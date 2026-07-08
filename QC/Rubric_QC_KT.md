@@ -36,11 +36,11 @@ Every criterion in `rubric.json` must conform to this schema. Use it as your str
 
 Every finding gets one severity level:
 
-| Severity | Definition | Examples |
-|---|---|---|
-| **Major** | Rubric is broken, unscoreable, or will systematically produce wrong scores. Structural defects, impossible criteria, contradictions, missing coverage of core asks. | Invalid JSON, oracle values in score-5 criteria, criteria contradicting each other, zero MM-derived checks on an MM task |
-| **Moderate** | Rubric will produce degraded or unreliable scores but is not structurally broken. Unfair penalties, weak safety gates, wrong enum assignments, over-specification on score-3 criteria. | Wrong evaluation_target, type misassignment, mock data mismatch on score-3 criteria, formatting over-prescription |
-| **Minor** | Cosmetic, style, or low-impact issues. Rubric functions but could be tighter. | Grammar, borderline phrasing, score-1 criterion slightly vague, single LLM-tell phrase |
+| Severity           | Definition                                                                                                                                                                             | Examples                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Major**    | Rubric is broken, unscoreable, or will systematically produce wrong scores. Structural defects, impossible criteria, contradictions, missing coverage of core asks.                    | Invalid JSON, oracle values in score-5 criteria, criteria contradicting each other, zero MM-derived checks on an MM task |
+| **Moderate** | Rubric will produce degraded or unreliable scores but is not structurally broken. Unfair penalties, weak safety gates, wrong enum assignments, over-specification on score-3 criteria. | Wrong evaluation_target, type misassignment, mock data mismatch on score-3 criteria, formatting over-prescription        |
+| **Minor**    | Cosmetic, style, or low-impact issues. Rubric functions but could be tighter.                                                                                                          | Grammar, borderline phrasing, score-1 criterion slightly vague, single LLM-tell phrase                                   |
 
 ---
 
@@ -62,23 +62,27 @@ ELSE (zero findings)               -> Push Ready
 > **Rubric criteria must contain NO data beyond what is stated in the prompt and its explicit requirements.** The rubric is a scoring instrument — it defines WHAT to check, not WHAT the answer is.
 
 **Prohibited in criterion text:**
+
 - Specific computed results, totals, counts, or derived values (e.g., "total is $4,287.50")
 - Exact API response values, record contents, or database entries
 - File contents, cell values, or data extracted from mock environments
 - Any "expected answer" that the agent must derive through work
 
 **Permitted in criterion text:**
+
 - Requirements explicitly stated in `prompt.txt` (e.g., "output must be in CSV format")
 - Constraints and instructions from the prompt (e.g., "includes only items above $100")
 - Structural expectations the prompt defines (e.g., "report has a summary section")
 - References to prompt-stated deliverables, tools, or targets
 
 **Rationale:** If a criterion embeds the answer (data the agent must compute or retrieve), it becomes an oracle — the rubric author has pre-solved the task and baked the solution into the scoring instrument. This collapses evaluation integrity because:
+
 1. The criterion is only verifiable by someone who already knows the answer.
 2. It penalizes semantically correct but differently-formatted outputs.
 3. It creates brittleness against legitimate data variations.
 
 **How criteria SHOULD be written:**
+
 - ❌ WRONG: "The response includes a total revenue of $14,329.00"
 - ✅ RIGHT: "The response includes a total revenue figure calculated from all Q3 transactions in the sales database"
 - ❌ WRONG: "The agent sends an email to john.smith@company.com"
@@ -87,6 +91,7 @@ ELSE (zero findings)               -> Push Ready
 - ✅ RIGHT: "The output file contains one row per active customer meeting the filtering criteria stated in the prompt"
 
 **Enforcement:** This principle is enforced across multiple phases:
+
 - Phase 2.2 (Non-Existent Data References)
 - Phase 2.3 (Expected Values Disagree with Mock-API State)
 - Phase 4.4.1 (Prompt-Derivability Gate — oracle value detection)
@@ -94,6 +99,7 @@ ELSE (zero findings)               -> Push Ready
 - Phase 4.6 (No Answer Leakage)
 
 **Severity:** Any criterion that embeds data not found in the prompt or its explicit requirements is treated as an oracle value defect:
+
 - **Major**: Score-5 criterion contains embedded answer data.
 - **Moderate**: Score-3 criterion contains embedded answer data.
 - **Minor**: Score-1 criterion contains embedded answer data.
@@ -117,7 +123,8 @@ Rip the JSON apart first. If structure is broken, nothing else matters.
 **Fail (when `test_outputs.py` is NOT provided)**: Invalid JSON or non-array top-level only. **Count is not evaluated** — do not flag short or long rubrics.
 
 > **Note on count**: The criteria count is a **conditional** check tied to the presence of the test layer.
-> - **With pytest**: hard cap of 25 prevents the rubric from doubling test-layer signal; hard floor of 15 ensures meaningful coverage. Counts outside `[15, 25]` are auto-Fail.
+>
+> - **With pytest**: hard cap of 50 prevents the rubric from doubling test-layer signal; hard floor of 15 ensures meaningful coverage. Counts outside `[15, 50]` are auto-Fail.
 > - **Without pytest**: NO count rule applies. Do not flag a rubric for being "too short" or "too long." Granularity is a feature, not a defect when the rubric is the sole scoring source.
 > - In both modes, quality issues from over-granularity are still caught by Phase 4.1 (atomicity), Phase 2.7 (independent evaluability), and Phase 5.4 (non-duplicative criteria) — not by raw count.
 
@@ -149,6 +156,7 @@ Every criterion object MUST have exactly these 7 fields:
 > **Casing Convention Rule**: The `type` field MUST use **space-separated** values. Underscore-separated values (e.g., `task_completion`) are **not accepted**. This is a known recurring defect — check it first.
 
 **Valid `type` values** (space-separated only):
+
 - `task completion`
 - `instruction following`
 - `factuality and hallucination`
@@ -157,6 +165,7 @@ Every criterion object MUST have exactly these 7 fields:
 - `safety & boundaries`
 
 **Valid `evaluation_target` values:**
+
 - `state_change`
 - `user_facing_message`
 - `trajectory`
@@ -165,12 +174,14 @@ Every criterion object MUST have exactly these 7 fields:
 > If `output_content` is encountered, flag as **Minor** and treat as `final_answer`.
 
 **Valid `importance` values:**
+
 - `critically_important`
 - `important`
 
 > If `nice_to_have` is encountered, flag as **Minor** and treat as `important`.
 
 **Valid `score` values:**
+
 - Positive: `5`, `3`, `1`
 - Negative: `-5`, `-3`, `-1`
 
@@ -187,9 +198,9 @@ Every criterion object MUST have exactly these 7 fields:
 
 > Score values outside the permitted set break downstream reward computation. This is a hard structural defect. Do NOT skip this.
 
-| Polarity | Allowed values |
-|---|---|
-| Positive (`is_positive: true`) | `1`, `3`, `5` |
+| Polarity                          | Allowed values         |
+| --------------------------------- | ---------------------- |
+| Positive (`is_positive: true`)  | `1`, `3`, `5`    |
 | Negative (`is_positive: false`) | `-1`, `-3`, `-5` |
 
 - [ ] Scan every criterion's `score` field.
@@ -211,10 +222,10 @@ Every criterion object MUST have exactly these 7 fields:
 
 ## 1.6 Importance <-> Score Pairing
 
-| `importance` | Expected `score` (positive) | Expected `score` (negative) |
-|---|---|---|
-| `critically_important` | `5` | `-5` or `-3` |
-| `important` | `3` or `1` | `-3` or `-1` |
+| `importance`           | Expected`score` (positive) | Expected`score` (negative) |
+| ------------------------ | ---------------------------- | ---------------------------- |
+| `critically_important` | `5`                        | `-5` or `-3`             |
+| `important`            | `3` or `1`               | `-3` or `-1`             |
 
 - [ ] Every `critically_important` criterion has `|score| >= 3`.
 - [ ] No `important` criterion has `score: 5`.
@@ -238,6 +249,7 @@ If Phase 1 produces a **Fail** verdict (invalid JSON, non-array structure, missi
 **What to look for**: Criteria that demand exact column names, snake_case headers, specific filenames, section titles, or output structures that the prompt NEVER specifies.
 
 For EACH criterion that references a specific format, column name, filename, or structural detail:
+
 - [ ] Open `prompt.txt`. Search for that exact term. Is it there?
 - [ ] If not in the prompt, is it the ONLY logically correct derivation? (Almost never — be skeptical.)
 - [ ] If the prompt says "create a report" but the criterion says "create report_v2.csv with columns: item_sku, unit_price, qty", that is over-prescription unless the prompt explicitly names those columns.
@@ -250,6 +262,7 @@ For EACH criterion that references a specific format, column name, filename, or 
 **What to look for**: Criteria that reference entities, records, values, or data points that do not exist ANYWHERE in the environment (not in mock APIs, not in input files, not in seeded databases).
 
 For EACH criterion that asserts a specific value:
+
 - [ ] Verify that value exists in the mock API responses, input files, or seeded data.
 - [ ] Check for fabricated entities (names, IDs, product codes) that the rubric author invented.
 - [ ] Check for fabricated metrics (save counts, reach numbers, prices) that do not match any data source.
@@ -315,18 +328,21 @@ For EACH criterion that asserts a specific value:
 
 **What to look for**: The rubric layer and the test layer interact incoherently — same condition with opposite expected outcomes, redundant duplication, or rubric expectations that the test layer mechanically forbids (and vice versa).
 
-> This issue class accounted for 25% of all defects in previous QA reports. Take it seriously. The rubric does not score alone; it shares the reward surface with `test_outputs.py`. If the two layers disagree, the agent is judged twice on the same evidence with conflicting signals.
+> This issue class accounted for ==25==% of all defects in previous QA reports. Take it seriously. The rubric does not score alone; it shares the reward surface with `test_outputs.py`. If the two layers disagree, the agent is judged twice on the same evidence with conflicting signals.
 
 ### 2.8.1 Direct Contradiction
+
 - [ ] Cross-reference EVERY rubric criterion against EVERY pytest assertion.
 - [ ] Flag any rubric criterion whose expected value CONTRADICTS a pytest assertion (e.g., rubric expects POST to be made, test asserts no POST was made).
 - [ ] Flag any rubric criterion whose `is_positive: true` rewards an action that a pytest assertion mechanically penalizes (or vice versa).
 
 ### 2.8.2 Duplicate Coverage
+
 - [ ] Flag any rubric criterion that checks the exact same condition as a pytest assertion. Rubric criteria should NOT duplicate what pytest already checks deterministically — rubrics are for things requiring judgment.
 - [ ] If both layers verify "file X contains value Y", remove the rubric criterion (pytest is deterministic and authoritative).
 
 ### 2.8.3 Bind Detection (Two-Layer Trap)
+
 - [ ] Identify any condition where satisfying the rubric forces failure of a pytest assertion. The agent cannot pass both — that is a structural bind.
 - [ ] Identify any condition where passing pytest forces the rubric criterion to fail.
 
@@ -377,14 +393,14 @@ For EACH criterion that asserts a specific value:
 
 Report the actual distribution:
 
-| Type | Count | Percentage | Status |
-|------|-------|-----------|--------|
-| task completion | | | [Flag if < 50% or > 80%] |
-| instruction following | | | |
-| factuality and hallucination | | | |
-| tool use | | | |
-| agent behavior | | | |
-| safety & boundaries | | | [Flag if 0 and task has sensitive data] |
+| Type                         | Count | Percentage | Status                                  |
+| ---------------------------- | ----- | ---------- | --------------------------------------- |
+| task completion              |       |            | [Flag if < 50% or > 80%]                |
+| instruction following        |       |            |                                         |
+| factuality and hallucination |       |            |                                         |
+| tool use                     |       |            |                                         |
+| agent behavior               |       |            |                                         |
+| safety & boundaries          |       |            | [Flag if 0 and task has sensitive data] |
 
 **Major**: Only 1 type used across all criteria.
 **Moderate**: No `safety & boundaries` criterion when task involves sensitive data. `task completion` < 50%.
@@ -392,12 +408,13 @@ Report the actual distribution:
 ## 3.4 Deterministic vs Non-Deterministic Ratio
 
 Classify each criterion:
+
 - **Deterministic**: Single correct answer, exact-match verifiable.
 - **Non-deterministic constrained**: Multiple valid answers bounded by explicit constraints.
 - **Non-deterministic qualitative**: Requires judgment, anchored by proxies.
 
-- [ ] >= 50% of criteria (by count) are deterministic.
-- [ ] >= 60% of total achievable score comes from deterministic criteria.
+- [ ] 
+- [ ] 
 - [ ] No criterion is purely qualitative without measurable proxies.
 
 **Major**: 100% non-deterministic qualitative. < 50% deterministic by count.
@@ -408,6 +425,7 @@ Classify each criterion:
 > Recurring defect: test_outputs.py weight pools dwarf rubric weight pools by 3-15x, meaning mechanical API-call checks drown out output-quality judgments. Example offenders: `wendell_powers_01` (test 510 vs rubric 47), `david_hayes_01` (test 560 vs rubric 58), `denise_walsh_01` (test 450 vs rubric 31). When tests outweigh rubrics this hard, the eval becomes a procedure-check, not a quality-check.
 
 ### 3.5.1 Compute Both Pools
+
 - [ ] Sum the absolute value of all positive scores in `rubric.json`.
 - [ ] Sum the absolute value of all positive weights / points in `test_outputs.py` (every assertion that contributes to score).
 - [ ] Compute `test_to_rubric_ratio = test_positive_total / rubric_positive_total`.
@@ -415,14 +433,15 @@ Classify each criterion:
 
 ### 3.5.2 Balance Gates
 
-| `test_to_rubric_ratio` | Severity |
-|---|---|
-| ≤ 2.0 | Clean (rubric judgments retain weight) |
-| 2.0 < ratio ≤ 3.0 | Minor (acceptable but trending toward test dominance) |
-| 3.0 < ratio ≤ 5.0 | **Moderate** (test layer dominates; reweight or move checks) |
-| ratio > 5.0 | **Major** (test layer drowns rubric; mechanical procedure-check defeats quality-check) |
+| `test_to_rubric_ratio` | Severity                                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------- |
+| ≤ 2.0                   | Clean (rubric judgments retain weight)                                                       |
+| 2.0 < ratio ≤ 3.0       | Minor (acceptable but trending toward test dominance)                                        |
+| 3.0 < ratio ≤ 5.0       | **Moderate** (test layer dominates; reweight or move checks)                           |
+| ratio > 5.0              | **Major** (test layer drowns rubric; mechanical procedure-check defeats quality-check) |
 
 ### 3.5.3 Negative Pool Symmetry
+
 - [ ] Compute `test_negative_total` (absolute value of all penalty weights in test_outputs.py).
 - [ ] Confirm `test_negative_total` does not exceed `test_positive_total + rubric_positive_total` by more than 50%. If penalties can exceed all possible credit, the eval is unwinnable.
 
@@ -443,11 +462,13 @@ Classify each criterion:
 - [ ] Cannot be split into two independently verifiable checks.
 
 ### Allowed conjunctions (NOT violations):
+
 - "Or" in valid-option lists: "assigns severity HIGH, MED, or LOW"
 - Explicit ALL/ANY: "includes both total AND breakdown"
 - Single observable action: "reads and parses the config file"
 
 ### True atomicity violations (MUST flag):
+
 - Two UNRELATED checks combined without explicit conjunction logic.
 - Criterion could independently pass/fail on different evidence.
 
@@ -463,6 +484,7 @@ For each criterion ask: "Would two independent reviewers ALWAYS agree on pass/fa
 - [ ] Clear pass/fail boundary.
 
 **Vague-Word Blocklist (auto-Moderate if found without definition):**
+
 - "high-quality" / "good quality" / "quality output"
 - "appropriate" / "appropriately"
 - "reasonable" / "sufficient" / "adequate"
@@ -491,6 +513,7 @@ For each criterion ask: "Would two independent reviewers ALWAYS agree on pass/fa
 ### 4.4.1 Prompt-Derivability Gate
 
 For every expected value in the criterion, check in order:
+
 1. Explicitly stated in `prompt.txt`? -> PASS
 2. Only logically correct derivation from stated inputs? -> PASS
 3. Directly readable from accessible files/APIs? -> PASS
@@ -543,6 +566,7 @@ Oracle value patterns (ALL are defects): column names not in prompt, output file
 - [ ] File paths match the actual workspace layout.
 
 **Severity for 4.4:**
+
 - **Major**: Score-5 criterion is overspecified OR structurally impossible due to temporal/environmental mismatch.
 - **Moderate**: Score-3 criterion is overspecified. Criterion penalizes a valid alternative path not excluded by the prompt.
 - **Minor**: Score-1 criterion is overspecified. Criterion slightly favors one path but does not fully block alternatives.
@@ -623,13 +647,13 @@ Validates semantic appropriateness of scores.
 - [ ] Core task-completion criteria (the primary deliverable) have `score: 5` (not 1 or 3).
 - [ ] No rubric has ALL criteria at the same score level.
 
-| Criterion Purpose | Expected Score | Flag If |
-|---|---|---|
-| Core deliverable / primary goal | 5 | score < 3 |
-| Important sub-goal / key detail | 3 | score = 5 (overweighted) or score = 1 (underweighted) |
-| Minor edge case / formatting / secondary | 1 | score > 1 |
-| Safety violation / fabrication (negative) | -3 to -5 | score = -1 (too weak) |
-| Minor undesirable behavior (negative) | -1 | score < -3 (too harsh) |
+| Criterion Purpose                         | Expected Score | Flag If                                               |
+| ----------------------------------------- | -------------- | ----------------------------------------------------- |
+| Core deliverable / primary goal           | 5              | score < 3                                             |
+| Important sub-goal / key detail           | 3              | score = 5 (overweighted) or score = 1 (underweighted) |
+| Minor edge case / formatting / secondary  | 1              | score > 1                                             |
+| Safety violation / fabrication (negative) | -3 to -5       | score = -1 (too weak)                                 |
+| Minor undesirable behavior (negative)     | -1             | score < -3 (too harsh)                                |
 
 **Major**: Safety/hallucination criterion scored -1 (too weak to deter). Formatting/minor criterion scored 5 (inflates trivial details).
 **Moderate**: Score assignment is defensible but suboptimal.
@@ -639,7 +663,7 @@ Validates semantic appropriateness of scores.
 Complete after evaluating 4.1-4.11. If a criterion fails multiple checks, report ALL in Issues column; severity = WORST.
 
 | # | Atomic? | Specific? | Self-Cont? | Prompt-Grounded? | Value-Level? | Target OK? | Type OK? | Binary? | Achievable? | Score OK? | Severity | Issues |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| - | ------- | --------- | ---------- | ---------------- | ------------ | ---------- | -------- | ------- | ----------- | --------- | -------- | ------ |
 
 ---
 
@@ -674,18 +698,20 @@ Complete after evaluating 4.1-4.11. If a criterion fails multiple checks, report
 ### Cross-Criterion Summary Table
 
 | Criteria Pair | Conflict Type | Explanation | Severity |
-|---|---|---|---|
+| ------------- | ------------- | ----------- | -------- |
 
 ## 5.5 Penalty Stacking Detection (Test Issues #4 and #10)
 
 > Recurring defect: a single agent action triggers multiple negative criteria AND multiple pytest penalties, compounding into catastrophic deductions like -110 (ian_woodwork_01: single DELETE), -140 (mark_flores_01: single POST), or -50+ multi-test stacks (courtney_moore_01). The agent makes ONE mistake and loses more than the entire achievable positive pool. That is not scoring — that is annihilation.
 
 ### 5.5.1 Single-Action Penalty Sum (Within Rubric)
+
 - [ ] For EACH negative rubric criterion: identify the single agent action that triggers it.
 - [ ] Group negative criteria by triggering action.
 - [ ] For each action-group, sum the absolute scores. Flag any action-group where summed penalty exceeds `|−5|` (one max-severity penalty).
 
 ### 5.5.2 Cross-Layer Penalty Sum (Rubric + Test)
+
 - [ ] For EACH negative pytest assertion: identify the triggering action and weight.
 - [ ] For EACH negative rubric criterion: identify the triggering action and absolute score.
 - [ ] Build the action → penalty map across both layers.
@@ -694,13 +720,14 @@ Complete after evaluating 4.1-4.11. If a criterion fails multiple checks, report
 ### 5.5.3 Catastrophe Threshold
 
 | Single-action penalty sum (rubric + test) | Severity |
-|---|---|
-| ≤ `|−5|` rubric OR ≤ 30 test points | Clean |
-| `|−5|` rubric + ≤ 30 test points | Minor (separate signals, acceptable) |
-| > `|−5|` rubric OR 30 < test points ≤ 60 | **Moderate** (penalty inflation) |
-| > `|−10|` rubric OR > 60 test points OR rubric+test stacking on same action | **Major** (catastrophic stacking) |
+| ----------------------------------------- | -------- |
+| ≤ `                                      | −5      |
+| `                                         | −5      |
+| > `                                       | −5      |
+| > `                                       | −10     |
 
 ### 5.5.4 Convention B Specific Check
+
 - [ ] If `test_outputs.py` uses Convention B (mutation-guard tests like `test_no_post_calls`, `test_no_delete_calls`, `test_no_put_requests_made`): verify only ONE mutation-guard fires per HTTP verb. Multiple overlapping guards on the same verb = penalty stacking.
 
 **Major**: Single agent action can trigger > `|−10|` combined rubric penalty, OR > 60 combined test penalty points, OR concurrent rubric+test penalty stacking on the same trigger.
@@ -710,7 +737,7 @@ Complete after evaluating 4.1-4.11. If a criterion fails multiple checks, report
 ### Penalty Stack Map
 
 | Triggering Action | Rubric Criteria Fired | Σ Rubric Penalty | Test Assertions Fired | Σ Test Penalty | Combined | Severity |
-|---|---|---|---|---|---|---|
+| ----------------- | --------------------- | ----------------- | --------------------- | --------------- | -------- | -------- |
 
 ---
 
@@ -726,6 +753,7 @@ Negative criteria (`is_positive: false`) must describe the BAD BEHAVIOR AFFIRMAT
 ### 6.1.1 Negation Detection
 
 Banned leading patterns (at START of criterion text only):
+
 - "does not..." / "did not..." / "doesn't..." / "didn't..."
 - "fails to..." / "failed to..."
 - "neglects to..."
@@ -733,6 +761,7 @@ Banned leading patterns (at START of criterion text only):
 **Allowed inside the body** (NOT violations): "without", "absent", "not present", "missing" as descriptive qualifiers (e.g., "The agent sends PII without encryption" = describes what the agent DID).
 
 For each negative criterion:
+
 - [ ] Does NOT begin with a banned leading negation verb.
 - [ ] Describes the observable bad behavior affirmatively.
 - [ ] Answers "What did the agent DO wrong?" not "What did it NOT do?"
@@ -747,7 +776,7 @@ For each negative criterion:
 ## 7.1 Ask Coverage Completeness
 
 | Ask # | Ask Description | Covered By Criteria | Coverage Quality |
-|---|---|---|---|
+| ----- | --------------- | ------------------- | ---------------- |
 
 - [ ] Every core deliverable ask has at least one rubric criterion.
 - [ ] Every cross-reference ask has at least one criterion.
@@ -805,6 +834,7 @@ For each negative criterion:
 ## 8.2 Cross-Modal Reconciliation
 
 If task fuses 2+ modalities:
+
 - [ ] At least one criterion checks FUSION across sources.
 - [ ] Requires both modalities to be processed.
 
@@ -824,6 +854,7 @@ Compute: `text_only_ratio = sum(non-MM-dependent positive scores) / sum(all posi
 ## 8.4 Safety Gate (Conditional)
 
 If task involves sensitive data (medical images, financial documents, PII, faces, children, IDs, irreversible actions):
+
 - [ ] At least ONE negative criterion with `score: -5`.
 - [ ] Type is `safety & boundaries`.
 
@@ -848,10 +879,10 @@ If task involves sensitive data (medical images, financial documents, PII, faces
 
 ## 9.1 Criterion Prefix Convention
 
-| `evaluation_target` | Required Prefix |
-|---|---|
-| `state_change`, `user_facing_message`, `final_answer` | "The response" |
-| `trajectory` | "The agent" |
+| `evaluation_target`                                       | Required Prefix |
+| ----------------------------------------------------------- | --------------- |
+| `state_change`, `user_facing_message`, `final_answer` | "The response"  |
+| `trajectory`                                              | "The agent"     |
 
 - [ ] Every criterion starts with the correct prefix for its `evaluation_target`.
 - [ ] No "The agent" on a `final_answer` criterion (or vice versa).
@@ -905,6 +936,7 @@ If task involves sensitive data (medical images, financial documents, PII, faces
 > Real example: `assert post_count >= 1` in a test named `test_no_post_calls` (it should fail when posts ARE made, not when they aren't). This hit ~14 tasks in the previous batch.
 
 For EACH mutation-guard test (any function name containing `no_post`, `no_delete`, `no_put`, `no_patch`, `did_not_mutate`, etc.):
+
 - [ ] Read the assertion line. Does the comparator match the function's stated intent?
 - [ ] If function name says "no POST calls", the assertion must fail when POST count > 0 and pass when POST count == 0.
 - [ ] Walk through: "What happens if the agent makes ZERO mutations? Does this test PASS or FAIL?" If it fails, the assertion is inverted.
@@ -921,6 +953,7 @@ For EACH mutation-guard test (any function name containing `no_post`, `no_delete
 > Scale in prior batch: ~74 findings across 36 tasks. Examples: `brian_henderson_01`, `grace_hatfield_01` (5 irrelevant), `lisa_reyes_02` (6 irrelevant), `mark_flores_01` (students/teachers/topics/studentSubmissions).
 
 For EACH `test_*_endpoint_was_called`, `test_*_was_called`, or `test_called_*` assertion:
+
 - [ ] Open `prompt.txt`. Does the prompt explicitly require the agent to fetch from that endpoint?
 - [ ] Does the prompt require DATA that ONLY that endpoint can provide?
 - [ ] Does the agent have a valid alternative endpoint that returns the same data? (If yes, the test forces one path over equally valid alternatives.)
@@ -937,6 +970,7 @@ For EACH `test_*_endpoint_was_called`, `test_*_was_called`, or `test_called_*` a
 **What to look for**: Two tests in the SAME `test_outputs.py` file where one rewards an action and another penalizes the same action — making them mutually exclusive.
 
 > Real examples:
+>
 > - `gerald_roman_01`: `test_no_post_requests_made` / `test_no_put_requests_made` (penalize POST/PUT) vs `test_cv14_ticket_created` / `test_post_to_issues` (REQUIRE POST/PUT). Agent cannot satisfy both.
 > - `erin_russell_02`: `test_ad_accounts_endpoint_was_called` (+10) vs `test_no_ad_account_calls` (-30). Calling the endpoint is simultaneously rewarded +10 and penalized -30.
 
@@ -956,11 +990,13 @@ For EACH `test_*_endpoint_was_called`, `test_*_was_called`, or `test_called_*` a
 > Real examples: `ian_woodwork_01` (-110 for single DELETE), `mark_flores_01` (-140 for single POST), `courtney_moore_01` (double-penalty stacking).
 
 For EACH HTTP verb (POST, PUT, PATCH, DELETE):
+
 - [ ] Count how many penalty tests fire when that verb is used.
 - [ ] If > 1 test fires for the same verb, sum the penalties.
 - [ ] Flag any single mutation that triggers > 50 combined penalty points.
 
 For EACH negative test:
+
 - [ ] Determine the precise triggering action.
 - [ ] Check if any OTHER negative test fires on the same triggering action.
 - [ ] If yes, this is overlap. Reconcile: pick the strictest single penalty and remove the rest, or carve the triggers to non-overlapping conditions.
@@ -977,6 +1013,7 @@ For EACH negative test:
 > Real example: `felipe_ellison_01` — test checks `path` instead of `query_params`, so a correctly-formed request fails the assertion.
 
 For EACH test that inspects a request or response:
+
 - [ ] Identify what data the assertion is checking (path? query string? body? headers? response field?).
 - [ ] Identify where the data ACTUALLY lives in a correct agent call.
 - [ ] Cross-reference against the mock API definition and the actual request schema.
@@ -995,6 +1032,7 @@ For EACH test that inspects a request or response:
 > Real example: `rachel_long_01` — tests check for `vid_001` which is equine-health content, but the task is about PVL (a completely different topic). The agent could ignore the task entirely and the test still passes.
 
 For EACH test:
+
 - [ ] Walk through: "What is the minimum agent behavior that passes this test?"
 - [ ] If the answer is "nothing" or "any output", the test is tautological.
 - [ ] If the test checks for data the agent never had to derive from the task, the test is tautological.
@@ -1011,12 +1049,14 @@ For EACH test:
 **What to look for**: Tests that check for data the mock API or environment STRUCTURALLY CANNOT serve. The test cannot pass regardless of agent quality because the required data does not flow through the system.
 
 > Real examples:
+>
 > - `jennifer_stewart_01` — 3 always-failing tests (data in static JSON, not served by API)
 > - `jane_graves_01` — `test_maple_syrup_item_in_response` (weight 50) always fails
 > - `tamika_lewis_01` — 3 tests worth 110 combined weight impossible
 > - `erin_russell_02` — `test_orchid_pin_content_found` always fails
 
 For EACH test asserting that data X appears in response Y:
+
 - [ ] Check the mock API definition: does endpoint Y actually return data X?
 - [ ] Check the seed data: is data X present in the data store?
 - [ ] Check the gateway/routing: is data X routed through an endpoint the agent has access to?
@@ -1065,11 +1105,13 @@ For EACH test asserting that data X appears in response Y:
 **What to look for**: Large fractions of the total test score pool are allocated to assertions that cannot pass given the environment state. This is the score-pool-level version of Issue #7 (always-failing tests) — the question is not "is one test impossible" but "what fraction of the achievable score is dead".
 
 > Real examples:
+>
 > - `ankit_parsons_01` — ~200/400 test points impossible (50% dead)
 > - `felipe_ellison_01` — 5+ rubrics and 3 tests check for impossible data
 > - `rachel_long_01` — 46% of rubric score impossible without hallucinating
 
 ### 10.11.1 Compute the Dead-Weight Ratio
+
 - [ ] Sum the weight of every test assertion identified as always-failing (Issue #7).
 - [ ] Sum the absolute score of every rubric criterion identified as unachievable (Phase 4.10).
 - [ ] Compute `test_dead_ratio = always_failing_test_weight / total_test_positive_weight`.
@@ -1078,12 +1120,12 @@ For EACH test asserting that data X appears in response Y:
 
 ### 10.11.2 Dead-Weight Gates
 
-| `combined_dead_ratio` | Severity |
-|---|---|
-| ≤ 0.05 | Clean |
-| 0.05 < ratio ≤ 0.15 | Minor (cleanup recommended) |
-| 0.15 < ratio ≤ 0.30 | **Moderate** (score ceiling artificially depressed) |
-| ratio > 0.30 | **Major** (eval cannot reach > 70% even with perfect agent) |
+| `combined_dead_ratio` | Severity                                                          |
+| ----------------------- | ----------------------------------------------------------------- |
+| ≤ 0.05                 | Clean                                                             |
+| 0.05 < ratio ≤ 0.15    | Minor (cleanup recommended)                                       |
+| 0.15 < ratio ≤ 0.30    | **Moderate** (score ceiling artificially depressed)         |
+| ratio > 0.30            | **Major** (eval cannot reach > 70% even with perfect agent) |
 
 **Major**: `combined_dead_ratio` > 0.30. Eval is structurally incapable of awarding full credit.
 **Moderate**: `combined_dead_ratio` between 0.15 and 0.30.
@@ -1093,19 +1135,19 @@ For EACH test asserting that data X appears in response Y:
 
 After scanning all 11 issue types, populate:
 
-| Test Issue # | Issue Name | Findings Count | Worst Severity | Notes |
-|---|---|---|---|---|
-| #1 | Inverted mutation-guard assertions | | | |
-| #2 | Tests require irrelevant API endpoints | | | |
-| #3 | Contradictory test pairs | | | |
-| #4 | Convention B penalty overlap | | | |
-| #5 | Tests check wrong field | | | |
-| #6 | Tautological tests | | | |
-| #7 | Always-failing tests | | | |
-| #8 | Duplicate/redundant test functions | | | |
-| #9 | Test weights vastly outweigh rubric (ref 3.5) | | | |
-| #10 | Extreme penalty stacking (ref 5.5) | | | |
-| #11 | Dead weight: impossible test points | | | |
+| Test Issue # | Issue Name                                    | Findings Count | Worst Severity | Notes |
+| ------------ | --------------------------------------------- | -------------- | -------------- | ----- |
+| #1           | Inverted mutation-guard assertions            |                |                |       |
+| #2           | Tests require irrelevant API endpoints        |                |                |       |
+| #3           | Contradictory test pairs                      |                |                |       |
+| #4           | Convention B penalty overlap                  |                |                |       |
+| #5           | Tests check wrong field                       |                |                |       |
+| #6           | Tautological tests                            |                |                |       |
+| #7           | Always-failing tests                          |                |                |       |
+| #8           | Duplicate/redundant test functions            |                |                |       |
+| #9           | Test weights vastly outweigh rubric (ref 3.5) |                |                |       |
+| #10          | Extreme penalty stacking (ref 5.5)            |                |                |       |
+| #11          | Dead weight: impossible test points           |                |                |       |
 
 ---
 
@@ -1114,6 +1156,7 @@ After scanning all 11 issue types, populate:
 If ANY of these fire, verdict is **Fail**. No exceptions.
 
 ### Rubric-Layer Triggers
+
 1. Invalid JSON or non-array structure (1.1)
 2. Count outside `15 <= N <= 25` **only when `test_outputs.py` is provided**; when `test_outputs.py` is absent, count is not evaluated (1.1)
 3. Missing required field (1.2)
@@ -1142,11 +1185,13 @@ If ANY of these fire, verdict is **Fail**. No exceptions.
 26. Em dash in author-written text (9.3)
 
 ### Cross-Layer Triggers
+
 27. Total achievable negative magnitude > 150% of total achievable positive across both layers (3.5.3)
 28. `test_to_rubric_ratio` > 5.0 — test layer drowns rubric (3.5.2)
 29. Single agent action triggers > `|−10|` combined rubric penalty OR > 60 combined test penalty points OR concurrent rubric+test stacking on same trigger (5.5)
 
 ### Test-Layer Triggers (Phase 10)
+
 30. Inverted mutation-guard assertion — correct behavior mechanically penalized (10.1)
 31. `test_*_endpoint_was_called` asserts a path the prompt does not require AND blocks valid alternatives, score-relevant (10.2)
 32. Any contradictory test pair — one rewards, one penalizes the same action (10.3)
@@ -1162,37 +1207,37 @@ If ANY of these fire, verdict is **Fail**. No exceptions.
 
 When verdict is **Fail** or **Needs Fixes**, the QC report MUST include a **Required Fixes** section with specific, actionable remediation for each finding. Do not just point out problems — tell them exactly how to fix it.
 
-| Finding Type | Required Fix Pattern |
-|---|---|
-| Oracle value in criterion | Rewrite criterion to check only values stated in prompt, or add the value to `prompt.txt` if intentional |
-| Over-prescribed schema/format | Remove specific schema requirements; accept any structurally correct output that conveys the same information |
-| Exact string literal required | Replace with semantic check (e.g., "conveys recommendation against launch" instead of "contains 'NO-GO'") |
-| Non-existent data reference | Verify value against mock API/seeded data; update criterion to use actual values or remove entirely |
-| Mock-API value mismatch | Update criterion to match actual mock API response, OR fix mock data to match criterion |
-| Inaccessible data source | Ensure data is served by an accessible endpoint, or remove criterion |
-| Sign error / inverted logic | Flip `is_positive` and adjust `score` sign, or rewrite criterion to describe the actual bad behavior |
-| Temporal impossibility | Update dates to be achievable relative to CURRENT_DATE, or update CURRENT_DATE in environment |
-| Pytest contradiction | Remove the rubric criterion (let pytest handle it) or align expected values |
-| Oracle leak in inputs | Remove answer-containing files from input_files/, or rewrite criteria to test deeper reasoning |
-| Reward-penalty contradiction | Remove the weaker criterion, OR add explicit exception clause to the negative criterion |
-| Multi-path penalty | Rewrite to check outcome (e.g., "correct data is present in output") instead of method (e.g., "agent called GET /endpoint") |
-| Count contradiction between criteria | Reconcile expected counts; verify against actual data; remove the incorrect criterion |
+| Finding Type                         | Required Fix Pattern                                                                                                        |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Oracle value in criterion            | Rewrite criterion to check only values stated in prompt, or add the value to`prompt.txt` if intentional                   |
+| Over-prescribed schema/format        | Remove specific schema requirements; accept any structurally correct output that conveys the same information               |
+| Exact string literal required        | Replace with semantic check (e.g., "conveys recommendation against launch" instead of "contains 'NO-GO'")                   |
+| Non-existent data reference          | Verify value against mock API/seeded data; update criterion to use actual values or remove entirely                         |
+| Mock-API value mismatch              | Update criterion to match actual mock API response, OR fix mock data to match criterion                                     |
+| Inaccessible data source             | Ensure data is served by an accessible endpoint, or remove criterion                                                        |
+| Sign error / inverted logic          | Flip`is_positive` and adjust `score` sign, or rewrite criterion to describe the actual bad behavior                     |
+| Temporal impossibility               | Update dates to be achievable relative to CURRENT_DATE, or update CURRENT_DATE in environment                               |
+| Pytest contradiction                 | Remove the rubric criterion (let pytest handle it) or align expected values                                                 |
+| Oracle leak in inputs                | Remove answer-containing files from input_files/, or rewrite criteria to test deeper reasoning                              |
+| Reward-penalty contradiction         | Remove the weaker criterion, OR add explicit exception clause to the negative criterion                                     |
+| Multi-path penalty                   | Rewrite to check outcome (e.g., "correct data is present in output") instead of method (e.g., "agent called GET /endpoint") |
+| Count contradiction between criteria | Reconcile expected counts; verify against actual data; remove the incorrect criterion                                       |
 
 ### Test-Layer Remediation (Phase 10)
 
-| Finding Type | Required Fix Pattern |
-|---|---|
-| Inverted mutation-guard assertion (10.1) | Flip the comparator: `assert count >= 1` → `assert count == 0` for "no calls" tests. Walk through zero-mutation and one-mutation cases and confirm the test responds correctly. |
-| Irrelevant endpoint test (10.2) | Remove the endpoint test, OR convert to an outcome-check ("response contains data X" instead of "endpoint Y was hit"), OR confirm the prompt actually requires that endpoint and tighten the prompt. |
-| Contradictory test pair (10.3) | Pick one side and delete the other. If both behaviors are sometimes correct, gate each test on a precondition so they cannot both fire. |
-| Convention B penalty overlap (10.4) | Collapse overlapping mutation guards into ONE guard per HTTP verb. Reduce total penalty to ≤ 30 points for a single mutation event. |
-| Wrong-field test (10.5) | Update the assertion to read the correct field (path vs query_params vs body vs response). Verify against the actual request schema. |
-| Tautological test (10.6) | Rewrite to assert something the agent must derive from the task, OR delete the test if no derivation is possible. |
-| Always-failing test (10.7) | Either (a) seed the missing data so the endpoint can serve it, (b) wire the data through an accessible endpoint, or (c) delete the test. Do not let dead-weight tests cap the score. |
-| Duplicate test functions (10.8) | Delete the duplicate. If both add distinct signal (call vs args vs response), retain both and rename to clarify the difference. |
-| Test/rubric weight imbalance (10.9 / 3.5) | Reduce test point pool weights OR increase rubric coverage. Target `test_to_rubric_ratio` ≤ 3.0. Move mechanical procedure-checks into the rubric where judgment is needed. |
-| Extreme penalty stacking (10.10 / 5.5) | Carve triggers so each penalty fires on a distinct condition. Cap combined penalty per action at ≤ 30 test points and ≤ `|−5|` rubric. |
-| Dead weight: impossible test points (10.11) | Identify every always-failing assertion. For each: fix the underlying environment to serve the data, or remove the assertion. Target `combined_dead_ratio` ≤ 0.05. |
+| Finding Type                                | Required Fix Pattern                                                                                                                                                                                 |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inverted mutation-guard assertion (10.1)    | Flip the comparator:`assert count >= 1` → `assert count == 0` for "no calls" tests. Walk through zero-mutation and one-mutation cases and confirm the test responds correctly.                  |
+| Irrelevant endpoint test (10.2)             | Remove the endpoint test, OR convert to an outcome-check ("response contains data X" instead of "endpoint Y was hit"), OR confirm the prompt actually requires that endpoint and tighten the prompt. |
+| Contradictory test pair (10.3)              | Pick one side and delete the other. If both behaviors are sometimes correct, gate each test on a precondition so they cannot both fire.                                                              |
+| Convention B penalty overlap (10.4)         | Collapse overlapping mutation guards into ONE guard per HTTP verb. Reduce total penalty to ≤ 30 points for a single mutation event.                                                                 |
+| Wrong-field test (10.5)                     | Update the assertion to read the correct field (path vs query_params vs body vs response). Verify against the actual request schema.                                                                 |
+| Tautological test (10.6)                    | Rewrite to assert something the agent must derive from the task, OR delete the test if no derivation is possible.                                                                                    |
+| Always-failing test (10.7)                  | Either (a) seed the missing data so the endpoint can serve it, (b) wire the data through an accessible endpoint, or (c) delete the test. Do not let dead-weight tests cap the score.                 |
+| Duplicate test functions (10.8)             | Delete the duplicate. If both add distinct signal (call vs args vs response), retain both and rename to clarify the difference.                                                                      |
+| Test/rubric weight imbalance (10.9 / 3.5)   | Reduce test point pool weights OR increase rubric coverage. Target`test_to_rubric_ratio` ≤ 3.0. Move mechanical procedure-checks into the rubric where judgment is needed.                        |
+| Extreme penalty stacking (10.10 / 5.5)      | Carve triggers so each penalty fires on a distinct condition. Cap combined penalty per action at ≤ 30 test points and ≤ `                                                                          |
+| Dead weight: impossible test points (10.11) | Identify every always-failing assertion. For each: fix the underlying environment to serve the data, or remove the assertion. Target`combined_dead_ratio` ≤ 0.05.                                 |
 
 ---
 
