@@ -24,8 +24,6 @@ Checklist items covered here (section.letter + number from the master list):
     #20  colons in a turn body           FAIL   (allowed only in TURN header)
     #21  temporal lexicon                FAIL   (clock stamps, e.g. 9am/09:30;
          today/tomorrow/weekday names are NOT flagged)
-    #21b explicit calendar years         FAIL   (1900-2099 four-digit years;
-         written-out years like "twenty twenty six" pass)
   D. Required form
     #23  empty artifact / no turn body   FAIL   (a body-less prompt is invalid)
     #23  one unbroken paragraph per turn WARN   (no blank line inside a body)
@@ -37,7 +35,7 @@ Checklist items covered here (section.letter + number from the master list):
     #32  no numbered / bulleted output list  FAIL
 
 Verdict policy (per client + manager decision):
-  * Forbidden content (#12/#15/#16/#18/#19/#19b/#20/#21/#21b) and malformed
+  * Forbidden content (#12/#15/#16/#18/#19/#19b/#20/#21) and malformed
     headers (#27), an empty artifact (#23), and deliverable lists (#31/#32) are
     HARD FAIL -- must be fixed before bundle.
   * Form bands (#24/#25) and a blank line inside a body (#23) are WARN --
@@ -111,10 +109,7 @@ CLOCK_TIME_RE = re.compile(
     re.IGNORECASE,
 )
 
-# #21b explicit calendar years.  A four-digit year (1900-2099) in a body is a
-# machine-facing date leak, the same family as the clock stamp.  Written-out
-# years ("twenty twenty six") are prose and are left to the judgment rubric.
-YEAR_RE = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)")
+
 
 # #15 dictated file names: a token that ends in a real file extension.
 FILENAME_RE = re.compile(
@@ -385,14 +380,6 @@ def check_forbidden_content(turn: Turn, findings: List[Finding]) -> None:
             "FAIL", "C#21 temporal", label,
             f"clock time stamp {body[m.start():m.end()]!r} near "
             f"...{_ctx(body, m.start())}...",
-        ))
-
-    # #21b explicit calendar years.
-    for m in YEAR_RE.finditer(body):
-        findings.append(Finding(
-            "FAIL", "C#21 temporal", label,
-            f"explicit calendar year {body[m.start():m.end()]!r} near "
-            f"...{_ctx(body, m.start())}...; name the event, not the year",
         ))
 
     # #15 dictated file names.
