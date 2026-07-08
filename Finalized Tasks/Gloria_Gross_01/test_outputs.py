@@ -2,8 +2,7 @@ import json
 import os
 from urllib.request import Request, urlopen
 
-FRESH_DATE = "2026-08-19"
-STALE_DATE = "2026-05-30"
+
 
 NOTION_API_URL = os.environ.get("NOTION_API_URL", "http://localhost:8010")
 GMAIL_API_URL = os.environ.get("GMAIL_API_URL", "http://localhost:8017")
@@ -194,7 +193,7 @@ def test_outcome_dossier_reports_corrected_ceiling():
 
 def test_outcome_dossier_supersedes_stale_ceiling():
     blob = _write_blob(NOTION_API_URL)
-    assert FRESH_DATE in blob and any(t in blob for t in ("supersede", "superseded", "older", "stale", "reallocat", "moved")), "the dossier does not show the corrected ceiling superseding the older planning total"
+    assert "2026-08-19" in blob and any(t in blob for t in ("supersede", "superseded", "older", "stale", "reallocat", "moved")), "the dossier does not show the corrected ceiling superseding the older planning total"
 
 
 def test_outcome_dossier_reports_diveops_component():
@@ -229,7 +228,7 @@ def test_outcome_ledger_reports_report_ready_count():
 
 def test_outcome_ledger_excludes_lookalikes():
     blob = _write_blob(AIRTABLE_API_URL) + _write_blob(NOTION_API_URL)
-    assert "6" in blob, "the look-alike exclusions are not recorded"
+    assert "6" in blob and "look" in blob, "the look-alike exclusions are not recorded"
 
 
 def test_outcome_dossier_cites_blocker_204():
