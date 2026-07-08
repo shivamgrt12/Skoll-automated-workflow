@@ -1,0 +1,91 @@
+# Notion Workspace — Studio Plan - Amanda
+
+- **service:** notion
+- **report_type:** workspace_index
+- **workspace_id:** ntn-aw-studio-2026
+- **generated_at:** 2026-10-12T09:00:00-04:00
+
+> Notion is Amanda's primary planning workspace. Obsidian holds the private journal (not seeded here). Each page below is a real page in the workspace with its last_edited_at, owner, and contents schema. Pages flagged 'snapshot' are point-in-time copies; pages flagged 'live' are continuously updated.
+
+## Pages
+
+### Studio Plan Hub (`ntn-pg-001`)
+- **kind:** live
+- **icon:** compass
+- **last_edited_at:** 2026-10-11T22:14:00-04:00
+- **last_edited_by:** Amanda
+
+Top-level index. Linked databases below. The October 20 sit-down has a blocked-off page placeholder titled '2026-10-20 plan refresh brief' that is empty as of the freeze.
+
+- **child_pages:** ntn-pg-002, ntn-pg-003, ntn-pg-004, ntn-pg-005, ntn-pg-006, ntn-pg-007, ntn-pg-008, ntn-pg-009
+
+### Year One Recap (2026) (`ntn-pg-002`)
+- **kind:** live
+- **last_edited_at:** 2026-09-30T20:51:00-04:00
+
+Running personal narrative on year one. Includes the February planning note where Amanda wrote the $400/month transfer assumption and the $12,000 expected savings line by year-end. Both numbers are now stale per the books and Plaid; this page has not been updated since.
+
+
+### Capital Target Tracker (`ntn-pg-003`)
+- **kind:** live
+- **last_edited_at:** 2026-09-30T20:55:00-04:00
+
+Target band: $25,000 - $30,000 to open Amanda's Dance Academy. Tracker last reconciled in late September. Reflects $12,000 as the running savings figure. Plaid balance at freeze (Studio Fund $13,650.42) is newer and authoritative.
+
+
+### Grant Pipeline (`ntn-pg-004`)
+- **kind:** live
+- **last_edited_at:** 2026-10-06T07:42:00-04:00
+
+Light tracker. The Salesforce pipeline is the authoritative system. This page is a narrative companion for Amanda's own reference. Five programs listed: PA WBC Aspire, Berks County Foundation Women in Arts, Reading Beautification Storefront, SBA Microloan, Eileen Fisher Foundation.
+
+
+### Fall Showcase - Nov 14 Working Page (`ntn-pg-005`)
+- **kind:** live
+- **last_edited_at:** 2026-10-11T19:02:00-04:00
+
+Working notes. The authoritative production board is in Monday. The costume tracker is in Airtable. This page holds the artistic notes, the running order draft, and the music clearance status. Six routines, Wyomissing duet.
+
+
+### Halloween Social - Oct 31 Playbook (`ntn-pg-006`)
+- **kind:** live
+- **last_edited_at:** 2026-10-09T11:18:00-04:00
+
+Run-of-show, BPM-arc playlist draft (working title 'Witch Hour to Last Dance', 8 tracks, 80-128 BPM arc), costume class content for the first hour, comms drafts (held). Door count placeholder reads '40-50' which is the old February estimate and no longer the live figure.
+
+
+### CEN Renewal Tracker (`ntn-pg-007`)
+- **kind:** live
+- **last_edited_at:** 2026-09-26T13:30:00-04:00
+
+Module ledger maintained by Amanda. References BambooHR credential dates and Google Classroom course completions. Currently shows 62 hours total (49 Category A, 49 of 75 required Category A; 13 Category B, fine). Deadline 2027-03-31.
+
+
+### Wedding - MOH Standup (`ntn-pg-008`)
+- **kind:** live
+- **last_edited_at:** 2026-10-04T22:08:00-04:00
+
+Light narrative companion. The real planner is the Trello board jess+amanda+miguel. This page only holds the closeout items Amanda is tracking on her own.
+
+
+### Audit Log - Trusted and Held (working) (`ntn-pg-009`)
+- **kind:** live
+- **last_edited_at:** 2026-10-11T23:55:00-04:00
+
+Amanda's existing running log of figures she has trusted and items she has held. Sparse. The October 20 refresh will produce the authoritative version.
+
+
+## Databases
+
+### Comms Drafts (held) (`ntn-db-comms-drafts`)
+- row_count: 6
+
+| id | channel | title | status | park_address |
+|----|---------|-------|--------|--------------|
+| comms-001 | Instagram post | Halloween Social one-week countdown | draft | Notion / Comms Drafts / comms-001 |
+| comms-002 | Mailchimp campaign | Fall Showcase tickets live | draft | Mailchimp / mc-draft-showcase-tickets |
+| comms-003 | LinkedIn post | Year-one recap + showcase teaser | draft | LinkedIn / drafts / li-draft-showcase-2026 |
+| comms-004 | Eventbrite listing | Showcase event page going live | staged | Eventbrite / evt-rhy-2026-1114 (private) |
+| comms-005 | Instagram story sequence | Halloween costume content tease | draft | Notion / Comms Drafts / comms-005 |
+| comms-006 | Student class email | Halloween logistics + parking note | draft | Notion / Comms Drafts / comms-006 |
+

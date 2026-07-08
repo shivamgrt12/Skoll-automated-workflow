@@ -1,0 +1,42 @@
+# Xero — Company Info
+
+- **service:** Xero
+- **snapshot_taken_at:** 2026-10-12T09:08:42-04:00
+- **organisation:**
+  ```json
+  {
+    "org_id": "xero-aw-instruction-2026",
+    "legal_name": "Amanda Webb",
+    "trading_name": "Amanda Webb Dance Instruction",
+    "country_code": "US",
+    "currency": "USD",
+    "fiscal_year_start": "01-01",
+    "primary_user": "amanda.webb@Finthesiss.ai",
+    "advisor": "Priya Iyer, CPA",
+    "advisor_email": "priya@iyertaxpa.com",
+    "advisor_note": "Priya suggested setting up Xero in January 2026 as a parallel set of books to give Amanda a second source of truth and to make a possible LLC conversion easier in 2027. Amanda dual-posted from January through late August. Dual posting stopped at the end of August because Amanda's evening shifts ran long and the manual reentry was getting skipped.",
+    "linked_payment_feeds": [
+      {
+        "name": "Square",
+        "feed_status": "broken_since_2026-09-04",
+        "last_successful_sync": "2026-09-04T02:11:00-04:00",
+        "note": "Token refresh failed in early September. Amanda received a notice email but did not action it. Most September Square transactions did not flow through. See gmail/inbox_snapshot.json for the Xero notice email."
+      },
+      {
+        "name": "Stripe",
+        "feed_status": "intermittent",
+        "last_successful_sync": "2026-09-12T03:02:00-04:00",
+        "note": "Two payouts after September 12 did not import."
+      }
+    ],
+    "linked_bank_accounts": [],
+    "tracking_categories": [
+      "Beginner Mon",
+      "Intermediate Wed",
+      "Contemporary Fusion Thu",
+      "Open Sat",
+      "Privates",
+      "Workshops"
+    ]
+  }
+  ```
