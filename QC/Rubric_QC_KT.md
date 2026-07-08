@@ -115,16 +115,16 @@ Rip the JSON apart first. If structure is broken, nothing else matters.
 - [ ] `rubric.json` is valid JSON. Parse it yourself — do not trust "it looks valid."
 - [ ] Top-level is a JSON array, not an object.
 - [ ] **Conditional count check** — depends on whether `test_outputs.py` is provided in the input bundle:
-  - **IF `test_outputs.py` IS provided (pytest layer active)** → enforce `15 <= N <= 25`. The rubric is sharing the scoring surface with the test layer; the criteria count MUST stay within this bounded range so the two layers can balance and so the rubric does not duplicate test-layer signal.
+  - **IF `test_outputs.py` IS provided (pytest layer active)** → enforce `N >= 15`. The rubric is sharing the scoring surface with the test layer; the criteria count MUST meet this minimum floor so the two layers can balance and so the rubric provides meaningful coverage. There is no upper cap — the rubric may contain as many criteria as the task legitimately requires.
   - **IF `test_outputs.py` is NOT provided (rubric-only scoring)** → **skip the count check entirely**. Do not impose any minimum or maximum. The rubric is the sole scoring source and may contain as many criteria as the task legitimately requires to cover all asks.
 - [ ] Every element is a JSON object.
 
-**Fail (when `test_outputs.py` IS provided)**: Invalid JSON, non-array top-level, or count outside `15 <= N <= 25`.
+**Fail (when `test_outputs.py` IS provided)**: Invalid JSON, non-array top-level, or count below `15`.
 **Fail (when `test_outputs.py` is NOT provided)**: Invalid JSON or non-array top-level only. **Count is not evaluated** — do not flag short or long rubrics.
 
 > **Note on count**: The criteria count is a **conditional** check tied to the presence of the test layer.
 >
-> - **With pytest**: hard cap of 50 prevents the rubric from doubling test-layer signal; hard floor of 15 ensures meaningful coverage. Counts outside `[15, 50]` are auto-Fail.
+> - **With pytest**: hard floor of 15 ensures meaningful coverage. Counts below `15` are auto-Fail. There is no upper cap — quality issues from over-granularity are caught by Phase 4.1 (atomicity), Phase 2.7 (independent evaluability), and Phase 5.4 (non-duplicative criteria), not by raw count.
 > - **Without pytest**: NO count rule applies. Do not flag a rubric for being "too short" or "too long." Granularity is a feature, not a defect when the rubric is the sole scoring source.
 > - In both modes, quality issues from over-granularity are still caught by Phase 4.1 (atomicity), Phase 2.7 (independent evaluability), and Phase 5.4 (non-duplicative criteria) — not by raw count.
 
@@ -1158,7 +1158,7 @@ If ANY of these fire, verdict is **Fail**. No exceptions.
 ### Rubric-Layer Triggers
 
 1. Invalid JSON or non-array structure (1.1)
-2. Count outside `15 <= N <= 25` **only when `test_outputs.py` is provided**; when `test_outputs.py` is absent, count is not evaluated (1.1)
+2. Count below `15` **only when `test_outputs.py` is provided**; when `test_outputs.py` is absent, count is not evaluated (1.1)
 3. Missing required field (1.2)
 4. Invalid enum value (1.3)
 5. Invalid score value not in {-5, -3, -1, 1, 3, 5} (1.4)
