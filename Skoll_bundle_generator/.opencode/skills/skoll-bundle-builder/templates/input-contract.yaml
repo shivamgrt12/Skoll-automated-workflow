@@ -1,0 +1,90 @@
+# ============================================================================
+# input-contract.yaml
+# ----------------------------------------------------------------------------
+# The HARD contract the persona team must satisfy before a bundle can be built.
+# Stage 0 (validate_input.py) enforces every rule here and FAILS LOUD with a
+# checklist if anything is missing or malformed.
+#
+# The persona team delivers ONE folder per persona with four surfaces:
+#   1. <root>/*.md         -> the 7 flat persona MD files (AT TOP LEVEL)
+#   2. home/               -> fake home-directory tree of workspace artifacts
+#   3. task/               -> README.md + QC_REPORT.md (design context)
+#   4. mock_data/<svc>-api -> the FULL environment catalog (~101 services)
+#
+# mock_data is the same full catalog for every persona. The prompt-factory
+# stage SELECTS the persona-specific subset and splits it into required vs
+# distractor APIs; only the selected subset is copied into the output bundle.
+#
+# Edit thresholds here as the contract evolves; validate_input.py reads this
+# file, it does not hardcode the rules.
+# ============================================================================
+
+contract_version: "2.0"
+
+# --- Surface 1: persona (7 MD files at the folder root) ----------------------
+persona:
+  dir: "."
+  # All 7 must be present. Order here is also the canonical concatenation order
+  # used to build task.yaml's system_prompt (assemble.py reads this list).
+  required_files:
+    - AGENTS.md
+    - SOUL.md
+    - IDENTITY.md
+    - USER.md
+    - TOOLS.md
+    - MEMORY.md
+    - HEARTBEAT.md
+  min_bytes_each: 200
+  memory_cache_boundary_marker: "<!-- === CACHE BOUNDARY === -->"
+  memory_marker_required: false
+
+# --- Surface 2: home (workspace artifacts, some input + some noise) ----------
+home:
+  dir: "home"
+  min_files: 5
+  # Artifacts are staged into the agent workspace. The prompt uses some as
+  # inputs, the rest remain as intentional noise, so no extension whitelist.
+  recurse: true
+
+# --- Surface 3: task (persona-team design context) ---------------------------
+task:
+  dir: "task"
+  required_files:
+    - README.md
+    - QC_REPORT.md
+
+# --- Surface 4: mock_data (full environment catalog) -------------------------
+mock_data:
+  dir: "mock_data"
+  subdir_suffix: "-api"
+  min_service_dirs: 20
+  min_files_per_service: 1
+  # If true, a mock_data/<x>-api that does not exist in the environment harness
+  # is a hard failure (prevents typos like "quickbook-api").
+  require_service_in_registry: true
+
+# --- Design metadata (operator-supplied; API split comes from prompt stage) --
+design_metadata:
+  required_keys:
+    - task_id
+    - variant
+    - principal
+    - timezone
+    - domain
+    - turns
+    - days
+    - difficulty
+  optional_keys:
+    - confirmation_threshold_single_usd
+    - confirmation_threshold_recurring_usd
+    - drafting_language
+    - deliverables
+    - runtime_model
+    - runtime_thinking
+
+# --- Environment harness (capability catalog, read-only) --------------------
+environment:
+  harness_dir: "SKOLL_GK/Environment_SN_Harness"
+  # Authoritative port/env_var/healthcheck source is each <svc>-api/service.toml.
+  # Postman collections and api docs carry STALE ports, do not scrape them.
+  registry_source: "service.toml"

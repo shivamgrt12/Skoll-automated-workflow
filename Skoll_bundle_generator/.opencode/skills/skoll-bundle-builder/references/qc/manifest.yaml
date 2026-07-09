@@ -1,0 +1,22 @@
+# Optional QC gate severity map. Any gate NOT listed here defaults to "block".
+# Set a gate to "warn" to make its failure non-blocking (reported, pipeline
+# continues). Keys are the gate filenames in this folder.
+severity:
+  10_rubric_qc.md: block
+  20_test_outputs_qc.md: block
+  # Persona team ships mock_data as JSON-only; harness team confirmed JSON is
+  # accepted at runtime. The schema-divergence findings this gate raises against
+  # the canonical CSV schema are therefore expected and non-blocking.
+  30_mock_data_qc.py: warn
+  # Deterministic scan for stub/placeholder values left in the assembled
+  # mock_data JSON after enrichment. Warn: a stray placeholder is a cleanup nit,
+  # not a reason to fail the whole bundle.
+  40_mock_data_placeholders.py: warn
+  50_truth_qc.md: block
+  # Scans data/ images for AI-generated / stock artifacts. Requires Pillow
+  # (`pip install Pillow`); without it the gate errors (exit 2) rather than
+  # silently passing, so operators install the dependency. Set to warn: the
+  # only images in these bundles are the persona team's generic home-tree noise
+  # files (a01-a54), which trip the low-JPEG-ratio heuristic but are decorative
+  # filler, not task deliverables.
+  60_check_ai_images.py: warn
