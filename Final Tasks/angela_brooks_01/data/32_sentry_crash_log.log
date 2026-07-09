@@ -1,0 +1,29 @@
+# Lantern Tides - Sentry crash log excerpt (stale export). Pull live for the current picture.
+# Godot 4.x demo build. This is a saved snapshot; the live Sentry records are authoritative.
+2026-10-09T22:14:03-07:00 ERROR lantern-tides chapter3 event=hard_crash issue=LT-1247
+  scene=post_office_door branch=feature/ch3-postoffice build=demo-vertical-slice
+  message="NullReference on door interaction: PostOfficeDoor.Interact() -> DoorController null"
+  stack:
+    at PostOfficeDoor.Interact()
+    at InteractionSystem.Dispatch(actor, target)
+    at InputRouter.OnConfirm()
+    at InputRouter._unhandled_input(event)
+    at SceneTree._physics_process(delta)
+  context="door prompt appears, confirm press dispatches into a null DoorController reference"
+  playtests_affected=14 note="single largest drop-off cluster; blocks the 5-min demo"
+2026-10-09T22:31:47-07:00 ERROR lantern-tides chapter3 event=hard_crash issue=LT-1247
+  scene=post_office_door branch=feature/ch3-postoffice
+  message="NullReference on door interaction: PostOfficeDoor.Interact() -> DoorController null"
+  note="second capture, same signature - reproduces on repeat confirm at the door"
+2026-10-10T01:02:55-07:00 WARN lantern-tides chapter3 event=softlock issue=LT-1231
+  scene=clerk_dialogue branch=fix/clerk-softlock
+  message="dialogue state stuck after back-out mid-line"
+  note="recoverable only by reload; not a crash but a demo-killer if a judge triggers it"
+2026-10-10T01:20:11-07:00 WARN lantern-tides chapter3 event=double_feedback issue=LT-1218
+  scene=postbox message="two feedback pings per interact"
+  note="cosmetic-ish but reads as buggy; lower priority than the door and the softlock"
+2026-10-11T23:47:39-07:00 INFO lantern-tides chapter2 event=state_reset issue=LT-1205
+  scene=radio_room message="radio state does not persist across scene load"
+  note="the radio thing that keeps coming back; chapter 2, lower severity than chapter 3 items"
+# Read order for triage: LT-1247 first (hard crash, blocks demo), then LT-1231, then LT-1218,
+# then LT-1205. Cross-check against the commit history - the board does not reflect these.
