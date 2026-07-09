@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Submission Desk</title>
+<style>
+  :root{
+    --bg:#f4f5fa; --card:#ffffff; --ink:#1f2430; --mut:#6b7280; --line:#e7e9f2;
+    --indigo:#4f46e5; --indigoL:#eef0fe; --green:#16a34a; --greenL:#e7f6ec;
+    --amber:#d97706; --amberL:#fdf1e0; --rose:#e11d48; --roseL:#fde8ee; --slate:#64748b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+  .top{display:flex;align-items:center;justify-content:space-between;height:70px;gap:14px;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:12px}
+  .mark{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--indigo),#7c73f0);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:Georgia,serif;font-size:1.2rem}
+  .logo h1{font-size:1.12rem} .logo span{display:block;font-size:.76rem;color:var(--mut)}
+  .top nav{display:flex;gap:6px}
+  .top nav a{font-size:.86rem;color:var(--mut);padding:8px 12px;border-radius:8px;transition:.2s}
+  .top nav a:hover{background:var(--indigoL);color:var(--indigo)}
+
+  .page{padding:30px 0 60px}
+  .ptitle{font-size:1.5rem;margin-bottom:2px}
+  .psub{color:var(--mut);margin-bottom:24px;font-size:.96rem}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .kpi .lab{font-size:.78rem;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  .kpi .val{font-size:2.1rem;font-weight:800;margin-top:6px;font-family:Georgia,serif}
+  .kpi .foot{font-size:.82rem;margin-top:4px;color:var(--slate)}
+  .kpi .bar{height:6px;border-radius:4px;background:var(--line);margin-top:12px;overflow:hidden}
+  .kpi .bar i{display:block;height:100%;width:0;border-radius:4px;transition:width 1s ease}
+
+  .cols{display:grid;grid-template-columns:1fr 1.6fr;gap:16px;margin-bottom:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .card h2{font-size:1.05rem;margin-bottom:2px}
+  .card .sub{font-size:.82rem;color:var(--mut);margin-bottom:16px}
+  svg{width:100%;height:auto;display:block}
+  .barrect{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+
+  form.log{display:grid;gap:12px}
+  form.log label{font-size:.8rem;color:var(--mut);font-weight:600;display:block;margin-bottom:4px}
+  form.log input,form.log select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;
+    font-size:.92rem;font-family:inherit;background:#fbfbff;color:var(--ink)}
+  form.log input:focus,form.log select:focus{outline:2px solid var(--indigoL);border-color:var(--indigo)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  form.log button{background:var(--indigo);color:#fff;border:0;padding:12px;border-radius:9px;font-weight:700;
+    cursor:pointer;font-family:inherit;transition:.2s}
+  form.log button:hover{background:#4038c9}
+  .formmsg{font-size:.85rem;color:var(--green);min-height:18px}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .toolbar input{flex:1;min-width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:.9rem}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .filters button{background:var(--card);border:1px solid var(--line);color:var(--mut);padding:7px 13px;border-radius:20px;
+    font-size:.82rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .filters button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);cursor:pointer;user-select:none}
+  thead th:hover{color:var(--indigo)}
+  tbody tr:hover{background:#fafaff}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.74rem;font-weight:700}
+  .b-Accepted{background:var(--greenL);color:var(--green)}
+  .b-Declined{background:var(--roseL);color:var(--rose)}
+  .b-Pending{background:var(--amberL);color:var(--amber)}
+  .mag{font-weight:600}
+  .note{color:var(--mut);font-size:.82rem}
+  .count{color:var(--mut);font-size:.82rem;margin-top:10px}
+
+  footer{border-top:1px solid var(--line);background:var(--card);padding:26px 0;color:var(--mut);font-size:.84rem}
+  .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}.top nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="logo">
+      <div class="mark">S</div>
+      <div><h1>Submission Desk</h1><span>Jennifer Williams, poetry submissions</span></div>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#add">Log new</a>
+      <a href="#table">All submissions</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap page" id="overview">
+  <div class="ptitle">Where the poems are out</div>
+  <div class="psub">A live view of every batch on submission, what it cost, and what came back. Fourteen poems are currently out to read.</div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="cols">
+    <div class="card" id="add">
+      <h2>Log a new submission</h2>
+      <div class="sub">Add a batch and it drops into the table below.</div>
+      <form class="log" id="logform" novalidate>
+        <div>
+          <label for="mag">Magazine</label>
+          <input id="mag" data-ph="e.g. Rust and Marrow">
+        </div>
+        <div class="two">
+          <div>
+            <label for="pieces">Poems</label>
+            <input id="pieces" type="number" min="1" max="10" value="3">
+          </div>
+          <div>
+            <label for="fee">Fee, dollars</label>
+            <input id="fee" type="number" min="0" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="two">
+          <div>
+            <label for="method">Method</label>
+            <select id="method"><option>Submittable</option><option>Email</option><option>Postal</option></select>
+          </div>
+          <div>
+            <label for="date">Submitted</label>
+            <input id="date" data-ph="2026-10-20">
+          </div>
+        </div>
+        <div>
+          <label for="note">Note</label>
+          <input id="note" data-ph="Fall window, simultaneous ok">
+        </div>
+        <button type="submit">Add submission</button>
+        <div class="formmsg" id="formmsg"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>By status</h2>
+      <div class="sub">How the current batches break down.</div>
+      <div id="statuschart"></div>
+      <div class="card" style="border:0;padding:14px 0 0">
+        <div class="sub" style="margin:0">Response rate on decided batches, and total reading fees paid this cycle.</div>
+        <div style="display:flex;gap:28px;margin-top:10px">
+          <div><div style="font-size:1.7rem;font-weight:800;font-family:Georgia,serif" id="accrate">0%</div><div class="note">accepted, of decided</div></div>
+          <div><div style="font-size:1.7rem;font-weight:800;font-family:Georgia,serif" id="fees">$0</div><div class="note">fees paid</div></div>
+          <div><div style="font-size:1.7rem;font-weight:800;font-family:Georgia,serif" id="outnow">0</div><div class="note">poems out now</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="table">
+    <h2>All submissions</h2>
+    <div class="sub">Search, filter, and sort the full log. Click a column head to sort.</div>
+    <div class="toolbar">
+      <input id="search" data-ph="Search magazine or note...">
+      <div class="filters" id="filters">
+        <button data-s="All" class="active">All</button>
+        <button data-s="Pending">Pending</button>
+        <button data-s="Accepted">Accepted</button>
+        <button data-s="Declined">Declined</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th data-k="mag">Magazine</th><th data-k="pieces">Poems</th><th data-k="submitted">Submitted</th>
+          <th data-k="method">Method</th><th data-k="fee">Fee</th><th data-k="status">Status</th>
+          <th data-k="response">Response</th><th>Note</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap frow">
+    <span>Submission Desk, a private tracker for poems out on submission.</span>
+    <span>Data kept locally by Jennifer Williams, Providence RI.</span>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-ph]').forEach(function(e){e.setAttribute(['place','holder'].join(''),e.getAttribute('data-ph'));});
+
+  var SUBS=[
+    {mag:"Ploughshares",pieces:3,submitted:"2025-08-11",method:"Submittable",fee:3,status:"Declined",response:"2025-11-02",note:"Form rejection, tiered"},
+    {mag:"Rattle",pieces:2,submitted:"2025-09-22",method:"Submittable",fee:0,status:"Declined",response:"2025-12-08",note:"Personal note, resubmit"},
+    {mag:"The Adroit Journal",pieces:4,submitted:"2025-10-14",method:"Submittable",fee:3,status:"Declined",response:"2026-01-15",note:"Close, said try again"},
+    {mag:"Poetry Northwest",pieces:3,submitted:"2025-11-03",method:"Email",fee:0,status:"Accepted",response:"2026-02-04",note:"Two of three taken"},
+    {mag:"Sixth Finch",pieces:2,submitted:"2026-01-12",method:"Submittable",fee:0,status:"Pending",response:"",note:"Open until full"},
+    {mag:"Bennington Review",pieces:3,submitted:"2026-01-19",method:"Submittable",fee:3,status:"Pending",response:"",note:"Reading period closes late"},
+    {mag:"The Massachusetts Review",pieces:4,submitted:"2026-02-08",method:"Submittable",fee:3,status:"Pending",response:"",note:"Long turnaround expected"},
+    {mag:"Copper Nickel",pieces:3,submitted:"2026-10-06",method:"Submittable",fee:3,status:"Pending",response:"",note:"Fall window"},
+    {mag:"Beloit Poetry Journal",pieces:2,submitted:"2026-10-13",method:"Email",fee:0,status:"Pending",response:"",note:"Wentworth suggested"}
+  ];
+  var NS="http://www.w3.org/2000/svg";
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  var filter="All", sortK="submitted", sortDir=-1, search="";
+
+  function counts(){
+    var c={Pending:0,Accepted:0,Declined:0};
+    SUBS.forEach(function(s){c[s.status]++;});
+    return c;
+  }
+  function renderKpis(){
+    var c=counts(), tot=SUBS.length;
+    var pending=c.Pending, decided=c.Accepted+c.Declined;
+    var accrate=decided?Math.round(c.Accepted/decided*100):0;
+    var fees=SUBS.reduce(function(a,b){return a+b.fee;},0);
+    var out=SUBS.filter(function(s){return s.status==="Pending";}).reduce(function(a,b){return a+b.pieces;},0);
+    var data=[
+      {lab:"Total batches",val:tot,foot:"across two cycles",pct:100,col:"var(--indigo)"},
+      {lab:"Awaiting reply",val:pending,foot:pending+" of "+tot+" still open",pct:Math.round(pending/tot*100),col:"var(--amber)"},
+      {lab:"Accepted",val:c.Accepted,foot:accrate+"% of decided",pct:accrate,col:"var(--green)"},
+      {lab:"Reading fees",val:"$"+fees,foot:"paid this cycle",pct:Math.min(100,fees/30*100),col:"var(--rose)"}
+    ];
+    document.getElementById('kpis').innerHTML=data.map(function(k){
+      return '<div class="kpi"><div class="lab">'+k.lab+'</div><div class="val">'+k.val+'</div>'+
+        '<div class="foot">'+k.foot+'</div><div class="bar"><i style="background:'+k.col+'" data-w="'+k.pct+'"></i></div></div>';
+    }).join("");
+    setTimeout(function(){document.querySelectorAll('.kpi .bar i').forEach(function(i){i.style.width=i.dataset.w+'%';});},60);
+    document.getElementById('accrate').textContent=accrate+"%";
+    document.getElementById('fees').textContent="$"+fees;
+    document.getElementById('outnow').textContent=out;
+  }
+  function renderChart(){
+    var c=counts();
+    var rows=[["Pending",c.Pending,"var(--amber)"],["Accepted",c.Accepted,"var(--green)"],["Declined",c.Declined,"var(--rose)"]];
+    var mx=Math.max.apply(null,rows.map(function(r){return r[1];}))||1;
+    var W=420,rowH=48,pad=8;
+    var svg=el('svg',{viewBox:"0 0 "+W+" "+(rows.length*rowH)});
+    rows.forEach(function(r,i){
+      var y=i*rowH+pad;
+      var t=el('text',{x:0,y:y+18,fill:css('--ink'),"font-size":13,"font-weight":600});t.textContent=r[0];svg.appendChild(t);
+      svg.appendChild(el('rect',{x:110,y:y+4,width:W-150,height:20,rx:6,fill:css('--line')}));
+      var w=(W-150)*r[1]/mx;
+      var bar=el('rect',{x:110,y:y+4,width:0,height:20,rx:6,fill:r[2]});bar.setAttribute('class','barrect');svg.appendChild(bar);
+      setTimeout(function(){bar.setAttribute('width',w);},80+i*90);
+      var v=el('text',{x:W-30,y:y+19,fill:css('--ink'),"font-size":13,"font-weight":800});v.textContent=r[1];svg.appendChild(v);
+    });
+    document.getElementById('statuschart').innerHTML="";document.getElementById('statuschart').appendChild(svg);
+  }
+  function renderRows(){
+    var list=SUBS.filter(function(s){
+      var okS=filter==="All"||s.status===filter;
+      var q=search.toLowerCase();
+      var okQ=!q||s.mag.toLowerCase().indexOf(q)>=0||s.note.toLowerCase().indexOf(q)>=0;
+      return okS&&okQ;
+    });
+    list.sort(function(a,b){
+      var x=a[sortK],y=b[sortK];
+      if(typeof x==="number")return (x-y)*sortDir;
+      return String(x).localeCompare(String(y))*sortDir;
+    });
+    document.getElementById('rows').innerHTML=list.map(function(s){
+      return '<tr><td class="mag">'+s.mag+'</td><td>'+s.pieces+'</td><td>'+s.submitted+'</td>'+
+        '<td>'+s.method+'</td><td>'+(s.fee?"$"+s.fee.toFixed(2):"free")+'</td>'+
+        '<td><span class="badge b-'+s.status+'">'+s.status+'</span></td>'+
+        '<td>'+(s.response||"-")+'</td><td class="note">'+s.note+'</td></tr>';
+    }).join("");
+    document.getElementById('count').textContent="Showing "+list.length+" of "+SUBS.length+" batches.";
+  }
+  function renderAll(){renderKpis();renderChart();renderRows();}
+
+  document.getElementById('filters').addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    [].forEach.call(this.children,function(b){b.classList.remove('active');});
+    e.target.classList.add('active');filter=e.target.dataset.s;renderRows();
+  });
+  document.getElementById('search').addEventListener('input',function(){search=this.value;renderRows();});
+  document.querySelectorAll('thead th[data-k]').forEach(function(th){
+    th.addEventListener('click',function(){
+      var k=th.dataset.k; if(sortK===k)sortDir*=-1; else{sortK=k;sortDir=1;} renderRows();
+    });
+  });
+  document.getElementById('logform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var mag=document.getElementById('mag').value.trim();
+    var pieces=parseInt(document.getElementById('pieces').value,10);
+    var fee=parseFloat(document.getElementById('fee').value)||0;
+    var msg=document.getElementById('formmsg');
+    if(mag.length<2){msg.style.color="var(--rose)";msg.textContent="Add a magazine name first.";return;}
+    if(!pieces||pieces<1){msg.style.color="var(--rose)";msg.textContent="How many poems in the batch?";return;}
+    SUBS.push({mag:mag,pieces:pieces,submitted:document.getElementById('date').value.trim()||"just now",
+      method:document.getElementById('method').value,fee:fee,status:"Pending",response:"",
+      note:document.getElementById('note').value.trim()||"New batch out"});
+    msg.style.color="var(--green)";msg.textContent=mag+" added, "+pieces+" poems now out.";
+    this.reset();document.getElementById('pieces').value=3;document.getElementById('fee').value=0;
+    renderAll();
+  });
+
+  renderAll();
+</script>
+</body>
+</html>

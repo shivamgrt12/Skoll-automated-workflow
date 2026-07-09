@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Altar Guild and Volunteer Portal</title>
+<style>
+  :root{--plum:#5b3a66;--plum-d:#412a4a;--gold:#b08828;--cream:#f7f3ec;--paper:#fff;--ink:#332b38;--line:#e4dcd0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--cream);color:var(--ink)}
+  header{background:linear-gradient(120deg,var(--plum-d),var(--plum));color:#f4eef6;padding:24px 30px;text-align:center;position:relative}
+  header h1{font-size:1.55rem;letter-spacing:.5px}
+  header .sub{font-size:.86rem;opacity:.9;margin-top:4px;font-style:italic}
+  header .cross{font-size:1.6rem;color:var(--gold);margin-bottom:4px}
+  nav.tabs{display:flex;justify-content:center;gap:4px;background:var(--paper);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:20;flex-wrap:wrap;padding:0 10px}
+  nav.tabs button{font-family:Arial,Helvetica,sans-serif;font-size:.82rem;letter-spacing:.8px;text-transform:uppercase;
+    padding:15px 20px;border:none;background:none;color:#7a6e82;cursor:pointer;border-bottom:3px solid transparent}
+  nav.tabs button.active{color:var(--plum);border-bottom-color:var(--gold)}
+  .wrap{max-width:920px;margin:0 auto;padding:30px 22px 60px}
+  .view{display:none;animation:fade .45s}
+  .view.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+  h2.sec{font-size:1.5rem;color:var(--plum-d);margin-bottom:4px}
+  p.lead{color:#6f6477;font-style:italic;margin-bottom:22px}
+  table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);font-size:.94rem}
+  th{background:#f0e9da;font-family:Arial,Helvetica,sans-serif;font-size:.72rem;letter-spacing:.8px;text-transform:uppercase;color:#8a6f2e}
+  tr:last-child td{border-bottom:none}
+  .role{display:inline-block;font-size:.72rem;padding:2px 9px;border-radius:18px;background:#ede3f0;color:var(--plum)}
+  .acc{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .acc-h{padding:15px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:bold;color:var(--plum-d)}
+  .acc-h:hover{background:#faf6f0}
+  .acc-h .chev{transition:.3s;color:var(--gold)}
+  .acc.open .chev{transform:rotate(90deg)}
+  .acc-b{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 18px}
+  .acc.open .acc-b{max-height:340px;padding:0 18px 16px}
+  .acc-b p{font-size:.95rem;color:#574d5e}
+  .hymn{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+  .hymn .date{font-family:Arial,Helvetica,sans-serif;font-size:.74rem;letter-spacing:.8px;text-transform:uppercase;color:#8a6f2e}
+  .hymn .season{float:right;font-style:italic;color:#9a8fa2;font-size:.85rem}
+  .hymn ul{margin:8px 0 0 18px;font-size:.92rem;color:#4f4556}
+  form{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px;max-width:560px}
+  label{display:block;font-family:Arial,Helvetica,sans-serif;font-size:.76rem;letter-spacing:.6px;text-transform:uppercase;color:#7a6e82;margin:14px 0 5px}
+  input,select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:1rem;background:var(--cream);color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--plum)}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .checks label{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-family:inherit;font-size:.95rem;color:var(--ink);margin:0}
+  .checks input{width:auto}
+  .btn{margin-top:20px;font-family:Arial,Helvetica,sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;
+    padding:13px 28px;border-radius:28px;border:none;background:var(--plum);color:#fff;cursor:pointer;transition:.25s}
+  .btn:hover{background:var(--plum-d);transform:translateY(-2px)}
+  .err{display:none;color:#a23b2d;font-size:.8rem;font-family:Arial,Helvetica,sans-serif;margin-top:4px}
+  .ok{display:none;background:#ece1f0;border:1px solid var(--plum);border-radius:10px;padding:16px;margin-top:18px;color:var(--plum-d);text-align:center}
+  footer{background:var(--plum-d);color:#e6dced;padding:30px 26px;text-align:center;font-size:.86rem}
+  footer .gold{color:var(--gold)}
+  @media(max-width:560px){.checks{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="cross">&#10013;</div>
+  <h1>Grace Episcopal Altar Guild</h1>
+  <div class="sub">Service roster, hymn board, and volunteer sign up, kept by Joanne Lawton</div>
+</header>
+<nav class="tabs">
+  <button class="active" onclick="showTab('roster',this)">Duty Roster</button>
+  <button onclick="showTab('hymns',this)">Hymn Board</button>
+  <button onclick="showTab('help',this)">Lend a Hand</button>
+  <button onclick="showTab('signup',this)">Volunteer Sign Up</button>
+</nav>
+<div class="wrap">
+
+  <div class="view show" id="roster">
+    <h2 class="sec">Sunday duty roster</h2>
+    <p class="lead">Setup begins at 7:30 AM, earlier for feast days. Find me near the kitchen if anything is unclear.</p>
+    <table>
+      <thead><tr><th>Date</th><th>Member</th><th>Assignment</th><th>Time</th></tr></thead>
+      <tbody>
+        <tr><td>Oct 4, 2026</td><td>Joanne Lawton <span class="role">President</span></td><td>Altar setup and linens, St. Francis florals</td><td>8:00 AM</td></tr>
+        <tr><td>Oct 11, 2026</td><td>Clara Jensen</td><td>Altar setup and linens</td><td>8:00 AM</td></tr>
+        <tr><td>Oct 18, 2026</td><td>Marion Reed</td><td>Communion vessels</td><td>8:00 AM</td></tr>
+        <tr><td>Oct 24, 2026</td><td>Joanne Lawton <span class="role">President</span></td><td>Harvest Fair weekend, dedication setup</td><td>7:30 AM</td></tr>
+        <tr><td>Nov 1, 2026</td><td>Joanne Lawton <span class="role">President</span></td><td>All Saints, Book of Remembrance</td><td>7:30 AM</td></tr>
+        <tr><td>Nov 8, 2026</td><td>Alice Summers</td><td>Altar flowers, fall arrangement</td><td>8:30 AM</td></tr>
+        <tr><td>Nov 29, 2026</td><td>Clara Jensen</td><td>First Advent, wreath installed</td><td>7:30 AM</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="view" id="hymns">
+    <h2 class="sec">Hymn board</h2>
+    <p class="lead">Selected with Margaret Fenway, our choir director. Numbers refer to the 1982 Hymnal.</p>
+    <div class="hymn"><span class="season">Harvest Fair weekend</span><div class="date">Sunday, October 24, 2026</div>
+      <ul><li>Opening: To God Be the Glory (485)</li><li>Offertory: We Plow the Fields and Scatter (290)</li><li>Closing: Now Thank We All Our God (397)</li></ul></div>
+    <div class="hymn"><span class="season">All Saints Day</span><div class="date">Sunday, November 1, 2026</div>
+      <ul><li>Opening: For All the Saints (287)</li><li>Communion: I Am the Bread of Life (335)</li><li>Closing: Sine Nomine (287)</li></ul></div>
+    <div class="hymn"><span class="season">First Sunday of Advent</span><div class="date">Sunday, November 29, 2026</div>
+      <ul><li>Opening: O Come O Come Emmanuel (56)</li><li>Gradual: People Look East (67)</li><li>Closing: Lo He Comes with Clouds Descending (57)</li></ul></div>
+  </div>
+
+  <div class="view" id="help">
+    <h2 class="sec">Where we need hands</h2>
+    <p class="lead">Tap a task to read what it involves. None of it is hard, and the company is good.</p>
+    <div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">Harvest Fair setup, October 24 <span class="chev">&#9656;</span></div>
+      <div class="acc-b"><p>Arrive at 7:30 AM to help arrange vendor tables, the plant and herb table, and the raffle display. Coffee and cider provided. We finish in good time for the 10:00 AM opening.</p></div></div>
+    <div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">Food drive sorting, November 14 <span class="chev">&#9656;</span></div>
+      <div class="acc-b"><p>Sorting and packing day from 9:00 AM to 1:00 PM. We check dates, sort by category, and build the Thanksgiving baskets. A warm and satisfying morning.</p></div></div>
+    <div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">Homebound basket delivery, November 22 <span class="chev">&#9656;</span></div>
+      <div class="acc-b"><p>Drivers and helpers from 10:00 AM to 2:00 PM to carry baskets to neighbors who cannot get out. A short visit at each door means a great deal. Please bring a vehicle if you can.</p></div></div>
+    <div class="acc"><div class="acc-h" onclick="this.parentNode.classList.toggle('open')">Altar flowers and linens <span class="chev">&#9656;</span></div>
+      <div class="acc-b"><p>A gentle weekly rotation. We arrange seasonal flowers, press and lay the linens, and prepare the Communion vessels before the 10:00 AM service. I will teach you everything.</p></div></div>
+  </div>
+
+  <div class="view" id="signup">
+    <h2 class="sec">Volunteer sign up</h2>
+    <p class="lead">Leave your name and what you would like to help with. I will call to confirm.</p>
+    <form id="vForm" novalidate>
+      <label for="vn">Name</label>
+      <input id="vn" type="text"><div class="err" id="e-vn">Please add your name.</div>
+      <label for="vp">Phone</label>
+      <input id="vp" type="tel"><div class="err" id="e-vp">A phone number lets me reach you.</div>
+      <label>I can help with</label>
+      <div class="checks">
+        <label><input type="checkbox" name="task"> Harvest Fair setup</label>
+        <label><input type="checkbox" name="task"> Food drive sorting</label>
+        <label><input type="checkbox" name="task"> Basket delivery (have a vehicle)</label>
+        <label><input type="checkbox" name="task"> Altar flowers and linens</label>
+      </div>
+      <div class="err" id="e-task">Please choose at least one.</div>
+      <button type="submit" class="btn">Sign me up</button>
+      <div class="ok" id="vok">Bless you. Your name is on the list and I will call to confirm the details. We could not do this without you.</div>
+    </form>
+  </div>
+</div>
+<footer>Grace Episcopal Church <span class="gold">&#10013;</span> 72 Pine Street, Portland, Maine 04101 <span class="gold">&#10013;</span> Office (207) 555-0238 <span class="gold">&#10013;</span> Altar Guild led by Joanne Lawton</footer>
+
+<script>
+  function showTab(id,btn){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('show');btn.classList.add('active');
+  }
+  document.getElementById('vForm').addEventListener('submit',function(ev){
+    ev.preventDefault();var ok=true;
+    function show(id,cond){document.getElementById('e-'+id).style.display=cond?'none':'block';if(!cond)ok=false;}
+    show('vn',document.getElementById('vn').value.trim().length>0);
+    show('vp',document.getElementById('vp').value.trim().length>=7);
+    show('task',document.querySelectorAll('input[name=task]:checked').length>0);
+    if(ok){this.querySelectorAll('input[type=text],input[type=tel]').forEach(x=>x.value='');
+      document.querySelectorAll('input[name=task]').forEach(x=>x.checked=false);
+      document.getElementById('vok').style.display='block';
+      document.getElementById('vok').scrollIntoView({behavior:'smooth',block:'center'});}
+  });
+</script>
+</body>
+</html>

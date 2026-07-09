@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Westside Wolverines - Detroit Metro Parks League</title>
+  <style>
+    :root {
+      --maroon: #6b1a1a;
+      --gold: #e8b84b;
+      --dark: #1a1a1a;
+      --mid: #555;
+      --light: #fafaf7;
+      --panel: #fff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; background: var(--light); color: var(--dark); }
+
+    /* NAV */
+    header {
+      background: var(--maroon);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .nav-wrap { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 58px; padding: 0 1.5rem; }
+    .brand { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; }
+    .brand-icon { width: 38px; height: 38px; border-radius: 50%; background: var(--gold); color: var(--maroon); font-weight: 900; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+    .brand-text { color: #fff; font-weight: bold; font-size: 1.1rem; letter-spacing: 0.5px; }
+    .brand-sub { color: rgba(255,255,255,0.6); font-size: 0.72rem; display: block; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88rem; margin-left: 1.5rem; transition: color 0.2s; }
+    nav a:hover { color: var(--gold); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(160deg, var(--maroon) 50%, #3d0e0e 100%);
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: 'W';
+      position: absolute;
+      font-size: 22rem;
+      font-weight: 900;
+      color: rgba(232,184,75,0.06);
+      right: -2rem;
+      top: -3rem;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .hero-season { display: inline-block; background: var(--gold); color: var(--maroon); font-weight: bold; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; padding: 3px 14px; border-radius: 20px; margin-bottom: 1rem; animation: slideUp 0.6s ease both; }
+    .hero h1 { font-size: 3rem; font-weight: 900; letter-spacing: -1px; animation: slideUp 0.8s ease both; }
+    .hero p { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.6rem; animation: slideUp 1s ease both; }
+    .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2rem; flex-wrap: wrap; animation: slideUp 1.2s ease both; }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 2.2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .hero-stat .lbl { font-size: 0.75rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SECTIONS */
+    section { padding: 3.5rem 1.5rem; }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .sec-eyebrow { font-size: 0.72rem; font-weight: bold; letter-spacing: 2.5px; text-transform: uppercase; color: var(--maroon); margin-bottom: 0.4rem; }
+    h2.sec-title { font-size: 1.8rem; font-weight: 900; color: var(--dark); margin-bottom: 0.5rem; }
+    .sec-desc { color: var(--mid); font-size: 0.93rem; margin-bottom: 2rem; max-width: 560px; }
+
+    /* ROSTER TABLE */
+    .roster-table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .roster-table th { background: var(--maroon); color: var(--gold); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; padding: 0.8rem 1rem; text-align: left; }
+    .roster-table td { padding: 0.75rem 1rem; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0; }
+    .roster-table tr:last-child td { border-bottom: none; }
+    .roster-table tr:hover td { background: #fef9ec; }
+    .num-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--maroon); color: var(--gold); font-weight: bold; font-size: 0.82rem; }
+    .avg-bar { display: flex; align-items: center; gap: 0.5rem; }
+    .avg-track { width: 70px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .avg-fill { height: 100%; background: var(--maroon); border-radius: 4px; }
+    .avg-val { font-size: 0.85rem; font-weight: bold; color: var(--maroon); }
+
+    /* STAT CARDS */
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .stat-card { background: var(--panel); border-radius: 8px; padding: 1.4rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 3px solid var(--gold); text-align: center; transition: transform 0.18s; }
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-card .big { font-size: 2.2rem; font-weight: 900; color: var(--maroon); line-height: 1; }
+    .stat-card .lbl { font-size: 0.78rem; color: var(--mid); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* COACHING NOTES */
+    .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 650px) { .notes-grid { grid-template-columns: 1fr; } }
+    .note-card { background: var(--panel); border-radius: 8px; padding: 1.4rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid var(--maroon); }
+    .note-card.secondary { border-left-color: var(--gold); }
+    .note-card h4 { font-size: 0.95rem; color: var(--dark); margin-bottom: 0.6rem; }
+    .note-card p, .note-card ul { font-size: 0.88rem; color: var(--mid); line-height: 1.65; }
+    .note-card ul { padding-left: 1.2rem; }
+    .note-card li { margin-bottom: 0.3rem; }
+
+    /* SCHEDULE */
+    .schedule-table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .schedule-table th { background: #f5f5f2; color: var(--mid); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; padding: 0.7rem 1rem; text-align: left; }
+    .schedule-table td { padding: 0.75rem 1rem; font-size: 0.88rem; border-bottom: 1px solid #f0f0f0; }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .home-tag { background: #d4edda; color: #155724; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px; }
+    .away-tag { background: #f8d7da; color: #721c24; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px; }
+
+    /* COACHES */
+    .coaches-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 650px) { .coaches-grid { grid-template-columns: 1fr; } }
+    .coach-card { background: var(--panel); border-radius: 8px; padding: 1.6rem; display: flex; gap: 1.2rem; align-items: flex-start; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .coach-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--maroon); color: var(--gold); font-size: 1.3rem; font-weight: 900; display: flex; align-items: center; justify-content: justify; align-items: center; justify-content: center; flex-shrink: 0; }
+    .coach-info h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .coach-info .title { font-size: 0.8rem; color: var(--maroon); font-weight: bold; }
+    .coach-info p { font-size: 0.85rem; color: var(--mid); margin-top: 0.5rem; line-height: 1.55; }
+
+    /* FOOTER */
+    footer { background: var(--maroon); color: rgba(255,255,255,0.6); padding: 2rem 1.5rem; text-align: center; font-size: 0.82rem; }
+    footer strong { color: var(--gold); }
+    .footer-row { margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header>
+  <div class="nav-wrap">
+    <a class="brand" href="#">
+      <div class="brand-icon">WW</div>
+      <div>
+        <div class="brand-text">Westside Wolverines</div>
+        <span class="brand-sub">Detroit Metro Parks League</span>
+      </div>
+    </a>
+    <nav>
+      <a href="#roster">Roster</a>
+      <a href="#stats">Stats</a>
+      <a href="#coaching">Coaching</a>
+      <a href="#schedule">Schedule</a>
+      <a href="#coaches">Staff</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-season">2025 Season Final</div>
+  <h1>Westside Wolverines</h1>
+  <p>Coed Recreational - Rouge Park, Diamond 4 - Northwest Detroit</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">18</div>
+      <div class="lbl">Games Played</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">.338</div>
+      <div class="lbl">Team Average</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">150</div>
+      <div class="lbl">Total Hits</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">120</div>
+      <div class="lbl">RBI</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROSTER -->
+<section id="roster" style="background:#f5f5f2;">
+  <div class="wrap">
+    <div class="sec-eyebrow">Active Roster</div>
+    <h2 class="sec-title">2025 Player Lineup</h2>
+    <p class="sec-desc">Full roster with batting averages and on-base percentages from the completed 2025 season.</p>
+
+    <table class="roster-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Position</th>
+          <th>G</th>
+          <th>AB</th>
+          <th>H</th>
+          <th>Runs</th>
+          <th>RBI</th>
+          <th>AVG</th>
+          <th>OBP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="num-badge">7</span></td>
+          <td><strong>Darnell Robinson</strong></td>
+          <td>First Base</td>
+          <td>18</td><td>52</td><td>21</td><td>14</td><td>19</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:100%"></div></div>
+              <div class="avg-val">.404</div>
+            </div>
+          </td>
+          <td>.468</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">12</span></td>
+          <td><strong>Raymond Okafor</strong></td>
+          <td>Catcher</td>
+          <td>18</td><td>49</td><td>18</td><td>11</td><td>15</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:91%"></div></div>
+              <div class="avg-val">.367</div>
+            </div>
+          </td>
+          <td>.421</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">3</span></td>
+          <td>Pete Lawson</td>
+          <td>Shortstop</td>
+          <td>17</td><td>48</td><td>17</td><td>16</td><td>9</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:88%"></div></div>
+              <div class="avg-val">.354</div>
+            </div>
+          </td>
+          <td>.440</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">21</span></td>
+          <td>Carlos Mendez</td>
+          <td>Center Field</td>
+          <td>18</td><td>51</td><td>18</td><td>15</td><td>12</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:87%"></div></div>
+              <div class="avg-val">.353</div>
+            </div>
+          </td>
+          <td>.410</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">9</span></td>
+          <td>Andre Whitfield</td>
+          <td>Third Base</td>
+          <td>16</td><td>44</td><td>15</td><td>10</td><td>14</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:84%"></div></div>
+              <div class="avg-val">.341</div>
+            </div>
+          </td>
+          <td>.388</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">24</span></td>
+          <td>Marcus Dawson</td>
+          <td>Left Field</td>
+          <td>11</td><td>31</td><td>11</td><td>8</td><td>7</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:88%"></div></div>
+              <div class="avg-val">.355</div>
+            </div>
+          </td>
+          <td>.429</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">5</span></td>
+          <td>Tommy Bishop</td>
+          <td>Second Base</td>
+          <td>18</td><td>50</td><td>16</td><td>12</td><td>8</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:79%"></div></div>
+              <div class="avg-val">.320</div>
+            </div>
+          </td>
+          <td>.377</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">18</span></td>
+          <td>Greg Sanders</td>
+          <td>Right Field</td>
+          <td>15</td><td>41</td><td>12</td><td>9</td><td>10</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:72%"></div></div>
+              <div class="avg-val">.293</div>
+            </div>
+          </td>
+          <td>.356</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">33</span></td>
+          <td>Will Carter</td>
+          <td>Pitcher</td>
+          <td>18</td><td>45</td><td>13</td><td>7</td><td>11</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:71%"></div></div>
+              <div class="avg-val">.289</div>
+            </div>
+          </td>
+          <td>.340</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">2</span></td>
+          <td>Eddie Brooks</td>
+          <td>Utility</td>
+          <td>14</td><td>33</td><td>9</td><td>6</td><td>5</td>
+          <td>
+            <div class="avg-bar">
+              <div class="avg-track"><div class="avg-fill" style="width:68%"></div></div>
+              <div class="avg-val">.273</div>
+            </div>
+          </td>
+          <td>.351</td>
+        </tr>
+        <tr style="background:#fef9ec;">
+          <td colspan="2"><strong>Team Totals</strong></td>
+          <td></td>
+          <td><strong>18</strong></td>
+          <td><strong>444</strong></td>
+          <td><strong>150</strong></td>
+          <td><strong>108</strong></td>
+          <td><strong>120</strong></td>
+          <td><strong>.338</strong></td>
+          <td><strong>.402</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- STAT CARDS -->
+<section id="stats">
+  <div class="wrap">
+    <div class="sec-eyebrow">Team Statistics</div>
+    <h2 class="sec-title">By the Numbers</h2>
+    <p class="sec-desc">Aggregate performance from the 2025 season across 18 games.</p>
+
+    <div class="stat-cards">
+      <div class="stat-card"><div class="big">444</div><div class="lbl">At Bats</div></div>
+      <div class="stat-card"><div class="big">150</div><div class="lbl">Total Hits</div></div>
+      <div class="stat-card"><div class="big">108</div><div class="lbl">Runs Scored</div></div>
+      <div class="stat-card"><div class="big">120</div><div class="lbl">RBI</div></div>
+      <div class="stat-card"><div class="big">.338</div><div class="lbl">Team Batting Avg</div></div>
+      <div class="stat-card"><div class="big">.402</div><div class="lbl">On Base Pct</div></div>
+      <div class="stat-card"><div class="big">.404</div><div class="lbl">Best Individual Avg</div></div>
+      <div class="stat-card"><div class="big">19</div><div class="lbl">Most RBI (1 Player)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COACHING NOTES -->
+<section id="coaching" style="background:#f5f5f2;">
+  <div class="wrap">
+    <div class="sec-eyebrow">Head Coach Notes</div>
+    <h2 class="sec-title">Approach and Strategy</h2>
+    <p class="sec-desc">We win on contact and defense. These are the principles we carry into every game.</p>
+
+    <div class="notes-grid">
+      <div class="note-card">
+        <h4>Lineup Philosophy</h4>
+        <ul>
+          <li>Lawson sets the table at leadoff - speed and bat control</li>
+          <li>Bishop follows with contact and patience</li>
+          <li>Robinson and Mendez drive them in - best contact hitters slot 3 and 4</li>
+          <li>Okafor at 5 is the RBI man</li>
+          <li>Marcus slots in at 7 when home from school</li>
+        </ul>
+      </div>
+      <div class="note-card secondary">
+        <h4>Situational Rules</h4>
+        <ul>
+          <li>Late and close: pinch run Brooks for Carter</li>
+          <li>Against a lefty: move Sanders up, nobody sits</li>
+          <li>Double header: rest Okafor in game two, Bishop catches</li>
+          <li>Never swing for the fence - make contact and let defense work</li>
+        </ul>
+      </div>
+      <div class="note-card secondary">
+        <h4>Practice Schedule</h4>
+        <p>Practices run Tuesday and Thursday evenings, 6:30 to 8:30 PM. Raymond Okafor handles drills and practice logistics. Coach Dawson focuses on game strategy, lineup decisions, and matchup preparation for each Saturday opponent.</p>
+      </div>
+      <div class="note-card">
+        <h4>Season Logistics</h4>
+        <p>Home field is Rouge Park, Diamond 4. Games are Saturday mornings, typically 9:00 or 10:00 AM start. SMS reminders go to players the day before each practice and game. League registration for 2026 filed February 21, 2026 - confirmation DMPL-2026-0331.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COACHES -->
+<section id="coaches">
+  <div class="wrap">
+    <div class="sec-eyebrow">Coaching Staff</div>
+    <h2 class="sec-title">The People Running This Team</h2>
+    <div class="coaches-grid">
+      <div class="coach-card">
+        <div class="coach-avatar">SD</div>
+        <div class="coach-info">
+          <h4>Shawn "Terry" Dawson</h4>
+          <div class="title">Head Coach - 4th Season</div>
+          <p>Four years coaching the Wolverines. Handles game strategy, lineup decisions, and matchup planning. Has played softball since age twelve. Keeps four seasons of scorebooks.</p>
+        </div>
+      </div>
+      <div class="coach-card">
+        <div class="coach-avatar">RO</div>
+        <div class="coach-info">
+          <h4>Raymond Okafor</h4>
+          <div class="title">Assistant Coach</div>
+          <p>High school gym teacher and longtime assistant. Runs all practice drills and handles logistics so the head coach can focus on strategy. The arrangement has worked for three seasons and there is no reason to change it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Westside Wolverines</strong> - Detroit Metro Parks League - Rouge Park, Diamond 4, Detroit, MI
+  <div class="footer-row">Head Coach: Shawn T. Dawson | Assistant: Raymond Okafor | Contact: (313) 555-3920</div>
+  <div class="footer-row" style="margin-top:0.5rem;">Registration confirmed February 21, 2026 - DMPL-2026-0331</div>
+</footer>
+
+</body>
+</html>

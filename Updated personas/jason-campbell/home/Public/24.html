@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Jose House, Home Operations</title>
+<style>
+  :root{--bg:#071a1c;--p1:#0c2a2d;--p2:#103438;--line:#1c4449;--ink:#e9f5f3;
+    --mut:#83b3b0;--ac:#34d2c0;--ac2:#7ee081;--warn:#ffcf6b;--red:#ff7a8a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:
+    radial-gradient(900px 500px at 15% -10%,#0e3a3d,transparent 55%),var(--bg);color:var(--ink);min-height:100vh}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border-bottom:1px solid var(--line)}
+  .logo{display:flex;gap:12px;align-items:center;font-weight:700}
+  .home{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--ac),#13837a);display:grid;place-items:center}
+  .home svg{width:20px;height:20px}
+  .status{font-size:12px;color:var(--ac2);display:flex;align-items:center;gap:7px}
+  .ledd{width:9px;height:9px;border-radius:50%;background:var(--ac2);box-shadow:0 0 0 0 rgba(126,224,129,.6);animation:beat 2s infinite}
+  @keyframes beat{0%{box-shadow:0 0 0 0 rgba(126,224,129,.5)}70%{box-shadow:0 0 0 9px rgba(126,224,129,0)}100%{box-shadow:0 0 0 0 rgba(126,224,129,0)}}
+  .wrap{max-width:1160px;margin:0 auto;padding:24px 22px 60px}
+  h1{font-size:24px;margin-bottom:3px}.sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .tab{padding:9px 16px;border-radius:24px;border:1px solid var(--line);background:var(--p1);color:var(--mut);
+    cursor:pointer;font:inherit;font-size:14px;transition:.2s}
+  .tab.on{background:linear-gradient(135deg,var(--ac),#178c82);color:#04201d;border-color:transparent;font-weight:700}
+  .panel{display:none;animation:fade .4s}.panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+  .grid{display:grid;gap:16px}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1.3fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:840px){.g3,.g2,.g4{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--p2),var(--p1));border:1px solid var(--line);border-radius:15px;padding:18px}
+  .card h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:10px}
+  .zone{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+  .zone:last-child{border:none}
+  .temp{font-size:22px;font-weight:800;color:var(--ac)}
+  .toggle{width:44px;height:24px;border-radius:14px;background:#0a262a;border:1px solid var(--line);position:relative;cursor:pointer}
+  .toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--mut);transition:.25s}
+  .toggle.on{background:#0f5a52}.toggle.on i{left:22px;background:var(--ac2)}
+  .ck{display:flex;align-items:center;gap:11px;padding:9px 0;cursor:pointer;font-size:14px}
+  .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;flex:none;transition:.2s}
+  .ck.done .box{background:var(--ac2);border-color:var(--ac2)}.ck.done .box:after{content:"";width:6px;height:10px;border:solid #04201d;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+  .ck.done span{color:var(--mut);text-decoration:line-through}
+  .prog{height:9px;border-radius:6px;background:#0a262a;overflow:hidden;margin-top:12px}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));width:0;transition:width 1s}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}th{color:var(--mut);font-size:11px;text-transform:uppercase}
+  .due{color:var(--warn);font-weight:600}.ok2{color:var(--ac2)}
+  .big{font-size:30px;font-weight:800}.unit{font-size:12px;color:var(--mut)}
+  .spark{width:100%;height:70px}
+  .spark polyline{fill:none;stroke:var(--ac);stroke-width:2}
+  .spark .fl{fill:url(#g);opacity:.25}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .day{background:#0a262a;border:1px solid var(--line);border-radius:10px;padding:10px 8px;font-size:12px}
+  .day b{color:var(--ac);display:block;margin-bottom:6px}
+  .day em{color:var(--mut);font-style:normal;display:block;margin:3px 0}
+  footer{color:var(--mut);font-size:12px;text-align:center;padding:24px;border-top:1px solid var(--line);margin-top:30px}
+  .pillrow{display:flex;gap:8px;flex-wrap:wrap}
+  .mini{font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:16px;padding:4px 10px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><span class="home"><svg viewBox="0 0 24 24" fill="none" stroke="#04201d" stroke-width="2"><path d="M3 11 L12 3 L21 11 M5 9 V21 H19 V9"/></svg></span> San Jose House</div>
+  <div class="status"><span class="ledd"></span> All systems normal, generator ready</div>
+</header>
+<div class="wrap">
+  <h1>Home Operations</h1>
+  <div class="sub">Five bedroom residence, San Jose neighborhood, Jacksonville. Snapshot as of February 2026.</div>
+
+  <div class="tabs">
+    <button class="tab on" data-t="climate">Climate and devices</button>
+    <button class="tab" data-t="storm">Hurricane readiness</button>
+    <button class="tab" data-t="maint">Maintenance</button>
+    <button class="tab" data-t="rhythm">Weekly rhythm</button>
+    <button class="tab" data-t="care">Dorothy care</button>
+  </div>
+
+  <!-- CLIMATE -->
+  <div class="panel on" id="climate">
+    <div class="grid g2">
+      <div class="card"><h3>Three zone thermostats</h3>
+        <div class="zone"><div><b>Main living</b><div class="unit">cooling, scheduled</div></div><div class="temp">72&deg;</div></div>
+        <div class="zone"><div><b>Bedrooms</b><div class="unit">cooling, scheduled</div></div><div class="temp">70&deg;</div></div>
+        <div class="zone"><div><b>Downstairs suite</b><div class="unit">priority comfort circuit</div></div><div class="temp">73&deg;</div></div>
+      </div>
+      <div class="card"><h3>Connected devices</h3>
+        <div class="zone"><span>Front door camera</span><span class="toggle on" onclick="this.classList.toggle('on')"><i></i></span></div>
+        <div class="zone"><span>Pool deck camera</span><span class="toggle on" onclick="this.classList.toggle('on')"><i></i></span></div>
+        <div class="zone"><span>Smart lighting scenes</span><span class="toggle on" onclick="this.classList.toggle('on')"><i></i></span></div>
+        <div class="zone"><span>Garage Level 2 charger</span><span class="toggle on" onclick="this.classList.toggle('on')"><i></i></span></div>
+        <div class="zone"><span>Whole house generator self test</span><span class="toggle on" onclick="this.classList.toggle('on')"><i></i></span></div>
+      </div>
+    </div>
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card"><h3>Pool</h3><div class="big">73&deg;</div><div class="unit">Saltwater, screened. Pump assessment pending.</div></div>
+      <div class="card"><h3>Generator</h3><div class="big">Ready</div><div class="unit">22 kW, serviced February 12, 2026</div></div>
+      <div class="card"><h3>Charger</h3><div class="big">Idle</div><div class="unit">Electric sedan charges overnight</div></div>
+      <div class="card"><h3>Cameras</h3><div class="big">3</div><div class="unit">Door and pool deck online</div></div>
+    </div>
+  </div>
+
+  <!-- STORM -->
+  <div class="panel" id="storm">
+    <div class="grid g2">
+      <div class="card"><h3>Readiness checklist</h3>
+        <div class="ck done" onclick="tog(this)"><span class="box"></span><span>Impact windows verified, installed 2022</span></div>
+        <div class="ck done" onclick="tog(this)"><span class="box"></span><span>Roof inspected after Idalia, no damage</span></div>
+        <div class="ck done" onclick="tog(this)"><span class="box"></span><span>Generator serviced and fuel confirmed</span></div>
+        <div class="ck" onclick="tog(this)"><span class="box"></span><span>Top off the electric sedan</span></div>
+        <div class="ck" onclick="tog(this)"><span class="box"></span><span>Refill essential medications with Karen</span></div>
+        <div class="ck" onclick="tog(this)"><span class="box"></span><span>Secure patio furniture and the grill</span></div>
+        <div class="ck" onclick="tog(this)"><span class="box"></span><span>Charge devices, confirm the contact tree</span></div>
+        <div class="prog"><i id="pbar"></i></div>
+        <div class="unit" style="margin-top:8px"><span id="pct">0</span> of 7 complete</div>
+      </div>
+      <div class="card"><h3>Hardening summary</h3>
+        <p class="unit" style="line-height:1.8">The home is built to ride out the season. Impact rated windows, a 22 kW whole house standby generator on a priority circuit for the downstairs suite, and a roof cleared after the last storm. A printed copy of the full plan stays with the go-bag, and Karen leads on medication logistics.</p>
+        <div class="pillrow" style="margin-top:14px">
+          <span class="mini">Wind mitigation credit active</span>
+          <span class="mini">Next roof inspection 2027</span>
+          <span class="mini">Generator next service October 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAINTENANCE -->
+  <div class="panel" id="maint">
+    <div class="card"><h3>Service and maintenance schedule</h3>
+      <table>
+        <thead><tr><th>Item</th><th>Provider</th><th>Cadence</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Saltwater pool service</td><td>Pool specialist</td><td>Monthly</td><td class="due">Pump assessment due</td></tr>
+          <tr><td>Yard and landscaping</td><td>Lawn service</td><td>Monthly</td><td class="ok2">On schedule</td></tr>
+          <tr><td>Standby generator</td><td>Power systems</td><td>Semi-annual</td><td class="ok2">Done February 2026</td></tr>
+          <tr><td>Roof inspection</td><td>Roofing contractor</td><td>Periodic</td><td class="ok2">Next 2027</td></tr>
+          <tr><td>Electric sedan service</td><td>Service center</td><td>By mileage</td><td class="ok2">Next at 25,000 mi</td></tr>
+          <tr><td>Family dental</td><td>Dr. William Park</td><td>Twice yearly</td><td class="due">February visit</td></tr>
+        </tbody>
+      </table>
+      <p class="unit" style="margin-top:10px">Open item: the pool pump reported a grinding noise. The estimate for a motor replacement is 300 to 500 dollars, pending approval.</p>
+    </div>
+  </div>
+
+  <!-- RHYTHM -->
+  <div class="panel" id="rhythm">
+    <div class="card"><h3>Weekly rhythm</h3>
+      <div class="week">
+        <div class="day"><b>Mon</b><em>Run 5:15</em><em>Cath lab</em><em>Clinic</em></div>
+        <div class="day"><b>Tue</b><em>Tennis 6:30</em><em>Cath lab</em><em>Clinic</em></div>
+        <div class="day"><b>Wed</b><em>Run 5:15</em><em>Cath lab</em><em>Clinic</em></div>
+        <div class="day"><b>Thu</b><em>Tennis 6:30</em><em>Cath lab</em><em>Clinic</em></div>
+        <div class="day"><b>Fri</b><em>Run 5:15</em><em>Research 1 to 5</em><em>Family dinner 7</em></div>
+        <div class="day"><b>Sat</b><em>Doubles 6:30</em><em>Brisket and grill</em><em>Grocery run</em></div>
+        <div class="day"><b>Sun</b><em>Brunch</em><em>Call Kyle 7:00</em></div>
+      </div>
+      <div class="grid g3" style="margin-top:16px">
+        <div class="card" style="background:#0a262a"><h3>Run streak, February</h3><div class="big">7</div><div class="unit">sessions, about 8:00 per mile</div></div>
+        <div class="card" style="background:#0a262a"><h3>Tennis ladder</h3><div class="big">No. 2</div><div class="unit">Men 4.0 singles, 8 wins 3 losses</div></div>
+        <div class="card" style="background:#0a262a"><h3>Piano</h3><div class="big">20 min</div><div class="unit">most weeknights, Chopin and Debussy</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARE -->
+  <div class="panel" id="care">
+    <div class="grid g2">
+      <div class="card"><h3>Dorothy, blood pressure trend, February</h3>
+        <svg class="spark" viewBox="0 0 320 70" preserveAspectRatio="none">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#34d2c0"/><stop offset="1" stop-color="transparent"/></linearGradient></defs>
+          <polygon class="fl" points="0,40 0,40 45,34 90,18 135,42 180,30 225,46 270,8 315,28 315,70 0,70"/>
+          <polyline points="0,40 45,34 90,18 135,42 180,30 225,46 270,8 315,28"/>
+        </svg>
+        <div class="unit">Systolic readings 116 to 142 over the period. One flagged morning at 142 over 88 on February 15, rechecked and settled. Target under 140 over 90.</div>
+      </div>
+      <div class="card"><h3>Medication summary</h3>
+        <table>
+          <thead><tr><th>Medication</th><th>Dose</th><th>Schedule</th></tr></thead>
+          <tbody>
+            <tr><td>Amlodipine</td><td>10 mg</td><td>Once daily</td></tr>
+            <tr><td>Losartan</td><td>50 mg</td><td>Once daily</td></tr>
+            <tr><td>Alendronate</td><td>70 mg</td><td>Weekly, Sunday</td></tr>
+          </tbody>
+        </table>
+        <p class="unit" style="margin-top:10px">Morning walk at 9:00 with Mrs. Henderson. Lactose free at shared meals. Nephrology follow up with Dr. Priya Nair. Coordinate any change with Karen first.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Private household dashboard. Personal use only, San Jose neighborhood, Jacksonville, FL.</footer>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.onclick=function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+      document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('on')});
+      t.classList.add('on');document.getElementById(t.getAttribute('data-t')).classList.add('on');
+    };
+  });
+  function tog(el){el.classList.toggle('done');refresh();}
+  function refresh(){
+    var all=document.querySelectorAll('#storm .ck'),done=document.querySelectorAll('#storm .ck.done').length;
+    document.getElementById('pbar').style.width=(done/all.length*100)+'%';
+    document.getElementById('pct').textContent=done;
+  }
+  refresh();
+</script>
+</body>
+</html>

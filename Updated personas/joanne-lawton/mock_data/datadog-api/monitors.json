@@ -1,0 +1,74 @@
+[
+  {
+    "id": "2000001",
+    "name": "CPU pressure on web tier",
+    "type": "metric alert",
+    "query": "avg(last_5m):avg:system.cpu.user{role:web} > 80",
+    "message": "CPU pressure on web tier — paged @team-graceepiscopal.",
+    "overall_state": "Warn",
+    "priority": "2",
+    "tags": "service:api;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  },
+  {
+    "id": "2000002",
+    "name": "Memory > 90% on workers",
+    "type": "metric alert",
+    "query": "avg(last_10m):avg:system.mem.pct_usable{role:worker} < 10",
+    "message": "Memory > 90% on workers — paged @team-graceepiscopal.",
+    "overall_state": "Alert",
+    "priority": "2",
+    "tags": "service:worker;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  },
+  {
+    "id": "2000003",
+    "name": "API 5xx rate too high",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:trace.http.request.errors{service:api}.as_rate() > 5",
+    "message": "API 5xx rate too high — paged @team-graceepiscopal.",
+    "overall_state": "No Data",
+    "priority": "1",
+    "tags": "service:web;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  },
+  {
+    "id": "2000004",
+    "name": "Synthetic check failing",
+    "type": "synthetic alert",
+    "query": "synthetic.test{*}.failed",
+    "message": "Synthetic check failing — paged @team-graceepiscopal.",
+    "overall_state": "OK",
+    "priority": "1",
+    "tags": "service:web;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  },
+  {
+    "id": "2000005",
+    "name": "Disk usage above 80%",
+    "type": "metric alert",
+    "query": "avg(last_15m):avg:system.disk.in_use{*} > 0.8",
+    "message": "Disk usage above 80% — paged @team-graceepiscopal.",
+    "overall_state": "OK",
+    "priority": "3",
+    "tags": "service:worker;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  },
+  {
+    "id": "2000006",
+    "name": "Background worker latency",
+    "type": "metric alert",
+    "query": "avg(last_10m):avg:trace.celery.task.latency{*} > 5",
+    "message": "Background worker latency — paged @team-graceepiscopal.",
+    "overall_state": "No Data",
+    "priority": "2",
+    "tags": "service:api;env:prod",
+    "created": "2024-01-15T09:00:00Z",
+    "modified": "2026-07-01T07:00:00+00:00"
+  }
+]

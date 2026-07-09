@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asheville Trails - Brian's Hiking Guide</title>
+  <style>
+    :root {
+      --forest: #2d5a3d;
+      --forest-mid: #4a7c5e;
+      --forest-light: #7daa8a;
+      --sky: #7ab5d4;
+      --sky-light: #c4dfee;
+      --stone: #7a8a7a;
+      --stone-light: #b8c8b8;
+      --cream: #f7f4ef;
+      --warm: #e8dcc8;
+      --earth: #8b6f4e;
+      --gold: #d4a84b;
+      --white: #ffffff;
+      --charcoal: #2a2a2a;
+      --text-muted: #666;
+      --red: #c0392b;
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background-color: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+    }
+
+    /* ---- HERO HEADER ---- */
+    .hero {
+      background: linear-gradient(180deg, #1a3d2a 0%, #2d5a3d 40%, #3d6b4d 100%);
+      color: white;
+      padding: 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--cream);
+      clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    .hero-top {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.4rem 0 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .hero-brand-icon { font-size: 1.6rem; }
+
+    .hero-brand-text h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .hero-brand-text p {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .hero-btn {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .hero-btn-outline {
+      background: rgba(255,255,255,0.12);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+
+    .hero-btn-outline:hover { background: rgba(255,255,255,0.2); }
+
+    .hero-btn-solid {
+      background: var(--gold);
+      color: var(--charcoal);
+    }
+
+    .hero-btn-solid:hover { background: #e0b85a; }
+
+    .hero-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .hero-heading {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-heading em { font-style: italic; color: var(--forest-light); }
+
+    .hero-sub {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.9rem;
+      opacity: 0.75;
+      max-width: 500px;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .hero-stat { text-align: center; }
+
+    .hero-stat-num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--forest-light);
+      display: block;
+    }
+
+    .hero-stat-lbl {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-elevation {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .elevation-viz {
+      position: relative;
+      width: 200px;
+      height: 100px;
+    }
+
+    /* ---- FILTER BAR ---- */
+    .filter-bar {
+      background: var(--white);
+      border-bottom: 1px solid #e2e8e2;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .filter-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-inner::-webkit-scrollbar { display: none; }
+
+    .filter-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      margin-right: 0.4rem;
+    }
+
+    .filter-chip {
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid #d4dcd4;
+      background: transparent;
+      color: var(--charcoal);
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .filter-chip:hover {
+      border-color: var(--forest-mid);
+      color: var(--forest);
+      background: #f0f5f0;
+    }
+
+    .filter-chip.active {
+      background: var(--forest);
+      color: white;
+      border-color: var(--forest);
+    }
+
+    .filter-sep {
+      width: 1px;
+      height: 20px;
+      background: #d4dcd4;
+      flex-shrink: 0;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    /* ---- QUICK STATS ROW ---- */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .qs-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      border: 1px solid #e0e8e0;
+      text-align: center;
+      transition: box-shadow 0.2s;
+    }
+
+    .qs-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+    .qs-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+
+    .qs-num {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--forest);
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+
+    .qs-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* ---- SECTION HEADS ---- */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.4rem;
+    }
+
+    .section-head h2 {
+      font-size: 1.3rem;
+      color: var(--forest);
+    }
+
+    .section-head span {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ---- TRAIL GRID ---- */
+    .trail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .trail-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e0e8e0;
+      overflow: hidden;
+      transition: transform 0.22s, box-shadow 0.22s;
+      cursor: pointer;
+    }
+
+    .trail-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+
+    .trail-top {
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trail-emoji { font-size: 3.5rem; z-index: 1; }
+
+    .difficulty-banner {
+      position: absolute;
+      top: 0.7rem;
+      right: 0.7rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 10px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .diff-easy   { background: #d4edda; color: #1a6633; }
+    .diff-mod    { background: var(--sky-light); color: #1a5a80; }
+    .diff-hard   { background: #fde8d8; color: #8b3a0a; }
+    .diff-stren  { background: #fce4e4; color: var(--red); }
+
+    .family-badge {
+      position: absolute;
+      top: 0.7rem;
+      left: 0.7rem;
+      background: rgba(255,255,255,0.9);
+      color: var(--forest);
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .trail-body { padding: 1.2rem 1.3rem; }
+
+    .trail-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--forest);
+      margin-bottom: 0.25rem;
+    }
+
+    .trail-location {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .trail-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .trail-stat {
+      background: #f5f8f5;
+      border-radius: 8px;
+      padding: 0.4rem;
+      text-align: center;
+    }
+
+    .trail-stat-val {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      display: block;
+    }
+
+    .trail-stat-lbl {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .trail-tags {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .trail-tag {
+      background: #edf3ed;
+      color: var(--forest-mid);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+    }
+
+    .trail-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .trail-last {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .trail-btn {
+      background: var(--forest);
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 12px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .trail-btn:hover { background: var(--forest-mid); }
+
+    /* ---- RECENT HIKES ---- */
+    .hikes-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 3rem; }
+
+    .hike-row {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e0e8e0;
+      padding: 1.1rem 1.3rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 1rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .hike-row:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+    .hike-icon {
+      width: 44px;
+      height: 44px;
+      background: #edf5ef;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .hike-info strong {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--charcoal);
+      margin-bottom: 0.15rem;
+    }
+
+    .hike-info span {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .hike-meta {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .hike-stat {
+      text-align: center;
+    }
+
+    .hike-stat span {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--forest);
+    }
+
+    .hike-stat small {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .hike-date {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+      min-width: 80px;
+    }
+
+    /* ---- ELEVATION CHART ---- */
+    .elevation-section { margin-bottom: 3rem; }
+
+    .elevation-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e0e8e0;
+      padding: 1.5rem;
+    }
+
+    .elev-chart-container { height: 120px; position: relative; margin: 1rem 0 0.5rem; }
+
+    .elev-svg { width: 100%; height: 100%; }
+
+    .elev-axis {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* ---- GEAR SECTION ---- */
+    .gear-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .gear-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e0e8e0;
+      padding: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .gear-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+    .gear-icon { font-size: 1.6rem; }
+
+    .gear-info strong {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .gear-info span {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .gear-badge {
+      margin-left: auto;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      background: var(--forest);
+      color: white;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--forest);
+      color: rgba(255,255,255,0.7);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    footer p { font-family: 'Arial', sans-serif; font-size: 0.8rem; }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      .hero-main { grid-template-columns: 1fr; }
+      .hero-elevation { display: none; }
+      .quick-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .quick-stats { grid-template-columns: repeat(2, 1fr); }
+      .hike-row { grid-template-columns: auto 1fr; }
+      .hike-meta { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-brand">
+      <span class="hero-brand-icon">🏔</span>
+      <div class="hero-brand-text">
+        <h1>Asheville Trails</h1>
+        <p>Brian's personal trail log</p>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="hero-btn hero-btn-outline" onclick="logHike()">Log a Hike</button>
+      <button class="hero-btn hero-btn-solid">Plan Next Trail</button>
+    </div>
+  </div>
+  <div class="hero-main">
+    <div>
+      <h2 class="hero-heading">
+        Every trail within an hour of<br><em>Asheville</em> - mapped and rated.
+      </h2>
+      <p class="hero-sub">
+        Personal notes on difficulty, elevation, stroller access, and how far the kids made it
+        before someone needed to be carried. Updated after each hike.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">47</span>
+          <span class="hero-stat-lbl">Trails logged</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">312</span>
+          <span class="hero-stat-lbl">Miles hiked</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">88k</span>
+          <span class="hero-stat-lbl">Feet gained</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-elevation">
+      <svg width="220" height="110" viewBox="0 0 220 110">
+        <defs>
+          <linearGradient id="mtnGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(125,170,138,0.9)"/>
+            <stop offset="100%" stop-color="rgba(45,90,61,0.2)"/>
+          </linearGradient>
+        </defs>
+        <polygon points="0,110 50,60 90,80 130,20 160,55 200,35 220,50 220,110" fill="url(#mtnGrad)"/>
+        <polygon points="0,110 50,60 90,80 130,20 160,55 200,35 220,50 220,110" fill="none" stroke="rgba(125,170,138,0.8)" stroke-width="1.5"/>
+        <circle cx="130" cy="20" r="4" fill="var(--gold)"/>
+        <text x="125" y="14" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Arial">6,684 ft</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-chip active" onclick="filter(this,'all')">All Trails</button>
+    <button class="filter-chip" onclick="filter(this,'easy')">Easy</button>
+    <button class="filter-chip" onclick="filter(this,'moderate')">Moderate</button>
+    <button class="filter-chip" onclick="filter(this,'hard')">Hard</button>
+    <div class="filter-sep"></div>
+    <button class="filter-chip" onclick="filter(this,'family')">Family-friendly</button>
+    <button class="filter-chip" onclick="filter(this,'solo')">Solo 5+ miles</button>
+    <button class="filter-chip" onclick="filter(this,'recent')">Hiked recently</button>
+    <div class="filter-sep"></div>
+    <button class="filter-chip" onclick="filter(this,'pisgah')">Pisgah Area</button>
+    <button class="filter-chip" onclick="filter(this,'bfr')">Blue Ridge Parkway</button>
+    <button class="filter-chip" onclick="filter(this,'urban')">In-town / Greenway</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- QUICK STATS -->
+  <div class="quick-stats">
+    <div class="qs-card">
+      <div class="qs-icon">🥾</div>
+      <div class="qs-num">18</div>
+      <div class="qs-label">Hikes in 2026</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">🧒</div>
+      <div class="qs-num">11</div>
+      <div class="qs-label">With the kids</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">🏃</div>
+      <div class="qs-num">7</div>
+      <div class="qs-label">Solo hikes</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">⭐</div>
+      <div class="qs-num">4.7</div>
+      <div class="qs-label">Avg personal rating</div>
+    </div>
+  </div>
+
+  <!-- TRAIL CARDS -->
+  <div class="section-head">
+    <h2>Favorite Trails</h2>
+    <span id="trail-count">Showing 8 of 47</span>
+  </div>
+  <div class="trail-grid" id="trailGrid">
+
+    <div class="trail-card" data-difficulty="moderate" data-family="true" data-area="pisgah">
+      <div class="trail-top" style="background: linear-gradient(135deg, #2d5a3d, #4a7c5e)">
+        <span class="trail-emoji">🌲</span>
+        <span class="difficulty-banner diff-mod">Moderate</span>
+        <span class="family-badge">Kid-friendly</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Art Loeb Trail - Pilot Cove</div>
+        <div class="trail-location">Pisgah National Forest, 40 min from Asheville</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">4.2 mi</span>
+            <span class="trail-stat-lbl">Distance</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">820 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">2.5 hr</span>
+            <span class="trail-stat-lbl">Our time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Waterfalls nearby</span>
+          <span class="trail-tag">Good trail condition</span>
+          <span class="trail-tag">Owen made it halfway</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Oct 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="hard" data-solo="true" data-area="bfr">
+      <div class="trail-top" style="background: linear-gradient(135deg, #1a3d2a, #2d5a3d)">
+        <span class="trail-emoji">🏔</span>
+        <span class="difficulty-banner diff-hard">Hard</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Black Balsam Knob Loop</div>
+        <div class="trail-location">Blue Ridge Parkway, Milepost 420, 55 min out</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">6.4 mi</span>
+            <span class="trail-stat-lbl">Distance</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">1,480 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">4 hr</span>
+            <span class="trail-stat-lbl">Solo time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Exposed balds</span>
+          <span class="trail-tag">360 views</span>
+          <span class="trail-tag">Best reset hike</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Feb 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="easy" data-family="true" data-area="urban">
+      <div class="trail-top" style="background: linear-gradient(135deg, #4a7c5e, #7daa8a)">
+        <span class="trail-emoji">🌊</span>
+        <span class="difficulty-banner diff-easy">Easy</span>
+        <span class="family-badge">Stroller OK</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">French Broad Greenway</div>
+        <div class="trail-location">West Asheville - starts near the house</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">3.8 mi</span>
+            <span class="trail-stat-lbl">Out and back</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">50 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">1.2 hr</span>
+            <span class="trail-stat-lbl">Family time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Both kids</span>
+          <span class="trail-tag">Paved sections</span>
+          <span class="trail-tag">Good for a run</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Oct 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="strenuous" data-solo="true" data-area="pisgah">
+      <div class="trail-top" style="background: linear-gradient(135deg, #1a1a2e, #2d3a5a)">
+        <span class="trail-emoji">⛰</span>
+        <span class="difficulty-banner diff-stren">Strenuous</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Cold Mountain via Art Loeb</div>
+        <div class="trail-location">Shining Rock Wilderness, Pisgah NF, 50 min</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">10.4 mi</span>
+            <span class="trail-stat-lbl">Round trip</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">2,800 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">6.5 hr</span>
+            <span class="trail-stat-lbl">My best time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Summit views</span>
+          <span class="trail-tag">Early start required</span>
+          <span class="trail-tag">6,030 ft summit</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Jan 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="moderate" data-family="true" data-area="pisgah">
+      <div class="trail-top" style="background: linear-gradient(135deg, #3a6b5a, #5a9c7a)">
+        <span class="trail-emoji">🦅</span>
+        <span class="difficulty-banner diff-mod">Moderate</span>
+        <span class="family-badge">Kid-friendly</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Looking Glass Rock Trail</div>
+        <div class="trail-location">Pisgah NF near Brevard, 45 min from Asheville</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">6.5 mi</span>
+            <span class="trail-stat-lbl">Round trip</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">1,760 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">3.5 hr</span>
+            <span class="trail-stat-lbl">With kids</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Granite summit</span>
+          <span class="trail-tag">Hazel loves the rocks</span>
+          <span class="trail-tag">Good fall colors</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Nov 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="easy" data-family="true" data-area="bfr">
+      <div class="trail-top" style="background: linear-gradient(135deg, #5a7a4a, #8aaa5a)">
+        <span class="trail-emoji">🌸</span>
+        <span class="difficulty-banner diff-easy">Easy</span>
+        <span class="family-badge">Stroller possible</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Craggy Gardens Picnic Area</div>
+        <div class="trail-location">Blue Ridge Parkway Milepost 364, 30 min</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">1.4 mi</span>
+            <span class="trail-stat-lbl">Loop</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">250 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">45 min</span>
+            <span class="trail-stat-lbl">With kids</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Rhododendron tunnel</span>
+          <span class="trail-tag">All ages</span>
+          <span class="trail-tag">Bring a snack</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Oct 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="hard" data-solo="true" data-area="pisgah">
+      <div class="trail-top" style="background: linear-gradient(135deg, #2a4a6a, #3a5a7a)">
+        <span class="trail-emoji">🌙</span>
+        <span class="difficulty-banner diff-hard">Hard</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Graveyard Fields to Yellow Mountain</div>
+        <div class="trail-location">Blue Ridge Parkway Milepost 418, 55 min</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">8.1 mi</span>
+            <span class="trail-stat-lbl">Round trip</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">1,650 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">4.5 hr</span>
+            <span class="trail-stat-lbl">Solo time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Waterfall start</span>
+          <span class="trail-tag">Open bald summit</span>
+          <span class="trail-tag">My go-to after a long birth</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Feb 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="trail-card" data-difficulty="easy" data-family="true" data-area="urban">
+      <div class="trail-top" style="background: linear-gradient(135deg, #6a8a4a, #9aba6a)">
+        <span class="trail-emoji">🌳</span>
+        <span class="difficulty-banner diff-easy">Easy</span>
+        <span class="family-badge">Kid-friendly</span>
+      </div>
+      <div class="trail-body">
+        <div class="trail-name">Beech Glen Trail, Carrier Park</div>
+        <div class="trail-location">West Asheville, 5 min from the house</div>
+        <div class="trail-stats">
+          <div class="trail-stat">
+            <span class="trail-stat-val">2.2 mi</span>
+            <span class="trail-stat-lbl">Loop</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">120 ft</span>
+            <span class="trail-stat-lbl">Elevation</span>
+          </div>
+          <div class="trail-stat">
+            <span class="trail-stat-val">55 min</span>
+            <span class="trail-stat-lbl">Family time</span>
+          </div>
+        </div>
+        <div class="trail-tags">
+          <span class="trail-tag">Owen's first trail</span>
+          <span class="trail-tag">Dog friendly</span>
+          <span class="trail-tag">Flat enough for Owen</span>
+        </div>
+        <div class="trail-footer">
+          <span class="trail-last">Last hiked: Nov 2026</span>
+          <button class="trail-btn">Details</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RECENT HIKES -->
+  <div class="section-head">
+    <h2>Recent Hikes</h2>
+    <span>2026 log</span>
+  </div>
+  <div class="hikes-list">
+    <div class="hike-row">
+      <div class="hike-icon">🍂</div>
+      <div class="hike-info">
+        <strong>Art Loeb Trail - Pilot Cove</strong>
+        <span>With Hazel and Owen - Owen made it 1.2 miles before the carrier came out. Worth it.</span>
+      </div>
+      <div class="hike-meta">
+        <div class="hike-stat"><span>4.2 mi</span><small>distance</small></div>
+        <div class="hike-stat"><span>820 ft</span><small>elevation</small></div>
+        <div class="hike-stat"><span>2.5 hr</span><small>time</small></div>
+      </div>
+      <div class="hike-date">Oct 12, 2026</div>
+    </div>
+    <div class="hike-row">
+      <div class="hike-icon">🌲</div>
+      <div class="hike-info">
+        <strong>Looking Glass Rock</strong>
+        <span>Solo. Left at 6:30 AM to beat the leaf-peeper traffic. Fog burned off by the summit. Good.</span>
+      </div>
+      <div class="hike-meta">
+        <div class="hike-stat"><span>6.5 mi</span><small>distance</small></div>
+        <div class="hike-stat"><span>1,760 ft</span><small>elevation</small></div>
+        <div class="hike-stat"><span>3.5 hr</span><small>time</small></div>
+      </div>
+      <div class="hike-date">Oct 4, 2026</div>
+    </div>
+    <div class="hike-row">
+      <div class="hike-icon">🌿</div>
+      <div class="hike-info">
+        <strong>French Broad Greenway</strong>
+        <span>Run, not a hike. 5K out and back with coffee after. The kind of morning that makes the week work.</span>
+      </div>
+      <div class="hike-meta">
+        <div class="hike-stat"><span>3.8 mi</span><small>distance</small></div>
+        <div class="hike-stat"><span>50 ft</span><small>elevation</small></div>
+        <div class="hike-stat"><span>45 min</span><small>time</small></div>
+      </div>
+      <div class="hike-date">Oct 1, 2026</div>
+    </div>
+    <div class="hike-row">
+      <div class="hike-icon">⛰</div>
+      <div class="hike-info">
+        <strong>Black Balsam Knob</strong>
+        <span>Solo. Post-call. Needed the exposure and the wind. Took the camera. Ate lunch on the bald. Five stars.</span>
+      </div>
+      <div class="hike-meta">
+        <div class="hike-stat"><span>6.4 mi</span><small>distance</small></div>
+        <div class="hike-stat"><span>1,480 ft</span><small>elevation</small></div>
+        <div class="hike-stat"><span>4 hr</span><small>time</small></div>
+      </div>
+      <div class="hike-date">Feb 8, 2026</div>
+    </div>
+  </div>
+
+  <!-- GEAR LIST -->
+  <div class="section-head">
+    <h2>What I carry</h2>
+    <span>Standard kit</span>
+  </div>
+  <div class="gear-grid">
+    <div class="gear-card">
+      <span class="gear-icon">🥾</span>
+      <div class="gear-info">
+        <strong>Trail boots</strong>
+        <span>Mid-cut waterproof, worn in over 3 years</span>
+      </div>
+      <span class="gear-badge">Go-to</span>
+    </div>
+    <div class="gear-card">
+      <span class="gear-icon">🎒</span>
+      <div class="gear-info">
+        <strong>Daypack 20L</strong>
+        <span>Hip belt fits snacks, first aid, extra layer</span>
+      </div>
+    </div>
+    <div class="gear-card">
+      <span class="gear-icon">💧</span>
+      <div class="gear-info">
+        <strong>Hydration bladder</strong>
+        <span>2L - refill when there is a stream</span>
+      </div>
+      <span class="gear-badge">Solo only</span>
+    </div>
+    <div class="gear-card">
+      <span class="gear-icon">🍵</span>
+      <div class="gear-info">
+        <strong>Thermos with Mountain Morning</strong>
+        <span>Never leave the house without it</span>
+      </div>
+      <span class="gear-badge">Always</span>
+    </div>
+    <div class="gear-card">
+      <span class="gear-icon">🧒</span>
+      <div class="gear-info">
+        <strong>Carrier pack for Owen</strong>
+        <span>For when the legs give out around mile 1.5</span>
+      </div>
+      <span class="gear-badge">Kid hikes</span>
+    </div>
+    <div class="gear-card">
+      <span class="gear-icon">🩹</span>
+      <div class="gear-info">
+        <strong>First aid kit</strong>
+        <span>Small but properly stocked - occupational habit</span>
+      </div>
+      <span class="gear-badge">Always</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Personal trail log for West Asheville and surrounding mountains. Updated after each hike. Not a public guide - just notes for the next time.</p>
+</footer>
+
+<script>
+  function filter(btn, type) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.trail-card');
+    let visible = 0;
+    cards.forEach(card => {
+      let show = false;
+      if (type === 'all') show = true;
+      else if (type === 'easy' && card.dataset.difficulty === 'easy') show = true;
+      else if (type === 'moderate' && card.dataset.difficulty === 'moderate') show = true;
+      else if (type === 'hard' && card.dataset.difficulty === 'hard') show = true;
+      else if (type === 'family' && card.dataset.family === 'true') show = true;
+      else if (type === 'solo' && card.dataset.solo === 'true') show = true;
+      else if (type === 'pisgah' && card.dataset.area === 'pisgah') show = true;
+      else if (type === 'bfr' && card.dataset.area === 'bfr') show = true;
+      else if (type === 'urban' && card.dataset.area === 'urban') show = true;
+      else if (type === 'recent') show = true; // simplified
+
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('trail-count').textContent = 'Showing ' + visible + ' of 47';
+  }
+
+  function logHike() {
+    const name = prompt('Trail name:');
+    if (name) alert('Logged: ' + name + '. Great hike!');
+  }
+</script>
+</body>
+</html>

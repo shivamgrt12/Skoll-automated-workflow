@@ -1,0 +1,162 @@
+[
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block obvious bots",
+    "expression": "(cf.client.bot)",
+    "id": "f899139df5e1059396431415e770c6dd",
+    "paused": "false",
+    "priority": 1,
+    "zone_id": "861b3735a208c23acfd1325557419906"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block known bad user agents and scrapers",
+    "expression": "(http.user_agent contains \"AhrefsBot\") or (http.user_agent contains \"SemrushBot\") or (http.user_agent contains \"MJ12bot\") or (http.user_agent eq \"\")",
+    "id": "38b3eff8baf56627478ec76a704e9b52",
+    "paused": "false",
+    "priority": 2,
+    "zone_id": "29811cbff3c0888a2b8f0060df462914"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Rate-limit newsletter signup form submissions",
+    "expression": "(http.request.uri.path eq \"/signup\" and http.request.method eq \"POST\")",
+    "id": "ec8956637a99787bd197eacd77acce5e",
+    "paused": "false",
+    "priority": 3,
+    "zone_id": "89ac32f25a73d874d65c9393df1427d0"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block SQL injection patterns in query and body",
+    "expression": "(http.request.uri.query contains \"union select\") or (http.request.uri.query contains \"' or '1'='1\") or (any(http.request.body.form.values[*] contains \"union select\"))",
+    "id": "a5bfc9e07964f8dddeb95fc584cd965d",
+    "paused": "false",
+    "priority": 4,
+    "zone_id": "fe4537bf4b5c79af83c094b7c9497fcd"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block cross-site scripting payloads",
+    "expression": "(http.request.uri.query contains \"<script\") or (http.request.uri.query contains \"javascript:\") or (http.request.uri.query contains \"onerror=\")",
+    "id": "a5771bce93e200c36f7cd9dfd0e5deaa",
+    "paused": "false",
+    "priority": 5,
+    "zone_id": "9eaa775ce6f747fe35c4accb95cfdc2f"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Challenge high-risk countries",
+    "expression": "(ip.geoip.country in {\"KP\" \"RU\" \"IR\"})",
+    "id": "d67d8ab4f4c10bf22aa353e27879133c",
+    "paused": "false",
+    "priority": 6,
+    "zone_id": "f01e604346bca39306e4cbdaab81be80"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Allow Mailchimp ESP delivery IP range",
+    "expression": "(ip.src in {198.51.100.0/24})",
+    "id": "d645920e395fedad7bbbed0eca3fe2e0",
+    "paused": "false",
+    "priority": 7,
+    "zone_id": "b4bef71c65ee8054762f86acc0d874f9"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Allow Shopify presale shop callback IPs",
+    "expression": "(ip.src in {203.0.113.0/24})",
+    "id": "3416a75f4cea9109507cacd8e2f2aefc",
+    "paused": "false",
+    "priority": 8,
+    "zone_id": "233a36feeffd794cb0a4a86319ee70d1"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Challenge access to wp-login and admin probes",
+    "expression": "(http.request.uri.path contains \"/wp-login.php\") or (http.request.uri.path contains \"/wp-admin\") or (http.request.uri.path contains \"/xmlrpc.php\")",
+    "id": "a1d0c6e83f027327d8461063f4ac58a6",
+    "paused": "false",
+    "priority": 9,
+    "zone_id": "e8a7cbe0708b4845599aa1dc5d2c8ca7"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block access to dotfiles and env files",
+    "expression": "(http.request.uri.path contains \"/.env\") or (http.request.uri.path contains \"/.git\") or (http.request.uri.path contains \"/.aws\")",
+    "id": "17e62166fc8586dfa4d1bc0e1742c08b",
+    "paused": "false",
+    "priority": 10,
+    "zone_id": "8d8e4d88319b6373468141f2886867b3"
+  },
+  {
+    "action": "js_challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "JS challenge presale shop checkout from new visitors",
+    "expression": "(http.host eq \"shop.offmic.co.za\" and http.request.uri.path contains \"/checkout\")",
+    "id": "f7177163c833dff4b38fc8d2872f1ec6",
+    "paused": "false",
+    "priority": 11,
+    "zone_id": "78c242a01a3e0503abef8840f500e458"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block path traversal attempts",
+    "expression": "(http.request.uri.path contains \"../\") or (http.request.uri.path contains \"%2e%2e%2f\")",
+    "id": "6c8349cc7260ae62e3b1396831a8398f",
+    "paused": "false",
+    "priority": 12,
+    "zone_id": "709cca0135a2b95ab4af99546f93aaac"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Challenge requests with no referer to signup endpoint",
+    "expression": "(http.request.uri.path eq \"/signup\" and http.referer eq \"\")",
+    "id": "d9d4f495e875a2e075a1a4a6e1b9770f",
+    "paused": "false",
+    "priority": 13,
+    "zone_id": "c20758141b30dfbab3f501e047e993c7"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block requests to API host without API key header",
+    "expression": "(http.host eq \"api.offmic.co.za\" and not http.request.headers[\"x-api-key\"][0] ne \"\")",
+    "id": "67c6a1e7ce56d3d6fa748ab6d9af3fd7",
+    "paused": "true",
+    "priority": 14,
+    "zone_id": "8fb43b81194c07468e1cb4c6ecde8aa8"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Challenge anonymizer and known VPN ASNs",
+    "expression": "(ip.geoip.asnum in {16509 14618}) and (http.request.uri.path eq \"/signup\")",
+    "id": "642e92efb79421734881b53e1e1b18b6",
+    "paused": "false",
+    "priority": 15,
+    "zone_id": "ee9556e1f1e805809d25e7b2e0b8212f"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000+02:00",
+    "description": "Block high threat-score requests",
+    "expression": "(cf.threat_score gt 40)",
+    "id": "f457c545a9ded88f18ecee47145a72c0",
+    "paused": "false",
+    "priority": 16,
+    "zone_id": "a1aa4ff8768779d6cbf5557940561b4e"
+  }
+]

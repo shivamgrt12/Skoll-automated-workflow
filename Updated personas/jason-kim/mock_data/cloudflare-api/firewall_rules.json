@@ -1,0 +1,222 @@
+[
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block obvious bots",
+    "expression": "(cf.client.bot)",
+    "id": "5d3e74ee018a9f35313103adf0b21ad1",
+    "paused": "false",
+    "priority": "1",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge traffic from high-risk countries",
+    "expression": "(ip.geoip.country in {\"KP\" \"RU\" \"IR\" \"SY\"})",
+    "id": "5c0e99b208e1fadd9a5896928d4aa054",
+    "paused": "false",
+    "priority": "2",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Allow KTS office IP without challenge",
+    "expression": "(ip.src eq 24.123.84.176)",
+    "id": "357a9306375b0db09a0728845b757da5",
+    "paused": "false",
+    "priority": "3",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Allow North Star Creative office range for site work",
+    "expression": "(ip.src in {96.120.0.0/16})",
+    "id": "51af4064819f05441584ca67b106846b",
+    "paused": "false",
+    "priority": "4",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "js_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge bogus WordPress probes - site is not WordPress",
+    "expression": "(http.request.uri.path contains \"/wp-login\") or (http.request.uri.path contains \"/wp-admin\")",
+    "id": "cc83cff4486f1067b820c4244b6ea5ec",
+    "paused": "false",
+    "priority": "5",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block scans for env and git files",
+    "expression": "(http.request.uri.path contains \"/.env\") or (http.request.uri.path contains \"/.git\")",
+    "id": "7d8cfeb0e3cdc1fc412818fde2aa1939",
+    "paused": "false",
+    "priority": "6",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block phpMyAdmin and Adminer probes",
+    "expression": "(http.request.uri.path contains \"/phpmyadmin\") or (http.request.uri.path contains \"/adminer\")",
+    "id": "42d4f0a660f187fa3687a5f531355203",
+    "paused": "false",
+    "priority": "7",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Rate-limit and challenge repeated login posts",
+    "expression": "(http.request.uri.path eq \"/login\") and (http.request.method eq \"POST\")",
+    "id": "7e8bc7c669a1342aeef987f3d5d60c19",
+    "paused": "false",
+    "priority": "8",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge suspicious traffic to SSO endpoints",
+    "expression": "(http.request.uri.path contains \"/sso/\") and (cf.threat_score gt 14)",
+    "id": "201e0ee3daa4be05c3e11d6bd66c6aa6",
+    "paused": "false",
+    "priority": "9",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block known scanner user agents",
+    "expression": "(http.user_agent contains \"sqlmap\") or (http.user_agent contains \"nikto\") or (http.user_agent contains \"nmap\")",
+    "id": "87ee4e1e8a24b678e6fce3eb1ce947a5",
+    "paused": "false",
+    "priority": "10",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block requests with empty user agent",
+    "expression": "(http.user_agent eq \"\")",
+    "id": "a17cb09c3d7c590ae17e741df9dadffb",
+    "paused": "false",
+    "priority": "11",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge high threat-score visitors on the site",
+    "expression": "(not http.request.uri.path matches \"^/api/\") and (cf.threat_score gt 30)",
+    "id": "2f37c5431de21043523ce8a232e4d7be",
+    "paused": "false",
+    "priority": "12",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block obvious SQLi and path traversal in query",
+    "expression": "(http.request.uri.query contains \"union select\") or (http.request.uri.query contains \"../\")",
+    "id": "5752299b68c6ee3b0eb3b99ed962b086",
+    "paused": "false",
+    "priority": "13",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "js_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge risky traffic to the API host",
+    "expression": "(http.host eq \"api.kimtradeservices.com\") and (not ip.src in {96.120.0.0/16}) and (cf.threat_score gt 20)",
+    "id": "6742ed453b56fcc9b4449b26707dff61",
+    "paused": "false",
+    "priority": "14",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Limit foreign access to the GitLab host",
+    "expression": "(http.host eq \"gitlab.kimtradeservices.com\") and (ip.geoip.country ne \"US\") and (cf.threat_score gt 10)",
+    "id": "5863b4806db2513bc6dc92e86a8119fa",
+    "paused": "false",
+    "priority": "15",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Always allow the public status page",
+    "expression": "(http.host eq \"status.kimtradeservices.com\")",
+    "id": "35b8997669de4a96ec9e06ab329b75f3",
+    "paused": "false",
+    "priority": "16",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge xmlrpc probes",
+    "expression": "(http.request.uri.path contains \"/xmlrpc.php\")",
+    "id": "2b6b4468e0dc8d8a80cbcc54b0fc44bd",
+    "paused": "false",
+    "priority": "17",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block TRACE and TRACK methods",
+    "expression": "(http.request.method eq \"TRACE\") or (http.request.method eq \"TRACK\")",
+    "id": "5db6352303457356012d434e7e89bec5",
+    "paused": "false",
+    "priority": "18",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block known referrer spam",
+    "expression": "(http.referer contains \"semalt.com\") or (http.referer contains \"buttons-for-website.com\")",
+    "id": "ebf6f8ad1b8fae10f3559f1e9a42d5d3",
+    "paused": "false",
+    "priority": "19",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge risky pulls against the container registry",
+    "expression": "(http.request.uri.path contains \"/registry/v2/\") and (cf.threat_score gt 25)",
+    "id": "322f0a6ce3593e87ebb070346178a630",
+    "paused": "false",
+    "priority": "20",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge bot-scored contact form spam",
+    "expression": "(http.request.uri.path contains \"/contact\") and (http.request.method eq \"POST\") and (cf.bot_management.score lt 30)",
+    "id": "58ca7a53cfb72ee368a983955ccdbe15",
+    "paused": "false",
+    "priority": "21",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block abusive hosting ASNs hitting the site",
+    "expression": "(ip.geoip.asnum in {9009 14061}) and (cf.threat_score gt 5)",
+    "id": "161284bc64b8ed92e0898809b90afca0",
+    "paused": "true",
+    "priority": "22",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  }
+]

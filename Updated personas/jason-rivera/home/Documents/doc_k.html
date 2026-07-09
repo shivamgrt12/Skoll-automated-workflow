@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rivera Household Financial Dashboard</title>
+<style>
+  :root{--bg:#0f1b24;--bg2:#162935;--card:#1b303d;--line:#27414f;--txt:#e8eef2;--mut:#8fa6b3;
+    --teal:#2db3a3;--gold:#e0a93a;--blue:#4a8fd6;--red:#d4694a;--green:#4cc08a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Tahoma,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#1d3340,var(--bg));color:var(--txt);min-height:100vh}
+  .top{display:flex;justify-content:space-between;align-items:center;padding:18px 30px;border-bottom:1px solid var(--line);
+    background:rgba(15,27,36,.7);position:sticky;top:0;backdrop-filter:blur(6px);z-index:10}
+  .top .t{display:flex;align-items:center;gap:13px}
+  .top .o{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--teal),#1c6f66);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#06231f}
+  .top h1{font-size:16px}.top h1 small{display:block;color:var(--mut);font-size:11.5px;font-weight:400}
+  .top .as{font-size:12px;color:var(--mut);text-align:right}
+  .wrap{max-width:1140px;margin:0 auto;padding:26px 22px 60px}
+  .row{display:grid;gap:18px}
+  .r4{grid-template-columns:repeat(4,1fr)}.r2{grid-template-columns:1.4fr 1fr}.r3{grid-template-columns:repeat(3,1fr)}
+  .card{background:linear-gradient(180deg,var(--card),#172a35);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .card h3{font-size:14px;margin-bottom:2px}.card .n{font-size:11.5px;color:var(--mut);margin-bottom:14px}
+  .stat{opacity:0;transform:translateY(14px);animation:r .6s forwards}
+  .stat:nth-child(2){animation-delay:.08s}.stat:nth-child(3){animation-delay:.16s}.stat:nth-child(4){animation-delay:.24s}
+  @keyframes r{to{opacity:1;transform:none}}
+  .stat .lab{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+  .stat .v{font-size:25px;font-weight:800;margin-top:5px}
+  .stat .d{font-size:11.5px;margin-top:3px}.pos{color:var(--green)}.neg{color:var(--red)}
+  .alloc{display:flex;align-items:center;gap:22px}
+  .pie{width:160px;height:160px;border-radius:50%;position:relative;flex-shrink:0}
+  .pie::after{content:"";position:absolute;inset:32px;border-radius:50%;background:#16282f}
+  .pie .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2}
+  .pie .c b{font-size:20px}.pie .c span{font-size:10.5px;color:var(--mut)}
+  .leg{display:grid;gap:9px;font-size:13px;flex:1}
+  .leg div{display:flex;justify-content:space-between;align-items:center}
+  .leg i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:8px;vertical-align:-1px}
+  .leg b{color:var(--txt)}
+  .bars{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+  .bln{font-size:12.5px;display:flex;justify-content:space-between;margin-bottom:4px;color:var(--mut)}
+  .bln b{color:var(--txt)}
+  .track{height:11px;background:#14242c;border-radius:7px;overflow:hidden}
+  .track i{display:block;height:100%;width:0;border-radius:7px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+  .prog{position:relative;height:26px;background:#14242c;border-radius:13px;overflow:hidden;margin-top:6px}
+  .prog i{position:absolute;left:0;top:0;height:100%;width:0;border-radius:13px;
+    background:linear-gradient(90deg,var(--gold),#b97f1d);transition:width 1.4s}
+  .prog span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0f1b24}
+  .wfall{display:flex;align-items:flex-end;gap:10px;height:180px;border-bottom:1px solid var(--line);padding-top:8px}
+  .wcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+  .wcol .bx{width:100%;border-radius:6px 6px 0 0;height:0;transition:height 1s}
+  .wcol small{font-size:10.5px;color:var(--mut);text-align:center;line-height:1.2}
+  .wcol .amt{font-size:11px;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  td.r,th.r{text-align:right}
+  .badge{font-size:10.5px;padding:2px 9px;border-radius:12px;font-weight:600}
+  .b1{background:#1e3b34;color:var(--teal)}.b2{background:#3a3320;color:var(--gold)}.b3{background:#1f3346;color:var(--blue)}
+  footer{color:var(--mut);font-size:12px;text-align:center;margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+  @media(max-width:880px){.r4,.r2,.r3{grid-template-columns:1fr 1fr}.alloc{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="t"><div class="o">R</div><h1>Rivera Household<small>Net worth and property dashboard</small></h1></div>
+  <div class="as">Prepared with Frank Moretti, CPA<br>As of January 31, 2026</div>
+</div>
+
+<div class="wrap">
+  <div class="row r4" style="margin-bottom:18px">
+    <div class="card stat"><div class="lab">Total net worth</div><div class="v" data-c="842500" data-m>$0</div><div class="d pos">up from prior quarter</div></div>
+    <div class="card stat"><div class="lab">Liquid and invested</div><div class="v" data-c="377500" data-m>$0</div><div class="d">cash, brokerage, retirement</div></div>
+    <div class="card stat"><div class="lab">Real estate equity</div><div class="v" data-c="465000" data-m>$0</div><div class="d">home and Van Houten</div></div>
+    <div class="card stat"><div class="lab">Property cash flow</div><div class="v" data-c="14200" data-m>$0</div><div class="d pos">net per year</div></div>
+  </div>
+
+  <div class="row r2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>Where the money sits</h3><div class="n">Assets by category, total $842,500</div>
+      <div class="alloc">
+        <div class="pie" id="pie"><div class="c"><b>$842K</b><span>net worth</span></div></div>
+        <div class="leg" id="leg"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Emre college fund</h3><div class="n">529 plan, goal $50,000 before college start in 2028</div>
+      <div class="prog"><i id="p529"></i><span id="p529t">0%</span></div>
+      <div class="bln" style="margin-top:10px"><span>Balance <b>$24,000</b></span><span>Goal <b>$50,000</b></span></div>
+      <p style="font-size:12.5px;color:var(--mut);margin-top:14px">Monthly auto deposit of $300. On pace with the catch up contributions made late in 2025.</p>
+      <h3 style="margin-top:18px">Retirement</h3><div class="n">SEP-IRA and Roth IRA</div>
+      <div class="bars">
+        <div><div class="bln"><span>SEP-IRA, Jason</span><b>$145,000</b></div><div class="track"><i data-w="100" style="background:linear-gradient(90deg,var(--teal),#1c6f66)"></i></div></div>
+        <div><div class="bln"><span>Roth IRA, Ayse</span><b>$68,000</b></div><div class="track"><i data-w="47" style="background:linear-gradient(90deg,var(--blue),#2f6aa6)"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3>Van Houten Street, annual cash flow</h3>
+    <div class="n">Mixed use building, gross rent $52,200 before mortgage, taxes, and insurance</div>
+    <div class="wfall" id="wfall"></div>
+    <div class="bln" style="margin-top:10px"><span>Gross rent <b style="color:var(--green)">$52,200</b></span><span>Operating cost <b style="color:var(--red)">$38,000</b></span><span>Net to household <b style="color:var(--gold)">$14,200</b></span></div>
+  </div>
+
+  <div class="row r2">
+    <div class="card">
+      <h3>Rent roll</h3><div class="n">Three units, gross $4,350 per month</div>
+      <table>
+        <thead><tr><th>Unit</th><th class="r">Monthly</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Unit A, barbershop</td><td class="r">$1,600</td><td><span class="badge b1">on time</span></td></tr>
+          <tr><td>Unit B, phone shop</td><td class="r">$1,200</td><td><span class="badge b2">runs late</span></td></tr>
+          <tr><td>2F residential, Reyes</td><td class="r">$1,550</td><td><span class="badge b1">on time</span></td></tr>
+          <tr><td><b>Total</b></td><td class="r"><b>$4,350</b></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Second property, 2027 target</h3><div class="n">Acquisition pipeline tracked on the side</div>
+      <table>
+        <thead><tr><th>Criterion</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Price range</td><td>$400K to $600K</td></tr>
+          <tr><td>Cap rate at current rents</td><td>7% or better</td></tr>
+          <tr><td>Down payment</td><td>25%, from reserves</td></tr>
+          <tr><td>Distance from Main Street</td><td>within 15 minutes</td></tr>
+          <tr><td>Target close</td><td><span class="badge b3">end of 2027</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--mut);margin-top:12px">Funded after the Wayne equipment loan is paid off. Emergency fund stays untouched.</p>
+    </div>
+  </div>
+
+  <footer>Private household summary for Jason and Ayse Rivera. Investment values are read only aggregations. Not tax advice.</footer>
+</div>
+
+<script>
+  var alloc=[
+    {n:"Real estate equity",v:465000,c:"#2db3a3"},
+    {n:"Retirement accounts",v:213000,c:"#4a8fd6"},
+    {n:"Restaurant operating cash",v:55000,c:"#e0a93a"},
+    {n:"Emergency fund",v:42000,c:"#4cc08a"},
+    {n:"Taxable brokerage",v:35000,c:"#d4694a"},
+    {n:"529 and reserves",v:32500,c:"#9a86c4"}
+  ];
+  var tot=alloc.reduce(function(a,b){return a+b.v},0);
+  var seg=[],acc=0;
+  alloc.forEach(function(a){var p=a.v/tot*100;seg.push(a.c+" "+acc.toFixed(2)+"% "+(acc+p).toFixed(2)+"%");acc+=p;});
+  var leg=document.getElementById("leg");
+  alloc.forEach(function(a){var d=document.createElement("div");
+    d.innerHTML='<span><i style="background:'+a.c+'"></i>'+a.n+'</span><b>$'+(a.v/1000).toFixed(0)+'K</b>';leg.appendChild(d);});
+
+  // waterfall data
+  var wf=[{l:"Gross rent",v:52200,c:"#4cc08a",t:1},{l:"Mortgage",v:-26400,c:"#d4694a"},
+          {l:"Taxes",v:-8400,c:"#d4694a"},{l:"Insurance",v:-3200,c:"#d4694a"},{l:"Net income",v:14200,c:"#e0a93a",t:1}];
+  var wmax=52200,wc=document.getElementById("wfall");
+  wf.forEach(function(w){var col=document.createElement("div");col.className="wcol";
+    var h=Math.abs(w.v)/wmax*100;
+    col.innerHTML='<div class="amt" style="color:'+w.c+'">'+(w.v<0?"-":"")+"$"+Math.abs(w.v/1000).toFixed(1)+'K</div><div class="bx" data-h="'+h+'" style="background:'+w.c+'"></div><small>'+w.l+'</small>';
+    wc.appendChild(col);});
+
+  window.addEventListener("load",function(){
+    setTimeout(function(){
+      document.getElementById("pie").style.background="conic-gradient("+seg.join(",")+")";
+      document.querySelectorAll(".track i").forEach(function(i){i.style.width=i.dataset.w+"%";});
+      document.getElementById("p529").style.width="48%";document.getElementById("p529t").textContent="48% funded";
+      document.querySelectorAll(".bx").forEach(function(b){b.style.height=b.dataset.h+"%";});
+      document.querySelectorAll("[data-c]").forEach(function(el){var t=+el.dataset.c,c=0,s=t/55;
+        var iv=setInterval(function(){c+=s;if(c>=t){c=t;clearInterval(iv);}
+          el.textContent=el.hasAttribute("data-m")?"$"+Math.round(c).toLocaleString():Math.round(c);},16);});
+    },250);
+  });
+</script>
+</body>
+</html>

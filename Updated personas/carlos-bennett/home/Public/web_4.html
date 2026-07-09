@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bench Pipeline Tracker</title>
+<style>
+  :root{
+    --bg:#211a13; --panel:#2c231a; --panel2:#352a1f; --line:#473829; --ink:#f1e7d6;
+    --muted:#b09a7e; --amber:#d99a3a; --amber2:#e9b964; --green:#5fae6e; --blue:#5e93c4; --queue:#9b8763;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(90deg,#1a140e,#2c231a);border-bottom:1px solid var(--line);
+    padding:18px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .ht{display:flex;align-items:center;gap:13px}
+  .ht svg{flex:0 0 30px;color:var(--amber2)}
+  .ht h1{font-size:1.18rem;font-weight:600}
+  .ht .s{font-size:.78rem;color:var(--muted)}
+  .clock{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:30px;padding:7px 15px}
+  main{max-width:1220px;margin:0 auto;padding:24px 26px}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}
+  .sc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .sc .lab{font-size:.71rem;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted)}
+  .sc .v{font-size:1.85rem;font-weight:700;margin-top:5px}
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  .controls .fl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-right:4px}
+  .fbtn{font-size:.8rem;padding:7px 15px;border-radius:30px;border:1px solid var(--line);background:transparent;
+    color:var(--muted);cursor:pointer;transition:.2s}
+  .fbtn:hover{color:var(--ink)}
+  .fbtn.on{background:var(--amber);color:#241a0e;border-color:var(--amber);font-weight:600}
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:200px}
+  .col h2{font-size:.82rem;text-transform:uppercase;letter-spacing:1.2px;display:flex;justify-content:space-between;
+    align-items:center;padding:4px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .col h2 .cnt{background:var(--panel2);color:var(--muted);border-radius:30px;font-size:.74rem;padding:2px 9px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:9px;
+    padding:14px;margin-bottom:12px;cursor:pointer;transition:transform .18s,box-shadow .18s,opacity .3s;
+    opacity:0;transform:translateY(12px);animation:in .4s ease forwards}
+  @keyframes in{to{opacity:1;transform:none}}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.35)}
+  .card .wo{font-size:.7rem;color:var(--muted);letter-spacing:.8px}
+  .card h3{font-size:.98rem;margin:3px 0 2px}
+  .card .who{font-size:.82rem;color:var(--muted)}
+  .card .svc{font-size:.82rem;margin:9px 0 11px;color:#ddcdb4}
+  .prog{height:7px;border-radius:6px;background:#1e160e;overflow:hidden}
+  .prog i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--amber),var(--amber2));
+    transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .meta{display:flex;justify-content:space-between;margin-top:9px;font-size:.74rem;color:var(--muted)}
+  .pill{font-size:.66rem;text-transform:uppercase;letter-spacing:.7px;padding:2px 8px;border-radius:20px;color:#241a0e;font-weight:700}
+  .hidden{display:none}
+  .parts{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:22px}
+  .parts h2{font-size:1rem;margin-bottom:3px}
+  .parts .s{font-size:.78rem;color:var(--muted);margin-bottom:16px}
+  .pbars{display:grid;gap:12px}
+  .pbar{display:grid;grid-template-columns:160px 1fr 70px;gap:12px;align-items:center;font-size:.85rem}
+  .pbar .track{height:14px;background:#1e160e;border-radius:7px;overflow:hidden}
+  .pbar .track i{display:block;height:100%;width:0;border-radius:7px;transition:width 1s ease}
+  .pbar .q{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  footer{max-width:1220px;margin:0 auto;padding:18px 26px 30px;color:var(--muted);font-size:.78rem;
+    border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:980px){.board{grid-template-columns:1fr 1fr}.summary{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.board,.summary{grid-template-columns:1fr}.pbar{grid-template-columns:110px 1fr 56px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="ht">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24M10 6v20"/></svg>
+    <div><h1>Bennett Guitar Works, Bench Pipeline</h1><div class="s">Workshop tracker, off-season repair queue</div></div>
+  </div>
+  <div class="clock">Updated February 28, 2026</div>
+</header>
+
+<main>
+  <div class="summary">
+    <div class="sc"><div class="lab">Active work orders</div><div class="v" id="s1">3</div></div>
+    <div class="sc"><div class="lab">Delivered this winter</div><div class="v" id="s2">1</div></div>
+    <div class="sc"><div class="lab">Open work value</div><div class="v" id="s3">$2,690</div></div>
+    <div class="sc"><div class="lab">Next deadline</div><div class="v" style="font-size:1.3rem;line-height:1.7">Oct 9</div></div>
+  </div>
+
+  <div class="controls">
+    <span class="fl">Filter</span>
+    <button class="fbtn on" data-f="all">All</button>
+    <button class="fbtn" data-f="intake">Intake</button>
+    <button class="fbtn" data-f="progress">In progress</button>
+    <button class="fbtn" data-f="ready">Ready</button>
+    <button class="fbtn" data-f="done">Delivered</button>
+  </div>
+
+  <div class="board" id="board">
+    <div class="col" data-col="intake"><h2><span><span class="dot" style="background:var(--queue)"></span>Intake</span><span class="cnt">0</span></h2></div>
+    <div class="col" data-col="progress"><h2><span><span class="dot" style="background:var(--amber)"></span>In progress</span><span class="cnt">0</span></h2></div>
+    <div class="col" data-col="ready"><h2><span><span class="dot" style="background:var(--blue)"></span>Ready for pickup</span><span class="cnt">0</span></h2></div>
+    <div class="col" data-col="done"><h2><span><span class="dot" style="background:var(--green)"></span>Delivered</span><span class="cnt">0</span></h2></div>
+  </div>
+
+  <div class="parts">
+    <h2>Parts wall, stock against reorder point</h2>
+    <div class="s">On-hand value reconciles to roughly 3,000 dollars. Bars show stock as a share of a healthy shelf.</div>
+    <div class="pbars" id="pbars"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Bennett Guitar Works, 14 Mariner's Point Road, Bayport, FL 34607</span>
+  <span>(352) 555-0144</span>
+</footer>
+
+<script>
+  var jobs=[
+    {wo:'BGW-1051',inst:'1960s dreadnought, full restoration',who:'Restoration client',svc:'Neck reset, bridge plate, refret, setup',
+      col:'progress',pct:55,deadline:'Oct 17, 2026',value:1850,pill:['In progress','#d99a3a']},
+    {wo:'BGW-1049',inst:'Solid body electric, 1974',who:'Local player',svc:'Refret, neck shim, full setup',
+      col:'progress',pct:40,deadline:'Oct 30, 2026',value:620,pill:['In progress','#d99a3a']},
+    {wo:'BGW-1048',inst:'Cutaway acoustic',who:'Local player',svc:'Fret level and setup',
+      col:'ready',pct:100,deadline:'Oct 9, 2026',value:220,pill:['Ready','#5e93c4']},
+    {wo:'BGW-1052',inst:'Mandolin, A-style',who:'Bluegrass regular',svc:'Bridge fit and setup, intake this week',
+      col:'intake',pct:8,deadline:'Nov 6, 2026',value:140,pill:['Intake','#9b8763']},
+    {wo:'BGW-1042',inst:'Acoustic, fret level and new nut',who:'Spring Hill client',svc:'Leveled, bone nut, setup',
+      col:'done',pct:100,deadline:'Picked up Feb 9, 2026',value:285,pill:['Delivered','#5fae6e']}
+  ];
+  var board=document.getElementById('board');
+  function render(filter){
+    document.querySelectorAll('.col').forEach(function(c){
+      c.querySelectorAll('.card').forEach(function(x){x.remove()});
+    });
+    var counts={intake:0,progress:0,ready:0,done:0};
+    jobs.forEach(function(j,idx){
+      counts[j.col]++;
+      var show=(filter==='all')||(filter==='intake'&&j.col==='intake')||(filter==='progress'&&j.col==='progress')||
+        (filter==='ready'&&j.col==='ready')||(filter==='done'&&j.col==='done');
+      if(!show)return;
+      var col=document.querySelector('.col[data-col="'+j.col+'"]');
+      var card=document.createElement('div');card.className='card';card.style.animationDelay=(idx*60)+'ms';
+      card.style.borderLeftColor=j.pill[1];
+      card.innerHTML='<div class="wo">'+j.wo+'</div><h3>'+j.inst+'</h3><div class="who">'+j.who+'</div>'+
+        '<div class="svc">'+j.svc+'</div><div class="prog"><i></i></div>'+
+        '<div class="meta"><span>'+j.deadline+'</span><span class="pill" style="background:'+j.pill[1]+'">'+j.pill[0]+'</span></div>';
+      col.appendChild(card);
+      setTimeout((function(c,p){return function(){c.querySelector('.prog i').style.width=p+'%'}})(card,j.pct),120+idx*70);
+    });
+    Object.keys(counts).forEach(function(k){
+      document.querySelector('.col[data-col="'+k+'"] .cnt').textContent=counts[k];
+    });
+  }
+  render('all');
+  document.querySelectorAll('.fbtn').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.fbtn').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');render(b.dataset.f);
+  })});
+  // parts wall
+  var parts=[['Fret wire, medium jumbo',240,300,'#d99a3a'],['Phosphor bronze strings',90,120,'#e9b964'],
+    ['Bone nut blanks',18,24,'#5fae6e'],['Tuning machine sets',12,16,'#5e93c4'],
+    ['Acoustic bridge plates',7,12,'#d99a3a'],['Single coil pickups',10,14,'#9b8763']];
+  var pb=document.getElementById('pbars');
+  parts.forEach(function(p,i){
+    var pct=Math.min(100,Math.round(p[1]/p[2]*100));
+    var row=document.createElement('div');row.className='pbar';
+    row.innerHTML='<span>'+p[0]+'</span><div class="track"><i style="background:'+p[3]+'"></i></div><span class="q">'+p[1]+' on hand</span>';
+    pb.appendChild(row);
+    setTimeout((function(r,pc){return function(){r.querySelector('.track i').style.width=pc+'%'}})(row,pct),200+i*90);
+  });
+</script>
+</body>
+</html>

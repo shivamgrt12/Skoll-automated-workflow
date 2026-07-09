@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Strike Season Dashboard</title>
+<style>
+  :root{
+    --bg:#0e1620; --panel:#16212e; --panel2:#1d2b3a; --line:#27384a; --ink:#e6eef5;
+    --muted:#8aa0b4; --teal:#36c2c8; --amber:#f0a836; --green:#46c07a; --red:#e2685f; --blue:#5a9be2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header{background:linear-gradient(90deg,#0b1219,#16212e);border-bottom:1px solid var(--line);
+    padding:18px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .htitle{display:flex;align-items:center;gap:13px}
+  .htitle svg{flex:0 0 30px;color:var(--teal)}
+  .htitle h1{font-size:1.2rem;font-weight:600;letter-spacing:.3px}
+  .htitle .sub{font-size:.78rem;color:var(--muted)}
+  .range{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:30px;padding:7px 16px}
+  main{max-width:1200px;margin:0 auto;padding:26px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;position:relative;overflow:hidden;
+    opacity:0;transform:translateY(18px);animation:up .6s ease forwards}
+  .kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.16s}.kpi:nth-child(4){animation-delay:.24s}
+  @keyframes up{to{opacity:1;transform:none}}
+  .kpi .lab{font-size:.72rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+  .kpi .val{font-size:2rem;font-weight:700;margin-top:6px}
+  .kpi .delta{font-size:.8rem;margin-top:4px}
+  .kpi .bar{position:absolute;left:0;bottom:0;height:4px;width:100%}
+  .up{color:var(--green)}.down{color:var(--red)}
+  .panels{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .panel h2{font-size:1rem;font-weight:600;margin-bottom:3px}
+  .panel .psub{font-size:.78rem;color:var(--muted);margin-bottom:16px}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{font-size:.78rem;padding:7px 15px;border-radius:30px;border:1px solid var(--line);background:transparent;
+    color:var(--muted);cursor:pointer;transition:.2s}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:var(--teal);color:#062029;border-color:var(--teal);font-weight:600}
+  svg.chart{width:100%;height:300px;overflow:visible}
+  .bar-rect{transition:height .8s cubic-bezier(.2,.8,.2,1),y .8s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+  .bar-rect:hover{opacity:.82}
+  .axis{stroke:var(--line);stroke-width:1}
+  .axlab{fill:var(--muted);font-size:11px}
+  .gline{stroke:var(--line);stroke-dasharray:3 4;stroke-width:1}
+  .legend2{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+  .legend2 .li{display:flex;align-items:center;gap:10px;font-size:.86rem}
+  .legend2 .sw{width:13px;height:13px;border-radius:3px;flex:0 0 13px}
+  .legend2 .amt{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
+  .full{grid-column:1 / -1}
+  table.mini{width:100%;border-collapse:collapse;font-size:.84rem;margin-top:6px}
+  table.mini th,table.mini td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right}
+  table.mini th:first-child,table.mini td:first-child{text-align:left}
+  table.mini th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:1px}
+  table.mini tr:hover td{background:var(--panel2)}
+  .tip{position:fixed;pointer-events:none;background:#0a1118;border:1px solid var(--line);border-radius:7px;
+    padding:7px 11px;font-size:.8rem;opacity:0;transition:opacity .15s;z-index:9}
+  footer{max-width:1200px;margin:0 auto;padding:18px 26px 30px;color:var(--muted);font-size:.78rem;
+    border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}.panels{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="htitle">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 26l7-8 5 5 8-12M22 11h4v4"/></svg>
+    <div><h1>Lucky Strike, Season Dashboard</h1><div class="sub">Captain Carlos Bennett, charter operations</div></div>
+  </div>
+  <div class="range">Season: April to November 2025</div>
+</header>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">Charter gross</div><div class="val" id="k1">0</div><div class="delta up">Full season, 8 months</div><div class="bar" style="background:var(--teal)"></div></div>
+    <div class="kpi"><div class="lab">Charters run</div><div class="val" id="k2">0</div><div class="delta up">Up from 58 in 2024</div><div class="bar" style="background:var(--blue)"></div></div>
+    <div class="kpi"><div class="lab">Net after fixed costs</div><div class="val" id="k3">0</div><div class="delta up">Charter side only</div><div class="bar" style="background:var(--green)"></div></div>
+    <div class="kpi"><div class="lab">Best month</div><div class="val">July</div><div class="delta">15,500 gross, 12 charters</div><div class="bar" style="background:var(--amber)"></div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Monthly performance</h2>
+      <div class="psub">Toggle the series to compare gross revenue against net before fixed costs.</div>
+      <div class="tabs">
+        <button class="tab on" data-s="gross">Charter gross</button>
+        <button class="tab" data-s="net">Net before fixed</button>
+        <button class="tab" data-s="charters">Charter count</button>
+      </div>
+      <svg class="chart" id="barChart" viewBox="0 0 640 300" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="panel">
+      <h2>Where the money goes</h2>
+      <div class="psub">Annual operating and fixed costs, 54,400 total.</div>
+      <svg class="chart" id="donut" viewBox="0 0 220 220" style="height:200px"></svg>
+      <div class="legend2" id="dleg"></div>
+    </div>
+
+    <div class="panel full">
+      <h2>Season ledger</h2>
+      <div class="psub">Reconciled January 2026 against the season revenue tracker.</div>
+      <table class="mini">
+        <thead><tr><th>Month</th><th>Charters</th><th>Gross</th><th>Fuel</th><th>Mate plus tips</th><th>Net before fixed</th></tr></thead>
+        <tbody id="ledger"></tbody>
+        <tfoot><tr style="font-weight:700"><td>Season</td><td>62</td><td>80,000</td><td>22,400</td><td>18,800</td><td>38,800</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Lucky Strike Charters, Bayport Harbor slip B-12</span>
+  <span>Generated from the season revenue tracker, January 2026</span>
+</footer>
+<div class="tip" id="tip"></div>
+
+<script>
+  var months=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'];
+  var gross=[7000,11500,14500,15500,13000,9000,5500,4000];
+  var net=[2600,5600,7500,8100,6700,4500,2600,1200];
+  var charters=[6,9,11,12,10,7,4,3];
+  var fuel=[2400,3200,3800,4000,3400,2400,1600,1600];
+  var mate=[2000,2700,3200,3400,2900,2100,1300,1200];
+  // ledger
+  var lb=document.getElementById('ledger');
+  for(var i=0;i<months.length;i++){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+['April','May','June','July','August','September','October','November'][i]+' 2025</td>'+
+      '<td>'+charters[i]+'</td><td>'+gross[i].toLocaleString()+'</td><td>'+fuel[i].toLocaleString()+
+      '</td><td>'+mate[i].toLocaleString()+'</td><td>'+net[i].toLocaleString()+'</td>';
+    lb.appendChild(tr);
+  }
+  // KPIs count up
+  function countUp(el,target,prefix){var s=0,step=Math.max(1,Math.round(target/40));
+    var iv=setInterval(function(){s+=step;if(s>=target){s=target;clearInterval(iv)}
+      el.textContent=(prefix||'')+s.toLocaleString()},22);}
+  countUp(document.getElementById('k1'),80000,'$');
+  countUp(document.getElementById('k2'),62,'');
+  countUp(document.getElementById('k3'),25600,'$');
+  // bar chart
+  var tip=document.getElementById('tip');
+  function showTip(e,txt){tip.textContent=txt;tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY-10)+'px';tip.style.opacity=1;}
+  function hideTip(){tip.style.opacity=0;}
+  var colors={gross:'#36c2c8',net:'#46c07a',charters:'#5a9be2'};
+  function drawBars(series){
+    var data=series==='gross'?gross:series==='net'?net:charters;
+    var max=Math.max.apply(null,data)*1.12;
+    var svg=document.getElementById('barChart');svg.innerHTML='';
+    var W=640,H=300,padL=44,padB=28,padT=10,bw=(W-padL-10)/data.length;
+    // gridlines
+    for(var g=0;g<=4;g++){var y=padT+(H-padT-padB)*g/4;var val=Math.round(max*(1-g/4));
+      svg.innerHTML+='<line class="gline" x1="'+padL+'" y1="'+y+'" x2="'+W+'" y2="'+y+'"/>'+
+        '<text class="axlab" x="'+(padL-6)+'" y="'+(y+4)+'" text-anchor="end">'+(series==='charters'?val:val.toLocaleString())+'</text>';}
+    data.forEach(function(v,i){
+      var h=(H-padT-padB)*(v/max);
+      var x=padL+i*bw+bw*0.18,w=bw*0.64,y=H-padB-h;
+      var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      r.setAttribute('class','bar-rect');r.setAttribute('x',x);r.setAttribute('width',w);
+      r.setAttribute('rx',4);r.setAttribute('fill',colors[series]);
+      r.setAttribute('y',H-padB);r.setAttribute('height',0);
+      var label=series==='charters'?v+' charters':'$'+v.toLocaleString();
+      r.addEventListener('mousemove',(function(m,l){return function(e){showTip(e,m+': '+l)}})(months[i],label));
+      r.addEventListener('mouseleave',hideTip);
+      svg.appendChild(r);
+      setTimeout((function(rr,yy,hh){return function(){rr.setAttribute('y',yy);rr.setAttribute('height',hh)}})(r,y,h),30+i*45);
+      svg.innerHTML+='<text class="axlab" x="'+(padL+i*bw+bw/2)+'" y="'+(H-8)+'" text-anchor="middle">'+months[i]+'</text>';
+    });
+  }
+  drawBars('gross');
+  document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on');drawBars(t.dataset.s);
+  })});
+  // donut
+  var costs=[['Mate pay plus tips',18800,'#5a9be2'],['Fuel',22400,'#36c2c8'],
+    ['Dock fees',4200,'#f0a836'],['Insurance',4200,'#e2685f'],['Maintenance reserve',4800,'#46c07a']];
+  var totalC=costs.reduce(function(a,c){return a+c[1]},0);
+  var donut=document.getElementById('donut'),cx=110,cy=110,rad=80,sw=30,circ=2*Math.PI*rad,off=0;
+  costs.forEach(function(c){
+    var frac=c[1]/totalC,len=circ*frac;
+    var ci=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ci.setAttribute('cx',cx);ci.setAttribute('cy',cy);ci.setAttribute('r',rad);
+    ci.setAttribute('fill','none');ci.setAttribute('stroke',c[2]);ci.setAttribute('stroke-width',sw);
+    ci.setAttribute('stroke-dasharray','0 '+circ);
+    ci.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+    ci.style.transition='stroke-dasharray 1s ease';
+    var thisOff=off;
+    ci.setAttribute('stroke-dashoffset',-thisOff);
+    donut.appendChild(ci);
+    setTimeout((function(el,l){return function(){el.setAttribute('stroke-dasharray',l+' '+(circ-l))}})(ci,len),120);
+    off+=len;
+  });
+  donut.innerHTML+='<text x="110" y="104" text-anchor="middle" fill="#e6eef5" font-size="22" font-weight="700">54,400</text>'+
+    '<text x="110" y="124" text-anchor="middle" fill="#8aa0b4" font-size="11">total costs</text>';
+  var dleg=document.getElementById('dleg');
+  costs.slice().sort(function(a,b){return b[1]-a[1]}).forEach(function(c){
+    dleg.innerHTML+='<div class="li"><span class="sw" style="background:'+c[2]+'"></span>'+c[0]+
+      '<span class="amt">'+c[1].toLocaleString()+'</span></div>';
+  });
+</script>
+</body>
+</html>

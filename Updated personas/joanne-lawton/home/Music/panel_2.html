@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fasting Glucose Tracker</title>
+<style>
+  :root{--teal:#2a6f6b;--teal-d:#1d4f4c;--slate:#3a4750;--mist:#eef4f3;--paper:#fff;--ink:#26323a;--line:#dbe7e5;--warn:#c2773a;--good:#3f7d52}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:var(--mist);color:var(--ink)}
+  header{background:var(--teal-d);color:#eaf4f2;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  header h1{font-size:1.4rem}
+  header .sub{font-size:.84rem;opacity:.9;margin-top:2px}
+  header .hb{font-size:2rem}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 56px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card .l{font-size:.72rem;letter-spacing:.8px;text-transform:uppercase;color:#789b97}
+  .card .v{font-size:1.9rem;font-weight:800;margin-top:5px;color:var(--teal)}
+  .card .u{font-size:.78rem;color:#8497a0}
+  .card.good .v{color:var(--good)}.card.warn .v{color:var(--warn)}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .panel h2{font-size:1.1rem;margin-bottom:3px}
+  .panel .note{font-size:.82rem;color:#7d9490;margin-bottom:16px}
+  .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .filters button{font-size:.8rem;font-weight:600;padding:8px 18px;border-radius:22px;border:1.5px solid var(--teal);
+    background:none;color:var(--teal-d);cursor:pointer;transition:.2s}
+  .filters button.active{background:var(--teal);color:#fff}
+  .chart-box{overflow-x:auto}
+  svg .grid{stroke:#e3eeec;stroke-width:1}
+  svg .band{fill:#e0efe5;opacity:.6}
+  svg .axis{stroke:#b9cbc8;stroke-width:1}
+  svg text{font-size:10px;fill:#789b97}
+  svg .line{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+  svg .dot{fill:var(--teal)}
+  svg .dot.hi{fill:var(--warn)}svg .dot.lo{fill:var(--good)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;color:#5e7570;margin-top:12px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  footer{max-width:1000px;margin:0 auto;padding:0 20px 40px;font-size:.8rem;color:#7d9490;text-align:center}
+  footer .ln{border-top:1px solid var(--line);padding-top:14px}
+  .draw{stroke-dasharray:2600;stroke-dashoffset:2600;animation:draw 1.6s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Fasting Blood Glucose</h1><div class="sub">Joanne Lawton, home monitoring log, kept for Dr. Chambers</div></div>
+  <div class="hb">&#129656;</div>
+</header>
+<div class="wrap">
+  <div class="cards">
+    <div class="card"><div class="l">Average</div><div class="v" id="avg">0</div><div class="u">mg/dL fasting</div></div>
+    <div class="card good"><div class="l">Lowest</div><div class="v" id="low">0</div><div class="u" id="lowd">mg/dL</div></div>
+    <div class="card warn"><div class="l">Highest</div><div class="v" id="high">0</div><div class="u" id="highd">mg/dL</div></div>
+    <div class="card"><div class="l">Days in target</div><div class="v" id="intarget">0</div><div class="u">of <span id="total">0</span> days</div></div>
+  </div>
+  <div class="panel">
+    <h2>Daily readings</h2>
+    <p class="note">Taken each morning on waking, before food or medication. Target band per Dr. Chambers is 80 to 130 mg/dL.</p>
+    <div class="filters">
+      <button class="active" data-f="all" onclick="setRange('all',this)">All, Jan to Feb</button>
+      <button data-f="jan" onclick="setRange('jan',this)">January</button>
+      <button data-f="feb" onclick="setRange('feb',this)">February</button>
+    </div>
+    <div class="chart-box"><svg id="chart" width="940" height="320" viewBox="0 0 940 320"></svg></div>
+    <div class="legend">
+      <span><i style="background:#e0efe5"></i>Target band 80 to 130</span>
+      <span><i style="background:#2a6f6b"></i>Reading</span>
+      <span><i style="background:#c2773a"></i>Above target</span>
+      <span><i style="background:#3f7d52"></i>At or below 130</span>
+    </div>
+  </div>
+</div>
+<footer><div class="ln">Personal record. Monitored under the care of Dr. Robert Chambers, Greenleaf Health Portland. Equipment calibrated January 2, 2026. Not a substitute for clinical judgment.</div></footer>
+
+<script>
+  var JAN=[142,138,131,148,139,134,145,151,152,148,144,138,133,129,135,141,136,128,133,140,138,145,141,134,128,131,136,140,133,138,134];
+  var FEB=[131,128,135,140,134,129,133,138,142,135,130,127,131,145,138,133,129,134,140,138,130,128,135,132,127,129,134,131];
+  function setRange(f,btn){
+    document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    var data = f==='jan'?JAN.slice():f==='feb'?FEB.slice():JAN.concat(FEB);
+    var labelMonth = f==='jan'?'Jan':f==='feb'?'Feb':'Jan 1 to Feb 28';
+    var avg=Math.round(data.reduce((a,b)=>a+b,0)/data.length*10)/10;
+    var low=Math.min.apply(null,data),high=Math.max.apply(null,data);
+    var inT=data.filter(v=>v>=80&&v<=130).length;
+    document.getElementById('avg').textContent=avg;
+    document.getElementById('low').textContent=low;
+    document.getElementById('high').textContent=high;
+    document.getElementById('intarget').textContent=inT;
+    document.getElementById('total').textContent=data.length;
+    document.getElementById('lowd').textContent='mg/dL, best reading';
+    document.getElementById('highd').textContent='mg/dL, watch days';
+    drawChart(data,f);
+  }
+  function drawChart(data,f){
+    var W=940,H=320,padL=44,padR=16,padT=18,padB=34;
+    var minY=110,maxY=160; // visual range
+    var n=data.length;
+    var x=i=> padL + i*( (W-padL-padR)/(n-1||1) );
+    var y=v=> padT + (maxY-v)*((H-padT-padB)/(maxY-minY));
+    var svg=document.getElementById('chart');
+    var s='';
+    // target band 80-130 (clamped to visual range, so band fills from 130 down)
+    var bandTop=y(130), bandBot=H-padB;
+    s+='<rect class="band" x="'+padL+'" y="'+bandTop+'" width="'+(W-padL-padR)+'" height="'+(bandBot-bandTop)+'"/>';
+    // gridlines + y labels
+    for(var g=120;g<=160;g+=10){s+='<line class="grid" x1="'+padL+'" y1="'+y(g)+'" x2="'+(W-padR)+'" y2="'+y(g)+'"/>';
+      s+='<text x="'+(padL-8)+'" y="'+(y(g)+3)+'" text-anchor="end">'+g+'</text>';}
+    // axes
+    s+='<line class="axis" x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+(H-padB)+'"/>';
+    s+='<line class="axis" x1="'+padL+'" y1="'+(H-padB)+'" x2="'+(W-padR)+'" y2="'+(H-padB)+'"/>';
+    // x labels (sparse)
+    var step=Math.ceil(n/10);
+    for(var i=0;i<n;i+=step){var lbl=(f==='all'?(i<31?('J'+(i+1)):('F'+(i-30))):((f==='jan'?'Jan ':'Feb ')+(i+1)));
+      s+='<text x="'+x(i)+'" y="'+(H-padB+16)+'" text-anchor="middle">'+lbl+'</text>';}
+    // path
+    var d='';
+    data.forEach(function(v,i){d+=(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' ';});
+    s+='<path class="line draw" d="'+d+'"/>';
+    // dots
+    data.forEach(function(v,i){var c=v>130?'dot hi':(v<=130?'dot lo':'dot');
+      s+='<circle class="'+c+'" cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="3"><title>Reading '+v+' mg/dL</title></circle>';});
+    svg.innerHTML=s;
+  }
+  setRange('all',document.querySelector('.filters button'));
+</script>
+</body>
+</html>

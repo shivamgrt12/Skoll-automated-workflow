@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Phase III Reef Health Dashboard — Pacific Reef Research Institute</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e;
+    --panel: #0d1b2a;
+    --border: rgba(0,180,216,0.2);
+    --surf: #00b4d8;
+    --foam: #90e0ef;
+    --deep: #023e8a;
+    --white: #e8f4fb;
+    --muted: #5a7a9a;
+    --coral: #ff6b6b;
+    --gold: #ffd166;
+    --kelp: #2ec4b6;
+    --green: #52b788;
+    --warn: #ff9a3c;
+    --text: #c8dff0;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--panel); border-bottom: 2px solid var(--surf);
+    padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .hdr-left { display: flex; align-items: center; gap: 16px; }
+  .hdr-logo {
+    width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--deep), var(--surf));
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .hdr-title { font-size: 0.85rem; color: var(--white); letter-spacing: 0.06em; }
+  .hdr-title span { color: var(--surf); }
+  .hdr-right { display: flex; align-items: center; gap: 20px; }
+  .alert-pill {
+    background: rgba(255,107,107,0.15); border: 1px solid var(--coral);
+    color: var(--coral); padding: 4px 14px; border-radius: 20px; font-size: 0.72rem;
+    letter-spacing: 0.08em; animation: blink 1.8s ease infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .hdr-meta { font-size: 0.72rem; color: var(--muted); }
+
+  /* LAYOUT */
+  .dashboard { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
+
+  /* SIDEBAR */
+  aside {
+    background: var(--panel); border-right: 1px solid var(--border);
+    padding: 24px 0; display: flex; flex-direction: column; gap: 4px;
+  }
+  .aside-section-label {
+    font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 12px 20px 6px;
+  }
+  .aside-link {
+    display: flex; align-items: center; gap: 10px; padding: 9px 20px;
+    color: var(--text); text-decoration: none; font-size: 0.8rem;
+    cursor: pointer; transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .aside-link:hover, .aside-link.active { background: rgba(0,180,216,0.08); color: var(--surf); border-left-color: var(--surf); }
+  .aside-link .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--green); }
+  .dot-warn { background: var(--coral); animation: blink 1.8s infinite; }
+  .dot-blue { background: var(--surf); }
+  .aside-divider { height: 1px; background: var(--border); margin: 10px 20px; }
+  .status-block { padding: 16px 20px; }
+  .status-item { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 8px; }
+  .status-item .val { color: var(--surf); }
+  .status-item .val.warn { color: var(--coral); }
+
+  /* MAIN */
+  main { padding: 24px; overflow-y: auto; }
+  .main-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .page-title { font-size: 0.95rem; color: var(--white); letter-spacing: 0.04em; }
+  .page-subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .date-badge { background: var(--panel); border: 1px solid var(--border); padding: 6px 14px; border-radius: 4px; font-size: 0.72rem; color: var(--muted); }
+
+  /* KPI CARDS */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 18px 16px; position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .kpi:hover { border-color: var(--surf); transform: translateY(-2px); }
+  .kpi-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-value { font-size: 1.9rem; color: var(--white); line-height: 1; margin-bottom: 4px; }
+  .kpi-value.warn { color: var(--coral); }
+  .kpi-value.ok { color: var(--kelp); }
+  .kpi-sub { font-size: 0.7rem; color: var(--muted); }
+  .kpi::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi.blue::after { background: var(--surf); }
+  .kpi.green::after { background: var(--green); }
+  .kpi.warn-kpi::after { background: var(--coral); }
+  .kpi.gold::after { background: var(--gold); }
+
+  /* CHART GRID */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; position: relative;
+  }
+  .cp-title {
+    font-size: 0.75rem; color: var(--white); letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .cp-sub { font-size: 0.65rem; color: var(--muted); margin-bottom: 16px; }
+  .cp-alert { font-size: 0.65rem; color: var(--coral); margin-bottom: 16px; }
+  canvas { max-height: 230px; }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    background: rgba(255,107,107,0.1); border: 1px solid var(--coral);
+    border-radius: 8px; padding: 14px 20px; margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .alert-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  .alert-body h4 { color: var(--coral); font-size: 0.85rem; margin-bottom: 4px; }
+  .alert-body p { font-size: 0.75rem; color: var(--text); line-height: 1.6; }
+
+  /* STATION TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .data-table th { color: var(--muted); font-weight: normal; text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .data-table td { padding: 9px 12px; border-bottom: 1px solid rgba(0,180,216,0.08); color: var(--text); }
+  .data-table tr:hover td { background: rgba(0,180,216,0.04); }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 0.06em; }
+  .badge-ok { background: rgba(82,183,136,0.2); color: var(--green); }
+  .badge-warn { background: rgba(255,107,107,0.2); color: var(--coral); }
+  .badge-watch { background: rgba(255,154,60,0.2); color: var(--warn); }
+  .badge-base { background: rgba(0,180,216,0.2); color: var(--surf); }
+
+  /* FOOTER */
+  .dash-footer {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 0.68rem; color: var(--muted); display: flex; justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-left">
+    <div class="hdr-logo">🪸</div>
+    <div>
+      <div class="hdr-title"><span>PRRI</span> · Phase III Reef Health Monitoring Dashboard</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="alert-pill">⚠ WR-C ALERT ACTIVE</div>
+    <div class="hdr-meta">Grant CCF-2023-HI-0047 · PI: A. Peterson, PhD</div>
+  </div>
+</header>
+
+<div class="dashboard">
+  <aside>
+    <div class="aside-section-label">Sites</div>
+    <div class="aside-link active"><span class="dot dot-green"></span> Hanauma Bay</div>
+    <div class="aside-link"><span class="dot dot-warn"></span> Waikiki Reef</div>
+    <div class="aside-link"><span class="dot dot-blue"></span> Lanai Lookout</div>
+    <div class="aside-divider"></div>
+    <div class="aside-section-label">Monitoring</div>
+    <div class="aside-link">Coral Cover</div>
+    <div class="aside-link">Bleaching Index</div>
+    <div class="aside-link">Water Quality</div>
+    <div class="aside-link">Transect Logs</div>
+    <div class="aside-divider"></div>
+    <div class="aside-section-label">System Status</div>
+    <div class="status-block">
+      <div class="status-item"><span>Airtable Sync</span><span class="val">Live</span></div>
+      <div class="status-item"><span>Last Survey</span><span class="val">Feb 19, 2026</span></div>
+      <div class="status-item"><span>Alert Protocol</span><span class="val warn">Active</span></div>
+      <div class="status-item"><span>Permit</span><span class="val">Valid</span></div>
+      <div class="status-item"><span>YSI Calibration</span><span class="val">Jan 8, 2026</span></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="main-top">
+      <div>
+        <div class="page-title">Phase III Overview — All Sites</div>
+        <div class="page-subtitle">Data period: September 2025 – February 2026 · DLNR Permit HI-DLNR-MR-2023-047</div>
+      </div>
+      <div class="date-badge">Updated: Feb 20, 2026</div>
+    </div>
+
+    <!-- ALERT BANNER -->
+    <div class="alert-banner">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-body">
+        <h4>BLEACHING ALERT — WAIKIKI REEF STATION C (WR-C) — ACTIVE SINCE NOV 6, 2025</h4>
+        <p>Bleaching at WR-C first exceeded the 5% Phase III threshold on November 6, 2025 (reading: 5.1%). As of February 2026 the reading has reached 7.2%, an ongoing rising trend. Monitoring frequency increased to bi-monthly. Alert memo filed with PI Dr. Keanu Palani and CCF program contact. Community notification completed via Ocean Discovery Day Fall (Nov 8, 2025).</p>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi blue">
+        <div class="kpi-label">Peak Live Coral</div>
+        <div class="kpi-value ok">44.0%</div>
+        <div class="kpi-sub">Hanauma Bay Station C · Dec 2025</div>
+      </div>
+      <div class="kpi warn-kpi">
+        <div class="kpi-label">WR-C Bleaching (Latest)</div>
+        <div class="kpi-value warn">7.2%</div>
+        <div class="kpi-sub">Feb 2026 · Alert threshold: 5.0%</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">HB-A Live Coral</div>
+        <div class="kpi-value ok">43.0%</div>
+        <div class="kpi-sub">Hanauma Bay A · Feb 5, 2026</div>
+      </div>
+      <div class="kpi gold">
+        <div class="kpi-label">Water Temp Range</div>
+        <div class="kpi-value" style="color:var(--gold)">24–27.5°C</div>
+        <div class="kpi-sub">Sep 2025 – Feb 2026 across all sites</div>
+      </div>
+      <div class="kpi blue">
+        <div class="kpi-label">Total Surveys</div>
+        <div class="kpi-value">34</div>
+        <div class="kpi-sub">Sep 2025 – Feb 19, 2026</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="chart-grid">
+      <div class="chart-panel">
+        <div class="cp-title">Hanauma Bay — Live Coral Cover by Station</div>
+        <div class="cp-sub">Live coral cover (%) · point-intercept transect · quarterly surveys 2025–2026</div>
+        <canvas id="chartHB"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="cp-title">Waikiki Reef Station C — Bleaching Trend</div>
+        <div class="cp-alert">⚠ Alert threshold 5% exceeded November 2025 — trending upward</div>
+        <canvas id="chartWRC"></canvas>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="chart-grid-3">
+      <div class="chart-panel">
+        <div class="cp-title">Water Temperature — All Sites (°C)</div>
+        <div class="cp-sub">Average surface water temperature by survey date · all stations</div>
+        <canvas id="chartTemp"></canvas>
+      </div>
+      <div class="chart-panel">
+        <div class="cp-title">Hanauma Bay A — Benthic Composition</div>
+        <div class="cp-sub">Feb 5, 2026 · Transect T1 · n=50 points</div>
+        <canvas id="chartDonut"></canvas>
+      </div>
+    </div>
+
+    <!-- STATION STATUS TABLE -->
+    <div class="chart-panel" style="margin-bottom:16px;">
+      <div class="cp-title">Station Status Summary</div>
+      <div class="cp-sub">Latest recorded readings across all Phase III monitoring stations</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Station</th><th>Site</th><th>Date</th>
+            <th>Live Coral %</th><th>Bleaching %</th><th>Temp °C</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>HB-A</td><td>Hanauma Bay</td><td>Feb 5, 2026</td><td>43.0</td><td>0.5</td><td>24.2</td><td><span class="badge badge-ok">Healthy</span></td></tr>
+          <tr><td>HB-B</td><td>Hanauma Bay</td><td>Feb 5, 2026</td><td>40.6</td><td>1.0</td><td>24.2</td><td><span class="badge badge-ok">Healthy</span></td></tr>
+          <tr><td>HB-C</td><td>Hanauma Bay</td><td>Dec 4, 2025</td><td>44.0</td><td>0.5</td><td>25.2</td><td><span class="badge badge-ok">Healthy</span></td></tr>
+          <tr><td>WR-A</td><td>Waikiki Reef</td><td>Jan 8, 2026</td><td>30.4</td><td>2.6</td><td>24.6</td><td><span class="badge badge-watch">Watch</span></td></tr>
+          <tr><td>WR-B</td><td>Waikiki Reef</td><td>Nov 6, 2025</td><td>28.2</td><td>2.4</td><td>25.8</td><td><span class="badge badge-watch">Watch</span></td></tr>
+          <tr><td>WR-C</td><td>Waikiki Reef</td><td>Feb 19, 2026</td><td>22.4</td><td>7.2</td><td>24.8</td><td><span class="badge badge-warn">⚠ ALERT</span></td></tr>
+          <tr><td>LL-A</td><td>Lanai Lookout</td><td>Dec 11, 2025</td><td>37.5</td><td>2.3</td><td>24.8</td><td><span class="badge badge-base">Baseline</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dash-footer">
+      <span>Pacific Reef Research Institute · PRRI-2021-047 · Grant CCF-2023-HI-0047 · angela.peterson@Greenridertech.co</span>
+      <span>Data: A. Peterson, S. Watanabe, T. Rodriguez · Airtable transect log current through Feb 19, 2026</span>
+    </div>
+  </main>
+</div>
+
+<script>
+const SURF = '#00b4d8';
+const FOAM = '#90e0ef';
+const DEEP = '#023e8a';
+const CORAL = '#ff6b6b';
+const GREEN = '#52b788';
+const GOLD  = '#ffd166';
+const KELP  = '#2ec4b6';
+const MUTED = 'rgba(90,122,154,0.4)';
+
+Chart.defaults.color = '#5a7a9a';
+Chart.defaults.borderColor = 'rgba(0,180,216,0.12)';
+Chart.defaults.font.family = "'Courier New', monospace";
+Chart.defaults.font.size = 11;
+
+// Hanauma Bay Cover
+new Chart(document.getElementById('chartHB'), {
+  type: 'line',
+  data: {
+    labels: ['Sep 2025', 'Oct 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026'],
+    datasets: [
+      { label: 'HB-A', data: [41.2, 41.8, 42.4, 42.8, 43.0], borderColor: SURF, backgroundColor: 'rgba(0,180,216,0.08)', tension: 0.4, pointRadius: 5, pointHoverRadius: 7 },
+      { label: 'HB-B', data: [38.4, null, 39.8, null, 40.6], borderColor: GREEN, backgroundColor: 'rgba(82,183,136,0.08)', tension: 0.4, pointRadius: 5, spanGaps: true },
+      { label: 'HB-C', data: [null, 43.2, 44.0, null, null], borderColor: GOLD, backgroundColor: 'rgba(255,209,102,0.08)', tension: 0.4, pointRadius: 5, spanGaps: true },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { labels: { color: '#90e0ef', boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a' } },
+      y: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a', callback: v => v + '%' }, min: 35, max: 48 }
+    }
+  }
+});
+
+// WR-C Bleaching trend
+new Chart(document.getElementById('chartWRC'), {
+  type: 'line',
+  data: {
+    labels: ['Sep 2025', 'Nov 2025', 'Jan 2026', 'Feb 2026'],
+    datasets: [
+      { label: 'Bleaching %', data: [4.1, 5.1, 6.2, 7.2], borderColor: CORAL, backgroundColor: 'rgba(255,107,107,0.12)', tension: 0.3, pointRadius: 6, fill: true, pointBackgroundColor: CORAL },
+      { label: 'Alert Threshold (5%)', data: [5.0, 5.0, 5.0, 5.0], borderColor: 'rgba(255,154,60,0.6)', borderDash: [6,4], pointRadius: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { labels: { color: '#90e0ef', boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a' } },
+      y: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a', callback: v => v + '%' }, min: 3, max: 9 }
+    }
+  }
+});
+
+// Water Temperature
+new Chart(document.getElementById('chartTemp'), {
+  type: 'line',
+  data: {
+    labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+    datasets: [
+      { label: 'Hanauma Bay', data: [27.4, 26.8, null, 25.2, 24.4, 24.2], borderColor: SURF, tension: 0.4, pointRadius: 4 },
+      { label: 'Waikiki Reef', data: [27.5, 26.9, 25.9, null, 24.6, 24.8], borderColor: CORAL, tension: 0.4, pointRadius: 4 },
+      { label: 'Lanai Lookout', data: [null, null, null, 24.8, null, null], borderColor: GOLD, pointRadius: 6, showLine: false },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { labels: { color: '#90e0ef', boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a' } },
+      y: { grid: { color: 'rgba(0,180,216,0.08)' }, ticks: { color: '#5a7a9a', callback: v => v + '°C' }, min: 23, max: 29 }
+    }
+  }
+});
+
+// Donut — benthic composition
+new Chart(document.getElementById('chartDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Live Coral', 'Bleached Coral', 'Dead Coral', 'Algae', 'Other Benthos'],
+    datasets: [{
+      data: [43.0, 0.5, 6.8, 19.6, 30.1],
+      backgroundColor: [GREEN, CORAL, '#555', GOLD, 'rgba(0,180,216,0.4)'],
+      borderColor: '#0d1b2a', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    cutout: '58%',
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#90e0ef', boxWidth: 12, padding: 10, font: { size: 10 } } }
+    }
+  }
+});
+</script>
+</body>
+</html>

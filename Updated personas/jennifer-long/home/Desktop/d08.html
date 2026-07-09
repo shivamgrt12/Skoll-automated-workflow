@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Dashboard</title>
+<style>
+  :root{
+    --ink:#213531; --teal:#1f5f5b; --teal2:#2f807a; --sage:#e7f0ec; --coral:#e8916b;
+    --gold:#c9a227; --card:#ffffff; --bg:#f4f6f4; --muted:#6f8480; --line:#d9e6e1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(120deg,var(--teal),var(--teal2));color:#fff;padding:22px 26px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  header .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:44px;height:44px;border-radius:12px;background:var(--coral);display:grid;place-items:center;
+    font-weight:700;font-size:20px;color:#fff}
+  header h1{font-size:19px;font-weight:600}
+  header .sub{font-size:12.5px;opacity:.85}
+  nav{display:flex;gap:6px;flex-wrap:wrap}
+  nav button{background:rgba(255,255,255,.14);color:#fff;border:0;padding:9px 15px;border-radius:20px;
+    font-size:13px;cursor:pointer;transition:.2s}
+  nav button:hover{background:rgba(255,255,255,.28)}
+  nav button.active{background:#fff;color:var(--teal);font-weight:600}
+  main{max-width:1100px;margin:24px auto;padding:0 18px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+    box-shadow:0 1px 4px rgba(0,0,0,.04);opacity:0;transform:translateY(10px);
+    animation:rise .5s forwards}
+  .kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.16s}.kpi:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .label{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .kpi .val{font-size:30px;font-weight:700;color:var(--teal);margin:6px 0 2px}
+  .kpi .note{font-size:12.5px;color:var(--muted)}
+  .kpi .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:var(--sage);color:var(--teal);margin-top:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;
+    box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .panel h2{font-size:15px;margin-bottom:14px;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .panel h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--coral)}
+  .bars{display:flex;align-items:flex-end;gap:26px;height:180px;padding:10px 6px 0}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:flex-end}
+  .bar .col{width:60%;background:linear-gradient(180deg,var(--teal2),var(--teal));border-radius:8px 8px 0 0;
+    height:0;transition:height 1s ease}
+  .bar .col.alt{background:linear-gradient(180deg,var(--coral),#d9744f)}
+  .bar .col.gold{background:linear-gradient(180deg,var(--gold),#a9861f)}
+  .bar .cap{font-size:12px;color:var(--muted)}
+  .bar .amt{font-size:13px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  tr:hover td{background:var(--sage)}
+  .pill{font-size:11.5px;padding:2px 9px;border-radius:10px}
+  .pill.paid{background:#e3f1e8;color:#2f7d4f}.pill.open{background:#fbeede;color:#b5791d}
+  .donut{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .legend{font-size:13px;list-style:none}
+  .legend li{display:flex;align-items:center;gap:8px;margin:8px 0}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .progress{background:var(--sage);border-radius:20px;height:22px;overflow:hidden}
+  .progress > span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal2));
+    border-radius:20px;transition:width 1.1s ease;color:#fff;font-size:12px;text-align:right;padding-right:10px;line-height:22px}
+  .tabview{display:none}.tabview.active{display:block;animation:fade .35s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  footer{max-width:1100px;margin:10px auto 40px;padding:18px;color:var(--muted);font-size:12.5px;
+    border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">L</div>
+    <div><h1>Long Pediatric Therapy</h1><div class="sub">Practice dashboard, private view</div></div>
+  </div>
+  <nav>
+    <button class="active" data-tab="overview">Overview</button>
+    <button data-tab="billing">Billing</button>
+    <button data-tab="caseload">Caseload</button>
+  </nav>
+</header>
+
+<main>
+  <section id="overview" class="tabview active">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Net income, 2025</div><div class="val">$123,000</div>
+        <div class="note">Gross $185,000, expenses $62,000</div><span class="tag">On plan</span></div>
+      <div class="kpi"><div class="label">Sessions per week</div><div class="val" data-count="24">0</div>
+        <div class="note">45 minute sessions, near capacity</div><span class="tag">22 to 25</span></div>
+      <div class="kpi"><div class="label">Waitlist</div><div class="val" data-count="6">0</div>
+        <div class="note">Average wait about 3 weeks</div><span class="tag">Consider hiring</span></div>
+      <div class="kpi"><div class="label">CE hours</div><div class="val">8 / 20</div>
+        <div class="note">Due December 31, 2026</div><span class="tag">In progress</span></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h2>Revenue and expenses, 2025</h2>
+        <div class="bars">
+          <div class="bar"><div class="amt">$185K</div><div class="col" data-h="160"></div><div class="cap">Revenue</div></div>
+          <div class="bar"><div class="amt">$62K</div><div class="col alt" data-h="54"></div><div class="cap">Expenses</div></div>
+          <div class="bar"><div class="amt">$123K</div><div class="col gold" data-h="107"></div><div class="cap">Net</div></div>
+        </div>
+      </div>
+      <div class="panel"><h2>Where revenue comes from</h2>
+        <div class="donut">
+          <svg width="150" height="150" viewBox="0 0 42 42" aria-label="Revenue mix">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e7f0ec" stroke-width="7"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1f5f5b" stroke-width="7"
+              stroke-dasharray="80 20" stroke-dashoffset="25" id="seg1"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e8916b" stroke-width="7"
+              stroke-dasharray="20 80" stroke-dashoffset="-55" id="seg2"></circle>
+            <text x="21" y="22.5" text-anchor="middle" font-size="6" fill="#213531" font-weight="700">$185K</text>
+          </svg>
+          <ul class="legend">
+            <li><span class="dot" style="background:#1f5f5b"></span> Insurance sessions, 80 percent ($148,500)</li>
+            <li><span class="dot" style="background:#e8916b"></span> Cash pay sessions, 20 percent ($36,500)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><h2>Continuing education progress</h2>
+      <div class="progress"><span id="ceBar">8 of 20 hours</span></div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:10px">Twelve hours remain before the December 31, 2026 deadline. Fall conference adds up to 6 hours.</p>
+    </div>
+  </section>
+
+  <section id="billing" class="tabview">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Billed, February 2026</div><div class="val">$1,700</div><div class="note">Ten claims submitted</div></div>
+      <div class="kpi"><div class="label">Allowed</div><div class="val">$1,432</div><div class="note">Contracted and cash pay</div></div>
+      <div class="kpi"><div class="label">Paid</div><div class="val">$1,164</div><div class="note">Posted to date</div></div>
+      <div class="kpi"><div class="label">Outstanding</div><div class="val">$268</div><div class="note">Two claims submitted, unpaid</div></div>
+    </div>
+    <div class="panel"><h2>Recent claims</h2>
+      <table>
+        <thead><tr><th>Claim</th><th>Date</th><th>Payer</th><th>Billed</th><th>Allowed</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>LPT-26-0212</td><td>2026-02-03</td><td>Premera</td><td>$165</td><td>$135</td><td><span class="pill paid">Paid</span></td></tr>
+          <tr><td>LPT-26-0213</td><td>2026-02-03</td><td>Tricare</td><td>$190</td><td>$142</td><td><span class="pill paid">Paid</span></td></tr>
+          <tr><td>LPT-26-0216</td><td>2026-02-06</td><td>Pacific Health Partners</td><td>$165</td><td>$128</td><td><span class="pill open">Submitted</span></td></tr>
+          <tr><td>LPT-26-0218</td><td>2026-02-11</td><td>Tricare</td><td>$165</td><td>$140</td><td><span class="pill open">Submitted</span></td></tr>
+          <tr><td>LPT-26-0219</td><td>2026-02-12</td><td>Cash pay</td><td>$190</td><td>$190</td><td><span class="pill paid">Paid</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="caseload" class="tabview">
+    <div class="panel"><h2>Caseload snapshot</h2>
+      <table>
+        <thead><tr><th>Measure</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Sessions per week</td><td>22 to 25</td></tr>
+          <tr><td>Ages served</td><td>2 to 12</td></tr>
+          <tr><td>Primary focus areas</td><td>Sensory processing, fine motor, handwriting</td></tr>
+          <tr><td>Cash pay share</td><td>About 20 percent</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel"><h2>Waitlist</h2>
+      <table>
+        <thead><tr><th>Ref</th><th>Age</th><th>Concern</th><th>Insurance</th><th>Wait</th></tr></thead>
+        <tbody>
+          <tr><td>WL-201</td><td>3</td><td>Sensory avoidance</td><td>Premera</td><td>3 weeks</td></tr>
+          <tr><td>WL-202</td><td>6</td><td>Handwriting delay</td><td>Cash pay</td><td>2 weeks</td></tr>
+          <tr><td>WL-204</td><td>4</td><td>Sensory processing</td><td>Tricare</td><td>4 weeks</td></tr>
+          <tr><td>WL-205</td><td>8</td><td>Hand injury recovery</td><td>Pacific Health Partners</td><td>2 weeks</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Long Pediatric Therapy, Tacoma WA. Private practice view.</span>
+  <span>Updated February 2026</span>
+</footer>
+
+<script>
+  // Tab switching
+  const btns=document.querySelectorAll('nav button');
+  const views=document.querySelectorAll('.tabview');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('active'));
+    views.forEach(v=>v.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+    animate();
+  }));
+  // Count up + bars + progress
+  function animate(){
+    document.querySelectorAll('.val[data-count]').forEach(el=>{
+      const target=+el.dataset.count; let n=0;
+      const step=Math.max(1,Math.round(target/20));
+      clearInterval(el._t);
+      el._t=setInterval(()=>{n+=step;if(n>=target){n=target;clearInterval(el._t);}el.textContent=n;},30);
+    });
+    document.querySelectorAll('.col[data-h]').forEach(c=>{c.style.height='0px';
+      requestAnimationFrame(()=>{setTimeout(()=>{c.style.height=c.dataset.h+'px';},50);});});
+    const ce=document.getElementById('ceBar'); if(ce){ce.style.width='0';
+      setTimeout(()=>{ce.style.width='40%';},80);} // 8 of 20 = 40 percent
+  }
+  window.addEventListener('load',animate);
+</script>
+</body>
+</html>

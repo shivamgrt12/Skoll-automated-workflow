@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crestwood Track and Field - Season Analytics Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3349;
+    --accent: #2a6ebb;
+    --green: #22c55e;
+    --gold: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f4;
+    --muted: #7a8aaa;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 60px; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 1rem; }
+  .header-logo { font-size: 0.85rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+  .header-subtitle { font-size: 0.75rem; color: var(--muted); }
+  .header-right { display: flex; gap: 1.5rem; align-items: center; }
+  .season-badge {
+    background: var(--accent); color: var(--white); font-size: 0.72rem;
+    font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 3px; letter-spacing: 0.5px;
+  }
+  .last-updated { font-size: 0.72rem; color: var(--muted); }
+
+  /* LAYOUT */
+  .dashboard { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem; position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi-card.accent::before { background: var(--accent); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.gold::before { background: var(--gold); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.purple::before { background: #a78bfa; }
+  .kpi-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+  .kpi-value { font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; }
+  .kpi-sub { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+  .kpi-delta { font-size: 0.75rem; font-weight: 600; }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .grid-13 { display: grid; grid-template-columns: 1fr 3fr; gap: 1rem; margin-bottom: 1rem; }
+
+  /* CARD */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;
+  }
+  .card-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 1.25rem; }
+  .card-title span { color: var(--accent); margin-right: 0.5rem; }
+
+  /* SVG CHARTS */
+  .chart-wrap { width: 100%; }
+  svg text { font-family: 'Segoe UI', system-ui, sans-serif; }
+
+  /* BAR CHART */
+  .bar-group { display: flex; align-items: flex-end; gap: 6px; height: 160px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .bar { border-radius: 3px 3px 0 0; transition: opacity 0.2s; cursor: pointer; width: 100%; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; text-align: center; }
+  .bar-val { font-size: 0.68rem; color: var(--text); margin-bottom: 0.2rem; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  .data-table td { font-size: 0.82rem; color: var(--text); padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(42,51,73,0.5); }
+  .data-table tr:hover td { background: var(--surface2); }
+  .data-table .badge {
+    display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 0.18rem 0.55rem;
+    border-radius: 3px; letter-spacing: 0.5px;
+  }
+  .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-gold { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-blue { background: rgba(42,110,187,0.15); color: #60a5fa; }
+
+  /* PROGRESS BARS */
+  .prog-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; }
+  .prog-label { font-size: 0.78rem; color: var(--text); min-width: 130px; }
+  .prog-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .prog-val { font-size: 0.72rem; color: var(--muted); min-width: 45px; text-align: right; }
+
+  /* SPARKLINE */
+  .sparkline-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.85rem; }
+  .spark-name { font-size: 0.8rem; color: var(--text); min-width: 120px; }
+  .spark-mark { font-size: 0.75rem; color: var(--muted); min-width: 60px; }
+  .spark-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+  .spark-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .spark-trend { font-size: 0.72rem; font-weight: 700; min-width: 50px; text-align: right; }
+  .trend-up { color: var(--green); }
+  .trend-dn { color: var(--red); }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 2rem; border-top: 1px solid var(--border); padding: 1rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div>
+      <div class="header-logo">Crestwood Track and Field</div>
+      <div class="header-subtitle">Season Analytics Dashboard &nbsp;- &nbsp;Head Coach: Shannon D. Perry, DPT, SCS</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="season-badge">2026-2027 Season</span>
+    <span class="last-updated">Updated: October 2026</span>
+  </div>
+</header>
+
+<div class="dashboard">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Total Athletes</div>
+      <div class="kpi-value">28</div>
+      <div class="kpi-sub"><span class="kpi-delta up">+4</span> vs. last season</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">State Qualifiers (2026)</div>
+      <div class="kpi-value">9</div>
+      <div class="kpi-sub"><span class="kpi-delta up">+3</span> vs. prior season</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">D-I Prospects</div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub">Active recruiting contact</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Injury Incidents (2026)</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-sub"><span class="kpi-delta up">-2</span> vs. prior season</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">School Records Set</div>
+      <div class="kpi-value">2</div>
+      <div class="kpi-sub">800m and 4x100 relay</div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Bar chart + Table -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>Top Sprint PRs - Men (seconds, lower is faster)</div>
+      <div class="legend" style="margin-bottom:1rem;">
+        <div class="legend-item"><div class="legend-dot" style="background:#2a6ebb;"></div>100m</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div>200m (scaled)</div>
+      </div>
+      <div style="overflow-x: auto;">
+        <div class="bar-group" style="min-width:380px; height:180px; align-items:flex-end; gap:8px;">
+          <!-- 5 athletes: Devon, Marcus, Darius, Calvin, Evan scaled bars -->
+          <!-- 100m bars: Devon 10.71, Marcus 11.20, Darius 11.44, Calvin 11.56, Jordan 11.89 -->
+          <!-- Normalize: best=10.71, worst=12.0; bar height = (12.0 - val)/(12.0-10.5)*100 -->
+          <div class="bar-col">
+            <div class="bar-val">10.71</div>
+            <div class="bar" style="background:#2a6ebb; height:86%;"></div>
+            <div class="bar-label">Mitchell</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">11.20</div>
+            <div class="bar" style="background:#2a6ebb; height:53%;"></div>
+            <div class="bar-label">Owens</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">11.44</div>
+            <div class="bar" style="background:#2a6ebb; height:37%;"></div>
+            <div class="bar-label">Cole</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">11.56</div>
+            <div class="bar" style="background:#2a6ebb; height:30%;"></div>
+            <div class="bar-label">Webb</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">11.89</div>
+            <div class="bar" style="background:#2a6ebb; height:8%;"></div>
+            <div class="bar-label">Moore</div>
+          </div>
+          <div class="bar-col" style="border-left:1px solid var(--border); padding-left:8px;">
+            <div class="bar-val">21.53</div>
+            <div class="bar" style="background:#f59e0b; height:90%;"></div>
+            <div class="bar-label">Mitchell (200)</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">22.61</div>
+            <div class="bar" style="background:#f59e0b; height:55%;"></div>
+            <div class="bar-label">Owens (200)</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">23.10</div>
+            <div class="bar" style="background:#f59e0b; height:38%;"></div>
+            <div class="bar-label">Cole (200)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>Roster Status - All Athletes</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Athlete</th><th>Grade</th><th>Events</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Devon Mitchell</td><td>12</td><td>100, 200, 110H</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Marcus Owens</td><td>12</td><td>200, 400, relay</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>James Tillman</td><td>12</td><td>800, 1600, 3200</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Calvin Webb</td><td>11</td><td>LJ, 100</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Amara Johnson</td><td>11</td><td>100, 200, 4x100</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Keely Barrett</td><td>11</td><td>400, 4x400</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Darius Cole</td><td>10</td><td>200, 400</td><td><span class="badge badge-gold">Return - ankle</span></td></tr>
+          <tr><td>Latoya Harris</td><td>12</td><td>HJ, LJ</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Nadia Flowers</td><td>11</td><td>400H, 4x400</td><td><span class="badge badge-gold">Monitoring</span></td></tr>
+          <tr><td>Kwame Jenkins</td><td>11</td><td>TJ, LJ</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Brianna Simms</td><td>10</td><td>800, 4x400</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Evan Moore</td><td>11</td><td>SP, DT</td><td><span class="badge badge-green">Active</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ROW 3: PR Trends + Distance section -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>Sprint PR Trends - Season over Season</div>
+      <div style="margin-bottom: 1rem;">
+        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;">Devon Mitchell - 100m progression (lower = faster)</div>
+        <!-- SVG line chart -->
+        <svg viewBox="0 0 400 130" width="100%" style="display:block;">
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2a6ebb" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#2a6ebb" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="40" y1="10" x2="40" y2="110" stroke="#2a3349" stroke-width="1"/>
+          <line x1="40" y1="110" x2="390" y2="110" stroke="#2a3349" stroke-width="1"/>
+          <line x1="40" y1="40" x2="390" y2="40" stroke="#2a3349" stroke-width="0.5" stroke-dasharray="4,4"/>
+          <line x1="40" y1="70" x2="390" y2="70" stroke="#2a3349" stroke-width="0.5" stroke-dasharray="4,4"/>
+          <!-- Labels -->
+          <text x="95" y="122" font-size="10" fill="#7a8aaa">2024</text>
+          <text x="220" y="122" font-size="10" fill="#7a8aaa">2025</text>
+          <text x="345" y="122" font-size="10" fill="#7a8aaa">2026</text>
+          <text x="2" y="43" font-size="9" fill="#7a8aaa">10.9</text>
+          <text x="2" y="73" font-size="9" fill="#7a8aaa">11.2</text>
+          <!-- Data: 2024=11.42, 2025=10.98, 2026=10.71 -->
+          <!-- Scale: y= 110 - (11.9-val)/(11.9-10.5)*100 -->
+          <!-- 2024: y=110-(11.9-11.42)/1.4*100=110-34=76; 2025: y=110-(11.9-10.98)/1.4*100=110-65=45; 2026: y=110-(11.9-10.71)/1.4*100=110-85=25 -->
+          <polygon points="95,76 220,45 345,25 345,110 220,110 95,110" fill="url(#lineGrad)"/>
+          <polyline points="95,76 220,45 345,25" fill="none" stroke="#2a6ebb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="95" cy="76" r="4" fill="#2a6ebb"/>
+          <circle cx="220" cy="45" r="4" fill="#2a6ebb"/>
+          <circle cx="345" cy="25" r="4" fill="#f59e0b"/>
+          <text x="78" y="72" font-size="9" fill="#7a8aaa">11.42</text>
+          <text x="203" y="41" font-size="9" fill="#7a8aaa">10.98</text>
+          <text x="330" y="21" font-size="9" fill="#f59e0b">10.71</text>
+        </svg>
+      </div>
+      <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.6rem;">James Tillman - 800m progression (seconds)</div>
+        <svg viewBox="0 0 400 100" width="100%" style="display:block;">
+          <line x1="40" y1="10" x2="40" y2="85" stroke="#2a3349" stroke-width="1"/>
+          <line x1="40" y1="85" x2="390" y2="85" stroke="#2a3349" stroke-width="1"/>
+          <!-- Data: 2024=128.3, 2025=122.1, 2026=116.4 -->
+          <!-- Scale: y=85-(140-val)/(140-115)*75 -->
+          <!-- 2024: y=85-(140-128.3)/25*75=85-35=50; 2025: y=85-(140-122.1)/25*75=85-54=31; 2026: y=85-(140-116.4)/25*75=85-71=14 -->
+          <polyline points="95,50 220,31 345,14" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="95" cy="50" r="3.5" fill="#22c55e"/>
+          <circle cx="220" cy="31" r="3.5" fill="#22c55e"/>
+          <circle cx="345" cy="14" r="4" fill="#f59e0b"/>
+          <text x="88" y="62" font-size="9" fill="#7a8aaa">2:08.3</text>
+          <text x="213" y="43" font-size="9" fill="#7a8aaa">2:02.1</text>
+          <text x="330" y="26" font-size="9" fill="#f59e0b">1:56.4</text>
+          <text x="95" y="96" font-size="10" fill="#7a8aaa">2024</text>
+          <text x="220" y="96" font-size="10" fill="#7a8aaa">2025</text>
+          <text x="345" y="96" font-size="10" fill="#7a8aaa">2026</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>Season Goal Progress - 2026-2027 Targets</div>
+      <div class="prog-row">
+        <div class="prog-label">Mitchell 100m target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:68%; background:#2a6ebb;"></div></div>
+        <div class="prog-val">10.71 / 10.55</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Mitchell 200m target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:62%; background:#2a6ebb;"></div></div>
+        <div class="prog-val">21.53 / 21.20</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Mitchell 110mH target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:55%; background:#f59e0b;"></div></div>
+        <div class="prog-val">14.28 / 13.95</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Tillman 800m target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:72%; background:#22c55e;"></div></div>
+        <div class="prog-val">1:56.4 / 1:53.0</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Owens 400m target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:58%; background:#a78bfa;"></div></div>
+        <div class="prog-val">49.72 / 48.80</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Johnson 100m target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:61%; background:#f472b6;"></div></div>
+        <div class="prog-val">12.18 / 11.95</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">4x100 relay target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:69%; background:#2a6ebb;"></div></div>
+        <div class="prog-val">41.88 / 41.30</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">Women 4x400 target</div>
+        <div class="prog-track"><div class="prog-fill" style="width:53%; background:#f472b6;"></div></div>
+        <div class="prog-val">4:05.3 / 4:00.0</div>
+      </div>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--muted);">
+        Progress bars show current mark vs. 2027 season target. Training phase: base conditioning through December 2026.
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4: Meet results + Injury log -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>2026 Season Meet Results Summary</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Meet</th><th>Date</th><th>Location</th><th>Team Pts</th><th>Place</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Season Opener</td><td>Feb 2026</td><td>Crestwood HS</td><td>58</td><td><span class="badge badge-green">1st</span></td></tr>
+          <tr><td>Jefferson County Dual</td><td>Feb 2026</td><td>Shades Valley HS</td><td>72</td><td><span class="badge badge-green">1st</span></td></tr>
+          <tr><td>Mountain Brook Inv.</td><td>Feb 2026</td><td>Mountain Brook HS</td><td>44</td><td><span class="badge badge-gold">3rd</span></td></tr>
+          <tr><td>Oak Mountain Classic</td><td>Mar 2026</td><td>Oak Mountain HS</td><td>61</td><td><span class="badge badge-green">2nd</span></td></tr>
+          <tr><td>Shelby Co. Invitational</td><td>Apr 2026</td><td>Chilton County HS</td><td>49</td><td><span class="badge badge-gold">3rd</span></td></tr>
+          <tr><td>6A Area 6 Championship</td><td>Apr 2026</td><td>TBD</td><td>83</td><td><span class="badge badge-green">1st</span></td></tr>
+          <tr><td>6A Regional</td><td>Feb 2026</td><td>TBD</td><td>71</td><td><span class="badge badge-green">2nd</span></td></tr>
+          <tr><td>AHSAA 6A State</td><td>Feb 2026</td><td>Gulf Shores, AL</td><td>38</td><td><span class="badge badge-gold">4th</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>&#9632;</span>Athlete Development Spotlight</div>
+      <div class="sparkline-row" style="padding-bottom:0.75rem; border-bottom:1px solid var(--border); margin-bottom:0.75rem;">
+        <div style="width:100%; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px;">Athlete / Event - 2024 to 2026 improvement</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">D. Mitchell 100m</div>
+        <div class="spark-mark">11.42 to 10.71</div>
+        <div class="spark-bar" style="flex:1;"><div class="spark-fill" style="width:75%;"></div></div>
+        <div class="spark-trend trend-up">-0.71s</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">J. Tillman 800m</div>
+        <div class="spark-mark">2:08.3 to 1:56.4</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:82%;"></div></div>
+        <div class="spark-trend trend-up">-11.9s</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">M. Owens 400m</div>
+        <div class="spark-mark">52.10 to 49.72</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:60%;"></div></div>
+        <div class="spark-trend trend-up">-2.38s</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">A. Johnson 100m</div>
+        <div class="spark-mark">12.71 to 12.18</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:48%;"></div></div>
+        <div class="spark-trend trend-up">-0.53s</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">C. Webb LJ</div>
+        <div class="spark-mark">19ft 8in to 22ft 3in</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:66%;"></div></div>
+        <div class="spark-trend trend-up">+2ft 7in</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">K. Barrett 400m</div>
+        <div class="spark-mark">61.3 to 57.42</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:58%;"></div></div>
+        <div class="spark-trend trend-up">-3.88s</div>
+      </div>
+      <div class="sparkline-row">
+        <div class="spark-name">K. Jenkins TJ</div>
+        <div class="spark-mark">39ft 4in to 43ft 1in</div>
+        <div class="spark-bar"><div class="spark-fill" style="width:53%;"></div></div>
+        <div class="spark-trend trend-up">+3ft 9in</div>
+      </div>
+      <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.7rem; color: var(--muted);">
+        All marks from AHSAA-sanctioned competition. Hurdles debut for Mitchell was sophomore year 2025.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>Crestwood High School Track and Field &nbsp;|&nbsp; Head Coach: Shannon D. Perry, DPT, SCS &nbsp;|&nbsp; (205) 555-0291</div>
+  <div>Data covers AHSAA competition through February 2026. Internal use only.</div>
+</footer>
+
+<script>
+  // Animate progress bars on load
+  window.addEventListener('load', () => {
+    const fills = document.querySelectorAll('.prog-fill');
+    fills.forEach(f => {
+      const target = f.style.width;
+      f.style.width = '0%';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          f.style.width = target;
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

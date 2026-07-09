@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Participatory Budgeting: Trust and the Results Report</title>
+<style>
+  :root{--ink:#11161d;--bg:#0f1722;--panel:#16212f;--line:#27384b;--text:#e7eef6;--muted:#93a4b8;
+        --c1:#4ea1ff;--c2:#ffb14e;--c3:#5ad19a;--c4:#e0607e}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  header{padding:34px 22px;background:linear-gradient(135deg,#152233,#0f1722);border-bottom:1px solid var(--line)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+  header .kicker{color:var(--c1);letter-spacing:3px;text-transform:uppercase;font-size:.74rem;margin-bottom:10px}
+  header h1{font-size:2rem;line-height:1.15;max-width:760px}
+  header p{color:var(--muted);max-width:680px;margin-top:12px}
+  header .by{margin-top:16px;font-size:.85rem;color:var(--muted)}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
+  .controls button{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:9px 16px;border-radius:999px;cursor:pointer;font-size:.85rem;transition:.2s}
+  .controls button:hover{color:var(--text);border-color:var(--c1)}
+  .controls button.active{background:var(--c1);color:#06101e;border-color:var(--c1);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:8px 0 26px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .stat .n{font-size:2.2rem;font-weight:700;color:var(--c3)}
+  .stat .l{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:4px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:22px}
+  .panel h2{font-size:1.2rem;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+  canvas{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:.82rem;color:var(--muted)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.5px}
+  td.loop-yes{color:var(--c3);font-weight:600}td.loop-no{color:var(--c4);font-weight:600}
+  .src{font-size:.84rem;color:var(--muted)}
+  .src code{color:var(--c2)}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;padding:24px 0;margin-top:10px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:560px){header h1{font-size:1.5rem}.stat .n{font-size:1.7rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Municipal governance working brief</div>
+    <h1>Participatory budgeting and trust in midsize city governments</h1>
+    <p>A reading of three city cases on whether a public results report after the vote is what moves resident trust, not the vote alone.</p>
+    <div class="by">Brian Patterson &middot; Research assistant to Dr. Helen Voss &middot; Syracuse University &middot; Draft of December 2025</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="controls">
+    <button class="active" data-view="trust">Trust by case</button>
+    <button data-view="participation">Participation over time</button>
+    <button data-view="allocation">Where money went</button>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="n" data-count="3">0</div><div class="l">City cases</div></div>
+    <div class="stat"><div class="n" data-count="5" data-suffix=" yr">0</div><div class="l">Study window</div></div>
+    <div class="stat"><div class="n" data-count="2">0</div><div class="l">Closed the loop</div></div>
+    <div class="stat"><div class="n" data-count="14" data-suffix=" pts">0</div><div class="l">Avg trust gap</div></div>
+  </div>
+
+  <div class="panel">
+    <h2 id="cTitle">Process trust before and after the vote</h2>
+    <div class="sub" id="cSub">Share of surveyed residents reporting trust in how the city sets capital spending.</div>
+    <canvas id="chart" width="940" height="380"></canvas>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Case detail</h2>
+    <div class="sub">Each case coded for a public results report issued after the resident vote.</div>
+    <table>
+      <thead><tr><th>City case</th><th>Population band</th><th>Results report</th><th>Trust change</th></tr></thead>
+      <tbody>
+        <tr><td>River City</td><td>180,000 to 220,000</td><td class="loop-yes">Yes</td><td>+16 points</td></tr>
+        <tr><td>Lakeside</td><td>250,000 to 300,000</td><td class="loop-yes">Yes</td><td>+12 points</td></tr>
+        <tr><td>Mill Town</td><td>120,000 to 160,000</td><td class="loop-no">No</td><td>+3 points</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>Source base</h2>
+    <div class="sub">A sample of the tagged literature behind the argument.</div>
+    <p class="src">Core framing from <code>Wampler 2012</code> and <code>Cabannes 2015</code> on participatory budgeting principles, <code>Fung 2015</code> on putting the public back into governance, and <code>Touchton 2019</code> on inequality and outcomes. Local grounding from the <code>City of Syracuse 2023</code> adopted budget and capital plan.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Prepared for the municipal governance project, Department of Political Science</div>
+    <div>Contact: bpatterson@syr.edu</div>
+  </div>
+</footer>
+
+<script>
+const DATA={
+  trust:{title:"Process trust before and after the vote",
+    sub:"Share of surveyed residents reporting trust in how the city sets capital spending.",
+    labels:["River City","Lakeside","Mill Town"],
+    series:[{name:"Before vote",color:getC('--muted'),vals:[41,38,40]},
+            {name:"After vote and report",color:getC('--c3'),vals:[57,50,43]}],max:70,suffix:"%"},
+  participation:{title:"Resident participation over the study window",
+    sub:"Ballots cast in the participatory budgeting cycle, in thousands.",
+    labels:["Yr 1","Yr 2","Yr 3","Yr 4","Yr 5"],
+    series:[{name:"River City",color:getC('--c1'),vals:[3.2,4.1,5.0,5.8,6.4]},
+            {name:"Lakeside",color:getC('--c2'),vals:[2.4,2.9,3.5,3.9,4.2]},
+            {name:"Mill Town",color:getC('--c4'),vals:[1.8,2.0,2.1,2.0,2.2]}],max:7,suffix:"k",line:true},
+  allocation:{title:"Where the voted money went",
+    sub:"Share of the participatory pool by category, pooled across cases.",
+    labels:["Parks","Streets","Schools","Safety","Libraries"],
+    series:[{name:"Share of pool",color:getC('--c2'),vals:[28,24,19,17,12]}],max:35,suffix:"%"}
+};
+function getC(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+const cv=document.getElementById('chart'),ctx=cv.getContext('2d');
+let cur="trust";
+
+function draw(key,progress){
+  const d=DATA[key];ctx.clearRect(0,0,cv.width,cv.height);
+  const W=cv.width,H=cv.height,padL=54,padB=46,padT=16,padR=18;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  // axes + gridlines
+  ctx.strokeStyle=getC('--line');ctx.fillStyle=getC('--muted');ctx.font="12px Segoe UI";ctx.lineWidth=1;
+  for(let g=0;g<=5;g++){const y=padT+plotH-(plotH*g/5);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+    ctx.fillText(Math.round(d.max*g/5),16,y+4);}
+  const n=d.labels.length;
+  if(d.line){
+    d.series.forEach(s=>{ctx.strokeStyle=s.color;ctx.lineWidth=2.5;ctx.beginPath();
+      s.vals.forEach((v,i)=>{const x=padL+plotW*(i/(n-1));const y=padT+plotH-(plotH*(v/d.max))*progress;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+      ctx.stroke();
+      s.vals.forEach((v,i)=>{const x=padL+plotW*(i/(n-1));const y=padT+plotH-(plotH*(v/d.max))*progress;
+        ctx.fillStyle=s.color;ctx.beginPath();ctx.arc(x,y,3.5,0,7);ctx.fill();});
+    });
+  }else{
+    const groupW=plotW/n,bw=Math.min(46,groupW/(d.series.length+1));
+    d.labels.forEach((lab,i)=>{
+      d.series.forEach((s,si)=>{const v=s.vals[i];const bh=plotH*(v/d.max)*progress;
+        const x=padL+groupW*i+groupW/2-(d.series.length*bw)/2+si*bw;
+        ctx.fillStyle=s.color;roundRect(x,padT+plotH-bh,bw-4,bh,4);ctx.fill();});
+    });
+  }
+  ctx.fillStyle=getC('--muted');ctx.textAlign="center";
+  d.labels.forEach((lab,i)=>{const x=d.line?padL+plotW*(i/(n-1)):padL+(plotW/n)*i+(plotW/n)/2;ctx.fillText(lab,x,H-18);});
+  ctx.textAlign="left";
+}
+function roundRect(x,y,w,h,r){if(h<1)h=1;r=Math.min(r,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,0);ctx.arcTo(x,y+h,x,y,0);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function legend(key){const d=DATA[key];document.getElementById('legend').innerHTML=
+  d.series.map(s=>`<span><i style="background:${s.color}"></i>${s.name}</span>`).join('');}
+function animate(key){let t=0;legend(key);
+  document.getElementById('cTitle').textContent=DATA[key].title;
+  document.getElementById('cSub').textContent=DATA[key].sub;
+  (function step(){t+=.05;draw(key,Math.min(1,t));if(t<1)requestAnimationFrame(step);})();}
+document.querySelectorAll('.controls button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.controls button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');cur=b.dataset.view;animate(cur);}));
+// counters
+document.querySelectorAll('.n[data-count]').forEach(el=>{const tg=+el.dataset.count,sf=el.dataset.suffix||'';let n=0;
+  const iv=setInterval(()=>{n++;el.textContent=n+sf;if(n>=tg){clearInterval(iv);}},60);});
+window.addEventListener('load',()=>animate('trust'));
+</script>
+</body>
+</html>

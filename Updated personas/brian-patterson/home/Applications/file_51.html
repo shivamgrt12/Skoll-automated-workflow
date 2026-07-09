@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Affairs Tracker</title>
+<style>
+  :root{
+    --ink:#16202e; --paper:#f4f6fb; --card:#ffffff; --line:#dfe5ef;
+    --blue:#2f5db0; --blue-d:#21407c; --amber:#e0902a; --green:#2f8f63; --rose:#c2536b;
+    --muted:#5d6b80;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper);line-height:1.55}
+  a{color:inherit}
+  header.top{background:linear-gradient(120deg,var(--blue-d),var(--blue));color:#fff;padding:26px 22px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .brandrow h1{font-size:1.5rem;letter-spacing:.3px}
+  .brandrow .who{font-size:.85rem;opacity:.9}
+  .pill{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+        padding:4px 12px;border-radius:999px;font-size:.78rem;margin-top:8px}
+  nav.tabs{background:var(--blue-d);position:sticky;top:0;z-index:5}
+  nav.tabs .wrap{display:flex;gap:4px;flex-wrap:wrap}
+  nav.tabs button{background:transparent;border:0;color:#cfe0ff;padding:14px 18px;font-size:.9rem;cursor:pointer;
+        border-bottom:3px solid transparent;transition:.2s}
+  nav.tabs button:hover{color:#fff}
+  nav.tabs button.active{color:#fff;border-bottom-color:var(--amber)}
+  main{padding:26px 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+        box-shadow:0 6px 18px rgba(20,40,80,.05);opacity:0;transform:translateY(14px);animation:rise .6s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .stat{font-size:2.3rem;font-weight:700;line-height:1}
+  .stat small{font-size:.95rem;color:var(--muted);font-weight:600}
+  .label{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:6px}
+  .panel{display:none;animation:fade .4s}
+  .panel.show{display:block}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  h2.sec{font-size:1.15rem;margin:24px 0 12px;display:flex;align-items:center;gap:10px}
+  h2.sec::before{content:"";width:8px;height:22px;background:var(--amber);border-radius:3px;display:inline-block}
+  .init{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--blue);
+        border-radius:12px;padding:18px 20px;margin-bottom:14px}
+  .init h3{font-size:1.05rem;margin-bottom:4px}
+  .init .meta{font-size:.8rem;color:var(--muted);margin-bottom:10px}
+  .bar{height:12px;background:#eef1f7;border-radius:7px;overflow:hidden}
+  .bar > i{display:block;height:100%;border-radius:7px;width:0;transition:width 1.1s ease}
+  .row{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:6px}
+  .tag{display:inline-block;font-size:.72rem;padding:3px 9px;border-radius:999px;font-weight:600}
+  .t-go{background:#e7f3ec;color:var(--green)}.t-mid{background:#fbf0dc;color:var(--amber)}.t-plan{background:#f7e7eb;color:var(--rose)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{padding:11px 14px;text-align:left;font-size:.88rem;border-bottom:1px solid var(--line)}
+  th{background:#eef2f9;font-size:.74rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  .chart{display:flex;align-items:flex-end;gap:14px;height:180px;padding:14px 6px 0}
+  .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:flex-end;height:100%}
+  .chart .col .b{width:100%;max-width:48px;background:linear-gradient(180deg,var(--blue),var(--blue-d));border-radius:6px 6px 0 0;
+        height:0;transition:height 1s ease}
+  .chart .col span{font-size:.74rem;color:var(--muted)}
+  .btn{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:.85rem;cursor:pointer;transition:.2s}
+  .btn:hover{background:var(--blue-d);transform:translateY(-1px)}
+  .note{font-size:.86rem;color:var(--muted);margin-top:8px}
+  footer{margin-top:30px;background:var(--ink);color:#c7d2e2;padding:22px;font-size:.82rem}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:560px){.brandrow h1{font-size:1.2rem}.stat{font-size:1.9rem}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap brandrow">
+    <div>
+      <h1>Academic Affairs Tracker</h1>
+      <div class="who">Student Association, Syracuse University</div>
+      <span class="pill">Maintained by Brian Patterson, Vice President of Academic Affairs</span>
+    </div>
+    <div class="who" style="text-align:right">
+      Fall 2025 term board<br>Updated November 8, 2025
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button class="active" data-tab="overview">Overview</button>
+    <button data-tab="initiatives">Initiatives</button>
+    <button data-tab="meetings">Meetings</button>
+    <button data-tab="forum">Spring Forum</button>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+  <section id="overview" class="panel show">
+    <div class="grid">
+      <div class="card"><div class="label">Active initiatives</div><div class="stat" data-count="3">0</div></div>
+      <div class="card"><div class="label">Committee members</div><div class="stat" data-count="7">0</div></div>
+      <div class="card"><div class="label">Meetings held this term</div><div class="stat" data-count="5">0</div></div>
+      <div class="card"><div class="label">Avg progress</div><div class="stat" data-count="58" data-suffix="%">0</div></div>
+    </div>
+
+    <h2 class="sec">Where each priority stands</h2>
+    <div class="chart" id="ovChart">
+      <div class="col"><div class="b" data-h="70"></div><span>Syllabus access</span></div>
+      <div class="col"><div class="b" data-h="45"></div><span>Exam relief</span></div>
+      <div class="col"><div class="b" data-h="58"></div><span>Spring forum</span></div>
+    </div>
+    <p class="note">Percent of the path to a faculty senate recommendation, by initiative. Bars fill on load.</p>
+  </section>
+
+  <section id="initiatives" class="panel">
+    <h2 class="sec">Fall priorities</h2>
+
+    <div class="init">
+      <h3>Syllabus access before registration <span class="tag t-go">On track</span></h3>
+      <div class="meta">Owner: Brian Patterson &middot; Goal: syllabi posted at least one week before registration opens</div>
+      <div class="bar"><i style="background:var(--green)" data-w="70"></i></div>
+      <div class="row"><span>Draft recommendation in progress</span><span>70%</span></div>
+    </div>
+
+    <div class="init">
+      <h3>Exam scheduling relief <span class="tag t-mid">Gathering data</span></h3>
+      <div class="meta">Owner: committee &middot; Goal: a fair conflict policy for three finals in one day</div>
+      <div class="bar"><i style="background:var(--amber)" data-w="45"></i></div>
+      <div class="row"><span>Pulling counts from the registrar</span><span>45%</span></div>
+    </div>
+
+    <div class="init">
+      <h3>Spring forum on advising <span class="tag t-plan">Planning</span></h3>
+      <div class="meta">Owner: Amara Williams &middot; Goal: a student forum on advising and course planning</div>
+      <div class="bar"><i style="background:var(--rose)" data-w="58"></i></div>
+      <div class="row"><span>Room and date being confirmed</span><span>58%</span></div>
+    </div>
+  </section>
+
+  <section id="meetings" class="panel">
+    <h2 class="sec">Committee meetings</h2>
+    <table>
+      <thead><tr><th>Date</th><th>Focus</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>Oct 6, 2025</td><td>Syllabus transparency proposal</td><td>Brian to draft recommendation</td></tr>
+        <tr><td>Oct 20, 2025</td><td>Exam conflict data</td><td>Request sent to registrar</td></tr>
+        <tr><td>Nov 3, 2025</td><td>Forum scope</td><td>Theme set to advising</td></tr>
+        <tr><td>Nov 17, 2025</td><td>Draft review</td><td>Recommendation language refined</td></tr>
+        <tr><td>Dec 1, 2025</td><td>Term wrap and handoff</td><td>Spring planning meeting set for Oct 26, 2026</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Quorum is four of seven. Minutes are filed after each session.</p>
+  </section>
+
+  <section id="forum" class="panel">
+    <h2 class="sec">Spring forum budget</h2>
+    <div class="grid">
+      <div class="card"><div class="label">Total income</div><div class="stat"><small>$</small>945</div></div>
+      <div class="card"><div class="label">Total expenses</div><div class="stat"><small>$</small>800</div></div>
+      <div class="card"><div class="label">Balance held</div><div class="stat"><small>$</small>145</div></div>
+    </div>
+    <h2 class="sec">Line items</h2>
+    <table>
+      <thead><tr><th>Category</th><th>Type</th><th>Amount</th></tr></thead>
+      <tbody>
+        <tr><td>Student Association allocation</td><td>Income</td><td>$600.00</td></tr>
+        <tr><td>Bake sale proceeds</td><td>Income</td><td>$145.00</td></tr>
+        <tr><td>Department co sponsor</td><td>Income</td><td>$200.00</td></tr>
+        <tr><td>Room and audiovisual</td><td>Expense</td><td>$120.00</td></tr>
+        <tr><td>Speaker travel stipend</td><td>Expense</td><td>$350.00</td></tr>
+        <tr><td>Refreshments</td><td>Expense</td><td>$210.00</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Reconciled against the academic affairs forum budget sheet. <button class="btn" id="reveal">Show planning checklist</button></p>
+    <div id="checklist" style="display:none;margin-top:12px" class="init">
+      <h3>Before the forum</h3>
+      <label style="display:block;margin:6px 0"><input type="checkbox"> Confirm Goldstein Auditorium booking</label>
+      <label style="display:block;margin:6px 0"><input type="checkbox"> Invite advising office panelists</label>
+      <label style="display:block;margin:6px 0"><input type="checkbox"> Print flyers and post in residence halls</label>
+      <label style="display:block;margin:6px 0"><input type="checkbox" checked> Open the volunteer sign up sheet</label>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Student Association &middot; Academic Affairs Committee &middot; Schine Student Center</div>
+    <div>Questions: academic affairs desk &middot; Brian Patterson, VP Academic Affairs</div>
+  </div>
+</footer>
+
+<script>
+  // tab switching
+  const tabs=document.querySelectorAll('nav.tabs button');
+  const panels=document.querySelectorAll('.panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('show'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('show');
+    if(t.dataset.tab==='overview') runBars();
+  }));
+
+  // animated counters
+  function animateCounters(){
+    document.querySelectorAll('.stat[data-count]').forEach(el=>{
+      const target=+el.dataset.count, suffix=el.dataset.suffix||''; let n=0;
+      const step=Math.max(1,Math.round(target/40));
+      const tick=()=>{n+=step;if(n>=target){n=target;el.textContent=n+suffix;return;}el.textContent=n+suffix;requestAnimationFrame(tick);};
+      tick();
+    });
+  }
+  // bar charts + progress
+  function runBars(){
+    document.querySelectorAll('#ovChart .b').forEach(b=>{b.style.height='0';requestAnimationFrame(()=>b.style.height=b.dataset.h+'%');});
+  }
+  function runProgress(){
+    document.querySelectorAll('.bar > i').forEach(i=>{i.style.width='0';requestAnimationFrame(()=>i.style.width=i.dataset.w+'%');});
+  }
+  // reveal checklist
+  document.getElementById('reveal').addEventListener('click',e=>{
+    const c=document.getElementById('checklist');
+    const open=c.style.display==='block';
+    c.style.display=open?'none':'block';
+    e.target.textContent=open?'Show planning checklist':'Hide planning checklist';
+  });
+
+  window.addEventListener('load',()=>{animateCounters();runBars();runProgress();});
+  // fill progress whenever initiatives tab opens
+  document.querySelector('[data-tab="initiatives"]').addEventListener('click',runProgress);
+</script>
+</body>
+</html>

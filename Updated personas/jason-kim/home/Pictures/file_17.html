@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Columbus Trade Mentorship Program</title>
+<style>
+:root{
+  --forest:#1f3d2b; --sage:#3e6b4a; --terra:#c56b3e; --cream:#f5f0e6; --ink:#2c3a2e;
+  --paper:#fffdf8; --line:#e3dac6; --muted:#6b5f4d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",Georgia,serif;color:var(--ink);background:var(--cream);line-height:1.6}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:30;background:rgba(31,61,43,.97);color:var(--cream);
+  display:flex;align-items:center;justify-content:space-between;padding:14px 26px}
+.logo{font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.logo .dot{width:14px;height:14px;border-radius:50%;background:var(--terra)}
+nav{display:flex;align-items:center;gap:20px;font-size:.92rem}
+nav a{color:#dfe7d7;transition:.2s}
+nav a:hover{color:#fff}
+nav .btn{background:var(--terra);color:#fff;padding:8px 16px;border-radius:22px}
+.burger{display:none;font-size:1.5rem;background:none;border:none;color:var(--cream);cursor:pointer}
+.hero{position:relative;background:linear-gradient(135deg,var(--forest),var(--sage));color:var(--cream);
+  padding:90px 26px 80px;text-align:center;overflow:hidden}
+.hero h1{font-size:2.6rem;max-width:780px;margin:0 auto 16px;opacity:0;transform:translateY(20px);animation:rise .9s .1s forwards}
+.hero p{max-width:620px;margin:0 auto 26px;color:#e7efe0;opacity:0;transform:translateY(20px);animation:rise .9s .3s forwards}
+.hero .cta{display:inline-block;background:var(--terra);color:#fff;padding:13px 28px;border-radius:26px;font-weight:700;
+  opacity:0;transform:translateY(20px);animation:rise .9s .5s forwards;transition:.2s}
+.hero .cta:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.hero .blob{position:absolute;width:320px;height:320px;border-radius:46% 54% 60% 40%;
+  background:rgba(197,107,62,.18);right:-90px;bottom:-120px;animation:float 9s ease-in-out infinite}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes float{50%{transform:translateY(-26px) rotate(8deg)}}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+section.block{padding:64px 0}
+.eyebrow{color:var(--terra);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-size:.78rem;margin-bottom:8px}
+h2.t{font-size:1.7rem;color:var(--forest);margin-bottom:14px}
+.lead{color:var(--muted);max-width:680px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;
+  opacity:0;transform:translateY(20px);transition:.6s}
+.card.in{opacity:1;transform:none}
+.card .ic{width:44px;height:44px;border-radius:12px;background:var(--cream);display:grid;place-items:center;
+  font-size:1.3rem;margin-bottom:12px}
+.card h3{color:var(--sage);font-size:1.08rem;margin-bottom:6px}
+.card p{font-size:.92rem;color:var(--muted)}
+.stats{background:var(--forest);color:var(--cream);border-radius:18px;padding:40px 26px;margin-top:10px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;text-align:center}
+.stat .n{font-size:2.3rem;font-weight:800;color:#fff}
+.stat .l{font-size:.84rem;color:#cfe0c8;margin-top:4px}
+.timeline{margin-top:28px;border-left:3px solid var(--terra);padding-left:24px}
+.tev{margin-bottom:18px;opacity:0;transform:translateX(-14px);transition:.6s}
+.tev.in{opacity:1;transform:none}
+.tev .d{color:var(--terra);font-weight:700}
+.formwrap{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:34px;margin-top:30px;
+  box-shadow:0 14px 40px rgba(31,61,43,.08)}
+.field{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.86rem;color:var(--forest);font-weight:600}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:11px 12px;
+  font:inherit;background:#fff;transition:.2s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px rgba(62,107,74,.15)}
+.field .err{color:#b5462b;font-size:.78rem;display:none}
+.field.bad input,.field.bad textarea{border-color:#b5462b}
+.field.bad .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+button.submit{background:var(--terra);color:#fff;border:none;border-radius:26px;padding:13px 30px;font:inherit;
+  font-weight:700;cursor:pointer;transition:.2s}
+button.submit:hover{background:#a9572f}
+.success{display:none;background:#e7f1e4;border:1px solid #b9d6b6;color:var(--sage);padding:16px;border-radius:12px;margin-top:14px;font-weight:600}
+footer{background:var(--forest);color:#cfe0c8;padding:38px 24px}
+.fgrid{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;gap:30px;justify-content:space-between}
+footer b{color:#fff}
+footer .tline{height:4px;background:var(--terra);max-width:1040px;margin:22px auto 0;border-radius:3px}
+@media(max-width:840px){
+  nav{position:absolute;top:60px;right:0;flex-direction:column;background:var(--forest);width:220px;
+    padding:18px;gap:14px;border-radius:0 0 0 14px;transform:translateX(110%);transition:.3s}
+  nav.open{transform:none}
+  .burger{display:block}
+  .cards{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .row2{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="dot"></span> Columbus Trade Mentorship</div>
+  <button class="burger" id="burger" aria-label="Open menu">&#9776;</button>
+  <nav id="nav">
+    <a href="#about">About</a>
+    <a href="#offer">What You Get</a>
+    <a href="#cohort">The Cohort</a>
+    <a href="#schedule">Schedule</a>
+    <a class="btn" href="#interest">Join the List</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="blob"></div>
+  <h1>Where Central Ohio's next trade professionals find their footing</h1>
+  <p>A six month mentorship pairing early career trade and logistics professionals with practitioners who have done the work. Co-founded in 2019 by Kim Trade Services and Montoya Logistics.</p>
+  <a class="cta" href="#interest">Join the interest list</a>
+</div>
+
+<div class="wrap">
+  <section class="block" id="about">
+    <div class="eyebrow">About the program</div>
+    <h2 class="t">Structured guidance, not a brochure</h2>
+    <p class="lead">The program closes a gap in structured mentorship for people in their first three years in the field. Each participant is paired with a volunteer mentor for one on one guidance, joins group sessions, and gains access to the Columbus Trade Association network. Directors serve without compensation, and the two founding firms absorb the time as an investment in the regional pipeline.</p>
+  </section>
+
+  <section class="block" id="offer" style="padding-top:0">
+    <div class="eyebrow">What you get</div>
+    <h2 class="t">Six months, built around your growth</h2>
+    <div class="cards">
+      <div class="card"><div class="ic">&#129309;</div><h3>A dedicated mentor</h3><p>One practitioner who carries you through the full cycle, from classification basics to exam coaching.</p></div>
+      <div class="card"><div class="ic">&#128218;</div><h3>Group sessions</h3><p>Five working sessions on rules of origin, drawback, classification, and client communication.</p></div>
+      <div class="card"><div class="ic">&#127760;</div><h3>A real network</h3><p>Introductions through the Columbus Trade Association that open doors you would not find alone.</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="cohort" style="padding-top:0">
+    <div class="eyebrow">The 2025 cohort</div>
+    <h2 class="t">A record seventh year</h2>
+    <div class="stats">
+      <div class="stat"><div class="n" data-count="11">0</div><div class="l">Participants</div></div>
+      <div class="stat"><div class="n" data-count="9">0</div><div class="l">Volunteer mentors</div></div>
+      <div class="stat"><div class="n" data-count="91" data-suffix="%">0</div><div class="l">Completion rate</div></div>
+      <div class="stat"><div class="n" data-count="5">0</div><div class="l">Group sessions</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="schedule" style="padding-top:0">
+    <div class="eyebrow">Schedule</div>
+    <h2 class="t">The 2026 cohort</h2>
+    <p class="lead">Applications for the 2026 cohort closed on January 9, 2026, and mentor pairings are finalized. The cohort runs October 2026 through March 2027. Use the form below to join the interest list for the cohort that follows, or to nominate a participant from your firm.</p>
+    <div class="timeline">
+      <div class="tev"><span class="d">January 9, 2026</span><br>Applications for the 2026 cohort closed</div>
+      <div class="tev"><span class="d">October 2026</span><br>Cohort kickoff and orientation</div>
+      <div class="tev"><span class="d">December 2026</span><br>Mid cohort group session</div>
+      <div class="tev"><span class="d">March 2027</span><br>Closing reception and certificates</div>
+    </div>
+  </section>
+
+  <section class="block" id="interest" style="padding-top:0">
+    <div class="eyebrow">Get involved</div>
+    <h2 class="t">Join the interest list</h2>
+    <p class="lead">Tell us a little about yourself or the participant you want to nominate. A program director will follow up before the next application window opens.</p>
+    <div class="formwrap">
+      <form id="form" novalidate>
+        <div class="row2">
+          <div class="field"><label for="name">Full name</label><input id="name" type="text"><span class="err">Please enter a name.</span></div>
+          <div class="field"><label for="email">Email</label><input id="email" type="email"><span class="err">Please enter a valid email.</span></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="firm">Firm or employer</label><input id="firm" type="text"><span class="err">Please enter a firm.</span></div>
+          <div class="field"><label for="years">Years in the field</label>
+            <select id="years"><option value="">Select one</option><option>Under 1 year</option><option>1 to 2 years</option><option>2 to 3 years</option><option>Mentor candidate</option></select>
+            <span class="err">Please choose an option.</span></div>
+        </div>
+        <div class="field"><label for="msg">What are you hoping to get from the program</label><textarea id="msg" rows="4"></textarea><span class="err">Please add a short note.</span></div>
+        <button class="submit" type="submit">Send my interest</button>
+        <div class="success" id="success">Thank you. Your interest has been recorded and a program director will be in touch.</div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="fgrid">
+    <div><b>Columbus Trade Mentorship Program</b><br>Co-founded 2019 by Kim Trade Services<br>and Montoya Logistics</div>
+    <div><b>Administered with</b><br>Columbus Trade Association<br>400 N. High Street, Columbus, OH 43215</div>
+    <div><b>Program directors</b><br>Jason Robert Kim and Ryan Montoya<br>(614) 555-2947</div>
+  </div>
+  <div class="tline"></div>
+</footer>
+
+<script>
+var burger=document.getElementById("burger"), nav=document.getElementById("nav");
+burger.addEventListener("click",function(){nav.classList.toggle("open");});
+nav.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){nav.classList.remove("open");});});
+
+function countUp(el){
+  var t=parseFloat(el.dataset.count), suf=el.dataset.suffix||"", start=null, dur=1200;
+  function step(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);
+    el.textContent=Math.floor(t*p)+suf; if(p<1)requestAnimationFrame(step); else el.textContent=t+suf;}
+  requestAnimationFrame(step);
+}
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(!e.isIntersecting)return;
+    e.target.classList.add("in");
+    if(e.target.classList.contains("stat")){var n=e.target.querySelector(".n");if(n&&!n.dataset.d){n.dataset.d=1;countUp(n);}}
+    io.unobserve(e.target);
+  });
+},{threshold:.4});
+document.querySelectorAll(".card,.tev,.stat").forEach(function(el){io.observe(el);});
+
+var form=document.getElementById("form");
+function bad(id,cond){var f=document.getElementById(id).closest(".field");f.classList.toggle("bad",cond);return cond;}
+form.addEventListener("submit",function(e){
+  e.preventDefault();
+  var emailVal=document.getElementById("email").value.trim();
+  var errors=0;
+  if(bad("name",document.getElementById("name").value.trim()===""))errors++;
+  if(bad("email",!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)))errors++;
+  if(bad("firm",document.getElementById("firm").value.trim()===""))errors++;
+  if(bad("years",document.getElementById("years").value===""))errors++;
+  if(bad("msg",document.getElementById("msg").value.trim()===""))errors++;
+  if(errors===0){
+    form.querySelector("button").style.display="none";
+    document.getElementById("success").style.display="block";
+  }
+});
+</script>
+</body>
+</html>

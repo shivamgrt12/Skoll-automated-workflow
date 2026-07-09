@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Sam Osborne">
+<title>Osborne Metalworks - Studio Dashboard</title>
+<style>
+  :root{
+    --bg:#f4f1ea; --bg2:#e7e0d2; --header:#1f3a3d; --teal:#2e8b8b;
+    --stone:#c9762e; --card:#ffffff; --ink:#34302a; --faint:#8a8270; --line:#ddd6c6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.55}
+  a{color:var(--teal);text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:50;background:var(--header);color:#fff;
+    display:flex;align-items:center;gap:1.2rem;padding:.7rem 1.4rem;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  header.nav .brand{font-weight:700;letter-spacing:.04em}
+  header.nav nav{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap}
+  header.nav nav a{color:#dfe7e2;font-size:.92rem}
+  header.nav nav a:hover{color:#fff}
+  section{max-width:1040px;margin:0 auto;padding:2.4rem 1.4rem}
+  .hero{background:linear-gradient(160deg,#1f3a3d,#2e8b8b);color:#fff;max-width:none;margin:0;
+    padding:3rem 1.4rem 2.6rem}
+  .hero .inner{max-width:1040px;margin:0 auto}
+  .hero h1{margin:.2rem 0 .4rem;font-size:2.1rem}
+  .hero p{max-width:60ch;color:#e7f0ec}
+  .kicker{text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;color:var(--stone);font-weight:700}
+  .hero .kicker{color:#f0c79a}
+  .stats{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.6rem}
+  .stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:10px;
+    padding:.8rem 1.1rem;min-width:150px}
+  .stat b{display:block;font-size:1.5rem}
+  .stat span{font-size:.8rem;color:#d7e4df}
+  h2{font-size:1.45rem;margin:.2rem 0 1rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.1rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;
+    box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .card h3{margin:.1rem 0 .5rem;font-size:1.05rem;color:var(--header)}
+  .chartwrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  table{width:100%;border-collapse:collapse;font-size:.93rem}
+  th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+  th{color:var(--faint);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.82rem;color:var(--faint);margin-top:.6rem}
+  .swatch{display:inline-block;width:.8rem;height:.8rem;border-radius:2px;margin-right:.35rem;vertical-align:middle}
+  .btn{display:inline-block;background:var(--teal);color:#fff;border:none;border-radius:8px;
+    padding:.65rem 1.1rem;font-size:.95rem;cursor:pointer}
+  .btn:hover{background:#256f6f}
+  .btn.alt{background:var(--stone)}
+  .btn.alt:hover{background:#a85f22}
+  .filterbar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+  .filterbar button{background:var(--bg2);border:1px solid var(--line);border-radius:20px;
+    padding:.4rem .9rem;cursor:pointer;font-size:.85rem;color:var(--ink)}
+  .filterbar button.active{background:var(--header);color:#fff;border-color:var(--header)}
+  footer{background:var(--header);color:#cfd9d4;margin-top:2rem}
+  footer .inner{max-width:1040px;margin:0 auto;padding:1.6rem 1.4rem;font-size:.85rem;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+  .note{font-size:.85rem;color:var(--faint);margin-top:.6rem}
+  svg text{font-family:inherit}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <span class="brand">Osborne Metalworks</span>
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#revenue">Revenue</a>
+    <a href="#channels">Channels</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<div class="hero" id="overview">
+  <div class="inner">
+    <span class="kicker">Studio Dashboard</span>
+    <h1>One bench, tracked end to end</h1>
+    <p>A working view of a sterling and stone studio run out of a converted garage on the eastern edge of
+       Gallup, New Mexico. Numbers cover the trailing twelve months through January 2026.</p>
+    <div class="stats">
+      <div class="stat"><b>$18,140</b><span>Trailing 12-month revenue</span></div>
+      <div class="stat"><b>41</b><span>Pieces shipped</span></div>
+      <div class="stat"><b>$443</b><span>Average sale value</span></div>
+      <div class="stat"><b>2</b><span>Active galleries</span></div>
+    </div>
+    <p style="margin-top:1.4rem"><button class="btn" id="toRevenue">See the revenue breakdown</button></p>
+  </div>
+</div>
+
+<section id="revenue">
+  <span class="kicker">Revenue</span>
+  <h2>Revenue by month</h2>
+  <div class="chartwrap">
+    <!-- Bar chart: monthly studio revenue, trailing 12 months. Values sum to 18,140. -->
+    <svg viewBox="0 0 720 300" width="100%" height="300" role="img" aria-label="Monthly revenue bar chart">
+      <line x1="50" y1="250" x2="700" y2="250" stroke="#ddd6c6" stroke-width="1"/>
+      <line x1="50" y1="180" x2="700" y2="180" stroke="#eee7d8" stroke-width="1"/>
+      <line x1="50" y1="110" x2="700" y2="110" stroke="#eee7d8" stroke-width="1"/>
+      <line x1="50" y1="40"  x2="700" y2="40"  stroke="#eee7d8" stroke-width="1"/>
+      <text x="44" y="254" text-anchor="end" font-size="10" fill="#8a8270">0</text>
+      <text x="44" y="184" text-anchor="end" font-size="10" fill="#8a8270">1k</text>
+      <text x="44" y="114" text-anchor="end" font-size="10" fill="#8a8270">2k</text>
+      <text x="44" y="44"  text-anchor="end" font-size="10" fill="#8a8270">3k</text>
+      <!-- 12 bars; pixel height = value/3000*210 -->
+      <!-- Feb25 1180 -->
+      <rect x="58"  y="167.4" width="38" height="82.6" fill="#2e8b8b"/>
+      <text x="77"  y="265" text-anchor="middle" font-size="9" fill="#8a8270">Feb</text>
+      <!-- Mar25 1340 -->
+      <rect x="112" y="156.2" width="38" height="93.8" fill="#2e8b8b"/>
+      <text x="131" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Mar</text>
+      <!-- Apr25 1490 -->
+      <rect x="166" y="145.7" width="38" height="104.3" fill="#2e8b8b"/>
+      <text x="185" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Apr</text>
+      <!-- May25 1720 spring ship -->
+      <rect x="220" y="129.6" width="38" height="120.4" fill="#c9762e"/>
+      <text x="239" y="265" text-anchor="middle" font-size="9" fill="#8a8270">May</text>
+      <!-- Jun25 1260 -->
+      <rect x="274" y="161.8" width="38" height="88.2" fill="#2e8b8b"/>
+      <text x="293" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Jun</text>
+      <!-- Jul25 2380 fair booth -->
+      <rect x="328" y="83.4" width="38" height="166.6" fill="#c9762e"/>
+      <text x="347" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Jul</text>
+      <!-- Aug25 1110 -->
+      <rect x="382" y="172.3" width="38" height="77.7" fill="#2e8b8b"/>
+      <text x="401" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Aug</text>
+      <!-- Sep25 1290 -->
+      <rect x="436" y="159.7" width="38" height="90.3" fill="#2e8b8b"/>
+      <text x="455" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Sep</text>
+      <!-- Oct25 1430 -->
+      <rect x="490" y="149.9" width="38" height="100.1" fill="#2e8b8b"/>
+      <text x="509" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Oct</text>
+      <!-- Nov25 1560 -->
+      <rect x="544" y="140.8" width="38" height="109.2" fill="#2e8b8b"/>
+      <text x="563" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Nov</text>
+      <!-- Dec25 2050 holiday gallery -->
+      <rect x="598" y="106.5" width="38" height="143.5" fill="#c9762e"/>
+      <text x="617" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Dec</text>
+      <!-- Jan26 1330 -->
+      <rect x="652" y="156.9" width="38" height="93.1" fill="#2e8b8b"/>
+      <text x="671" y="265" text-anchor="middle" font-size="9" fill="#8a8270">Jan</text>
+    </svg>
+    <div class="legend">
+      <span><span class="swatch" style="background:#2e8b8b"></span>Steady month</span>
+      <span><span class="swatch" style="background:#c9762e"></span>Event month (spring ship, fair booth, holiday window)</span>
+    </div>
+    <p class="note">Twelve months sum to $18,140. The three orange bars are the booth and gallery pushes that
+      carry the year.</p>
+  </div>
+</section>
+
+<section id="channels">
+  <span class="kicker">Channels</span>
+  <h2>Where the money comes from</h2>
+  <div class="grid">
+    <div class="chartwrap">
+      <!-- Donut chart of revenue share by channel. 4 slices, sum 100%. -->
+      <svg viewBox="0 0 220 220" width="220" height="220" role="img" aria-label="Revenue share donut chart">
+        <!-- circumference for r=80 is ~502.65. Slices via stroke-dasharray. -->
+        <g transform="translate(110,110) rotate(-90)">
+          <circle r="80" cx="0" cy="0" fill="none" stroke="#2e8b8b" stroke-width="34"
+            stroke-dasharray="201.06 301.59"></circle>
+          <!-- 40% galleries, offset 0 -->
+          <circle r="80" cx="0" cy="0" fill="none" stroke="#c9762e" stroke-width="34"
+            stroke-dasharray="140.74 361.91" stroke-dashoffset="-201.06"></circle>
+          <!-- 28% online shop -->
+          <circle r="80" cx="0" cy="0" fill="none" stroke="#1f3a3d" stroke-width="34"
+            stroke-dasharray="115.61 387.04" stroke-dashoffset="-341.80"></circle>
+          <!-- 23% fairs & flea -->
+          <circle r="80" cx="0" cy="0" fill="none" stroke="#9bb07a" stroke-width="34"
+            stroke-dasharray="45.24 457.41" stroke-dashoffset="-457.41"></circle>
+          <!-- 9% direct commissions -->
+        </g>
+        <text x="110" y="106" text-anchor="middle" font-size="22" font-weight="700" fill="#1f3a3d">$18.1k</text>
+        <text x="110" y="124" text-anchor="middle" font-size="10" fill="#8a8270">12 months</text>
+      </svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2e8b8b"></span>Galleries 40%</span>
+        <span><span class="swatch" style="background:#c9762e"></span>Online shop 28%</span>
+        <span><span class="swatch" style="background:#1f3a3d"></span>Fairs and flea 23%</span>
+        <span><span class="swatch" style="background:#9bb07a"></span>Direct 9%</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Channel detail</h3>
+      <table>
+        <thead><tr><th>Channel</th><th class="num">Revenue</th><th class="num">Share</th></tr></thead>
+        <tbody>
+          <tr><td>Galleries (Turquoise Trail, Red Earth)</td><td class="num">$7,256</td><td class="num">40%</td></tr>
+          <tr><td>Online shop</td><td class="num">$5,079</td><td class="num">28%</td></tr>
+          <tr><td>Fairs and flea market</td><td class="num">$4,172</td><td class="num">23%</td></tr>
+          <tr><td>Direct commissions</td><td class="num">$1,633</td><td class="num">9%</td></tr>
+          <tr><td><b>Total</b></td><td class="num"><b>$18,140</b></td><td class="num"><b>100%</b></td></tr>
+        </tbody>
+      </table>
+      <p class="note">Galleries carry the heavy pieces. The online shop holds six active listings and runs three
+        to five sales a month at roughly $450 each.</p>
+    </div>
+  </div>
+</section>
+
+<section id="inventory">
+  <span class="kicker">Inventory</span>
+  <h2>Pieces shipped by line</h2>
+  <div class="filterbar" id="filters">
+    <button data-line="all" class="active">All lines</button>
+    <button data-line="cuff">Cuffs</button>
+    <button data-line="bolo">Bolo ties</button>
+    <button data-line="buckle">Buckles</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Line</th><th class="num">Shipped</th><th class="num">Price band</th><th class="num">Revenue</th></tr></thead>
+      <tbody id="invbody">
+        <tr data-line="cuff"><td>Heavy sterling cuff</td><td class="num">17</td><td class="num">$400 to $800</td><td class="num">$9,180</td></tr>
+        <tr data-line="bolo"><td>Bolo tie</td><td class="num">15</td><td class="num">$250 to $500</td><td class="num">$5,025</td></tr>
+        <tr data-line="buckle"><td>Belt buckle</td><td class="num">9</td><td class="num">$600 to $1,200</td><td class="num">$3,935</td></tr>
+      </tbody>
+    </table>
+    <p class="note" id="invsummary">41 pieces across three lines, $18,140 total.</p>
+  </div>
+</section>
+
+<section id="contact">
+  <span class="kicker">Contact</span>
+  <h2>Commission inquiry</h2>
+  <div class="card" style="max-width:560px">
+    <p>Studio runs by appointment. Pieces are made to order, so lead time on a buckle runs two to three weeks.
+       Any commission over $300 gets a written quote before work starts.</p>
+    <form id="inq">
+      <p><label>Name<br><input name="name" required style="width:100%;padding:.5rem;border:1px solid var(--line);border-radius:6px"></label></p>
+      <p><label>Email<br><input name="email" type="email" required style="width:100%;padding:.5rem;border:1px solid var(--line);border-radius:6px"></label></p>
+      <p><label>Piece<br>
+        <select name="piece" style="width:100%;padding:.5rem;border:1px solid var(--line);border-radius:6px">
+          <option>Heavy sterling cuff</option>
+          <option>Bolo tie</option>
+          <option>Belt buckle</option>
+        </select></label></p>
+      <p><button class="btn alt" type="submit">Send inquiry</button></p>
+    </form>
+    <p id="inqresult" style="display:none;color:var(--header);font-weight:600"></p>
+    <p class="note">Direct line: sam.osborne@mailcove.net</p>
+  </div>
+</section>
+
+<footer>
+  <div class="inner">
+    <span>Osborne Metalworks, Gallup, New Mexico. Sterling and stone since the bench was Leonard's.</span>
+    <span>sam.osborne@mailcove.net</span>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll from hero button to the revenue section.
+  document.getElementById('toRevenue').addEventListener('click', function(){
+    document.getElementById('revenue').scrollIntoView({behavior:'smooth'});
+  });
+
+  // Inventory line filter.
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#invbody tr'));
+  var summary = document.getElementById('invsummary');
+  var totals = {cuff:[17,9180], bolo:[15,5025], buckle:[9,3935]};
+  document.getElementById('filters').addEventListener('click', function(e){
+    if(e.target.tagName !== 'BUTTON') return;
+    var line = e.target.getAttribute('data-line');
+    this.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');
+    rows.forEach(function(r){
+      r.style.display = (line === 'all' || r.getAttribute('data-line') === line) ? '' : 'none';
+    });
+    if(line === 'all'){
+      summary.textContent = '41 pieces across three lines, $18,140 total.';
+    } else {
+      var t = totals[line];
+      summary.textContent = t[0] + ' pieces in this line, $' + t[1].toLocaleString() + ' revenue.';
+    }
+  });
+
+  // Commission form confirmation.
+  document.getElementById('inq').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = this.name.value.trim() || 'there';
+    var piece = this.piece.value;
+    var out = document.getElementById('inqresult');
+    out.style.display = 'block';
+    out.textContent = 'Thanks ' + name + '. Your ' + piece.toLowerCase() +
+      ' inquiry is logged. Expect a written quote within two days.';
+    this.reset();
+  });
+</script>
+</body>
+</html>

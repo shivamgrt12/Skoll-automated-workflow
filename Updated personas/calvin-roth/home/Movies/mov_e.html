@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Aid Clinic - Volunteer Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #263345;
+    --border: #334155;
+    --accent: #38bdf8;
+    --accent2: #0ea5e9;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --card-radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .clinic-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .header-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .header-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .badge strong { color: var(--accent); }
+
+  /* MAIN */
+  main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+  /* PAGE HEADING */
+  .page-heading {
+    margin-bottom: 1.8rem;
+    animation: slideDown 0.4s ease both;
+  }
+
+  .page-heading h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+  }
+
+  .page-heading p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1.3rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease both;
+    transition: border-color 0.25s;
+  }
+
+  .kpi-card:hover { border-color: var(--accent2); }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .kpi-card.blue::before { background: var(--accent); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.amber::before { background: var(--amber); }
+  .kpi-card.purple::before { background: var(--purple); }
+  .kpi-card.red::before { background: var(--red); }
+
+  .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+  .kpi-card:nth-child(5) { animation-delay: 0.25s; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kpi-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+
+  .kpi-card.blue .kpi-value { color: var(--accent); }
+  .kpi-card.green .kpi-value { color: var(--green); }
+  .kpi-card.amber .kpi-value { color: var(--amber); }
+  .kpi-card.purple .kpi-value { color: var(--purple); }
+  .kpi-card.red .kpi-value { color: var(--red); }
+
+  .kpi-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .kpi-meta .up { color: var(--green); }
+  .kpi-meta .dn { color: var(--red); }
+
+  /* CHARTS GRID */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  @media (max-width: 800px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1.4rem;
+    animation: fadeIn 0.6s ease both;
+  }
+
+  .chart-card:nth-child(2) { animation-delay: 0.1s; }
+
+  .chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+
+  .chart-card-header h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  .chart-card-header p {
+    font-size: 0.77rem;
+    color: var(--text-muted);
+  }
+
+  .chart-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .chart-container { position: relative; height: 220px; }
+
+  /* LOWER GRID */
+  .lower-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  @media (max-width: 800px) {
+    .lower-grid { grid-template-columns: 1fr; }
+  }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    animation: fadeIn 0.65s 0.15s ease both;
+  }
+
+  .table-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-card-header h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tbl thead tr {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .tbl th {
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tbl td {
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .tbl tbody tr:last-child td { border-bottom: none; }
+  .tbl tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  .status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .status-open { background: rgba(74,222,128,0.12); color: var(--green); }
+  .status-pending { background: rgba(251,191,36,0.12); color: var(--amber); }
+  .status-closed { background: rgba(148,163,184,0.12); color: var(--text-muted); }
+
+  /* PROGRESS BARS */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1.4rem;
+    animation: fadeIn 0.65s 0.2s ease both;
+  }
+
+  .progress-section h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+  }
+
+  .progress-item {
+    margin-bottom: 1.1rem;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+  }
+
+  .progress-row .pct { color: var(--text-muted); }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    animation: grow 1s 0.5s ease both;
+    transform-origin: left;
+  }
+
+  @keyframes grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  .fill-blue { background: var(--accent); }
+  .fill-green { background: var(--green); }
+  .fill-amber { background: var(--amber); }
+  .fill-purple { background: var(--purple); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="clinic-dot"></div>
+    <div>
+      <div class="header-title">Legal Aid Clinic - Volunteer Dashboard</div>
+      <div class="header-sub">Chicago, Illinois - Volunteer Coordinator View</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge">Reporting Period: <strong>Jan - Feb 2026</strong></div>
+    <div class="badge">Volunteer: <strong>Calvin M. Roth</strong></div>
+  </div>
+</header>
+
+<main>
+
+  <div class="page-heading">
+    <h1>Intake and Volunteer Activity Summary</h1>
+    <p>Aggregate view of client contacts, case status, and volunteer hour tracking for the current reporting window.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Client Contacts (Jan-Feb)</div>
+      <div class="kpi-value">47</div>
+      <div class="kpi-meta"><span class="up">+12%</span> vs prior period</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Volunteer Hours Logged</div>
+      <div class="kpi-value">31.5</div>
+      <div class="kpi-meta">~8 hrs / week average</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Cases Opened</div>
+      <div class="kpi-value">14</div>
+      <div class="kpi-meta">Misdemeanor and civil matters</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">Intakes Completed</div>
+      <div class="kpi-value">22</div>
+      <div class="kpi-meta"><span class="up">+5</span> vs Jan 2025 period</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Pending Referrals</div>
+      <div class="kpi-value">6</div>
+      <div class="kpi-meta">Awaiting outside placement</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>Monthly Client Intake</h3>
+          <p>Intake contacts by month, Jan 2025 - Feb 2026</p>
+        </div>
+        <span class="chart-pill">Jan 2025 - Feb 2026</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="intakeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h3>Case Type Breakdown</h3>
+          <p>By legal matter category</p>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="typeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOWER GRID -->
+  <div class="lower-grid">
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3>Recent Case Activity</h3>
+        <span class="chart-pill">Last 10 entries</span>
+      </div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Intake Date</th>
+            <th>Matter Type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Feb 19, 2026</td><td>Tenant Rights</td><td><span class="status-pill status-open">Open</span></td></tr>
+          <tr><td>Feb 14, 2026</td><td>Criminal Expungement</td><td><span class="status-pill status-open">Open</span></td></tr>
+          <tr><td>Feb 11, 2026</td><td>Benefits Appeal</td><td><span class="status-pill status-pending">Pending</span></td></tr>
+          <tr><td>Feb 5, 2026</td><td>Consumer Debt</td><td><span class="status-pill status-open">Open</span></td></tr>
+          <tr><td>Jan 29, 2026</td><td>Family Court</td><td><span class="status-pill status-pending">Pending</span></td></tr>
+          <tr><td>Jan 22, 2026</td><td>Criminal Expungement</td><td><span class="status-pill status-closed">Referred Out</span></td></tr>
+          <tr><td>Jan 16, 2026</td><td>Employment</td><td><span class="status-pill status-closed">Closed</span></td></tr>
+          <tr><td>Jan 8, 2026</td><td>Tenant Rights</td><td><span class="status-pill status-closed">Resolved</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="progress-section">
+      <h3>Goal Tracking - Q1 2026 Targets</h3>
+
+      <div class="progress-item">
+        <div class="progress-row">
+          <span>Client Contacts (Target: 60)</span>
+          <span class="pct">78%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-blue" style="width:78%"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-row">
+          <span>Volunteer Hours (Target: 40 hrs)</span>
+          <span class="pct">79%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-green" style="width:79%"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-row">
+          <span>Intakes Completed (Target: 30)</span>
+          <span class="pct">73%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-amber" style="width:73%"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-row">
+          <span>Cases Opened (Target: 20)</span>
+          <span class="pct">70%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-purple" style="width:70%"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-row">
+          <span>Referral Placements (Target: 10)</span>
+          <span class="pct">40%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-blue" style="width:40%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <span>Legal Aid Clinic - Volunteer Activity Dashboard - Chicago, Illinois</span>
+  <span>Calvin M. Roth - Volunteer Coordinator View</span>
+</footer>
+
+<script>
+  const CHART_DEFAULTS = {
+    font: { family: "'Segoe UI', sans-serif" },
+    color: '#94a3b8',
+  };
+  Chart.defaults.font = CHART_DEFAULTS.font;
+  Chart.defaults.color = CHART_DEFAULTS.color;
+
+  // Monthly Intake Bar Chart
+  const intakeCtx = document.getElementById('intakeChart').getContext('2d');
+  new Chart(intakeCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan 25', 'Feb 25', 'Oct 25', 'Nov 25', 'Dec 25', 'Jan 26', 'Feb 26'],
+      datasets: [{
+        label: 'Client Contacts',
+        data: [18, 21, 19, 24, 16, 25, 22],
+        backgroundColor: 'rgba(56,189,248,0.75)',
+        borderColor: '#38bdf8',
+        borderWidth: 1.5,
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+          borderWidth: 1,
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 11 } }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Case Type Doughnut
+  const typeCtx = document.getElementById('typeChart').getContext('2d');
+  new Chart(typeCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Criminal Expungement', 'Tenant Rights', 'Family Court', 'Benefits Appeal', 'Employment', 'Consumer Debt'],
+      datasets: [{
+        data: [18, 22, 14, 16, 12, 18],
+        backgroundColor: ['#38bdf8','#4ade80','#a78bfa','#fbbf24','#f87171','#34d399'],
+        borderColor: '#1e293b',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 10 }, padding: 10, boxWidth: 10 }
+        },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+          borderWidth: 1,
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

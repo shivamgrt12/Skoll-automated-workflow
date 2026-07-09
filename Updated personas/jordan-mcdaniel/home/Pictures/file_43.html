@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop Planner</title>
+<style>
+  :root{--ink:#22201c;--walnut:#4a3526;--walnut2:#6b4e36;--amber:#c08a3e;--sage:#5b6b4f;--line:#e3dac9;--muted:#7c7264}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#f1ebdf;color:var(--ink)}
+  .top{background:var(--walnut);color:#fff;padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
+  .top h1{font-size:20px} .top nav a{color:#e8ddc8;margin-left:18px;text-decoration:none;font-size:14px}
+  .top nav a:hover{color:#fff}
+  main{max-width:1000px;margin:0 auto;padding:26px 18px 60px}
+  .grid{display:grid;grid-template-columns:1fr 1.4fr;gap:20px}
+  .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 14px rgba(60,40,20,.08)}
+  h2{font-size:16px;color:var(--walnut);margin-bottom:14px;border-bottom:2px solid var(--line);padding-bottom:8px}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+  input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fbf8f1}
+  button{margin-top:16px;background:var(--amber);color:#fff;border:none;padding:11px 18px;border-radius:8px;
+         font-size:14px;font-weight:600;cursor:pointer}
+  button:hover{background:#a9762f}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .prog{background:#ece2d0;border-radius:7px;height:13px;overflow:hidden}
+  .prog>span{display:block;height:100%;background:var(--sage);border-radius:7px}
+  .pill{font-size:11px;padding:2px 9px;border-radius:11px;background:#eaddc4;color:var(--walnut)}
+  .next{background:#e7efe1;color:var(--sage)} .soon{background:#f5e7cf;color:#9a6f24}
+  .proj{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .dot{width:12px;height:12px;border-radius:50%;flex:none}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}
+  @media(max-width:780px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Shop Planner</h1>
+  <nav><a href="#wishlist">Tool wishlist</a><a href="#builds">Builds</a><a href="#add">Add a tool</a></nav>
+</div>
+<main>
+  <div class="grid">
+    <div class="card" id="add">
+      <h2>Add a tool to the wishlist</h2>
+      <form onsubmit="addTool(event)">
+        <label for="tname">Tool, for example a No. 7 jointer plane</label>
+        <input id="tname" required>
+        <label for="price">Target price in dollars</label>
+        <input id="price" type="number" min="0" step="1">
+        <label for="pri">Priority</label>
+        <select id="pri"><option>Next up</option><option>Soon</option><option>After that</option><option>Long term</option></select>
+        <label for="saved">Saved so far in dollars</label>
+        <input id="saved" type="number" min="0" step="1">
+        <button type="submit">Add to wishlist</button>
+      </form>
+      <p style="font-size:13px;color:var(--muted);margin-top:14px">House rule: nothing at or above $75 gets bought
+        without checking the budget first.</p>
+    </div>
+
+    <div class="card" id="wishlist">
+      <h2>Tool wishlist and savings progress</h2>
+      <table id="wt">
+        <tr><th>Tool</th><th>Target</th><th style="width:32%">Saved</th><th>Priority</th></tr>
+        <tr><td>No. 7 jointer plane</td><td>$475</td>
+          <td><div class="prog"><span style="width:67%"></span></div><small>$318</small></td>
+          <td><span class="pill next">Next up</span></td></tr>
+        <tr><td>Router table setup</td><td>$350</td>
+          <td><div class="prog"><span style="width:20%"></span></div><small>$70</small></td>
+          <td><span class="pill">After that</span></td></tr>
+        <tr><td>Garage dust collection</td><td>$200</td>
+          <td><div class="prog"><span style="width:45%"></span></div><small>$90</small></td>
+          <td><span class="pill soon">Soon</span></td></tr>
+        <tr><td>Cabinet saw, shop fund</td><td>$1,200</td>
+          <td><div class="prog"><span style="width:12%"></span></div><small>$140</small></td>
+          <td><span class="pill">Long term</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" id="builds" style="margin-top:20px">
+    <h2>Build projects</h2>
+    <div class="proj"><span class="dot" style="background:#c08a3e"></span>
+      <div style="flex:1"><strong>Walnut side table for Kayla</strong>
+        <div style="font-size:13px;color:var(--muted)">Mortise and tenon, one drawer, lower shelf. Finish by November 10, 2026.</div></div>
+      <span class="pill soon">In progress</span></div>
+    <div class="proj"><span class="dot" style="background:#5b6b4f"></span>
+      <div style="flex:1"><strong>Garage bench upgrade</strong>
+        <div style="font-size:13px;color:var(--muted)">Add a tail vise and a tool well. Weekend project, parts on hand.</div></div>
+      <span class="pill next">Planned</span></div>
+    <div class="proj"><span class="dot" style="background:#6b4e36"></span>
+      <div style="flex:1"><strong>Wall cabinet, hand tools</strong>
+        <div style="font-size:13px;color:var(--muted)">Sketch done. Build once the side table ships.</div></div>
+      <span class="pill">Idea</span></div>
+  </div>
+
+  <footer>Personal planner kept by Jordan McDaniel. Saved entries live in this browser only.</footer>
+</main>
+<script>
+  function addTool(e){
+    e.preventDefault();
+    var name=document.getElementById('tname').value.trim();
+    var price=document.getElementById('price').value||'0';
+    var pri=document.getElementById('pri').value;
+    var saved=parseInt(document.getElementById('saved').value||'0',10);
+    var target=parseInt(price,10)||1;
+    var pct=Math.min(100,Math.round(saved/target*100));
+    var t=document.getElementById('wt');
+    var r=t.insertRow(-1);
+    r.innerHTML='<td>'+name+'</td><td>$'+target.toLocaleString()+'</td>'+
+      '<td><div class="prog"><span style="width:'+pct+'%"></span></div><small>$'+saved.toLocaleString()+'</small></td>'+
+      '<td><span class="pill">'+pri+'</span></td>';
+    e.target.reset();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Console</title>
+<style>
+  :root{--bg:#101114;--card:#1a1c22;--card2:#21242c;--ink:#f2f3f5;--mut:#9aa0aa;--o:#ff6b35;--lime:#b7f546;--red:#ef4444;--line:#2a2e38;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  .top{display:flex;justify-content:space-between;align-items:center;padding:20px 26px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px;}
+  .top h1{font-size:1.3rem;letter-spacing:.5px;}
+  .top h1 b{color:var(--o);}
+  .top .who{color:var(--mut);font-size:.85rem;}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 26px 60px;}
+  .ring-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;}
+  .tile small{color:var(--mut);text-transform:uppercase;font-size:.72rem;letter-spacing:.6px;}
+  .tile b{display:block;font-size:1.9rem;margin-top:6px;}
+  .ring{position:relative;width:96px;height:96px;margin:6px auto 0;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tabs button{background:var(--card2);color:var(--ink);border:1px solid var(--line);padding:8px 16px;border-radius:9px;font-weight:600;cursor:pointer;transition:.15s;}
+  .tabs button.active{background:var(--o);color:#1a0c04;border-color:var(--o);}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;}
+  .panel h2{font-size:1.05rem;margin-bottom:2px;}
+  .panel .sub{color:var(--mut);font-size:.84rem;margin-bottom:16px;}
+  canvas{width:100%;height:auto;}
+  .pr{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .prc{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .prc small{color:var(--mut);font-size:.78rem;}
+  .prc b{display:block;font-size:1.5rem;margin-top:4px;color:var(--lime);}
+  .prc span{font-size:.8rem;color:var(--mut);}
+  .hide{display:none;}
+  footer{border-top:1px solid var(--line);color:var(--mut);font-size:.82rem;text-align:center;padding:20px;}
+  @media(max-width:780px){.ring-row{grid-template-columns:repeat(2,1fr);}.pr{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Training <b>Console</b></h1>
+  <div class="who">Brian Hall | qualifier prep block | data through February 13, 2026</div>
+</div>
+<div class="wrap">
+  <div class="ring-row">
+    <div class="tile"><small>Avg recovery</small>
+      <div class="ring"><svg width="96" height="96"><circle cx="48" cy="48" r="40" stroke="#2a2e38" stroke-width="9" fill="none"/><circle id="rcRing" cx="48" cy="48" r="40" stroke="#b7f546" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg><div class="num" id="rcNum">0</div></div>
+    </div>
+    <div class="tile"><small>Resting HR</small><b>48<span style="font-size:.9rem;color:var(--mut)"> bpm</span></b><div style="color:var(--mut);font-size:.82rem;margin-top:26px;">conditioned baseline</div></div>
+    <div class="tile"><small>Sessions per week</small><b>5</b><div style="color:var(--mut);font-size:.82rem;margin-top:26px;">CrossFit Buckhead 5:15 AM</div></div>
+    <div class="tile"><small>Sleep window</small><b>7h<span style="font-size:.9rem;color:var(--mut)"> 15m</span></b><div style="color:var(--mut);font-size:.82rem;margin-top:26px;">9:30 PM to 4:45 AM</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="active" data-tab="rec">Recovery trend</button>
+    <button data-tab="vol">Weekly volume</button>
+    <button data-tab="pr">Personal records</button>
+  </div>
+
+  <div class="panel" id="rec">
+    <h2>WHOOP recovery, last 14 days</h2>
+    <div class="sub">Green days get the session as written. Red days scale the volume and keep intensity honest.</div>
+    <canvas id="recCv" width="1000" height="300"></canvas>
+  </div>
+
+  <div class="panel hide" id="vol">
+    <h2>Training volume by week</h2>
+    <div class="sub">Total working sets across strength, conditioning, and gymnastics, eight week block.</div>
+    <canvas id="volCv" width="1000" height="300"></canvas>
+  </div>
+
+  <div class="panel hide" id="pr">
+    <h2>Current personal records</h2>
+    <div class="sub">Tracked from the programming log. Numbers to beat in the next test week.</div>
+    <div class="pr">
+      <div class="prc"><small>Back squat</small><b>275 lb</b><span>5x5 working weight</span></div>
+      <div class="prc"><small>Deadlift</small><b>405 lb</b><span>heavy triple</span></div>
+      <div class="prc"><small>Front squat</small><b>245 lb</b><span>5x3</span></div>
+      <div class="prc"><small>Power clean</small><b>205 lb</b><span>EMOM 10</span></div>
+      <div class="prc"><small>Snatch</small><b>195 lb</b><span>heavy single</span></div>
+      <div class="prc"><small>Row 500 m</small><b>1:38</b><span>split, controlled</span></div>
+    </div>
+  </div>
+</div>
+<footer>Push on the green days, protect the right shoulder regardless of the score. The work compounds.</footer>
+
+<script>
+  var avg=81;
+  var ring=document.getElementById('rcRing'),num=document.getElementById('rcNum'),C=251;
+  setTimeout(function(){ring.style.transition='stroke-dashoffset 1.3s ease';ring.style.strokeDashoffset=C*(1-avg/100);},200);
+  var n=0;var t=setInterval(function(){n+=2;if(n>=avg){n=avg;clearInterval(t);}num.textContent=n;},28);
+
+  var recData=[78,84,72,88,80,67,90,83,85,76,82,88,79,84];
+  var volData=[{w:'W1',v:62},{w:'W2',v:66},{w:'W3',v:70},{w:'W4',v:58},{w:'W5',v:68},{w:'W6',v:72},{w:'W7',v:64},{w:'W8',v:54}];
+
+  function recChart(){
+    var cv=document.getElementById('recCv'),x=cv.getContext('2d'),W=cv.width,H=cv.height,pL=44,pB=28,pT=16,pR=16;
+    x.clearRect(0,0,W,H);
+    x.strokeStyle='#2a2e38';x.fillStyle='#9aa0aa';x.font='12px Segoe UI';
+    for(var g=0;g<=4;g++){var y=pT+(H-pT-pB)*g/4;x.beginPath();x.moveTo(pL,y);x.lineTo(W-pR,y);x.stroke();x.fillText((100-g*25)+'%',8,y+4);}
+    var bw=(W-pL-pR)/recData.length;
+    recData.forEach(function(v,i){
+      var bx=pL+bw*i+bw*0.2,bh=(H-pT-pB)*v/100,by=H-pB-bh;
+      x.fillStyle=v>=85?'#b7f546':v>=70?'#ff6b35':'#ef4444';
+      x.fillRect(bx,by,bw*0.6,bh);
+    });
+    x.fillStyle='#9aa0aa';x.fillText('14 days ago',pL,H-8);x.fillText('today',W-pR-34,H-8);
+  }
+  function volChart(){
+    var cv=document.getElementById('volCv'),x=cv.getContext('2d'),W=cv.width,H=cv.height,pL=44,pB=28,pT=16,pR=16;
+    x.clearRect(0,0,W,H);
+    var max=80;x.strokeStyle='#2a2e38';x.fillStyle='#9aa0aa';x.font='12px Segoe UI';
+    for(var g=0;g<=4;g++){var y=pT+(H-pT-pB)*g/4;x.beginPath();x.moveTo(pL,y);x.lineTo(W-pR,y);x.stroke();x.fillText(Math.round(max*(4-g)/4),12,y+4);}
+    x.beginPath();
+    volData.forEach(function(d,i){var px=pL+(W-pL-pR)*i/(volData.length-1),py=pT+(H-pT-pB)*(1-d.v/max);if(i===0)x.moveTo(px,py);else x.lineTo(px,py);});
+    x.strokeStyle='#ff6b35';x.lineWidth=3;x.stroke();
+    volData.forEach(function(d,i){var px=pL+(W-pL-pR)*i/(volData.length-1),py=pT+(H-pT-pB)*(1-d.v/max);
+      x.fillStyle='#ff6b35';x.beginPath();x.arc(px,py,4,0,7);x.fill();x.fillStyle='#9aa0aa';x.fillText(d.w,px-8,H-8);});
+  }
+  recChart();
+  document.querySelectorAll('.tabs button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      ['rec','vol','pr'].forEach(function(id){document.getElementById(id).classList.add('hide');});
+      document.getElementById(b.dataset.tab).classList.remove('hide');
+      if(b.dataset.tab==='vol')volChart();
+      if(b.dataset.tab==='rec')recChart();
+    });
+  });
+</script>
+</body>
+</html>

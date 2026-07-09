@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Desk</title>
+<style>
+  :root{--bg:#1a1530;--panel:#241c44;--panel2:#2c2253;--line:#3a2f66;--text:#efeaff;--muted:#a99ed1;
+        --accent:#ff7a59;--accent2:#ffd166;--good:#54d6a3;--blue:#7aa2ff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:
+       radial-gradient(900px 400px at 80% -5%,#2a2152,transparent),var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 18px}
+  header{padding:30px 0 10px}
+  header .wrap{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  header h1{font-size:1.7rem}
+  header h1 span{color:var(--accent)}
+  header .who{color:var(--muted);font-size:.9rem}
+  .clock{font-variant-numeric:tabular-nums;color:var(--accent2);font-size:.95rem}
+  .layout{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin:18px 0 30px}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+  h2{font-size:1.05rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  h2::before{content:"";width:7px;height:18px;background:var(--accent);border-radius:3px}
+  /* countdowns */
+  .dl{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px dashed var(--line)}
+  .dl:last-child{border-bottom:0}
+  .dl .t{font-size:.95rem}.dl .d{font-size:.78rem;color:var(--muted)}
+  .dl .count{font-variant-numeric:tabular-nums;font-weight:700;color:var(--blue);font-size:.95rem;text-align:right}
+  .dl .count small{display:block;color:var(--muted);font-weight:400;font-size:.7rem}
+  .dl.past .count{color:var(--good)}
+  /* pomodoro */
+  .pomo{text-align:center}
+  .ring{position:relative;width:200px;height:200px;margin:6px auto 14px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .time b{font-size:2.5rem;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .ring .time em{font-style:normal;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{border:0;border-radius:10px;padding:11px 20px;font-size:.9rem;cursor:pointer;font-weight:600;transition:.2s}
+  .btn.go{background:var(--accent);color:#33180f}.btn.go:hover{background:#ff8d70}
+  .btn.gh{background:transparent;color:var(--muted);border:1px solid var(--line)}.btn.gh:hover{color:var(--text)}
+  .modes{display:flex;gap:8px;justify-content:center;margin-bottom:8px}
+  .modes button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 14px;font-size:.78rem;cursor:pointer}
+  .modes button.active{background:var(--accent2);color:#3a2c00;border-color:var(--accent2);font-weight:600}
+  /* tasks */
+  .task{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;transition:.2s}
+  .task:hover{background:var(--panel2)}
+  .task input{width:18px;height:18px;accent-color:var(--good);cursor:pointer}
+  .task label{flex:1;cursor:pointer}
+  .task.done label{text-decoration:line-through;color:var(--muted)}
+  .add{display:flex;gap:8px;margin-top:12px}
+  .add input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:9px 12px;font:inherit}
+  .add input:focus{outline:2px solid var(--accent)}
+  .prog{height:8px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:14px}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--good),var(--blue));width:0;transition:width .5s}
+  .progtext{font-size:.8rem;color:var(--muted);margin-top:6px}
+  .quote{grid-column:1/-1;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:18px 22px;color:var(--muted);font-style:italic}
+  footer{color:var(--muted);font-size:.82rem;padding:18px 0 34px;border-top:1px solid var(--line)}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div>
+      <h1>Study <span>Desk</span></h1>
+      <div class="who">Brian Patterson &middot; fall semester planner</div>
+    </div>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+
+    <div class="card">
+      <h2>Deadlines ahead</h2>
+      <div id="deadlines">
+        <div class="dl" data-date="2026-10-15T09:30:00"><div><div class="t">Political Theory midterm</div><div class="d">PSC 400, Eggers 010, 9:30 AM</div></div><div class="count"></div></div>
+        <div class="dl" data-date="2026-10-17T23:59:00"><div><div class="t">Public Policy paper draft</div><div class="d">Due to Dr. Voss, 11:59 PM</div></div><div class="count"></div></div>
+        <div class="dl" data-date="2026-10-26T14:00:00"><div><div class="t">Spring events planning meeting</div><div class="d">Student Association, 2:00 PM</div></div><div class="count"></div></div>
+        <div class="dl" data-date="2026-12-04T17:00:00"><div><div class="t">Last day of classes</div><div class="d">Fall semester</div></div><div class="count"></div></div>
+        <div class="dl" data-date="2026-12-07T08:00:00"><div><div class="t">Final exam period opens</div><div class="d">Through December 18</div></div><div class="count"></div></div>
+      </div>
+    </div>
+
+    <div class="card pomo">
+      <h2>Focus timer</h2>
+      <div class="modes">
+        <button class="active" data-min="25">Focus 25</button>
+        <button data-min="5">Break 5</button>
+        <button data-min="50">Deep 50</button>
+      </div>
+      <div class="ring">
+        <svg width="200" height="200"><circle cx="100" cy="100" r="88" stroke="#2c2253" stroke-width="14" fill="none"></circle>
+          <circle id="rprog" cx="100" cy="100" r="88" stroke="#ff7a59" stroke-width="14" fill="none"
+                  stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"></circle></svg>
+        <div class="time"><b id="ttime">25:00</b><em id="tstate">ready</em></div>
+      </div>
+      <div class="btns">
+        <button class="btn go" id="startBtn">Start</button>
+        <button class="btn gh" id="resetBtn">Reset</button>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:1/-1">
+      <h2>Today's list</h2>
+      <div id="tasks"></div>
+      <div class="add">
+        <input id="newTask" type="text" aria-label="Add a task and press Enter">
+        <button class="btn go" id="addBtn">Add</button>
+      </div>
+      <div class="prog"><i id="taskBar"></i></div>
+      <div class="progtext" id="taskText"></div>
+    </div>
+
+    <div class="quote">Sleep more than six hours at least three nights a week. Protect time with Marcus and dinners with friends. Drink the water, run easy, call home.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><div>Off Euclid Avenue, Syracuse</div><div>Lo-fi on, water bottle full</div></div>
+</footer>
+
+<script>
+// live clock
+function tickClock(){const d=new Date();
+  document.getElementById('clock').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})+
+    ' · '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});}
+setInterval(tickClock,1000);tickClock();
+
+// countdowns
+function updateCountdowns(){
+  document.querySelectorAll('#deadlines .dl').forEach(el=>{
+    const target=new Date(el.dataset.date),now=new Date(),diff=target-now,c=el.querySelector('.count');
+    if(diff<=0){el.classList.add('past');c.innerHTML='done<small>complete</small>';return;}
+    const days=Math.floor(diff/864e5),hrs=Math.floor(diff%864e5/36e5),mins=Math.floor(diff%36e5/6e4);
+    c.innerHTML=days+'d '+hrs+'h<small>'+mins+' min</small>';
+  });
+}
+setInterval(updateCountdowns,30000);updateCountdowns();
+
+// pomodoro
+const R=88,CIRC=2*Math.PI*R;let total=25*60,left=total,running=false,timer=null;
+const ttime=document.getElementById('ttime'),tstate=document.getElementById('tstate'),rprog=document.getElementById('rprog');
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function render(){ttime.textContent=fmt(left);rprog.style.strokeDashoffset=CIRC*(1-left/total);}
+function setMode(min){total=min*60;left=total;running=false;clearInterval(timer);tstate.textContent='ready';
+  document.getElementById('startBtn').textContent='Start';render();}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.modes button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  setMode(+b.dataset.min);}));
+document.getElementById('startBtn').addEventListener('click',function(){
+  if(running){running=false;clearInterval(timer);tstate.textContent='paused';this.textContent='Resume';return;}
+  running=true;tstate.textContent='focusing';this.textContent='Pause';
+  timer=setInterval(()=>{left--;render();if(left<=0){clearInterval(timer);running=false;tstate.textContent='done';
+    document.getElementById('startBtn').textContent='Start';}},1000);
+});
+document.getElementById('resetBtn').addEventListener('click',()=>setMode(total/60));
+render();
+
+// tasks
+let tasks=[{t:'Outline participatory budgeting method section',d:false},
+           {t:'Tutor shift notes into the log',d:true},
+           {t:'Draft syllabus access recommendation',d:false},
+           {t:'Run easy, Thornden loop',d:false}];
+function renderTasks(){
+  const box=document.getElementById('tasks');box.innerHTML='';
+  tasks.forEach((task,i)=>{
+    const row=document.createElement('div');row.className='task'+(task.d?' done':'');
+    row.innerHTML=`<input type="checkbox" ${task.d?'checked':''}><label>${task.t}</label>`;
+    row.querySelector('input').addEventListener('change',e=>{tasks[i].d=e.target.checked;renderTasks();});
+    box.appendChild(row);
+  });
+  const done=tasks.filter(t=>t.d).length;
+  document.getElementById('taskBar').style.width=(tasks.length?done/tasks.length*100:0)+'%';
+  document.getElementById('taskText').textContent=done+' of '+tasks.length+' done';
+}
+function addTask(){const v=document.getElementById('newTask').value.trim();if(!v)return;
+  tasks.push({t:v,d:false});document.getElementById('newTask').value='';renderTasks();}
+document.getElementById('addBtn').addEventListener('click',addTask);
+document.getElementById('newTask').addEventListener('keydown',e=>{if(e.key==='Enter')addTask();});
+renderTasks();
+</script>
+</body>
+</html>

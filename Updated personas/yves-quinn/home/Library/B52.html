@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuisine du Nord | Operator Dashboard</title>
+<style>
+:root {
+  --bg: #0f1722;
+  --panel: #18222f;
+  --panel-2: #1f2c3c;
+  --text: #e6edf3;
+  --muted: #8aa0b6;
+  --accent: #f0b14c;
+  --good: #4cc38a;
+  --warn: #e07a5f;
+  --info: #6ea8d8;
+  --line: #29384a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "Segoe UI", Inter, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+}
+header.top {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.brand-row { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), #c48628);
+  border-radius: 8px;
+  display: grid; place-items: center;
+  color: var(--bg); font-weight: 800; font-family: Georgia, serif;
+}
+.brand-row h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.3px; }
+.brand-row span.sub { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+
+.top-actions { display: flex; gap: 10px; align-items: center; }
+.range-tabs {
+  display: flex; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 999px; padding: 3px;
+}
+.range-tabs button {
+  background: transparent; border: none;
+  color: var(--muted); padding: 7px 14px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.18s, color 0.18s;
+  font-family: inherit;
+}
+.range-tabs button.active { background: var(--accent); color: var(--bg); }
+.range-tabs button:hover:not(.active) { color: var(--text); }
+
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 65px); }
+aside.side {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 22px 14px;
+}
+aside.side h6 {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin: 16px 12px 8px;
+}
+aside.side a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  color: var(--text); text-decoration: none; font-size: 13px;
+  margin-bottom: 2px;
+  transition: background 0.18s;
+}
+aside.side a:hover { background: var(--panel-2); }
+aside.side a.active { background: var(--panel-2); color: var(--accent); }
+aside.side a .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+aside.side a.active .dot { background: var(--accent); }
+
+main.content { padding: 24px 28px; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.kpi:hover { transform: translateY(-2px); border-color: var(--accent); }
+.kpi .label { color: var(--muted); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+.kpi .value { font-size: 26px; font-weight: 700; margin-top: 6px; }
+.kpi .delta { font-size: 12px; margin-top: 8px; font-weight: 600; }
+.kpi .delta.up { color: var(--good); }
+.kpi .delta.dn { color: var(--warn); }
+.kpi .spark { margin-top: 10px; height: 30px; }
+
+.grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 22px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.card-head h3 { font-size: 14px; font-weight: 600; letter-spacing: 0.3px; }
+.card-head .legend { display: flex; gap: 12px; font-size: 11px; color: var(--muted); }
+.card-head .legend span::before {
+  content: ""; display: inline-block;
+  width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle;
+}
+.legend .l-rev::before { background: var(--accent); }
+.legend .l-exp::before { background: var(--info); }
+
+table.txn {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+table.txn th {
+  text-align: left; color: var(--muted);
+  font-weight: 600; font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 6px; border-bottom: 1px solid var(--line);
+}
+table.txn td {
+  padding: 10px 6px; border-bottom: 1px solid var(--line);
+}
+table.txn tr:hover td { background: var(--panel-2); }
+table.txn td.amt { font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+.tag {
+  display: inline-block; padding: 3px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+}
+.tag.paid { background: rgba(76,195,138,0.18); color: var(--good); }
+.tag.pending { background: rgba(240,177,76,0.18); color: var(--accent); }
+.tag.refund { background: rgba(224,122,95,0.18); color: var(--warn); }
+
+.donut-wrap { display: flex; align-items: center; gap: 22px; }
+.donut { width: 150px; height: 150px; flex-shrink: 0; }
+.donut-legend { flex: 1; display: grid; gap: 8px; }
+.donut-legend .row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px;
+  padding: 6px 0; border-bottom: 1px dashed var(--line);
+}
+.donut-legend .row .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
+.donut-legend .row .pct { color: var(--muted); }
+
+.upcoming { display: grid; gap: 10px; }
+.upcoming .item {
+  display: grid; grid-template-columns: 56px 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 10px 12px;
+  background: var(--panel-2);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  transition: transform 0.15s;
+}
+.upcoming .item:hover { transform: translateX(2px); }
+.upcoming .date {
+  text-align: center; font-weight: 700; color: var(--accent);
+}
+.upcoming .date .d { font-size: 18px; }
+.upcoming .date .m { font-size: 10px; letter-spacing: 1px; color: var(--muted); }
+.upcoming .meta .name { font-weight: 600; }
+.upcoming .meta .det { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.upcoming .price { color: var(--good); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.alert {
+  background: rgba(224,122,95,0.12);
+  border: 1px solid rgba(224,122,95,0.35);
+  color: var(--warn);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 22px;
+  display: flex; gap: 12px; align-items: center;
+}
+.alert::before { content: "!"; font-weight: 800; background: var(--warn); color: var(--bg); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side { display: none; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand-row">
+    <div class="logo">CN</div>
+    <div>
+      <h1>Cuisine du Nord</h1>
+      <span class="sub">Operator dashboard, Q4 2026</span>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="range-tabs" id="rangeTabs">
+      <button data-range="7d">7d</button>
+      <button data-range="30d" class="active">30d</button>
+      <button data-range="qtd">QTD</button>
+      <button data-range="ytd">YTD</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <h6>Workspace</h6>
+    <a href="#" class="active"><span class="dot"></span>Overview</a>
+    <a href="#"><span class="dot"></span>Bookings</a>
+    <a href="#"><span class="dot"></span>Menu &amp; pricing</a>
+    <a href="#"><span class="dot"></span>Clients</a>
+    <a href="#"><span class="dot"></span>Inventory</a>
+    <h6>Money</h6>
+    <a href="#"><span class="dot"></span>Square POS</a>
+    <a href="#"><span class="dot"></span>Silverpeak CU</a>
+    <a href="#"><span class="dot"></span>Food truck fund</a>
+    <h6>Schedule</h6>
+    <a href="#"><span class="dot"></span>Hawthorne shifts</a>
+    <a href="#"><span class="dot"></span>Saturday market</a>
+    <a href="#"><span class="dot"></span>Family calendar</a>
+  </aside>
+
+  <main class="content">
+
+    <div class="alert" role="status">
+      Cottage food permit renewal deadline 16 November 2026. Pre-inspection passed on 5 Nov. Submit application and $230 fee on Multnomah County portal.
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Revenue MTD</div>
+        <div class="value" data-counter="7842">$0</div>
+        <div class="delta up">+18% vs Oct</div>
+        <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="0,22 10,20 20,18 30,16 40,14 50,15 60,12 70,9 80,8 90,5 100,3" fill="none" stroke="#f0b14c" stroke-width="2"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="label">Bookings MTD</div>
+        <div class="value" data-counter="11">0</div>
+        <div class="delta up">+3 vs Oct</div>
+        <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="0,18 10,20 20,15 30,17 40,12 50,14 60,10 70,12 80,7 90,9 100,5" fill="none" stroke="#4cc38a" stroke-width="2"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="label">Avg cover</div>
+        <div class="value" data-counter="21" data-prefix="$">$0</div>
+        <div class="delta up">+$0.80 vs Q3</div>
+        <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="0,17 10,16 20,17 30,15 40,14 50,15 60,13 70,12 80,13 90,11 100,10" fill="none" stroke="#6ea8d8" stroke-width="2"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="label">Food truck fund</div>
+        <div class="value" data-counter="7560" data-prefix="$">$0</div>
+        <div class="delta up">+$400 this month</div>
+        <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="0,25 10,24 20,23 30,21 40,20 50,18 60,17 70,15 80,13 90,11 100,9" fill="none" stroke="#f0b14c" stroke-width="2"/></svg>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head">
+          <h3>Revenue vs expense, last 8 weeks</h3>
+          <div class="legend">
+            <span class="l-rev">Revenue</span>
+            <span class="l-exp">Expense</span>
+          </div>
+        </div>
+        <svg viewBox="0 0 600 240" width="100%" height="260" preserveAspectRatio="none">
+          <line x1="40" y1="20" x2="40" y2="200" stroke="#29384a"/>
+          <line x1="40" y1="200" x2="580" y2="200" stroke="#29384a"/>
+          <text x="10" y="200" fill="#8aa0b6" font-size="10">$0</text>
+          <text x="10" y="150" fill="#8aa0b6" font-size="10">$1k</text>
+          <text x="10" y="100" fill="#8aa0b6" font-size="10">$2k</text>
+          <text x="10" y="50" fill="#8aa0b6" font-size="10">$3k</text>
+          <g id="bars"></g>
+          <g id="bar-labels"></g>
+        </svg>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Expense mix, Q4 to date</h3></div>
+        <div class="donut-wrap">
+          <svg class="donut" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#29384a" stroke-width="6"/>
+            <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#f0b14c" stroke-width="6" stroke-dasharray="40 60" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
+            <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#6ea8d8" stroke-width="6" stroke-dasharray="22 78" stroke-dashoffset="-15" transform="rotate(-90 21 21)"/>
+            <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#4cc38a" stroke-width="6" stroke-dasharray="18 82" stroke-dashoffset="-37" transform="rotate(-90 21 21)"/>
+            <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#e07a5f" stroke-width="6" stroke-dasharray="20 80" stroke-dashoffset="-55" transform="rotate(-90 21 21)"/>
+            <text x="21" y="22" text-anchor="middle" fill="#e6edf3" font-size="5" font-weight="700">$4,210</text>
+            <text x="21" y="27" text-anchor="middle" fill="#8aa0b6" font-size="3">spent</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="row"><span><span class="swatch" style="background:#f0b14c"></span>Food cost</span><span class="pct">40%</span></div>
+            <div class="row"><span><span class="swatch" style="background:#6ea8d8"></span>Kitchen rent</span><span class="pct">22%</span></div>
+            <div class="row"><span><span class="swatch" style="background:#4cc38a"></span>Packaging</span><span class="pct">18%</span></div>
+            <div class="row"><span><span class="swatch" style="background:#e07a5f"></span>Other</span><span class="pct">20%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h3>Recent Square transactions</h3></div>
+        <table class="txn">
+          <thead><tr><th>Date</th><th>Description</th><th>Method</th><th>Status</th><th class="amt">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Nov 13</td><td>Ambervale corporate lunch, 40 covers</td><td>Card .1142</td><td><span class="tag paid">Paid</span></td><td class="amt">$880.00</td></tr>
+            <tr><td>Nov 12</td><td>Holiday party deposit, 120 covers Dec 12</td><td>Card .3380</td><td><span class="tag paid">Paid</span></td><td class="amt">$1,320.00</td></tr>
+            <tr><td>Nov 07</td><td>Market booth B47, 6 transactions</td><td>Mixed</td><td><span class="tag paid">Paid</span></td><td class="amt">$324.00</td></tr>
+            <tr><td>Nov 07</td><td>Engagement party deposit</td><td>Card .1142</td><td><span class="tag paid">Paid</span></td><td class="amt">$660.00</td></tr>
+            <tr><td>Nov 04</td><td>Reveillon deposit, parish hall Dec 24</td><td>Card .7705</td><td><span class="tag pending">Pending</span></td><td class="amt">$540.00</td></tr>
+            <tr><td>Nov 02</td><td>Office holiday, 22 cover quote sent</td><td>Invoice</td><td><span class="tag pending">Awaiting</span></td><td class="amt">$484.00</td></tr>
+            <tr><td>Oct 30</td><td>Allergen swap refund, October booking</td><td>Card .4419</td><td><span class="tag refund">Refund</span></td><td class="amt">-$60.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Upcoming on the calendar</h3></div>
+        <div class="upcoming">
+          <div class="item">
+            <div class="date"><div class="d">16</div><div class="m">NOV</div></div>
+            <div class="meta"><div class="name">Cottage food permit renewal</div><div class="det">Multnomah County portal, $230</div></div>
+            <div class="price">-$230</div>
+          </div>
+          <div class="item">
+            <div class="date"><div class="d">21</div><div class="m">NOV</div></div>
+            <div class="meta"><div class="name">Saturday market, Booth B47</div><div class="det">Reveillon pre-order push</div></div>
+            <div class="price">+$280 est</div>
+          </div>
+          <div class="item">
+            <div class="date"><div class="d">26</div><div class="m">NOV</div></div>
+            <div class="meta"><div class="name">US Thanksgiving, hosting</div><div class="det">Personal, no service</div></div>
+            <div class="price">-</div>
+          </div>
+          <div class="item">
+            <div class="date"><div class="d">12</div><div class="m">DEC</div></div>
+            <div class="meta"><div class="name">Holiday party, 120 covers</div><div class="det">Crew: Yves, Emile, Sienna, Luc</div></div>
+            <div class="price">+$2,640</div>
+          </div>
+          <div class="item">
+            <div class="date"><div class="d">24</div><div class="m">DEC</div></div>
+            <div class="meta"><div class="name">Reveillon, parish hall</div><div class="det">6 courses, 48 covers</div></div>
+            <div class="price">+$1,920</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const tabs = document.querySelectorAll('#rangeTabs button');
+tabs.forEach(b => b.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+}));
+
+document.querySelectorAll('[data-counter]').forEach(el => {
+  const target = parseFloat(el.dataset.counter);
+  const prefix = el.dataset.prefix || '';
+  const dur = 1100; const start = performance.now();
+  function tick(t) {
+    const p = Math.min((t - start) / dur, 1);
+    const v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+    el.textContent = prefix + v.toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+});
+
+const weeks = [
+  { w: 'W41', rev: 1820, exp: 760 }, { w: 'W42', rev: 2010, exp: 880 },
+  { w: 'W43', rev: 1660, exp: 720 }, { w: 'W44', rev: 2240, exp: 940 },
+  { w: 'W45', rev: 1980, exp: 810 }, { w: 'W46', rev: 2480, exp: 1020 },
+  { w: 'W47', rev: 2640, exp: 1180 }, { w: 'W48', rev: 2900, exp: 1240 }
+];
+const bars = document.getElementById('bars');
+const labels = document.getElementById('bar-labels');
+const baseX = 60; const slot = 64;
+weeks.forEach((w, i) => {
+  const x = baseX + i * slot;
+  const revH = (w.rev / 3000) * 180;
+  const expH = (w.exp / 3000) * 180;
+  bars.innerHTML += `<rect x="${x}" y="${200 - revH}" width="22" height="${revH}" fill="#f0b14c" rx="2"><animate attributeName="height" from="0" to="${revH}" dur="0.7s" fill="freeze"/><animate attributeName="y" from="200" to="${200 - revH}" dur="0.7s" fill="freeze"/></rect>`;
+  bars.innerHTML += `<rect x="${x + 26}" y="${200 - expH}" width="22" height="${expH}" fill="#6ea8d8" rx="2"><animate attributeName="height" from="0" to="${expH}" dur="0.7s" fill="freeze"/><animate attributeName="y" from="200" to="${200 - expH}" dur="0.7s" fill="freeze"/></rect>`;
+  labels.innerHTML += `<text x="${x + 24}" y="218" text-anchor="middle" fill="#8aa0b6" font-size="10">${w.w}</text>`;
+});
+</script>
+
+</body>
+</html>

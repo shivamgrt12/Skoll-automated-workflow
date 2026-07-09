@@ -1,0 +1,74 @@
+[
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000001,
+    "message": "Web host osborne-web-1 not reporting — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "Web host up",
+    "overall_state": "OK",
+    "priority": 2,
+    "query": "\"datadog.agent.up\".over(\"host:osborne-web-1\").last(2).count_by_status()",
+    "tags": "service:storefront;env:prod",
+    "type": "service check"
+  },
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000002,
+    "message": "Storefront 5xx rate too high — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "Storefront 5xx rate",
+    "overall_state": "OK",
+    "priority": 1,
+    "query": "sum(last_5m):sum:trace.http.request.errors{service:storefront}.as_rate() > 5",
+    "tags": "service:storefront;env:prod",
+    "type": "metric alert"
+  },
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000003,
+    "message": "Checkout errors detected — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "Checkout errors",
+    "overall_state": "Warn",
+    "priority": 1,
+    "query": "sum(last_10m):sum:trace.checkout.order.errors{service:checkout}.as_count() > 3",
+    "tags": "service:checkout;env:prod",
+    "type": "metric alert"
+  },
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000004,
+    "message": "Disk usage above 80% on web host — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "Disk usage above 80%",
+    "overall_state": "OK",
+    "priority": 3,
+    "query": "avg(last_15m):avg:system.disk.in_use{host:osborne-web-1} > 0.8",
+    "tags": "service:storefront;env:prod",
+    "type": "metric alert"
+  },
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000005,
+    "message": "Storefront synthetic uptime check failing — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "Storefront uptime check",
+    "overall_state": "OK",
+    "priority": 1,
+    "query": "synthetic.test{service:storefront}.failed",
+    "tags": "service:storefront;env:prod",
+    "type": "synthetic alert"
+  },
+  {
+    "created": "2025-10-04T09:00:00Z",
+    "id": 2000006,
+    "message": "TLS certificate near expiry for finthesiss.ai — notify @sam.osborne@Finthesiss.ai",
+    "modified": "2026-03-15T00:00:00+00:00",
+    "name": "TLS certificate expiry",
+    "overall_state": "OK",
+    "priority": 3,
+    "query": "min(last_1d):min:ssl.cert.days_remaining{service:storefront} < 14",
+    "tags": "service:storefront;env:prod",
+    "type": "metric alert"
+  }
+]

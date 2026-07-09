@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelly Electric LLC</title>
+<style>
+  :root{
+    --charcoal:#1e2a33; --charcoal2:#26343f; --blue:#1c6fb0; --blue-d:#155a90;
+    --amber:#f2a30f; --ink:#22303a; --slate:#5a7280; --bg:#f4f6f8; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header{position:sticky;top:0;z-index:50;background:rgba(30,42,51,.97);backdrop-filter:blur(6px);box-shadow:0 2px 14px rgba(0,0,0,.18)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:700;font-size:1.2rem;letter-spacing:.3px}
+  .bolt{width:34px;height:34px;background:var(--amber);border-radius:8px;display:grid;place-items:center;color:var(--charcoal);font-weight:900;font-size:1.2rem}
+  nav ul{display:flex;gap:28px;list-style:none}
+  nav a{color:#cdd9e1;font-size:.95rem;font-weight:500;transition:color .2s}
+  nav a:hover{color:var(--amber)}
+  .nav-cta{background:var(--amber);color:var(--charcoal);padding:9px 18px;border-radius:7px;font-weight:700;transition:transform .15s,background .2s}
+  .nav-cta:hover{transform:translateY(-2px);background:#ffb52e}
+  .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+  .burger span{width:26px;height:3px;background:#fff;border-radius:2px;transition:.3s}
+
+  /* hero */
+  .hero{background:linear-gradient(120deg,var(--charcoal) 0%,var(--charcoal2) 60%,#2f4250 100%);color:#fff;padding:96px 0 110px;position:relative;overflow:hidden}
+  .hero:before{content:"";position:absolute;right:-120px;top:-80px;width:420px;height:420px;background:radial-gradient(circle,rgba(242,163,15,.18),transparent 70%)}
+  .hero h1{font-size:3rem;line-height:1.1;max-width:760px;margin-bottom:18px}
+  .hero h1 span{color:var(--amber)}
+  .hero p{font-size:1.18rem;color:#bccad4;max-width:600px;margin-bottom:34px}
+  .btns{display:flex;gap:16px;flex-wrap:wrap}
+  .btn{padding:14px 28px;border-radius:8px;font-weight:700;cursor:pointer;border:none;font-size:1rem;transition:transform .15s,box-shadow .2s}
+  .btn-primary{background:var(--amber);color:var(--charcoal)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(242,163,15,.34)}
+  .btn-ghost{background:transparent;color:#fff;border:2px solid #41525e}
+  .btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:-58px;position:relative;z-index:5}
+  .stat{background:#fff;border-radius:12px;padding:26px 20px;text-align:center;box-shadow:0 8px 26px rgba(20,40,55,.10);border-top:4px solid var(--blue)}
+  .stat:nth-child(even){border-top-color:var(--amber)}
+  .stat .num{font-size:2.3rem;font-weight:800;color:var(--charcoal)}
+  .stat .lbl{font-size:.9rem;color:var(--slate);margin-top:4px}
+
+  section{padding:80px 0}
+  .eyebrow{color:var(--blue);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:.8rem}
+  h2.title{font-size:2.1rem;color:var(--charcoal);margin:8px 0 10px}
+  .lead{color:var(--slate);max-width:680px;margin-bottom:46px}
+
+  .services{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:#fff;border-radius:12px;padding:30px 26px;box-shadow:0 4px 16px rgba(20,40,55,.07);transition:transform .25s,box-shadow .25s;border-bottom:3px solid transparent}
+  .card:hover{transform:translateY(-8px);box-shadow:0 16px 34px rgba(20,40,55,.14);border-bottom-color:var(--amber)}
+  .card .ic{width:52px;height:52px;border-radius:10px;background:#eaf3fb;display:grid;place-items:center;font-size:1.5rem;margin-bottom:16px}
+  .card h3{font-size:1.2rem;color:var(--charcoal);margin-bottom:8px}
+  .card p{font-size:.95rem;color:var(--slate)}
+
+  /* about / process */
+  .about{background:var(--charcoal);color:#fff}
+  .about .grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center}
+  .about .eyebrow{color:var(--amber)}
+  .about h2{font-size:2.1rem;margin:8px 0 16px}
+  .about p{color:#bccad4;margin-bottom:16px}
+  .steps{list-style:none;display:grid;gap:18px}
+  .steps li{display:flex;gap:16px;align-items:flex-start}
+  .steps .n{flex:none;width:40px;height:40px;border-radius:50%;background:var(--amber);color:var(--charcoal);font-weight:800;display:grid;place-items:center}
+  .steps h4{font-size:1.05rem}
+  .steps small{color:#9fb1bd}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .quote{background:#fff;border-radius:12px;padding:28px;box-shadow:0 4px 16px rgba(20,40,55,.07);position:relative}
+  .quote:before{content:"\201C";position:absolute;top:6px;left:18px;font-size:3.4rem;color:#e7eef3;font-family:Georgia,serif}
+  .quote p{position:relative;font-size:.98rem;color:var(--ink);margin-bottom:14px}
+  .quote .who{font-weight:700;color:var(--blue);font-size:.92rem}
+  .stars{color:var(--amber);letter-spacing:2px}
+
+  /* contact */
+  .contact{background:linear-gradient(180deg,#eef2f5,#f4f6f8)}
+  .contact .grid{display:grid;grid-template-columns:1fr 1fr;gap:46px}
+  .info-line{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+  .info-line .ic{width:44px;height:44px;border-radius:10px;background:var(--charcoal);color:var(--amber);display:grid;place-items:center;font-weight:700;flex:none}
+  .info-line b{display:block;color:var(--charcoal)}
+  .info-line span{color:var(--slate);font-size:.94rem}
+  form{background:#fff;border-radius:14px;padding:30px;box-shadow:0 8px 28px rgba(20,40,55,.10)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;color:var(--charcoal)}
+  .field input,.field textarea,.field select{width:100%;padding:12px 14px;border:1.5px solid #d4dde3;border-radius:8px;font-size:.95rem;font-family:inherit;transition:border-color .2s}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--blue)}
+  .field.err input,.field.err textarea{border-color:#d9483b;background:#fdf2f1}
+  .err-msg{color:#d9483b;font-size:.8rem;margin-top:4px;display:none}
+  .field.err .err-msg{display:block}
+  .form-ok{display:none;background:#e7f5ec;border:1.5px solid #34a06a;color:#1c7a4a;padding:14px;border-radius:8px;font-weight:600;margin-bottom:14px}
+  .form-ok.show{display:block;animation:pop .4s ease}
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+
+  footer{background:#15212a;color:#9fb1bd;padding:48px 0 28px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:34px;margin-bottom:30px}
+  footer h4{color:#fff;margin-bottom:14px;font-size:1rem}
+  footer a:hover{color:var(--amber)}
+  footer ul{list-style:none;display:grid;gap:8px;font-size:.92rem}
+  .foot-bot{border-top:1px solid #25333d;padding-top:18px;text-align:center;font-size:.85rem}
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:900px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .services,.quotes{grid-template-columns:1fr}
+    .about .grid,.contact .grid,.foot-grid{grid-template-columns:1fr}
+    .hero h1{font-size:2.2rem}
+    nav ul{position:fixed;inset:70px 0 auto 0;background:var(--charcoal);flex-direction:column;gap:0;padding:10px 24px;transform:translateY(-130%);transition:transform .3s;box-shadow:0 10px 20px rgba(0,0,0,.3)}
+    nav ul.open{transform:none}
+    nav li{padding:12px 0;border-bottom:1px solid #2c3b46}
+    .burger{display:flex}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand"><span class="bolt">K</span> Kelly Electric LLC</a>
+    <nav>
+      <ul id="menu">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#contact" class="nav-cta">Free Estimate</a></li>
+      </ul>
+    </nav>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div id="top" class="hero">
+  <div class="wrap">
+    <h1>Honest electrical work, <span>done to code</span> and done once.</h1>
+    <p>Residential and small commercial wiring across Philadelphia and the Bucks, Montgomery, and Delaware county suburbs. Licensed, insured, and twenty five years on the tools.</p>
+    <div class="btns">
+      <button class="btn btn-primary" onclick="go('contact')">Request a free estimate</button>
+      <button class="btn btn-ghost" onclick="go('services')">See what I do</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="num" data-count="25" data-suffix="+">0</div><div class="lbl">Years licensed</div></div>
+    <div class="stat"><div class="num" data-count="200" data-suffix="A">0</div><div class="lbl">Service upgrades to code</div></div>
+    <div class="stat"><div class="num" data-count="95" data-prefix="$">0</div><div class="lbl">Per hour, standard labor</div></div>
+    <div class="stat"><div class="num" data-count="100" data-suffix="%">0</div><div class="lbl">Inspections passed</div></div>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">What I do</div>
+      <h2 class="title">Wiring, panels, and the quiet fixes</h2>
+      <p class="lead">One tradesman, apprentice help on the bigger jobs. Three or four active jobs at a time, booked four to six weeks out, every one permitted and inspected.</p>
+    </div>
+    <div class="services">
+      <div class="card reveal"><div class="ic">&#9889;</div><h3>Panel upgrades</h3><p>Old fuse boxes out, 200 amp service in, bonded and labeled to current code with room to grow.</p></div>
+      <div class="card reveal"><div class="ic">&#127968;</div><h3>Whole house rewire</h3><p>Older Philadelphia homes brought up to a safe modern standard, room by room, with the mess kept down.</p></div>
+      <div class="card reveal"><div class="ic">&#128267;</div><h3>EV charger installs</h3><p>Dedicated 240 volt circuits sized right, weatherproof receptacle, permit pulled, final inspection passed.</p></div>
+      <div class="card reveal"><div class="ic">&#128161;</div><h3>Circuits and devices</h3><p>GFCI protection, smoke detectors, kitchen and laundry circuits, and clean lighting work.</p></div>
+      <div class="card reveal"><div class="ic">&#127981;</div><h3>Small commercial</h3><p>Tenant fit outs, sub panels, and reliable service calls for local businesses on the block.</p></div>
+      <div class="card reveal"><div class="ic">&#128737;</div><h3>Safety and service</h3><p>Troubleshooting, code corrections, and catching the small trouble before it ever becomes a fire.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="about">
+  <div class="wrap grid">
+    <div class="reveal">
+      <div class="eyebrow">About the shop</div>
+      <h2>Two hands and a meter, since 2001.</h2>
+      <p>I came up the hard way, an apprenticeship and a master license earned the long way around. Kelly Electric is a one man shop by choice. You get me on the job, not a rotating crew, and the panel gets labeled before the cover goes back on.</p>
+      <p>Fully licensed in Pennsylvania, general liability and workers compensation in force. License ME-118455. Free estimates, no deposit to hold a date.</p>
+      <button class="btn btn-primary" onclick="go('contact')">Get in touch</button>
+    </div>
+    <div class="reveal" id="process">
+      <ul class="steps">
+        <li><span class="n">1</span><div><h4>Walk the job</h4><small>Look behind the wall where I can, measure the load, give you a straight number.</small></div></li>
+        <li><span class="n">2</span><div><h4>Quote and schedule</h4><small>Itemized or flat rate, booked four to six weeks out, no surprises.</small></div></li>
+        <li><span class="n">3</span><div><h4>Pull the permit</h4><small>Every job by the book. The permit and inspection protect the homeowner.</small></div></li>
+        <li><span class="n">4</span><div><h4>Do it clean</h4><small>Neat runs, labeled panel, the site swept before I leave.</small></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">From the neighbors</div>
+      <h2 class="title">Work that holds up</h2>
+      <p class="lead">A handful of recent jobs across the suburbs, in their own words.</p>
+    </div>
+    <div class="quotes">
+      <div class="quote reveal"><p>Pulled our old fuse panel and put in a clean 200 amp service. Labeled every circuit and passed inspection first try. Tidy and on time.</p><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="who">Hartwell residence, Doylestown</div></div>
+      <div class="quote reveal"><p>Rewired our whole house in phases so we were never fully without power. Honest about cost behind the walls and never cut a corner.</p><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="who">Whitmore residence, Lansdale</div></div>
+      <div class="quote reveal"><p>Installed the EV charger circuit in an afternoon, weatherproof and inspected. Explained the whole thing without talking down to us.</p><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="who">Delgado residence, Ardmore</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap grid">
+    <div class="reveal">
+      <div class="eyebrow">Free estimate</div>
+      <h2 class="title">Tell me about the job</h2>
+      <p class="lead">Most reachable early morning and after seven in the evening. Job site hours, the phone stays in the truck, so leave a note and I will get back to you.</p>
+      <div class="info-line"><div class="ic">&#9742;</div><div><b>(215) 555-0288</b><span>Call or text</span></div></div>
+      <div class="info-line"><div class="ic">&#9993;</div><div><b>brandon.kelly@greenridertech.co</b><span>Email, replies after 7 PM</span></div></div>
+      <div class="info-line"><div class="ic">&#9873;</div><div><b>417 Brookmead Street, Philadelphia, PA 19111</b><span>Serving Philadelphia and the surrounding counties</span></div></div>
+    </div>
+    <form id="estForm" novalidate>
+      <div class="form-ok" id="formOk">Thank you. Your request is noted. Brandon will get back to you after 7 PM.</div>
+      <div class="field"><label>Name</label><input type="text" id="f-name"><div class="err-msg">Please enter your name.</div></div>
+      <div class="field"><label>Email</label><input type="email" id="f-email"><div class="err-msg">Please enter a valid email.</div></div>
+      <div class="field"><label>Type of work</label>
+        <select id="f-type"><option value="">Choose one</option><option>Panel upgrade</option><option>Whole house rewire</option><option>EV charger install</option><option>Circuits or devices</option><option>Small commercial</option><option>Something else</option></select>
+        <div class="err-msg">Please choose the type of work.</div>
+      </div>
+      <div class="field"><label>Details</label><textarea id="f-msg" rows="4"></textarea><div class="err-msg">Please add a few details.</div></div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Send request</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Kelly Electric LLC</h4>
+        <p style="font-size:.92rem;max-width:320px">Licensed Pennsylvania master electrician. Residential and small commercial work done right the first time. License ME-118455, EIN 87-3041926.</p>
+      </div>
+      <div><h4>Services</h4><ul><li><a href="#services">Panel upgrades</a></li><li><a href="#services">Whole house rewire</a></li><li><a href="#services">EV chargers</a></li><li><a href="#services">Small commercial</a></li></ul></div>
+      <div><h4>Reach me</h4><ul><li>(215) 555-0288</li><li>brandon.kelly@greenridertech.co</li><li>417 Brookmead Street</li><li>Philadelphia, PA 19111</li></ul></div>
+    </div>
+    <div class="foot-bot">Kelly Electric LLC. Licensed and insured. Free estimates across Philadelphia and the surrounding counties.</div>
+  </div>
+</footer>
+
+<script>
+  function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});document.getElementById("menu").classList.remove("open");}
+  document.getElementById("burger").addEventListener("click",function(){document.getElementById("menu").classList.toggle("open");});
+
+  // scroll reveal
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.15});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+
+  // animated counters
+  function runCounters(){
+    document.querySelectorAll(".num[data-count]").forEach(function(el){
+      var target=+el.dataset.count, pre=el.dataset.prefix||"", suf=el.dataset.suffix||"", cur=0, steps=45, inc=target/steps;
+      var t=setInterval(function(){cur+=inc;if(cur>=target){cur=target;clearInterval(t);}el.textContent=pre+Math.round(cur)+suf;},20);
+    });
+  }
+  var statSeen=false;
+  var sIo=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!statSeen){statSeen=true;runCounters();}});},{threshold:.4});
+  sIo.observe(document.querySelector(".stats"));
+
+  // form validation
+  document.getElementById("estForm").addEventListener("submit",function(ev){
+    ev.preventDefault();
+    var ok=true;
+    function check(id,test){var f=document.getElementById(id).closest(".field");if(!test){f.classList.add("err");ok=false;}else{f.classList.remove("err");}}
+    var nm=document.getElementById("f-name").value.trim();
+    var em=document.getElementById("f-email").value.trim();
+    var tp=document.getElementById("f-type").value;
+    var ms=document.getElementById("f-msg").value.trim();
+    check("f-name",nm.length>1);
+    check("f-email",/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em));
+    check("f-type",tp!=="");
+    check("f-msg",ms.length>4);
+    if(ok){
+      document.getElementById("formOk").classList.add("show");
+      this.reset();
+      document.getElementById("formOk").scrollIntoView({behavior:"smooth",block:"center"});
+    }
+  });
+</script>
+</body>
+</html>

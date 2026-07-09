@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Munjoy Hill Apothecary</title>
+<style>
+  :root{
+    --sage:#6b7a5e; --sage-d:#4f5c45; --clay:#b07a52; --cream:#f6f2e7;
+    --ink:#2f3328; --soft:#eef0e6; --line:#d8d6c4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--cream);line-height:1.65}
+  a{color:var(--sage-d);text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(246,242,231,.94);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:14px 26px}
+  .brand{font-size:1.28rem;font-weight:bold;letter-spacing:.5px;color:var(--sage-d)}
+  .brand span{display:block;font-size:.66rem;letter-spacing:3px;color:var(--clay);font-style:italic}
+  nav ul{list-style:none;display:flex;gap:22px}
+  nav a{font-family:Arial,Helvetica,sans-serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase}
+  nav a:hover{color:var(--clay)}
+  .burger{display:none;font-size:1.5rem;background:none;border:none;cursor:pointer;color:var(--sage-d)}
+  .hero{padding:96px 26px 84px;text-align:center;background:
+     radial-gradient(circle at 50% 0,#e7ecda 0,var(--cream) 60%);position:relative;overflow:hidden}
+  .hero h1{font-size:2.7rem;line-height:1.2;max-width:760px;margin:0 auto 18px}
+  .hero p.lead{font-size:1.12rem;max-width:560px;margin:0 auto 30px;font-style:italic;color:#565e49}
+  .btn{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:.85rem;letter-spacing:1px;
+    text-transform:uppercase;padding:13px 28px;border-radius:30px;border:2px solid var(--sage);
+    background:var(--sage);color:#fff;cursor:pointer;transition:.25s}
+  .btn:hover{background:var(--sage-d);border-color:var(--sage-d);transform:translateY(-2px)}
+  .btn.ghost{background:none;color:var(--sage-d)}
+  .btn.ghost:hover{background:var(--sage);color:#fff}
+  .leaf{position:absolute;font-size:2rem;opacity:.25;animation:float 9s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-22px) rotate(8deg)}}
+  section{padding:64px 26px;max-width:1040px;margin:0 auto}
+  h2.title{font-size:1.9rem;text-align:center;margin-bottom:8px}
+  .sub{text-align:center;color:#7a7c66;font-style:italic;margin-bottom:38px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 22px;
+    transition:.3s;opacity:0;transform:translateY(24px)}
+  .card.in{opacity:1;transform:none}
+  .card:hover{box-shadow:0 14px 30px rgba(79,92,69,.18);transform:translateY(-6px)}
+  .card .ic{font-size:2rem;margin-bottom:12px}
+  .card h3{font-size:1.18rem;margin-bottom:8px;color:var(--sage-d)}
+  .card p{font-size:.96rem;color:#54583f}
+  .spotlight{background:var(--soft);border-radius:18px;padding:34px;margin-top:14px}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px}
+  .tab{font-family:Arial,Helvetica,sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;
+    padding:9px 18px;border-radius:24px;border:1px solid var(--sage);background:none;color:var(--sage-d);cursor:pointer}
+  .tab.active{background:var(--sage);color:#fff}
+  .panel{display:none;animation:fade .5s}
+  .panel.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+  .panel h3{color:var(--clay);font-size:1.3rem;margin-bottom:6px}
+  .panel .latin{font-style:italic;color:#8a8c70;margin-bottom:10px}
+  form{max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:30px}
+  label{display:block;font-family:Arial,Helvetica,sans-serif;font-size:.78rem;letter-spacing:.6px;
+    text-transform:uppercase;color:#6c6f56;margin:14px 0 5px}
+  input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;
+    font-family:inherit;font-size:1rem;background:var(--cream);color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sage)}
+  .err{color:#a23b2d;font-size:.8rem;font-family:Arial,Helvetica,sans-serif;display:none;margin-top:4px}
+  .ok{display:none;background:#e3ecd6;border:1px solid var(--sage);border-radius:10px;padding:16px;
+    margin-top:18px;color:var(--sage-d);text-align:center}
+  blockquote{background:#fff;border-left:4px solid var(--clay);border-radius:8px;padding:18px 22px;font-style:italic;color:#54583f}
+  blockquote cite{display:block;margin-top:8px;font-style:normal;font-size:.85rem;color:#8a8c70}
+  footer{background:var(--sage-d);color:#e8ecdd;margin-top:40px;padding:40px 26px 28px}
+  .fgrid{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+  footer h4{font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;color:#c9d3b6;margin-bottom:10px;font-family:Arial,Helvetica,sans-serif}
+  footer p,footer li{font-size:.92rem;list-style:none}
+  .copy{text-align:center;margin-top:26px;padding-top:16px;border-top:1px solid #5d6a50;font-size:.8rem;color:#aebb97}
+  @media(max-width:680px){nav ul{display:none}.burger{display:block}nav ul.open{display:flex;position:absolute;
+    top:60px;right:0;flex-direction:column;background:var(--cream);border:1px solid var(--line);padding:16px;border-radius:0 0 0 12px}
+    .hero h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="brand">Munjoy Hill Apothecary<span>Folk Herbalism and Prayer</span></div>
+  <button class="burger" aria-label="Menu" onclick="document.getElementById('menu').classList.toggle('open')">&#9776;</button>
+  <nav><ul id="menu">
+    <li><a href="#services" onclick="closeMenu()">Services</a></li>
+    <li><a href="#herbs" onclick="closeMenu()">The Garden</a></li>
+    <li><a href="#words" onclick="closeMenu()">Kind Words</a></li>
+    <li><a href="#book" onclick="closeMenu()">Request a Visit</a></li>
+  </ul></nav>
+</header>
+
+<div class="hero">
+  <span class="leaf" style="left:10%;top:30%">&#127807;</span>
+  <span class="leaf" style="right:12%;top:22%;animation-delay:2s">&#127811;</span>
+  <span class="leaf" style="left:20%;bottom:14%;animation-delay:4s">&#127810;</span>
+  <h1>Gentle, considered herbal care on Munjoy Hill</h1>
+  <p class="lead">Forty years of nursing and a lifetime of folk herbalism, offered quietly from my home to the neighbors who need it.</p>
+  <a class="btn" href="#book">Request a consultation</a>
+  <a class="btn ghost" href="#services" style="margin-left:8px">What I offer</a>
+</div>
+
+<section id="services">
+  <h2 class="title">How I can help</h2>
+  <p class="sub">Every visit begins with a full conversation about your health picture before any herb is prepared.</p>
+  <div class="cards">
+    <div class="card"><div class="ic">&#127861;</div><h3>Herbal Consultation</h3><p>A careful sitting to understand sleep, digestion, stress, or seasonal complaints, followed by a tincture or tea blend prepared for you.</p></div>
+    <div class="card"><div class="ic">&#128144;</div><h3>Tinctures and Teas</h3><p>Small batch preparations from the garden beds, made the slow way and labeled with the herb and the date.</p></div>
+    <div class="card"><div class="ic">&#129496;</div><h3>Poultices and Salves</h3><p>Comfrey poultices and calendula salves for aching hands, bruises, and dry winter skin. External use, always explained in full.</p></div>
+    <div class="card"><div class="ic">&#128591;</div><h3>Prayer and Quiet</h3><p>For the grieving and the weary, a prayer session with no herb at all. Sometimes sitting together an hour is the whole of it.</p></div>
+  </div>
+  <p class="sub" style="margin-top:30px">Visits are by donation, usually 20 to 40 dollars, and no one is turned away.</p>
+</section>
+
+<section id="herbs">
+  <h2 class="title">From the garden beds</h2>
+  <p class="sub">Eight beds behind the house, tended through the Maine seasons. Choose one to learn how I use it.</p>
+  <div class="spotlight">
+    <div class="tabs">
+      <button class="tab active" data-p="lav">Lavender</button>
+      <button class="tab" data-p="cham">Chamomile</button>
+      <button class="tab" data-p="ech">Echinacea</button>
+      <button class="tab" data-p="comf">Comfrey</button>
+    </div>
+    <div class="panel show" id="lav"><h3>Lavender</h3><p class="latin">Lavandula angustifolia, bed A1</p><p>The most versatile herb on the shelf. Dried flowers steeped for tea ease a restless evening, and a few drops of diluted oil settle a tense afternoon. I keep sachets on hand to give away.</p></div>
+    <div class="panel" id="cham"><h3>Chamomile</h3><p class="latin">Matricaria chamomilla, bed A2</p><p>One of the first herbs my grandmother taught me. The flowers go into my sleep and calm blend, dried on screens in late summer and kept in a wide mouth jar.</p></div>
+    <div class="panel" id="ech"><h3>Echinacea</h3><p class="latin">Echinacea purpurea, bed B1</p><p>Tinctured from the flower and leaf for winter immune support, taken at the first sign of a cold and never for longer than two weeks at a time. The root is left in the ground until its fourth year.</p></div>
+    <div class="panel" id="comf"><h3>Comfrey</h3><p class="latin">Symphytum officinale, bed D2</p><p>For bruises, sprains, and aching joints, prepared only as a poultice or salve. I tell every visitor the same thing: this one is for the skin, never to be taken by mouth.</p></div>
+  </div>
+</section>
+
+<section id="words">
+  <h2 class="title">Kind words from neighbors</h2>
+  <p class="sub">Shared with permission, kept anonymous out of respect.</p>
+  <div class="cards">
+    <blockquote>She sat with me the week after my husband passed and asked for nothing. The rosemary bundle she blessed is still on my windowsill.<cite>P. H., Munjoy Hill</cite></blockquote>
+    <blockquote>The sleep blend did more for me than three different things from the pharmacy. And she explained exactly why, like the nurse she is.<cite>M. C., East Bayside</cite></blockquote>
+    <blockquote>My hands were so stiff in January. The comfrey poultice and her patience got me through the cold snap.<cite>B. W., Portland</cite></blockquote>
+  </div>
+</section>
+
+<section id="book">
+  <h2 class="title">Request a consultation</h2>
+  <p class="sub">Tell me a little about what brings you, and I will call to find a time. I answer the phone faster than email.</p>
+  <form id="reqForm" novalidate>
+    <label for="nm">Your name</label>
+    <input id="nm" type="text"><div class="err" id="e-nm">Please tell me your name.</div>
+    <label for="ph">Phone number</label>
+    <input id="ph" type="tel"><div class="err" id="e-ph">A phone number helps me reach you.</div>
+    <label for="sv">What are you hoping for</label>
+    <select id="sv">
+      <option value="">Please choose one</option>
+      <option>Herbal consultation</option>
+      <option>Tincture or tea blend</option>
+      <option>Poultice or salve</option>
+      <option>Prayer and quiet</option>
+      <option>Not sure yet</option>
+    </select><div class="err" id="e-sv">Choose one so I can prepare.</div>
+    <label for="ms">Anything you would like me to know</label>
+    <textarea id="ms" rows="4"></textarea>
+    <div style="margin-top:20px;text-align:center">
+      <button type="submit" class="btn">Send request</button>
+    </div>
+    <div class="ok" id="ok">Thank you. Your request is noted and I will call you within a day or two. Be well until then.</div>
+  </form>
+</section>
+
+<footer>
+  <div class="fgrid">
+    <div><h4>Munjoy Hill Apothecary</h4><p>Joanne Lawton, retired registered nurse and folk herbalist. Caring for neighbors one visit at a time.</p></div>
+    <div><h4>Find me</h4><p>47 Atlantic Street<br>Portland, Maine 04101</p></div>
+    <div><h4>Reach me</h4><ul><li>Phone: (207) 555-0134</li><li>Email: joanne.lawton@Greenridertech.co</li><li>Evenings are best for email</li></ul></div>
+    <div><h4>A note</h4><p>I research and prepare herbs with care. I do not diagnose, prescribe, or replace your doctor. Please keep your providers informed.</p></div>
+  </div>
+  <div class="copy">Tended by hand on Munjoy Hill, Portland, Maine</div>
+</footer>
+
+<script>
+  function closeMenu(){document.getElementById('menu').classList.remove('open');}
+  // tabs
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('show'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.p).classList.add('show');
+    });
+  });
+  // reveal cards on scroll
+  var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');}});},{threshold:.2});
+  document.querySelectorAll('.card').forEach(function(c,i){c.style.transitionDelay=(i*0.08)+'s';io.observe(c);});
+  // form validation
+  document.getElementById('reqForm').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var ok=true;
+    function check(id,cond){var el=document.getElementById('e-'+id);el.style.display=cond?'none':'block';if(!cond)ok=false;return cond;}
+    check('nm',document.getElementById('nm').value.trim().length>0);
+    check('ph',document.getElementById('ph').value.trim().length>=7);
+    check('sv',document.getElementById('sv').value!=='');
+    if(ok){this.querySelectorAll('input,select,textarea').forEach(x=>x.value='');
+      document.getElementById('ok').style.display='block';
+      document.getElementById('ok').scrollIntoView({behavior:'smooth',block:'center'});}
+  });
+</script>
+</body>
+</html>

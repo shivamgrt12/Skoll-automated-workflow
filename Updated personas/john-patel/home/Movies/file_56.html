@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapid Rating Tracker</title>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222c;--ink:#eef1f6;--mut:#9aa3b2;
+    --accent:#7bd389;--win:#4ecb8d;--loss:#e06767;--draw:#e0b24e;--line:#272c37}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(15,17,21,.9);
+    backdrop-filter:blur(6px);z-index:20}
+  .nav{max-width:1040px;margin:0 auto;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+  .brand{font-weight:800;display:flex;gap:10px;align-items:center}
+  .kn{width:16px;height:16px;background:var(--accent);border-radius:4px}
+  .nav nav{display:flex;gap:18px;font-size:14px}
+  .nav a{color:var(--mut);text-decoration:none}.nav a:hover{color:var(--ink)}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 22px 60px}
+  h1{font-size:30px}.sub{color:var(--mut);margin-top:6px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat .k{color:var(--mut);font-size:13px}.stat .v{font-size:26px;font-weight:700;margin-top:4px}
+  .grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .panel h2{font-size:16px}.panel .s{color:var(--mut);font-size:13px;margin:4px 0 14px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:none;color:var(--mut);padding:7px 14px;
+    border-radius:999px;cursor:pointer;font-size:13px;transition:.2s}
+  .chip:hover{color:var(--ink)}.chip.on{background:var(--accent);color:#06210d;border-color:var(--accent);font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--mut);text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+  .res{font-weight:700}.res.Win{color:var(--win)}.res.Loss{color:var(--loss)}.res.Draw{color:var(--draw)}
+  footer{border-top:1px solid var(--line)}
+  .foot{max-width:1040px;margin:0 auto;padding:22px;color:var(--mut);font-size:13px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:820px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.nav nav{display:none}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+  <div class="brand"><span class="kn"></span> Rapid Rating Tracker</div>
+  <nav><a href="#chart">Rating</a><a href="#games">Games</a><a href="#split">Results</a></nav>
+</div></header>
+
+<div class="wrap">
+  <h1>Rapid chess, fifteen plus ten</h1>
+  <div class="sub">Night shift downtime and morning puzzles. A slow climb through the season.</div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Current rating</div><div class="v" data-c="1659">0</div></div>
+    <div class="stat"><div class="k">Season peak</div><div class="v" data-c="1671">0</div></div>
+    <div class="stat"><div class="k">Games played</div><div class="v" data-c="15">0</div></div>
+    <div class="stat"><div class="k">Win rate</div><div class="v"><span data-c="53">0</span>%</div></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel" id="chart">
+      <h2>Rating over the season</h2>
+      <div class="s">Rapid games, November to February</div>
+      <svg id="line" viewBox="0 0 520 240" role="img" aria-label="rating line chart"></svg>
+    </section>
+    <section class="panel" id="split">
+      <h2>Result split</h2>
+      <div class="s">Across fifteen rated games</div>
+      <svg id="donut" viewBox="0 0 220 220" role="img" aria-label="result donut"></svg>
+      <div id="legend" style="display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:13px"></div>
+    </section>
+  </div>
+
+  <section class="panel" id="games" style="margin-top:18px">
+    <h2>Recent games</h2>
+    <div class="s">Filter by result</div>
+    <div class="filters" id="filters">
+      <button class="chip on" data-f="all">All</button>
+      <button class="chip" data-f="Win">Wins</button>
+      <button class="chip" data-f="Draw">Draws</button>
+      <button class="chip" data-f="Loss">Losses</button>
+    </div>
+    <table><thead><tr><th>Date</th><th>Color</th><th>Time</th><th>Result</th><th>Rating</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+  </section>
+</div>
+
+<footer><div class="foot">
+  <div>Rapid Rating Tracker &middot; kept by J. Patel</div>
+  <div>Rapid 15+10 &middot; updated February 2026</div>
+</div></footer>
+
+<script>
+  var games=[
+    {d:"2025-11-03",c:"White",t:"15+10",r:"Win",a:1638},
+    {d:"2025-11-09",c:"Black",t:"15+10",r:"Draw",a:1641},
+    {d:"2025-11-17",c:"White",t:"10+5",r:"Loss",a:1629},
+    {d:"2025-11-24",c:"Black",t:"15+10",r:"Win",a:1644},
+    {d:"2025-12-01",c:"White",t:"15+10",r:"Win",a:1652},
+    {d:"2025-12-08",c:"Black",t:"10+5",r:"Loss",a:1640},
+    {d:"2025-12-15",c:"White",t:"15+10",r:"Win",a:1651},
+    {d:"2025-12-22",c:"Black",t:"15+10",r:"Draw",a:1653},
+    {d:"2026-01-05",c:"White",t:"15+10",r:"Win",a:1662},
+    {d:"2026-01-12",c:"Black",t:"10+5",r:"Loss",a:1649},
+    {d:"2026-01-19",c:"White",t:"15+10",r:"Win",a:1658},
+    {d:"2026-01-26",c:"Black",t:"15+10",r:"Win",a:1666},
+    {d:"2026-02-02",c:"White",t:"15+10",r:"Draw",a:1664},
+    {d:"2026-02-09",c:"Black",t:"10+5",r:"Win",a:1671},
+    {d:"2026-02-16",c:"White",t:"15+10",r:"Loss",a:1659}
+  ];
+  var ns="http://www.w3.org/2000/svg";
+  // counters
+  [].forEach.call(document.querySelectorAll("[data-c]"),function(el){
+    var tg=+el.dataset.c,n=0,base=tg>200?1500:0,step=Math.max(1,Math.round((tg-base)/35));
+    n=base;var iv=setInterval(function(){n+=step;if(n>=tg){n=tg;clearInterval(iv)}el.textContent=n},25);
+  });
+  // line chart
+  (function(){
+    var svg=document.getElementById("line"),W=520,H=240,pad=34;
+    var vals=games.map(function(g){return g.a});
+    var mn=Math.min.apply(0,vals)-6,mx=Math.max.apply(0,vals)+6;
+    function X(i){return pad+i*((W-pad*2)/(vals.length-1))}
+    function Y(v){return H-pad-(v-mn)/(mx-mn)*(H-pad*2)}
+    [0,.25,.5,.75,1].forEach(function(f){
+      var y=pad+f*(H-pad*2);
+      var l=document.createElementNS(ns,"line");
+      l.setAttribute("x1",pad);l.setAttribute("x2",W-pad);l.setAttribute("y1",y);l.setAttribute("y2",y);
+      l.setAttribute("stroke","#272c37");svg.appendChild(l);
+    });
+    var d="";vals.forEach(function(v,i){d+=(i?"L":"M")+X(i)+" "+Y(v)+" "});
+    var path=document.createElementNS(ns,"path");
+    path.setAttribute("d",d);path.setAttribute("fill","none");
+    path.setAttribute("stroke","#7bd389");path.setAttribute("stroke-width","2.5");
+    svg.appendChild(path);
+    var len=path.getTotalLength();
+    path.style.strokeDasharray=len;path.style.strokeDashoffset=len;
+    path.style.transition="stroke-dashoffset 1.4s ease";
+    setTimeout(function(){path.style.strokeDashoffset=0},150);
+    vals.forEach(function(v,i){
+      var c=document.createElementNS(ns,"circle");
+      c.setAttribute("cx",X(i));c.setAttribute("cy",Y(v));c.setAttribute("r",0);
+      c.setAttribute("fill",games[i].r=="Win"?"#4ecb8d":games[i].r=="Loss"?"#e06767":"#e0b24e");
+      svg.appendChild(c);
+      setTimeout(function(){c.setAttribute("r",4)},800+i*40);
+    });
+  })();
+  // donut
+  (function(){
+    var counts={Win:0,Draw:0,Loss:0};games.forEach(function(g){counts[g.r]++});
+    var total=games.length,cols={Win:"#4ecb8d",Draw:"#e0b24e",Loss:"#e06767"};
+    var svg=document.getElementById("donut"),cx=110,cy=110,r=78,a=-Math.PI/2;
+    Object.keys(counts).forEach(function(k){
+      var frac=counts[k]/total,a2=a+frac*2*Math.PI;
+      var x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+      var large=frac>.5?1:0;
+      var p=document.createElementNS(ns,"path");
+      p.setAttribute("d","M"+x1+" "+y1+"A"+r+" "+r+" 0 "+large+" 1 "+x2+" "+y2);
+      p.setAttribute("fill","none");p.setAttribute("stroke",cols[k]);
+      p.setAttribute("stroke-width","26");p.setAttribute("stroke-linecap","butt");
+      var ln=p.getTotalLength();p.style.strokeDasharray=ln;p.style.strokeDashoffset=ln;
+      p.style.transition="stroke-dashoffset 1s ease";svg.appendChild(p);
+      setTimeout(function(){p.style.strokeDashoffset=0},200);
+      a=a2;
+    });
+    var t=document.createElementNS(ns,"text");
+    t.setAttribute("x",cx);t.setAttribute("y",cy+6);t.setAttribute("text-anchor","middle");
+    t.setAttribute("fill","#eef1f6");t.setAttribute("font-size","26");t.setAttribute("font-weight","700");
+    t.textContent=total;svg.appendChild(t);
+    var lg=document.getElementById("legend");
+    Object.keys(counts).forEach(function(k){
+      var s=document.createElement("span");
+      s.innerHTML="<span style='display:inline-block;width:10px;height:10px;border-radius:2px;background:"+
+        cols[k]+";margin-right:6px'></span>"+k+" "+counts[k];
+      s.style.color="#9aa3b2";lg.appendChild(s);
+    });
+  })();
+  // table
+  var rows=document.getElementById("rows");
+  function draw(f){
+    rows.innerHTML="";
+    games.slice().reverse().filter(function(g){return f=="all"||g.r==f}).forEach(function(g){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+g.d+"</td><td>"+g.c+"</td><td>"+g.t+
+        "</td><td class='res "+g.r+"'>"+g.r+"</td><td>"+g.a+"</td>";
+      rows.appendChild(tr);
+    });
+  }
+  draw("all");
+  document.getElementById("filters").addEventListener("click",function(e){
+    if(!e.target.dataset.f)return;
+    [].forEach.call(this.children,function(c){c.classList.remove("on")});
+    e.target.classList.add("on");draw(e.target.dataset.f);
+  });
+</script>
+</body>
+</html>

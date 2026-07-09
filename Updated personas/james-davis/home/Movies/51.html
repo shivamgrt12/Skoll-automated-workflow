@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Davis Family Hub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  :root {
+    --bg: #eef2f7;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --border: #dce4ef;
+    --accent: #2471a3;
+    --accent2: #1a5276;
+    --green: #1e8449;
+    --orange: #ca6f1e;
+    --red: #c0392b;
+    --yellow: #d68910;
+    --text: #1c2833;
+    --muted: #7f8c8d;
+    --light: #f4f6f9;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--accent2);
+    color: #fff;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .hdr-left { display: flex; align-items: center; gap: 0.75rem; }
+  .hdr-icon {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .hdr-title { font-size: 1.05rem; font-weight: 700; }
+  .hdr-sub { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: 0.05rem; }
+  .hdr-right { display: flex; align-items: center; gap: 0.75rem; }
+  .hdr-chip {
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* TABS */
+  .tabs {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .tab {
+    padding: 0.9rem 1.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: color 0.2s, border-color 0.2s;
+    user-select: none;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--accent); }
+
+  /* CONTAINER */
+  .container { max-width: 1280px; margin: 0 auto; padding: 1.75rem 2rem; }
+
+  /* SECTION PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .card-head {
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-head h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+  .card-head h3 i { color: var(--accent); }
+  .card-body { padding: 1.2rem 1.4rem; }
+
+  /* GRID LAYOUTS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .mb { margin-bottom: 1.25rem; }
+
+  /* FAMILY MEMBERS */
+  .family-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+  .fam-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    transition: box-shadow 0.2s;
+    cursor: default;
+  }
+  .fam-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .fam-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    margin: 0 auto 0.65rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 800; color: #fff;
+  }
+  .fam-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .fam-role { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+  .fam-age { font-size: 0.75rem; color: var(--accent); margin-top: 0.4rem; font-weight: 600; }
+  .fam-tag { display: inline-block; margin-top: 0.4rem; font-size: 0.68rem; background: var(--light); color: var(--muted); padding: 0.2rem 0.5rem; border-radius: 10px; }
+
+  /* Dorothy CARE */
+  .med-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .med-row:last-child { border-bottom: none; }
+  .med-name { font-weight: 600; color: var(--text); }
+  .med-detail { font-size: 0.77rem; color: var(--muted); margin-top: 0.1rem; }
+  .med-time { font-size: 0.8rem; color: var(--green); font-weight: 600; }
+  .check-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.83rem;
+  }
+  .check-row:last-child { border-bottom: none; }
+
+  /* GLUCOSE CHART */
+  .glucose-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin: 0.75rem 0; }
+  .g-bar { flex: 1; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px; font-size: 0.6rem; color: #fff; font-weight: 700; }
+  .g-good { background: var(--green); }
+  .g-high { background: var(--orange); }
+  .g-ok { background: var(--accent); }
+
+  /* SCHEDULE */
+  .sched-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+  .sched-row:last-child { border-bottom: none; }
+  .sched-time { font-size: 0.75rem; font-weight: 700; color: var(--accent); min-width: 70px; }
+  .sched-desc { color: var(--text); font-weight: 500; }
+  .sched-who { font-size: 0.73rem; color: var(--muted); margin-top: 0.1rem; }
+  .dot-type { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* UPCOMING EVENTS CALENDAR */
+  .event-strip {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .ev-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.85rem 1.4rem; border-bottom: 1px solid var(--border);
+    transition: background 0.15s; cursor: default;
+  }
+  .ev-row:last-child { border-bottom: none; }
+  .ev-row:hover { background: var(--light); }
+  .ev-cal {
+    min-width: 44px; text-align: center;
+    background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem;
+  }
+  .ev-m { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .ev-d { font-size: 1.15rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .ev-title { font-size: 0.87rem; font-weight: 600; color: var(--text); }
+  .ev-desc { font-size: 0.77rem; color: var(--muted); margin-top: 0.15rem; }
+  .ev-cat { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 10px; font-weight: 600; }
+  .cat-family { background: rgba(36,113,163,0.1); color: var(--accent); }
+  .cat-shop { background: rgba(26,82,118,0.1); color: var(--accent2); }
+  .cat-health { background: rgba(30,132,73,0.1); color: var(--green); }
+  .cat-personal { background: rgba(202,111,30,0.1); color: var(--orange); }
+
+  /* BUDGET OVERVIEW */
+  .bud-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+  .bud-item:last-child { border-bottom: none; }
+  .bud-bar-wrap { flex: 1; }
+  .bud-cat { font-size: 0.8rem; color: var(--text); margin-bottom: 0.3rem; display: flex; justify-content: space-between; }
+  .bud-bar { background: var(--light); border-radius: 4px; height: 6px; overflow: hidden; }
+  .bud-fill { height: 100%; border-radius: 4px; }
+  .bud-amt { font-size: 0.8rem; font-weight: 700; color: var(--text); min-width: 52px; text-align: right; }
+
+  /* CONTACTS */
+  .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .contact-card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    transition: border-color 0.2s;
+  }
+  .contact-card:hover { border-color: var(--accent); }
+  .cc-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .cc-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+  .cc-rel { font-size: 0.72rem; color: var(--muted); }
+  .cc-phone { font-size: 0.78rem; color: var(--accent); margin-top: 0.25rem; font-weight: 600; }
+
+  /* BADGE */
+  .badge { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 10px; font-weight: 700; }
+  .badge-ok { background: rgba(30,132,73,0.1); color: var(--green); }
+  .badge-watch { background: rgba(202,111,30,0.1); color: var(--orange); }
+  .badge-alert { background: rgba(192,57,43,0.1); color: var(--red); }
+
+  /* FOOTER */
+  footer {
+    background: var(--accent2);
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    padding: 1rem 2rem;
+    font-size: 0.78rem;
+    margin-top: 2rem;
+  }
+  footer strong { color: #fff; }
+
+  @media (max-width: 1000px) {
+    .family-grid { grid-template-columns: repeat(3, 1fr); }
+    .g3 { grid-template-columns: 1fr; }
+    .g4 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 680px) {
+    .family-grid { grid-template-columns: repeat(2, 1fr); }
+    .g2 { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-left">
+    <div class="hdr-icon"><i class="fa-solid fa-house-chimney"></i></div>
+    <div>
+      <div class="hdr-title">Davis Family Hub</div>
+      <div class="hdr-sub">1127 Ysleta Drive, El Paso, TX 79907</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-chip"><i class="fa-solid fa-users fa-xs"></i> 5 Household Members</div>
+    <div class="hdr-chip"><i class="fa-solid fa-heart-pulse fa-xs"></i> Dorothy: Stable</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-panel="overview"><i class="fa-solid fa-house"></i> Overview</div>
+  <div class="tab" data-panel="dorothy"><i class="fa-solid fa-kit-medical"></i> Dorothy's Care</div>
+  <div class="tab" data-panel="calendar"><i class="fa-solid fa-calendar-days"></i> Family Calendar</div>
+  <div class="tab" data-panel="budget"><i class="fa-solid fa-piggy-bank"></i> Household Budget</div>
+  <div class="tab" data-panel="contacts"><i class="fa-solid fa-address-book"></i> Contacts</div>
+</div>
+
+<div class="container">
+
+  <!-- OVERVIEW PANEL -->
+  <div class="panel active" id="panel-overview">
+
+    <!-- FAMILY MEMBERS -->
+    <div class="family-grid mb">
+      <div class="fam-card">
+        <div class="fam-avatar" style="background:var(--accent2)">JD</div>
+        <div class="fam-name">James Davis</div>
+        <div class="fam-role">Head of household</div>
+        <div class="fam-age">50 yrs - Jan 8, 1976</div>
+        <div class="fam-tag">Owner, Davis Auto Repair</div>
+      </div>
+      <div class="fam-card">
+        <div class="fam-avatar" style="background:#8e44ad">BD</div>
+        <div class="fam-name">Beth Davis</div>
+        <div class="fam-role">Wife</div>
+        <div class="fam-age">48 yrs - Mar 5, 1978</div>
+        <div class="fam-tag">Owner, Beth's Bakery</div>
+      </div>
+      <div class="fam-card">
+        <div class="fam-avatar" style="background:var(--accent)">TD</div>
+        <div class="fam-name">Tyler Davis</div>
+        <div class="fam-role">Son</div>
+        <div class="fam-age">24 yrs - Oct 15, 2001</div>
+        <div class="fam-tag">Border Patrol Agent</div>
+      </div>
+      <div class="fam-card">
+        <div class="fam-avatar" style="background:var(--green)">AD</div>
+        <div class="fam-name">Amy Davis</div>
+        <div class="fam-role">Daughter</div>
+        <div class="fam-age">21 yrs - Nov 3, 2004</div>
+        <div class="fam-tag">Eng. Student / Bookkeeper</div>
+      </div>
+      <div class="fam-card" style="border-color:#f39c12;background:rgba(243,156,18,0.04)">
+        <div class="fam-avatar" style="background:#d68910">DD</div>
+        <div class="fam-name">Dorothy Davis</div>
+        <div class="fam-role">Mother (in home)</div>
+        <div class="fam-age">74 yrs - Dec 8, 1951</div>
+        <div class="fam-tag" style="background:rgba(243,156,18,0.12);color:#b7950b">Type 2 Diabetes</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW GRID -->
+    <div class="g3 mb">
+      <!-- TODAY'S SCHEDULE -->
+      <div class="card">
+        <div class="card-head">
+          <h3><i class="fa-regular fa-clock"></i> Today at Home</h3>
+          <span class="badge badge-ok">Weekday</span>
+        </div>
+        <div class="card-body" style="padding:0.5rem 1.4rem;">
+          <div class="sched-row">
+            <div class="sched-time">4:30 AM</div>
+            <div class="dot-type" style="background:#8e44ad"></div>
+            <div><div class="sched-desc">Beth starts baking</div><div class="sched-who">Bakery prep - Mon to Sat</div></div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">5:15 AM</div>
+            <div class="dot-type" style="background:var(--accent2)"></div>
+            <div><div class="sched-desc">James up, leaves for shop</div><div class="sched-who">At shop by 5:30 AM</div></div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">9:00 AM</div>
+            <div class="dot-type" style="background:var(--orange)"></div>
+            <div><div class="sched-desc">Karen arrives for Dorothy</div><div class="sched-who">Home health aide - Mon/Wed/Fri</div></div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">1:00 PM</div>
+            <div class="dot-type" style="background:var(--orange)"></div>
+            <div><div class="sched-desc">Karen departs</div><div class="sched-who">Dorothy home alone until family returns</div></div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">6:30 PM</div>
+            <div class="dot-type" style="background:var(--accent2)"></div>
+            <div><div class="sched-desc">James home from shop</div><div class="sched-who">Family dinner after</div></div>
+          </div>
+          <div class="sched-row" style="border:none">
+            <div class="sched-time">10:00 PM</div>
+            <div class="dot-type" style="background:#7f8c8d"></div>
+            <div><div class="sched-desc">Lights out</div><div class="sched-who">James and Dorothy early schedule</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOUSEHOLD HEALTH -->
+      <div class="card">
+        <div class="card-head">
+          <h3><i class="fa-solid fa-heart-pulse"></i> Health Summary</h3>
+        </div>
+        <div class="card-body">
+          <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+            <tr style="background:var(--light);">
+              <th style="padding:0.5rem 0.5rem;text-align:left;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--border)">Member</th>
+              <th style="padding:0.5rem 0.5rem;text-align:left;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--border)">Status</th>
+              <th style="padding:0.5rem 0.5rem;text-align:left;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--border)">Next Appt</th>
+            </tr>
+            <tr>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)">James</td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)"><span class="badge badge-watch">BP watch</span></td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border);color:var(--muted);font-size:0.77rem">Physical overdue</td>
+            </tr>
+            <tr>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)">Beth</td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)"><span class="badge badge-ok">Healthy</span></td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border);color:var(--muted);font-size:0.77rem">Annual checkup due</td>
+            </tr>
+            <tr>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)">Dorothy</td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border)"><span class="badge badge-watch">Managed</span></td>
+              <td style="padding:0.55rem 0.5rem;border-bottom:1px solid var(--border);color:var(--accent);font-size:0.77rem">Oct 20 - Dr. Foster</td>
+            </tr>
+            <tr>
+              <td style="padding:0.55rem 0.5rem;">Tyler</td>
+              <td style="padding:0.55rem 0.5rem;"><span class="badge badge-ok">Healthy</span></td>
+              <td style="padding:0.55rem 0.5rem;color:var(--muted);font-size:0.77rem">None scheduled</td>
+            </tr>
+          </table>
+          <div style="margin-top:1rem;padding:0.8rem;background:rgba(214,137,16,0.08);border-radius:8px;border-left:3px solid var(--yellow);">
+            <div style="font-size:0.78rem;font-weight:700;color:var(--yellow)"><i class="fa-solid fa-triangle-exclamation fa-xs"></i> Reminders</div>
+            <div style="font-size:0.77rem;color:var(--muted);margin-top:0.4rem;line-height:1.6;">
+              James: physical with Dr. Graham is 18 months overdue. Colonoscopy recommended at age 50 - not scheduled yet.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK FINANCIALS -->
+      <div class="card">
+        <div class="card-head">
+          <h3><i class="fa-solid fa-chart-pie"></i> Household Finances</h3>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+            <div style="background:var(--light);border-radius:8px;padding:0.75rem;text-align:center;">
+              <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">James Draw</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent2)">$78k</div>
+              <div style="font-size:0.68rem;color:var(--muted)">Annual</div>
+            </div>
+            <div style="background:var(--light);border-radius:8px;padding:0.75rem;text-align:center;">
+              <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Beth Bakery</div>
+              <div style="font-size:1.3rem;font-weight:800;color:#8e44ad">$52k</div>
+              <div style="font-size:0.68rem;color:var(--muted)">Annual net</div>
+            </div>
+          </div>
+          <div style="background:rgba(36,113,163,0.06);border-radius:8px;padding:0.75rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <span style="font-size:0.82rem;color:var(--muted)">Household total income</span>
+            <span style="font-size:1.1rem;font-weight:800;color:var(--accent2)">$130,000/yr</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.82rem;">
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">Monthly expenses (total)</span><span style="font-weight:700">$5,833</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">Emergency fund (Wells Fargo)</span><span style="font-weight:700;color:var(--green)">$18,000</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">Mortgage remaining (approx.)</span><span style="font-weight:700;color:var(--orange)">$170,000</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">SBA microloan (pending)</span><span style="font-weight:700;color:var(--orange)">$28,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOROTHY CARE PANEL -->
+  <div class="panel" id="panel-dorothy">
+    <div class="g2 mb">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-pills"></i> Medications</h3><span class="badge badge-ok">Stable</span></div>
+        <div class="card-body" style="padding:0 1.4rem;">
+          <div class="med-row">
+            <div><div class="med-name">Metformin 500mg</div><div class="med-detail">Type 2 diabetes management</div></div>
+            <div class="med-time"><i class="fa-solid fa-sun fa-xs"></i> Breakfast + Dinner</div>
+          </div>
+          <div class="med-row">
+            <div><div class="med-name">Calcium supplement</div><div class="med-detail">Bone health</div></div>
+            <div class="med-time"><i class="fa-solid fa-sun fa-xs"></i> Morning</div>
+          </div>
+          <div class="med-row">
+            <div><div class="med-name">Vitamin D</div><div class="med-detail">Alongside calcium</div></div>
+            <div class="med-time"><i class="fa-solid fa-sun fa-xs"></i> Morning</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-droplet"></i> Glucose Monitoring</h3><span class="badge badge-ok">3x daily</span></div>
+        <div class="card-body">
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">Sample readings - past 7 days (mg/dL)</div>
+          <div class="glucose-bars">
+            <div class="g-bar g-ok" style="height:55px">118</div>
+            <div class="g-bar g-good" style="height:48px">104</div>
+            <div class="g-bar g-high" style="height:68px">142</div>
+            <div class="g-bar g-ok" style="height:58px">122</div>
+            <div class="g-bar g-good" style="height:44px">98</div>
+            <div class="g-bar g-ok" style="height:53px">115</div>
+            <div class="g-bar g-good" style="height:46px">101</div>
+          </div>
+          <div style="display:flex;gap:1rem;font-size:0.72rem;color:var(--muted);">
+            <span><span style="color:var(--green)">-</span> Target (80-120)</span>
+            <span><span style="color:var(--accent)">-</span> Acceptable</span>
+            <span><span style="color:var(--orange)">-</span> Review</span>
+          </div>
+          <div style="margin-top:0.75rem;padding:0.6rem;background:rgba(30,132,73,0.07);border-radius:8px;font-size:0.78rem;color:var(--green);">
+            <i class="fa-solid fa-check-circle fa-xs"></i> Readings largely in target range. No escalation needed this week.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-user-nurse"></i> Care Schedule - Karen</h3></div>
+        <div class="card-body" style="padding:0 1.4rem;">
+          <div class="check-row">
+            <span>Days</span><span style="font-weight:700">Monday, Wednesday, Friday</span>
+          </div>
+          <div class="check-row">
+            <span>Hours</span><span style="font-weight:700">9:00 AM to 1:00 PM</span>
+          </div>
+          <div class="check-row">
+            <span>Rate</span><span style="font-weight:700">$22 / hour</span>
+          </div>
+          <div class="check-row">
+            <span>Monthly invoice</span><span style="font-weight:700;color:var(--accent)">$1,056</span>
+          </div>
+          <div class="check-row">
+            <span>Payment due</span><span style="font-weight:700">15th of each month</span>
+          </div>
+          <div class="check-row" style="border:none">
+            <span>Phone</span><span style="font-weight:700;color:var(--accent)">(915) 555-0224</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-calendar-check"></i> Upcoming Appointments</h3></div>
+        <div class="card-body" style="padding:0 1.4rem;">
+          <div class="med-row">
+            <div><div class="med-name">Dr. Foster - Eye Exam</div><div class="med-detail">Diabetic retinopathy screening (every 6 months)</div></div>
+            <div style="text-align:right;font-size:0.8rem;color:var(--accent);font-weight:700">Oct 20, 2026</div>
+          </div>
+          <div class="med-row">
+            <div><div class="med-name">Dr. Graham - Diabetes Check</div><div class="med-detail">Routine diabetes management review</div></div>
+            <div style="text-align:right;font-size:0.8rem;color:var(--accent);font-weight:700">Nov 12, 2026</div>
+          </div>
+          <div class="med-row" style="border:none">
+            <div><div class="med-name">Dr. Foster - Next Eye Exam</div><div class="med-detail">Next 6-month retinopathy screening</div></div>
+            <div style="text-align:right;font-size:0.8rem;color:var(--muted);font-weight:700">Apr 20, 2027</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR PANEL -->
+  <div class="panel" id="panel-calendar">
+    <div class="card">
+      <div class="card-head"><h3><i class="fa-solid fa-calendar-star"></i> Upcoming Family Events</h3></div>
+      <div class="event-strip">
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">OCT</div><div class="ev-d">15</div></div>
+          <div style="flex:1"><div class="ev-title">Tyler's 25th Birthday</div><div class="ev-desc">Family dinner at the Ysleta house. Tyler and Sarah attending.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">OCT</div><div class="ev-d">20</div></div>
+          <div style="flex:1"><div class="ev-title">Dorothy - Dr. Foster Appointment</div><div class="ev-desc">Diabetic retinopathy screening. 6-month check. James or Beth to drive.</div></div>
+          <span class="ev-cat cat-health">Health</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">NOV</div><div class="ev-d">01</div></div>
+          <div style="flex:1"><div class="ev-title">Shop Insurance Renewal</div><div class="ev-desc">Annual renewal. Confirm coverage levels. $6,800 expected. State Farm.</div></div>
+          <span class="ev-cat cat-shop">Shop</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">NOV</div><div class="ev-d">03</div></div>
+          <div style="flex:1"><div class="ev-title">Amy's 22nd Birthday</div><div class="ev-desc">Family dinner at home. Beth handling the cake.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">NOV</div><div class="ev-d">12</div></div>
+          <div style="flex:1"><div class="ev-title">Dorothy - Dr. Graham Appointment</div><div class="ev-desc">Routine diabetes management check.</div></div>
+          <span class="ev-cat cat-health">Health</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">NOV</div><div class="ev-d">26</div></div>
+          <div style="flex:1"><div class="ev-title">Thanksgiving</div><div class="ev-desc">Hosting at Ysleta house. Tyler and Sarah confirmed. Dorothy at the head of the table. Brisket on the Oklahoma Joe's.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">DEC</div><div class="ev-d">05</div></div>
+          <div style="flex:1"><div class="ev-title">El Paso Classic Car Show</div><div class="ev-desc">El Paso Convention Center. Mustang debut target. Entry registration in October.</div></div>
+          <span class="ev-cat cat-personal">Personal</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">DEC</div><div class="ev-d">08</div></div>
+          <div style="flex:1"><div class="ev-title">Dorothy's 75th Birthday</div><div class="ev-desc">Family lunch at home. Beth baking sugar-free carrot cake.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">DEC</div><div class="ev-d">12</div></div>
+          <div style="flex:1"><div class="ev-title">Amy's Graduation - El Paso Technical University</div><div class="ev-desc">Saturday ceremony. Beth coordinating lunch after. Mechanical engineering, December 2026.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">DEC</div><div class="ev-d">24</div></div>
+          <div style="flex:1"><div class="ev-title">Christmas Eve - First Baptist</div><div class="ev-desc">Service at 6:00 PM with Beth. Family gathering at home after.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">JAN</div><div class="ev-d">08</div></div>
+          <div style="flex:1"><div class="ev-title">James's 51st Birthday</div><div class="ev-desc">Quiet family dinner. He said no fuss.</div></div>
+          <span class="ev-cat cat-family">Family</span>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cal"><div class="ev-m">JAN</div><div class="ev-d">20</div></div>
+          <div style="flex:1"><div class="ev-title">SBA Loan Decision Expected</div><div class="ev-desc">Desert Plains Federal Credit Union - $28,000 microloan for shop equipment. Scanner and rack orders queued pending approval.</div></div>
+          <span class="ev-cat cat-shop">Shop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET PANEL -->
+  <div class="panel" id="panel-budget">
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><h3><i class="fa-solid fa-receipt"></i> Monthly Expenses</h3><span style="font-size:0.85rem;font-weight:700;color:var(--accent2)">Total: $5,833</span></div>
+        <div class="card-body" style="padding:0.5rem 1.4rem;">
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Mortgage (3.2% fixed, 12 yrs left)</span><span>$1,400</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:100%;background:var(--accent2)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Dorothy care (Karen + meds)</span><span>$1,336</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:95%;background:var(--orange)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Groceries</span><span>$900</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:64%;background:var(--green)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Insurance (home + personal auto)</span><span>$380</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:27%;background:var(--accent)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Utilities</span><span>$320</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:23%;background:#9b59b6"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Gas and personal auto</span><span>$280</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:20%;background:var(--yellow)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Church tithe</span><span>$250</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:18%;background:#1abc9c"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Amy tuition (El Paso Technical)</span><span>$342</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:24%;background:var(--green)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Dining out</span><span>$200</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:14%;background:#e74c3c"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Mustang restoration fund</span><span>$200</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:14%;background:var(--red)"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Little League sponsorship</span><span>$125</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:9%;background:#3498db"></div></div>
+            </div>
+          </div>
+          <div class="bud-item">
+            <div class="bud-bar-wrap">
+              <div class="bud-cat"><span>Entertainment</span><span>$100</span></div>
+              <div class="bud-bar"><div class="bud-fill" style="width:7%;background:#95a5a6"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card mb">
+          <div class="card-head"><h3><i class="fa-solid fa-piggy-bank"></i> Savings and Assets</h3></div>
+          <div class="card-body" style="padding:0 1.4rem;">
+            <div class="check-row"><span>Emergency fund</span><span style="font-weight:700;color:var(--green)">$18,000</span></div>
+            <div class="check-row"><span>Shop building (owned outright)</span><span style="font-weight:700;color:var(--green)">~$280,000</span></div>
+            <div class="check-row"><span>Home value (market est.)</span><span style="font-weight:700;color:var(--green)">~$340,000</span></div>
+            <div class="check-row" style="border:none"><span>Mortgage remaining</span><span style="font-weight:700;color:var(--orange)">~$170,000</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3><i class="fa-solid fa-calendar-day"></i> Monthly Recurring Payments</h3></div>
+          <div class="card-body" style="padding:0 1.4rem;">
+            <div class="check-row"><span style="color:var(--muted)">Mortgage (1st of month)</span><span style="font-weight:700">$1,400</span></div>
+            <div class="check-row"><span style="color:var(--muted)">Karen aide invoice (15th)</span><span style="font-weight:700">$1,056</span></div>
+            <div class="check-row"><span style="color:var(--muted)">Amy tuition installment (15th)</span><span style="font-weight:700">$342</span></div>
+            <div class="check-row"><span style="color:var(--muted)">Church tithe (monthly)</span><span style="font-weight:700">$250</span></div>
+            <div class="check-row" style="border:none"><span style="color:var(--muted)">Little League sponsorship (monthly)</span><span style="font-weight:700">$125</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACTS PANEL -->
+  <div class="panel" id="panel-contacts">
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#8e44ad">BD</div>
+        <div><div class="cc-name">Beth Davis</div><div class="cc-rel">Wife - Emergency contact</div><div class="cc-phone">(915) 555-0142</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--accent)">TD</div>
+        <div><div class="cc-name">Tyler Davis</div><div class="cc-rel">Son - Text only</div><div class="cc-phone">(915) 555-0167</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--green)">AD</div>
+        <div><div class="cc-name">Amy Davis</div><div class="cc-rel">Daughter - Bookkeeper</div><div class="cc-phone">(915) 555-0178</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--yellow)">DD</div>
+        <div><div class="cc-name">Dorothy Davis</div><div class="cc-rel">Mother - Home phone</div><div class="cc-phone">(915) 555-0189</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--orange)">K</div>
+        <div><div class="cc-name">Karen</div><div class="cc-rel">Dorothy's aide (Mon/Wed/Fri)</div><div class="cc-phone">(915) 555-0224</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#16a085">DF</div>
+        <div><div class="cc-name">Dr. Foster</div><div class="cc-rel">Dorothy's eye doctor</div><div class="cc-phone">(915) 555-0246</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#2980b9">DG</div>
+        <div><div class="cc-name">Dr. Graham</div><div class="cc-rel">Family physician</div><div class="cc-phone">(915) 555-0257</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#8e44ad">PT</div>
+        <div><div class="cc-name">Pastor Tom Wilson</div><div class="cc-rel">First Baptist Church</div><div class="cc-phone">(915) 555-0295</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#c0392b">EG</div>
+        <div><div class="cc-name">Eddie Gardner</div><div class="cc-rel">Lead mechanic - Shop</div><div class="cc-phone">(915) 555-0195</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#7f8c8d">LM</div>
+        <div><div class="cc-name">Linda Monroe</div><div class="cc-rel">Service writer - Shop</div><div class="cc-phone">(915) 555-0213</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#1a5276">DP</div>
+        <div><div class="cc-name">Desert Plains FCU</div><div class="cc-rel">SBA microloan - bank</div><div class="cc-phone">(915) 555-0284</div></div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:#154360">DR</div>
+        <div><div class="cc-name">Dr. Alan Richards</div><div class="cc-rel">Family dentist - Alameda Ave</div><div class="cc-phone">Alameda Ave, El Paso</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Davis Family Hub</strong> | 1127 Ysleta Drive, El Paso, TX 79907 | James and Beth Davis
+</footer>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

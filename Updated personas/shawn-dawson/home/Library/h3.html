@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T. Dawson - Personal Dashboard</title>
+  <style>
+    :root {
+      --navy: #1b2a45;
+      --teal: #1a6b6b;
+      --gold: #c8a84b;
+      --green: #27a05a;
+      --red: #c0392b;
+      --light: #f2f4f8;
+      --panel: #fff;
+      --mid: #556;
+      --border: #e2e6ec;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; background: var(--light); color: #222; }
+
+    /* HEADER */
+    .top-bar {
+      background: var(--navy);
+      padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 54px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .top-bar .brand { color: var(--gold); font-weight: bold; font-size: 1rem; letter-spacing: 0.5px; }
+    .top-bar .date-info { color: rgba(255,255,255,0.55); font-size: 0.8rem; }
+    .top-bar .user-chip { background: rgba(200,168,75,0.15); border: 1px solid var(--gold); color: var(--gold); font-size: 0.78rem; padding: 3px 12px; border-radius: 20px; }
+
+    /* LAYOUT */
+    .dash { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+    .dash-title { font-size: 1.5rem; font-weight: 900; color: var(--navy); margin-bottom: 0.2rem; }
+    .dash-sub { color: var(--mid); font-size: 0.88rem; margin-bottom: 1.8rem; }
+
+    /* KPI ROW */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 700px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+    .kpi { background: var(--panel); border-radius: 8px; padding: 1.2rem 1.4rem; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-top: 3px solid var(--navy); transition: box-shadow 0.2s; }
+    .kpi:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+    .kpi.green { border-top-color: var(--green); }
+    .kpi.gold { border-top-color: var(--gold); }
+    .kpi.red { border-top-color: var(--red); }
+    .kpi .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--mid); margin-bottom: 0.5rem; }
+    .kpi .value { font-size: 1.9rem; font-weight: 900; color: var(--navy); line-height: 1; }
+    .kpi .sub { font-size: 0.76rem; color: var(--mid); margin-top: 0.3rem; }
+    .kpi.green .value { color: var(--green); }
+    .kpi.gold .value { color: var(--gold); }
+    .kpi.red .value { color: var(--red); }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .grid-2b { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    @media (max-width: 900px) { .grid-2, .grid-3, .grid-2b { grid-template-columns: 1fr; } }
+
+    /* PANELS */
+    .panel { background: var(--panel); border-radius: 8px; padding: 1.4rem; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
+    .panel-title { font-size: 0.88rem; font-weight: bold; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; }
+    .panel-tag { font-size: 0.7rem; background: var(--light); color: var(--mid); padding: 2px 8px; border-radius: 10px; }
+
+    /* BUDGET CHART - horizontal bars */
+    .budget-rows { display: flex; flex-direction: column; gap: 0.7rem; }
+    .budget-row { display: flex; align-items: center; gap: 0.7rem; }
+    .budget-label { font-size: 0.8rem; color: var(--mid); width: 130px; flex-shrink: 0; text-align: right; }
+    .budget-track { flex: 1; background: var(--light); border-radius: 3px; height: 20px; overflow: hidden; }
+    .budget-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 0.72rem; font-weight: bold; color: #fff; }
+    .fill-income { background: var(--green); }
+    .fill-housing { background: var(--navy); }
+    .fill-transport { background: #4a6fa5; }
+    .fill-giving { background: var(--gold); }
+    .fill-family { background: var(--teal); }
+    .fill-food { background: #8e6b3a; }
+    .fill-save { background: #6b8e6b; }
+    .budget-amount { font-size: 0.78rem; font-weight: bold; color: var(--navy); width: 70px; text-align: right; flex-shrink: 0; }
+
+    /* HEALTH TRACKER */
+    .health-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .health-item { text-align: center; padding: 0.9rem; background: var(--light); border-radius: 6px; }
+    .health-item .h-num { font-size: 1.6rem; font-weight: 900; color: var(--navy); }
+    .health-item .h-lbl { font-size: 0.72rem; color: var(--mid); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+    .health-item.warn .h-num { color: var(--gold); }
+    .health-item.ok .h-num { color: var(--green); }
+
+    /* WEEKLY WALK CHART - simple column bars */
+    .walk-chart { display: flex; align-items: flex-end; gap: 0.4rem; height: 80px; padding-bottom: 0; }
+    .walk-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .walk-bar { width: 100%; background: var(--teal); border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.5s ease; }
+    .walk-val { font-size: 0.65rem; color: var(--mid); margin-top: 0.2rem; }
+
+    /* EVENTS / TIMELINE */
+    .events-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .event-row { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.75rem; border-radius: 6px; background: var(--light); border-left: 3px solid var(--navy); transition: background 0.15s; }
+    .event-row:hover { background: #e8edf5; }
+    .event-row.church { border-left-color: var(--gold); }
+    .event-row.softball { border-left-color: var(--teal); }
+    .event-row.union { border-left-color: var(--red); }
+    .event-dot { width: 36px; height: 36px; border-radius: 6px; background: var(--navy); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; text-align: center; line-height: 1.1; font-weight: bold; }
+    .event-row.church .event-dot { background: var(--gold); color: var(--navy); }
+    .event-row.softball .event-dot { background: var(--teal); }
+    .event-row.union .event-dot { background: var(--red); }
+    .event-info strong { font-size: 0.88rem; display: block; }
+    .event-info span { font-size: 0.77rem; color: var(--mid); }
+
+    /* RETIREMENT DOUGHNUT-LIKE DISPLAY */
+    .ret-ring-wrap { display: flex; flex-direction: column; align-items: center; }
+    .ret-ring { width: 120px; height: 120px; border-radius: 50%; border: 14px solid var(--navy); position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .ret-ring::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; border: 14px solid var(--light); z-index: -1; }
+    .ret-ring .inner { text-align: center; }
+    .ret-ring .inner .big { font-size: 1.2rem; font-weight: 900; color: var(--navy); }
+    .ret-ring .inner .tiny { font-size: 0.65rem; color: var(--mid); }
+    .ret-accounts { width: 100%; }
+    .ret-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+    .ret-row:last-child { border-bottom: none; }
+    .ret-row .acct { color: var(--mid); }
+    .ret-row .amount { font-weight: bold; color: var(--navy); }
+
+    /* GRIEVANCE TABLE */
+    .griev-table { width: 100%; border-collapse: collapse; }
+    .griev-table th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--mid); padding: 0.4rem 0.6rem; text-align: left; border-bottom: 2px solid var(--border); }
+    .griev-table td { font-size: 0.82rem; padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); }
+    .griev-table tr:last-child td { border-bottom: none; }
+    .step-badge { display: inline-block; font-size: 0.68rem; font-weight: bold; padding: 2px 7px; border-radius: 10px; }
+    .step-1 { background: #fff3cd; color: #856404; }
+    .step-2 { background: #cce5ff; color: #004085; }
+    .step-3 { background: #f8d7da; color: #721c24; }
+
+    /* BBQ LOG */
+    .bbq-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+    .bbq-row { display: flex; gap: 0.7rem; align-items: center; padding: 0.5rem 0.7rem; background: var(--light); border-radius: 5px; font-size: 0.82rem; }
+    .bbq-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .bbq-info { flex: 1; }
+    .bbq-info strong { display: block; font-size: 0.85rem; }
+    .bbq-info span { color: var(--mid); font-size: 0.76rem; }
+    .bbq-result { font-size: 0.75rem; font-weight: bold; color: var(--green); flex-shrink: 0; }
+
+    /* FOOTER */
+    .dash-footer { text-align: center; padding: 1.5rem; color: var(--mid); font-size: 0.78rem; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="brand">T. Dawson - Personal Dashboard</div>
+  <div class="date-info">Last refreshed: February 2026</div>
+  <div class="user-chip">Terry</div>
+</div>
+
+<div class="dash">
+  <div class="dash-title">Good morning, Terry.</div>
+  <div class="dash-sub">Northwest Detroit, MI - Irongate chassis line, Local 247, Greater Hope Baptist, Westside Wolverines</div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi green">
+      <div class="label">Checking Balance</div>
+      <div class="value">$5,015</div>
+      <div class="sub">Lakeside Federal - as of 2/28/26</div>
+    </div>
+    <div class="kpi gold">
+      <div class="label">Retirement Savings</div>
+      <div class="value">$325K</div>
+      <div class="sub">Pension + IRA combined</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Mortgage Remaining</div>
+      <div class="value">$68.4K</div>
+      <div class="sub">Est. payoff late 2029</div>
+    </div>
+    <div class="kpi red">
+      <div class="label">Active Grievances</div>
+      <div class="value">9</div>
+      <div class="sub">Local 247 caseload</div>
+    </div>
+  </div>
+
+  <!-- BUDGET + EVENTS -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Monthly Budget Overview</div>
+        <div class="panel-tag">Feb 2026</div>
+      </div>
+      <div class="budget-rows">
+        <div class="budget-row">
+          <div class="budget-label">Irongate Net Pay</div>
+          <div class="budget-track"><div class="budget-fill fill-income" style="width:100%">+$4,225</div></div>
+          <div class="budget-amount">$4,225</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Denise Net Pay</div>
+          <div class="budget-track"><div class="budget-fill fill-income" style="width:86%">+$3,650</div></div>
+          <div class="budget-amount">$3,650</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Mortgage</div>
+          <div class="budget-track"><div class="budget-fill fill-housing" style="width:34%">-$1,450</div></div>
+          <div class="budget-amount">-$1,450</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Truck Loan</div>
+          <div class="budget-track"><div class="budget-fill fill-transport" style="width:11%">-$485</div></div>
+          <div class="budget-amount">-$485</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Tithe - Greater Hope</div>
+          <div class="budget-track"><div class="budget-fill fill-giving" style="width:10%">-$440</div></div>
+          <div class="budget-amount">-$440</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Marcus Support</div>
+          <div class="budget-track"><div class="budget-fill fill-family" style="width:9%">-$400</div></div>
+          <div class="budget-amount">-$400</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Groceries</div>
+          <div class="budget-track"><div class="budget-fill fill-food" style="width:15%">-$650</div></div>
+          <div class="budget-amount">-$650</div>
+        </div>
+        <div class="budget-row">
+          <div class="budget-label">Emergency Reserve</div>
+          <div class="budget-track"><div class="budget-fill fill-save" style="width:2%"></div></div>
+          <div class="budget-amount">-$100</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Upcoming Events</div>
+        <div class="panel-tag">All three worlds</div>
+      </div>
+      <div class="events-list">
+        <div class="event-row union">
+          <div class="event-dot">OCT<br>6</div>
+          <div class="event-info">
+            <strong>Local 247 Membership Meeting</strong>
+            <span>6:00 PM - Contract vote discussion</span>
+          </div>
+        </div>
+        <div class="event-row church">
+          <div class="event-dot">OCT<br>17</div>
+          <div class="event-info">
+            <strong>Greater Hope 75th Anniversary</strong>
+            <span>Lead coordinator: Deacon Dawson</span>
+          </div>
+        </div>
+        <div class="event-row union">
+          <div class="event-dot">OCT<br>28</div>
+          <div class="event-info">
+            <strong>Contract Negotiation Session</strong>
+            <span>With Irongate management</span>
+          </div>
+        </div>
+        <div class="event-row softball">
+          <div class="event-dot">NOV<br>14</div>
+          <div class="event-info">
+            <strong>Wolverines End-of-Season Banquet</strong>
+            <span>Rescheduled - full team</span>
+          </div>
+        </div>
+        <div class="event-row">
+          <div class="event-dot">JAN<br>31</div>
+          <div class="event-info">
+            <strong>Contract Expiration</strong>
+            <span>Local 247 - new term effective</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEALTH + RETIREMENT + WALKS -->
+  <div class="grid-3">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Health Snapshot</div>
+        <div class="panel-tag">Feb 2026</div>
+      </div>
+      <div class="health-stats">
+        <div class="health-item warn">
+          <div class="h-num">215</div>
+          <div class="h-lbl">Cholesterol</div>
+        </div>
+        <div class="health-item ok">
+          <div class="h-num">214</div>
+          <div class="h-lbl">Weight (lb)</div>
+        </div>
+        <div class="health-item ok">
+          <div class="h-num">65</div>
+          <div class="h-lbl">Resting HR</div>
+        </div>
+        <div class="health-item">
+          <div class="h-num">2/10</div>
+          <div class="h-lbl">Knee Pain</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem; font-size:0.78rem; color:var(--mid); border-top:1px solid var(--border); padding-top:0.7rem;">
+        Atorvastatin 20mg daily. Omeprazole as needed.<br>
+        Dr. William Tate - Meridian Medical. Next physical: February 2026 (done).
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Walk Tracker</div>
+        <div class="panel-tag">Weekly miles</div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--mid);margin-bottom:0.8rem;">2-mile target per session, 3 sessions/week. Denise holds him to it.</div>
+      <div class="walk-chart">
+        <div class="walk-col">
+          <div class="walk-bar" style="height:73%"></div>
+          <div class="walk-val">Jan W1<br>5.8</div>
+        </div>
+        <div class="walk-col">
+          <div class="walk-bar" style="height:75%"></div>
+          <div class="walk-val">Jan W2<br>6.0</div>
+        </div>
+        <div class="walk-col">
+          <div class="walk-bar" style="height:76%"></div>
+          <div class="walk-val">Jan W3<br>6.1</div>
+        </div>
+        <div class="walk-col">
+          <div class="walk-bar" style="height:75%"></div>
+          <div class="walk-val">Jan W4<br>6.0</div>
+        </div>
+        <div class="walk-col">
+          <div class="walk-bar" style="height:78%;background:var(--gold);"></div>
+          <div class="walk-val">Feb W1<br>6.2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Retirement Overview</div>
+        <div class="panel-tag">Current balances</div>
+      </div>
+      <div class="ret-accounts">
+        <div class="ret-row">
+          <div class="acct">Union Pension (Allied Auto)</div>
+          <div class="amount">$280,000</div>
+        </div>
+        <div class="ret-row">
+          <div class="acct">Personal IRA (Alpaca)</div>
+          <div class="amount">$45,000</div>
+        </div>
+        <div class="ret-row">
+          <div class="acct">Emergency Reserve (LFCU)</div>
+          <div class="amount">$12,005</div>
+        </div>
+        <div class="ret-row" style="border-top:2px solid var(--navy);margin-top:0.2rem;padding-top:0.5rem;">
+          <div class="acct"><strong>Total Long-Term</strong></div>
+          <div class="amount" style="color:var(--navy);font-size:1.05rem;">$337,005</div>
+        </div>
+        <div style="font-size:0.74rem;color:var(--mid);margin-top:0.6rem;">30 years credited to pension. IRA held, no active trading.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRIEVANCES + BBQ LOG -->
+  <div class="grid-2b">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Grievance Caseload</div>
+        <div class="panel-tag">Local 247 - Active</div>
+      </div>
+      <table class="griev-table">
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Issue</th>
+            <th>Step</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GR-2025-0417</td>
+            <td>Wrongful termination</td>
+            <td><span class="step-badge step-3">Step 3</span></td>
+            <td>Arbitration pending</td>
+          </tr>
+          <tr>
+            <td>GR-2025-0392</td>
+            <td>Overtime distribution</td>
+            <td><span class="step-badge step-2">Step 2</span></td>
+            <td>Hearing scheduled</td>
+          </tr>
+          <tr>
+            <td>GR-2025-0388</td>
+            <td>Safety, line speed</td>
+            <td><span class="step-badge step-2">Step 2</span></td>
+            <td>Under review</td>
+          </tr>
+          <tr>
+            <td>GR-2026-0009</td>
+            <td>Disciplinary writeup</td>
+            <td><span class="step-badge step-1">Step 1</span></td>
+            <td>Investigating</td>
+          </tr>
+          <tr>
+            <td>GR-2026-0013</td>
+            <td>Seniority bypass</td>
+            <td><span class="step-badge step-1">Step 1</span></td>
+            <td>Awaiting docs</td>
+          </tr>
+          <tr>
+            <td>GR-2026-0021</td>
+            <td>Break time dispute</td>
+            <td><span class="step-badge step-1">Step 1</span></td>
+            <td>Mediation set</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Old Faithful Cook Log</div>
+        <div class="panel-tag">BBQ Records</div>
+      </div>
+      <div class="bbq-rows">
+        <div class="bbq-row">
+          <div class="bbq-icon">&#9829;</div>
+          <div class="bbq-info">
+            <strong>Brisket Packer - 13.5 lb</strong>
+            <span>Backyard cook - May 2025 - 12.5 hrs total</span>
+          </div>
+          <div class="bbq-result">Tender, good bark</div>
+        </div>
+        <div class="bbq-row">
+          <div class="bbq-icon">&#9829;</div>
+          <div class="bbq-info">
+            <strong>Pulled Pork - 9.0 lb</strong>
+            <span>Church potluck - June 2025 - 11.0 hrs</span>
+          </div>
+          <div class="bbq-result">Crowd favorite</div>
+        </div>
+        <div class="bbq-row">
+          <div class="bbq-icon">&#9829;</div>
+          <div class="bbq-info">
+            <strong>Brisket Flat - 8.5 lb</strong>
+            <span>Metro BBQ Contest - July 2025 - 10.5 hrs</span>
+          </div>
+          <div class="bbq-result">2nd place</div>
+        </div>
+        <div class="bbq-row">
+          <div class="bbq-icon">&#9829;</div>
+          <div class="bbq-info">
+            <strong>Brisket Packer - 14.0 lb</strong>
+            <span>Team cookout - August 2025 - 13.0 hrs</span>
+          </div>
+          <div class="bbq-result">Best yet</div>
+        </div>
+        <div class="bbq-row">
+          <div class="bbq-icon">&#9829;</div>
+          <div class="bbq-info">
+            <strong>Pulled Pork - 8.5 lb</strong>
+            <span>Practice cook - February 2026 - 10.0 hrs</span>
+          </div>
+          <div class="bbq-result">Dialed in</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="dash-footer">
+  T. Dawson Personal Dashboard - Northwest Detroit, MI - 15847 Greenview Avenue, Detroit, MI 48223<br>
+  shawn.dawson@finthesiss.ai | (313) 555-3920 | Last updated February 2026
+</div>
+
+</body>
+</html>

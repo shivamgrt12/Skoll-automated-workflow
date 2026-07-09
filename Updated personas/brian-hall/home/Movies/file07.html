@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Athlete Intake</title>
+<style>
+  :root{--ink:#13343b;--teal:#0e7c7b;--teal2:#0a5d5c;--bg:#eef4f4;--line:#cfe0df;--err:#d14343;--ok:#0e9f6e;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  .head{background:var(--teal);color:#fff;padding:24px 26px;}
+  .head h1{font-size:1.4rem;}
+  .head p{opacity:.9;font-size:.92rem;margin-top:4px;}
+  .shell{max-width:720px;margin:26px auto;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(14,124,123,.1);}
+  .prog{display:flex;border-bottom:1px solid var(--line);}
+  .prog div{flex:1;text-align:center;padding:14px 6px;font-size:.85rem;font-weight:600;color:#7f9897;position:relative;}
+  .prog div.active{color:var(--teal);}
+  .prog div.done{color:var(--ok);}
+  .prog .barbg{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#e3eeed;}
+  .prog .barfill{position:absolute;left:0;bottom:0;height:3px;background:var(--teal);width:0;transition:width .4s;}
+  form{padding:26px;}
+  .step{display:none;animation:fade .3s;}
+  .step.show{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:none;}}
+  label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px;}
+  input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:.95rem;font-family:inherit;background:#fbfdfd;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,124,123,.15);}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .err{color:var(--err);font-size:.8rem;margin-top:5px;display:none;}
+  .field.bad input,.field.bad select{border-color:var(--err);}
+  .field.bad .err{display:block;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .chip{padding:8px 14px;border:1px solid var(--line);border-radius:20px;cursor:pointer;font-size:.88rem;user-select:none;transition:.15s;}
+  .chip.sel{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .nav{display:flex;justify-content:space-between;margin-top:24px;}
+  button{font-family:inherit;font-weight:700;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;font-size:.95rem;transition:.15s;}
+  .back{background:#e7efee;color:var(--ink);}
+  .next,.submit{background:var(--teal);color:#fff;}
+  .next:hover,.submit:hover{background:var(--teal2);}
+  .back:hover{background:#d8e6e5;}
+  .done-screen{text-align:center;padding:50px 26px;display:none;}
+  .done-screen .check{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin:0 auto 18px;animation:pop .4s;}
+  @keyframes pop{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .foot{text-align:center;color:#6f8786;font-size:.82rem;padding:18px;}
+  @media(max-width:560px){.row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>Peak Performance PT</h1>
+  <p>New athlete intake. Tell us where you are so we can match you with the right clinician.</p>
+</div>
+
+<div class="shell">
+  <div class="prog">
+    <div class="active" data-p="0">Athlete</div>
+    <div data-p="1">Injury</div>
+    <div data-p="2">Goals</div>
+    <div class="barbg"></div><div class="barfill" id="barfill"></div>
+  </div>
+
+  <form id="frm" novalidate>
+    <div class="step show" data-step="0">
+      <div class="field"><label>Full name</label><input id="name"><div class="err">Please enter a name.</div></div>
+      <div class="row">
+        <div class="field"><label>Email</label><input id="email"><div class="err">Enter a valid email.</div></div>
+        <div class="field"><label>Phone</label><input id="phone"><div class="err">Enter a 10 digit phone.</div></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Age</label><input id="age" type="number"><div class="err">Enter a valid age.</div></div>
+        <div class="field"><label>Primary sport</label>
+          <select id="sport"><option value="">Select</option><option>Soccer</option><option>Basketball</option><option>Football</option><option>Track</option><option>CrossFit</option><option>Other</option></select>
+          <div class="err">Choose a sport.</div></div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1">
+      <label>What brings you in</label>
+      <div class="chips" id="reasonChips">
+        <div class="chip" data-v="ACL or knee">ACL or knee</div>
+        <div class="chip" data-v="Ankle">Ankle</div>
+        <div class="chip" data-v="Hamstring">Hamstring</div>
+        <div class="chip" data-v="Shoulder">Shoulder</div>
+        <div class="chip" data-v="Concussion">Concussion</div>
+        <div class="chip" data-v="Performance">Performance testing</div>
+      </div>
+      <div class="err" id="reasonErr">Pick at least one.</div>
+      <div class="field"><label>How long has this been going on</label>
+        <select id="dur"><option value="">Select</option><option>Less than 2 weeks</option><option>2 to 6 weeks</option><option>6 weeks to 3 months</option><option>Post surgery rehab</option><option>No injury, performance only</option></select>
+        <div class="err">Choose a timeframe.</div></div>
+      <div class="field"><label>Tell us a bit more</label><textarea id="detail" rows="3"></textarea></div>
+    </div>
+
+    <div class="step" data-step="2">
+      <label>Your main goal</label>
+      <div class="chips" id="goalChips">
+        <div class="chip" data-v="Return to sport">Return to sport</div>
+        <div class="chip" data-v="Pain free">Train pain free</div>
+        <div class="chip" data-v="Get stronger">Get stronger</div>
+        <div class="chip" data-v="Pass a test">Pass a clearance test</div>
+      </div>
+      <div class="err" id="goalErr">Pick at least one.</div>
+      <div class="field"><label>Preferred visit time</label>
+        <select id="time"><option value="">Select</option><option>Early morning, 7 to 9</option><option>Midday, 11 to 1</option><option>Afternoon, 2 to 6</option></select>
+        <div class="err">Choose a window.</div></div>
+      <div class="field"><label>How did you hear about us</label>
+        <select id="ref"><option value="">Select</option><option>Referred by a physician</option><option>Coach or team</option><option>Search</option><option>A friend or athlete</option></select>
+        <div class="err">Choose one.</div></div>
+    </div>
+
+    <div class="nav">
+      <button type="button" class="back" id="back" style="visibility:hidden;">Back</button>
+      <button type="button" class="next" id="next">Continue</button>
+    </div>
+  </form>
+
+  <div class="done-screen" id="doneScreen">
+    <div class="check">OK</div>
+    <h2>You are on the list</h2>
+    <p style="color:#5d7574;margin-top:8px;max-width:420px;margin-left:auto;margin-right:auto;">Thanks <span id="echoName">athlete</span>. The front desk will reach out within one business day to confirm your first visit. Mornings book quickly, so we will hold a slot for you.</p>
+  </div>
+  <div class="foot">2155 Monroe Drive NE, Suite 120, Atlanta, GA 30324 | (404) 555-0150</div>
+</div>
+
+<script>
+  var step=0,steps=document.querySelectorAll('.step'),prog=document.querySelectorAll('.prog div[data-p]');
+  var back=document.getElementById('back'),next=document.getElementById('next'),barfill=document.getElementById('barfill');
+  var reasons=[],goals=[];
+  function chipGroup(id,arr){document.querySelectorAll('#'+id+' .chip').forEach(function(c){
+    c.addEventListener('click',function(){c.classList.toggle('sel');
+      var v=c.dataset.v,i=arr.indexOf(v);if(i<0)arr.push(v);else arr.splice(i,1);});});}
+  chipGroup('reasonChips',reasons);chipGroup('goalChips',goals);
+
+  function show(){steps.forEach(function(s,i){s.classList.toggle('show',i===step);});
+    prog.forEach(function(p,i){p.classList.toggle('active',i===step);p.classList.toggle('done',i<step);});
+    barfill.style.width=(step/(steps.length-1)*100)+'%';
+    back.style.visibility=step===0?'hidden':'visible';
+    next.textContent=step===steps.length-1?'Submit':'Continue';
+    next.className=step===steps.length-1?'submit':'next';}
+  function bad(id){document.getElementById(id).closest('.field').classList.add('bad');}
+  function clr(id){document.getElementById(id).closest('.field').classList.remove('bad');}
+  function val(id){return document.getElementById(id).value.trim();}
+
+  function validate(){
+    var ok=true;
+    if(step===0){
+      ['name','email','phone','age','sport'].forEach(clr);
+      if(!val('name')){bad('name');ok=false;}
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('email'))){bad('email');ok=false;}
+      if(val('phone').replace(/\D/g,'').length!==10){bad('phone');ok=false;}
+      if(!val('age')||+val('age')<5||+val('age')>90){bad('age');ok=false;}
+      if(!val('sport')){bad('sport');ok=false;}
+    }else if(step===1){
+      clr('dur');
+      document.getElementById('reasonErr').style.display=reasons.length?'none':'block';
+      if(!reasons.length)ok=false;
+      if(!val('dur')){bad('dur');ok=false;}
+    }else if(step===2){
+      ['time','ref'].forEach(clr);
+      document.getElementById('goalErr').style.display=goals.length?'none':'block';
+      if(!goals.length)ok=false;
+      if(!val('time')){bad('time');ok=false;}
+      if(!val('ref')){bad('ref');ok=false;}
+    }
+    return ok;
+  }
+  next.addEventListener('click',function(){
+    if(!validate())return;
+    if(step<steps.length-1){step++;show();}
+    else{document.getElementById('frm').style.display='none';
+      document.querySelector('.prog').style.display='none';
+      document.getElementById('echoName').textContent=val('name').split(' ')[0];
+      document.getElementById('doneScreen').style.display='block';}
+  });
+  back.addEventListener('click',function(){if(step>0){step--;show();}});
+  show();
+</script>
+</body>
+</html>

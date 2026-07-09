@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Nate Wright">
+<title>Wright Household Finance Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1726; --panel:#16223a; --panel2:#1c2c49; --ink:#e7edf6; --muted:#93a4c0;
+    --accent:#e2a33b; --accent2:#4e86c6; --green:#46b67c; --line:#26375a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  a{color:inherit;text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(14,23,40,.95);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .nav-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 20px;flex-wrap:wrap}
+  .brand{font-weight:700;font-size:17px;margin-right:auto}
+  .brand span{color:var(--accent)}
+  .nav a{font-size:14px;color:var(--muted);padding:6px 8px;border-radius:6px}
+  .nav a:hover{color:var(--ink);background:var(--panel2)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  section{padding:48px 0;border-bottom:1px solid var(--line)}
+  .hero{padding:64px 0 40px}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.08em;font-size:13px;text-transform:uppercase}
+  h1{font-size:40px;margin:.2em 0 .1em;line-height:1.1}
+  h2{font-size:26px;margin:0 0 18px}
+  h3{font-size:16px;margin:0 0 6px}
+  .sub{color:var(--muted);max-width:640px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .stat{font-size:30px;font-weight:700}
+  .stat.green{color:var(--green)} .stat.amber{color:var(--accent)} .stat.blue{color:var(--accent2)}
+  .small{font-size:13px;color:var(--muted)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);
+    color:var(--ink);padding:9px 16px;border-radius:8px}
+  button:hover{border-color:var(--accent)}
+  button.active{background:var(--accent);color:#1a1208;border-color:var(--accent);font-weight:600}
+  .controls{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  footer{padding:34px 0;color:var(--muted);font-size:13px}
+  .note{font-size:12.5px;color:var(--muted);margin-top:14px}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">Wright <span>Household Finance</span></div>
+    <a href="#overview">Overview</a>
+    <a href="#savings">Savings</a>
+    <a href="#budget">Budget</a>
+    <a href="#college">College</a>
+    <a href="#notes">Notes</a>
+  </div>
+</header>
+
+<section class="hero wrap" id="overview">
+  <div class="kicker">14 Hillandale Road, Stamford</div>
+  <h1>Household finance, at a glance</h1>
+  <p class="sub">A plain read on income, fixed costs, and the savings targets for the year ahead. Figures are reviewed each quarter against the actual statements, not from memory. The 350 dollar confirmation line still applies to every entry below it.</p>
+  <div class="cards">
+    <div class="card"><div class="small">Combined income</div><div class="stat blue">$196,000</div><div class="small">Nate base plus overtime and Nicole</div></div>
+    <div class="card"><div class="small">Monthly take-home</div><div class="stat">$7,235</div><div class="small">After tax and deductions</div></div>
+    <div class="card"><div class="small">Emergency fund</div><div class="stat amber">$34,000</div><div class="small">Target $40,000, gap $6,000</div></div>
+    <div class="card"><div class="small">Retirement 401(a)</div><div class="stat green">$285,420</div><div class="small">Reviewed quarterly</div></div>
+  </div>
+</section>
+
+<section class="wrap" id="savings">
+  <h2>Emergency fund progress</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Balance against the $40,000 target</h3>
+      <p class="small">Paced at 250 to 500 dollars a month. Eight months of contributions shown, ending at the current balance of record.</p>
+      <!-- LINE CHART: emergency fund balance over time -->
+      <svg viewBox="0 0 460 230" width="100%" role="img" aria-label="Emergency fund balance line chart">
+        <line x1="50" y1="190" x2="440" y2="190" stroke="#26375a"/>
+        <line x1="50" y1="20" x2="50" y2="190" stroke="#26375a"/>
+        <!-- target line at 40000 -->
+        <line x1="50" y1="35" x2="440" y2="35" stroke="#e2a33b" stroke-dasharray="5 5" opacity=".7"/>
+        <text x="440" y="31" fill="#e2a33b" font-size="10" text-anchor="end">target $40,000</text>
+        <!-- gridlines/labels -->
+        <text x="44" y="194" fill="#93a4c0" font-size="10" text-anchor="end">31k</text>
+        <text x="44" y="115" fill="#93a4c0" font-size="10" text-anchor="end">35.5k</text>
+        <text x="44" y="39" fill="#93a4c0" font-size="10" text-anchor="end">40k</text>
+        <!-- data: 31000,31500,32000,32500,33000,33500,33750,34000 scaled (31000->190, 40000->35) -->
+        <polyline fill="none" stroke="#4e86c6" stroke-width="2.5"
+          points="50,190 105,181 161,172 216,164 272,155 327,146 383,142 440,138"/>
+        <g fill="#4e86c6">
+          <circle cx="50" cy="190" r="3.5"/><circle cx="105" cy="181" r="3.5"/>
+          <circle cx="161" cy="172" r="3.5"/><circle cx="216" cy="164" r="3.5"/>
+          <circle cx="272" cy="155" r="3.5"/><circle cx="327" cy="146" r="3.5"/>
+          <circle cx="383" cy="142" r="3.5"/><circle cx="440" cy="138" r="3.5"/>
+        </g>
+        <text x="50" y="206" fill="#93a4c0" font-size="9" text-anchor="middle">M1</text>
+        <text x="216" y="206" fill="#93a4c0" font-size="9" text-anchor="middle">M4</text>
+        <text x="440" y="206" fill="#93a4c0" font-size="9" text-anchor="middle">now</text>
+      </svg>
+      <p class="note">Current balance $34,000 of a $40,000 target. Remaining gap $6,000, roughly twelve to twenty-four months at the current pace.</p>
+    </div>
+    <div class="panel">
+      <h3>Progress to target</h3>
+      <p class="small">Eighty-five per cent of the target met, recomputed from the live balance.</p>
+      <!-- DONUT CHART: 34000/40000 = 85% -->
+      <svg viewBox="0 0 220 220" width="220" height="220" role="img" aria-label="Emergency fund progress donut, 85 per cent">
+        <circle cx="110" cy="110" r="80" fill="none" stroke="#26375a" stroke-width="26"/>
+        <!-- 85% of circumference (2*pi*80=502.65); filled 427.3, gap 75.4 -->
+        <circle cx="110" cy="110" r="80" fill="none" stroke="#46b67c" stroke-width="26"
+          stroke-dasharray="427.3 75.4" stroke-dashoffset="125.6" transform="rotate(-90 110 110)" stroke-linecap="butt"/>
+        <text x="110" y="104" fill="#e7edf6" font-size="34" font-weight="700" text-anchor="middle">85%</text>
+        <text x="110" y="128" fill="#93a4c0" font-size="12" text-anchor="middle">of $40,000</text>
+      </svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#46b67c"></span>Saved $34,000</span>
+        <span><span class="dot" style="background:#26375a"></span>Remaining $6,000</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="budget">
+  <h2>Monthly fixed costs</h2>
+  <p class="sub">The big lines the budget works around. Toggle between dollars and the share of monthly take-home.</p>
+  <div class="controls" style="margin-top:18px">
+    <button id="btnDollar" class="active" onclick="setMode('dollar')">Dollars</button>
+    <button id="btnPct" onclick="setMode('pct')">Share of take-home</button>
+  </div>
+  <div class="panel">
+    <!-- BAR CHART -->
+    <svg id="barChart" viewBox="0 0 620 260" width="100%" role="img" aria-label="Monthly fixed costs bar chart">
+      <line x1="120" y1="20" x2="120" y2="225" stroke="#26375a"/>
+      <line x1="120" y1="225" x2="600" y2="225" stroke="#26375a"/>
+      <g id="bars"></g>
+    </svg>
+    <p class="note" id="barNote">Mortgage $2,450, wagon $420, sedan $380, health insurance $290 per paycheck. The two car payments are only forty dollars apart and are labelled so they are never swapped.</p>
+  </div>
+</section>
+
+<section class="wrap" id="college">
+  <h2>College savings by child</h2>
+  <p class="sub">Two plans, funded each quarter. Nolan starts first, so the draw-down plan does not raid Chloe's balance.</p>
+  <div class="grid2" style="margin-top:8px">
+    <div class="panel">
+      <table>
+        <thead><tr><th>Quarter</th><th class="num">Nolan</th><th class="num">Chloe</th></tr></thead>
+        <tbody>
+          <tr><td>2025-Q4</td><td class="num">$36,500</td><td class="num">$20,800</td></tr>
+          <tr><td>2026-Q1</td><td class="num">$37,200</td><td class="num">$21,300</td></tr>
+          <tr><td>2026-Q4 (now)</td><td class="num">$38,000</td><td class="num">$22,000</td></tr>
+          <tr><td>2027-Q1 (proj.)</td><td class="num">$38,800</td><td class="num">$22,600</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Contributions: Nolan $750 a quarter, Chloe $500 a quarter. Rough per-child goal by college start is $120,000.</p>
+    </div>
+    <div class="panel">
+      <h3>Current balances</h3>
+      <!-- two-bar comparison -->
+      <svg viewBox="0 0 320 220" width="100%" role="img" aria-label="College balances comparison">
+        <line x1="60" y1="20" x2="60" y2="180" stroke="#26375a"/>
+        <line x1="60" y1="180" x2="300" y2="180" stroke="#26375a"/>
+        <!-- scale: 38000 -> height 150, top y=30 -->
+        <rect x="100" y="30" width="60" height="150" rx="4" fill="#4e86c6"/>
+        <rect x="210" y="93" width="60" height="87" rx="4" fill="#e2a33b"/>
+        <text x="130" y="22" fill="#e7edf6" font-size="12" text-anchor="middle">$38,000</text>
+        <text x="240" y="85" fill="#e7edf6" font-size="12" text-anchor="middle">$22,000</text>
+        <text x="130" y="196" fill="#93a4c0" font-size="12" text-anchor="middle">Nolan (16)</text>
+        <text x="240" y="196" fill="#93a4c0" font-size="12" text-anchor="middle">Chloe (12)</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="notes">
+  <h2>Discipline notes</h2>
+  <div class="cards">
+    <div class="card"><h3>Confirmation line</h3><p class="small">Any single expense at or above $350, or any new recurring charge at or above $30 a month, gets cleared with Nicole before it runs.</p></div>
+    <div class="card"><h3>Recompute live</h3><p class="small">The fund percentage is recomputed from the actual balance, with any deposit or travel charge surfaced as its own line, not folded into the total.</p></div>
+    <div class="card"><h3>Quarterly review</h3><p class="small">A short Sunday review with Nicole confirms the balances each quarter. The next one lands in January 2027.</p></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  Prepared by Nate Wright for the household review. Figures held at the credit union and the retirement plan. Last reviewed November 2026.
+</footer>
+
+<script>
+  var data = [
+    {label:"Mortgage", dollar:2450, pct:34},
+    {label:"wagon", dollar:420, pct:6},
+    {label:"sedan", dollar:380, pct:5},
+    {label:"Insurance", dollar:290, pct:4}
+  ];
+  var mode = "dollar";
+  function setMode(m){
+    mode = m;
+    document.getElementById("btnDollar").classList.toggle("active", m==="dollar");
+    document.getElementById("btnPct").classList.toggle("active", m==="pct");
+    drawBars();
+  }
+  function drawBars(){
+    var g = document.getElementById("bars");
+    g.innerHTML = "";
+    var max = mode==="dollar" ? 2600 : 40;
+    var x0 = 120, top = 25, bottom = 225, fullW = 470;
+    var bw = 70, gap = (fullW - data.length*bw) / (data.length+1);
+    data.forEach(function(d,i){
+      var val = mode==="dollar" ? d.dollar : d.pct;
+      var h = (val/max) * (bottom-top);
+      var x = x0 + gap + i*(bw+gap);
+      var y = bottom - h;
+      var rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      rect.setAttribute("x",x); rect.setAttribute("y",y);
+      rect.setAttribute("width",bw); rect.setAttribute("height",h);
+      rect.setAttribute("rx","4");
+      rect.setAttribute("fill", i===0 ? "#e2a33b" : "#4e86c6");
+      g.appendChild(rect);
+      var lbl = document.createElementNS("http://www.w3.org/2000/svg","text");
+      lbl.setAttribute("x", x+bw/2); lbl.setAttribute("y", bottom+18);
+      lbl.setAttribute("fill","#93a4c0"); lbl.setAttribute("font-size","12");
+      lbl.setAttribute("text-anchor","middle"); lbl.textContent = d.label;
+      g.appendChild(lbl);
+      var vt = document.createElementNS("http://www.w3.org/2000/svg","text");
+      vt.setAttribute("x", x+bw/2); vt.setAttribute("y", y-7);
+      vt.setAttribute("fill","#e7edf6"); vt.setAttribute("font-size","12");
+      vt.setAttribute("text-anchor","middle");
+      vt.textContent = mode==="dollar" ? ("$"+d.dollar.toLocaleString()) : (d.pct+"%");
+      g.appendChild(vt);
+    });
+    document.getElementById("barNote").textContent = mode==="dollar"
+      ? "Mortgage $2,450, wagon $420, sedan $380, health insurance $290 per paycheck. The two car payments are only forty dollars apart and are labelled so they are never swapped."
+      : "As a share of the $7,235 monthly take-home: mortgage 34 per cent, the two cars 11 per cent together, insurance 4 per cent. The rest covers utilities, groceries, and the kids' activities.";
+  }
+  drawBars();
+</script>
+</body>
+</html>

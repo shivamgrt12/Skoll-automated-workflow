@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salthill and Western Way training log</title>
+<style>
+  :root{
+    --bg:#0e1726; --panel:#16243a; --panel2:#1d3050; --line:#273c5e;
+    --ink:#eaf1fb; --mut:#9fb3d1; --lime:#9bd66b; --orange:#f0a24b; --sky:#5fb6e6; --rose:#e57b8b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header.bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding:18px 26px;background:linear-gradient(120deg,#16243a,#1d3050);border-bottom:1px solid var(--line)}
+  header.bar h1{font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px}
+  header.bar h1 .glyph{width:30px;height:30px;border-radius:8px;background:var(--lime);color:#13251a;
+    display:grid;place-items:center;font-weight:900}
+  .seg{display:flex;background:#0e1726;border:1px solid var(--line);border-radius:22px;padding:4px}
+  .seg button{background:transparent;color:var(--mut);border:0;padding:7px 16px;border-radius:18px;cursor:pointer;font-size:14px;transition:.2s}
+  .seg button.active{background:var(--lime);color:#13251a;font-weight:700}
+  main{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+  .kpi .big{font-size:30px;font-weight:800}
+  .kpi .lab{font-size:12.5px;color:var(--mut);margin-top:2px}
+  .kpi .spark{position:absolute;right:10px;bottom:8px;opacity:.5}
+  .view{display:none;animation:rise .4s ease}
+  .view.show{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:20px}
+  .card h2{font-size:17px;margin-bottom:3px}
+  .card .sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+  .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+  @media(max-width:780px){.grid2{grid-template-columns:1fr}}
+  /* line chart area */
+  svg{display:block;width:100%;height:auto}
+  .axis{stroke:var(--line);stroke-width:1}
+  .glabel{fill:var(--mut);font-size:11px}
+  .pace-line{fill:none;stroke:var(--sky);stroke-width:3;stroke-linejoin:round;stroke-linecap:round;
+    stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.8s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .dot{fill:var(--sky)}
+  /* trail sections */
+  .seclist{display:flex;flex-direction:column;gap:12px}
+  .sec{display:flex;align-items:center;gap:14px}
+  .sec .idx{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  .sec.done .idx{background:var(--lime);color:#13251a}
+  .sec.todo .idx{background:#26405f;color:var(--mut)}
+  .sec .meta{flex:1}
+  .sec .name{font-size:14.5px}
+  .sec .det{font-size:12px;color:var(--mut)}
+  .sec .track{height:8px;background:#0e1726;border-radius:5px;overflow:hidden;margin-top:6px}
+  .sec .fill{height:100%;width:0;background:var(--lime);transition:width 1.1s ease}
+  .sec.todo .fill{background:var(--orange)}
+  .ring-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--sky);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  footer.foot{padding:24px;text-align:center;color:var(--mut);font-size:13px;border-top:1px solid var(--line);background:var(--panel)}
+  footer.foot b{color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1><span class="glyph">J</span> Salthill and Western Way training log</h1>
+  <div class="seg">
+    <button class="active" data-view="run">Running</button>
+    <button data-view="trail">Western Way</button>
+  </div>
+</header>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="big" data-count="12">0</div><div class="lab">km a week, typical</div></div>
+    <div class="kpi"><div class="big">6:08</div><div class="lab">average pace, min per km</div></div>
+    <div class="kpi"><div class="big" data-count="84">0</div><div class="lab">km of trail completed</div></div>
+    <div class="kpi"><div class="big" data-count="4">0</div><div class="lab">of 7 trail sections done</div></div>
+  </div>
+
+  <section class="view show" id="run">
+    <div class="card">
+      <h2>Pace trend, recent prom runs</h2>
+      <div class="sub">Salthill prom and the extended loop to Nimmo's Pier. Lower is faster, minutes per km.</div>
+      <svg viewBox="0 0 640 240" role="img" aria-label="Pace trend line chart">
+        <line class="axis" x1="40" y1="200" x2="620" y2="200"></line>
+        <line class="axis" x1="40" y1="20" x2="40" y2="200"></line>
+        <text class="glabel" x="2" y="40">5:50</text>
+        <text class="glabel" x="2" y="120">6:05</text>
+        <text class="glabel" x="2" y="200">6:20</text>
+        <polyline class="pace-line" points="60,150 150,120 240,165 330,110 420,145 510,95 600,118"></polyline>
+        <g class="dot-group">
+          <circle class="dot" cx="60" cy="150" r="4"></circle><circle class="dot" cx="150" cy="120" r="4"></circle>
+          <circle class="dot" cx="240" cy="165" r="4"></circle><circle class="dot" cx="330" cy="110" r="4"></circle>
+          <circle class="dot" cx="420" cy="145" r="4"></circle><circle class="dot" cx="510" cy="95" r="4"></circle>
+          <circle class="dot" cx="600" cy="118" r="4"></circle>
+        </g>
+        <text class="glabel" x="48" y="218">Oct</text><text class="glabel" x="225" y="218">Nov</text>
+        <text class="glabel" x="400" y="218">Jan</text><text class="glabel" x="575" y="218">Feb</text>
+      </svg>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Recent sessions</h2>
+        <div class="sub">Logged runs along the prom.</div>
+        <table>
+          <tr><th>Date</th><th>Route</th><th>Km</th><th>Pace</th></tr>
+          <tr><td>06 Oct 2025</td><td>Prom and back</td><td>6.2</td><td>6:08</td></tr>
+          <tr><td>09 Oct 2025</td><td>To Nimmo's Pier</td><td>8.4</td><td>6:04</td></tr>
+          <tr><td>20 Oct 2025</td><td>Prom extended</td><td>7.5</td><td>6:08</td></tr>
+          <tr><td>10 Feb 2026</td><td>Prom and back</td><td>6.2</td><td>5:58</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2>This block</h2>
+        <div class="sub">Two runs a week, weather permitting.</div>
+        <div class="seclist">
+          <div class="sec done"><div class="idx">1</div><div class="meta"><div class="name">Consistency</div><div class="det">Target two runs a week</div><div class="track"><div class="fill" data-w="90"></div></div></div></div>
+          <div class="sec done"><div class="idx">2</div><div class="meta"><div class="name">Weekly distance</div><div class="det">12 to 15 km a week</div><div class="track"><div class="fill" data-w="80"></div></div></div></div>
+          <div class="sec todo"><div class="idx">3</div><div class="meta"><div class="name">Long run build</div><div class="det">Push the Nimmo's loop past 9 km</div><div class="track"><div class="fill" data-w="55"></div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="trail">
+    <div class="card">
+      <h2>Western Way progress</h2>
+      <div class="sub">Section by section, completed over weekends between on-call rotations.</div>
+      <div class="ring-wrap">
+        <svg viewBox="0 0 120 120" width="120" height="120" aria-label="Trail completion ring">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#26405f" stroke-width="12"></circle>
+          <circle id="ring" cx="60" cy="60" r="50" fill="none" stroke="#9bd66b" stroke-width="12"
+            stroke-linecap="round" transform="rotate(-90 60 60)"
+            stroke-dasharray="314" stroke-dashoffset="314"></circle>
+          <text x="60" y="58" text-anchor="middle" fill="#eaf1fb" font-size="20" font-weight="800">61%</text>
+          <text x="60" y="76" text-anchor="middle" fill="#9fb3d1" font-size="10">84.4 of 138.8 km</text>
+        </svg>
+        <div style="flex:1;min-width:240px">
+          <div class="seclist">
+            <div class="sec done"><div class="idx">1</div><div class="meta"><div class="name">Oughterard to Cornamona</div><div class="det">21.3 km, October 2024, with Colin</div><div class="track"><div class="fill" data-w="100"></div></div></div></div>
+            <div class="sec done"><div class="idx">2</div><div class="meta"><div class="name">Cornamona to Maam Cross</div><div class="det">17.8 km, November 2024, solo</div><div class="track"><div class="fill" data-w="100"></div></div></div></div>
+            <div class="sec done"><div class="idx">3</div><div class="meta"><div class="name">Maam to Leenane</div><div class="det">19.4 km, November 2024, with Colin and Nina</div><div class="track"><div class="fill" data-w="100"></div></div></div></div>
+            <div class="sec done"><div class="idx">4</div><div class="meta"><div class="name">Leenane to Louisburgh</div><div class="det">25.9 km, completed April 2025</div><div class="track"><div class="fill" data-w="100"></div></div></div></div>
+            <div class="sec todo"><div class="idx">5</div><div class="meta"><div class="name">Louisburgh to Newport</div><div class="det">24.6 km, planned for October or November 2026</div><div class="track"><div class="fill" data-w="0"></div></div></div></div>
+            <div class="sec todo"><div class="idx">6</div><div class="meta"><div class="name">Newport to Westport</div><div class="det">14.8 km, could combine with section 5</div><div class="track"><div class="fill" data-w="0"></div></div></div></div>
+            <div class="sec todo"><div class="idx">7</div><div class="meta"><div class="name">Westport to Croagh Patrick</div><div class="det">Optional spur, clear day only</div><div class="track"><div class="fill" data-w="0"></div></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <b>Personal training log</b> kept by Joan Hampton, Salthill, Galway.<br>
+  Runs along the prom and walks across Connemara. Target full Western Way completion by spring 2027.
+</footer>
+
+<script>
+  var segs=document.querySelectorAll('.seg button');
+  var views=document.querySelectorAll('.view');
+  function fillBars(scope){ scope.querySelectorAll('.fill').forEach(function(f){ f.style.width=f.dataset.w+'%'; }); }
+  segs.forEach(function(b){
+    b.addEventListener('click',function(){
+      segs.forEach(function(x){x.classList.remove('active')});
+      views.forEach(function(v){v.classList.remove('show')});
+      b.classList.add('active');
+      var el=document.getElementById(b.dataset.view);
+      el.classList.add('show');
+      el.querySelectorAll('.fill').forEach(function(f){f.style.width='0'});
+      setTimeout(function(){fillBars(el)},60);
+    });
+  });
+  document.querySelectorAll('[data-count]').forEach(function(n){
+    var t=+n.dataset.count,c=0,s=Math.max(1,Math.round(t/35));
+    var id=setInterval(function(){c+=s;if(c>=t){c=t;clearInterval(id)}n.textContent=c;},25);
+  });
+  window.addEventListener('load',function(){
+    fillBars(document.getElementById('run'));
+    var ring=document.getElementById('ring');
+    if(ring){ setTimeout(function(){ ring.style.transition='stroke-dashoffset 1.6s ease'; ring.style.strokeDashoffset=122; },200); }
+  });
+</script>
+</body>
+</html>

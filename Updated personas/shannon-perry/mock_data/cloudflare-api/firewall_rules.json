@@ -1,0 +1,202 @@
+[
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block known bad bots",
+    "expression": "(cf.client.bot and not cf.verified_bot)",
+    "id": "c92b0bee17c9fc216558c9a7daef554a",
+    "paused": "false",
+    "priority": "1",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Challenge high threat score",
+    "expression": "(cf.threat_score gt 40)",
+    "id": "e1fa8d077314a2d4ff4550eccb065f3f",
+    "paused": "false",
+    "priority": "2",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "js_challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "JS challenge on contact form",
+    "expression": "(http.request.uri.path eq \"/contact\" and http.request.method eq \"POST\")",
+    "id": "31aeceb3f75e168ea3e11eb691797607",
+    "paused": "false",
+    "priority": "3",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block SQLi patterns",
+    "expression": "(http.request.uri.query contains \"union select\")",
+    "id": "a3a2b9ed216fe917f4187473f756dd77",
+    "paused": "false",
+    "priority": "4",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block path traversal",
+    "expression": "(http.request.uri.path contains \"../\")",
+    "id": "6d7e35d6ab2a5d2d1a09b598d2edfc4c",
+    "paused": "false",
+    "priority": "5",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Challenge non-US admin access",
+    "expression": "(http.request.uri.path contains \"/admin\" and ip.geoip.country ne \"US\")",
+    "id": "dbb0658d98d7bb83bdc9c92e4e4f23c7",
+    "paused": "false",
+    "priority": "6",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "allow",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Allow my home IP",
+    "expression": "(ip.src eq 174.225.18.92)",
+    "id": "ca8a628ff3f35f3380f19da27d52cb73",
+    "paused": "false",
+    "priority": "7",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Rate-limit scraping the results page",
+    "expression": "(http.request.uri.path contains \"/results\" and cf.client.bot)",
+    "id": "0f6c21db674f1e3af390315850267505",
+    "paused": "false",
+    "priority": "8",
+    "zone_id": "4e5039803040dd665e1965f0cb85da5a"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Managed challenge on signup",
+    "expression": "(http.request.uri.path eq \"/signup\")",
+    "id": "5142cf62dbfd5a45861f08d084a36c42",
+    "paused": "false",
+    "priority": "9",
+    "zone_id": "e2e511050a76261db45eb48fcf443210"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block empty user agent",
+    "expression": "(http.user_agent eq \"\")",
+    "id": "c2a13e6081683e01e600fa3265483783",
+    "paused": "false",
+    "priority": "10",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Challenge old TLS",
+    "expression": "(ssl and not cf.tls_version in {\"TLSv1.2\" \"TLSv1.3\"})",
+    "id": "6b26e42bdaee5e79437aa7eec21dc72d",
+    "paused": "false",
+    "priority": "11",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block xmlrpc probes",
+    "expression": "(http.request.uri.path contains \"xmlrpc.php\")",
+    "id": "639b89e83d5c236318ebd5b0958ce977",
+    "paused": "false",
+    "priority": "12",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block wp-login probes",
+    "expression": "(http.request.uri.path contains \"wp-login\")",
+    "id": "abc69d40aea727a656e39a6ff69f8459",
+    "paused": "false",
+    "priority": "13",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "js_challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "JS challenge API writes",
+    "expression": "(http.request.uri.path contains \"/api\" and http.request.method eq \"POST\")",
+    "id": "767096950eef061501fb107fdec775a3",
+    "paused": "false",
+    "priority": "14",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Challenge anonymizers",
+    "expression": "(ip.src in $cf.anonymizer)",
+    "id": "c28f9ce562cca7a4f26303cea78d7731",
+    "paused": "false",
+    "priority": "15",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block large query strings",
+    "expression": "(len(http.request.uri.query) gt 2000)",
+    "id": "7861ef83cfccc8defa11210900453167",
+    "paused": "false",
+    "priority": "16",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "allow",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Allow uptime probes",
+    "expression": "(http.user_agent contains \"coachperry-uptime\")",
+    "id": "1d807735082e0171727b050c35202582",
+    "paused": "false",
+    "priority": "17",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block known scanner UAs",
+    "expression": "(http.user_agent contains \"sqlmap\")",
+    "id": "d629a724f0f0a5a8b2a00859f32cc425",
+    "paused": "false",
+    "priority": "18",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Challenge form spam keywords",
+    "expression": "(http.request.body.raw contains \"viagra\")",
+    "id": "bbb044d8866978a2213deadc34009e1f",
+    "paused": "false",
+    "priority": "19",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  },
+  {
+    "action": "block",
+    "created_on": "2026-10-12T09:00:00.000000Z",
+    "description": "Block deprecated /v1 API",
+    "expression": "(http.request.uri.path contains \"/v1/\")",
+    "id": "6d9c09d0cbf48366ac85f8bb6841fef3",
+    "paused": "false",
+    "priority": "20",
+    "zone_id": "46580a803a880e17f76f5bf33973ee2d"
+  }
+]

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household FI Tracker</title>
+<style>
+  :root{--bg:#0e1726;--panel:#16223a;--panel2:#1d2c49;--ink:#e8eef7;--mut:#8ea1c0;--g:#34d399;--b:#60a5fa;--y:#fbbf24;--line:#26365a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{padding:22px 26px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  header h1{font-size:1.35rem;}
+  header h1 span{color:var(--g);}
+  .tag{color:var(--mut);font-size:.85rem;}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 26px 60px;}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+  .kpi{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:18px;opacity:0;transform:translateY(16px);animation:in .5s forwards;}
+  .kpi:nth-child(2){animation-delay:.08s;}.kpi:nth-child(3){animation-delay:.16s;}.kpi:nth-child(4){animation-delay:.24s;}
+  @keyframes in{to{opacity:1;transform:none;}}
+  .kpi small{color:var(--mut);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;}
+  .kpi b{display:block;font-size:1.7rem;margin-top:6px;}
+  .kpi .d{font-size:.82rem;margin-top:4px;color:var(--g);}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;}
+  .panel h2{font-size:1.05rem;margin-bottom:4px;}
+  .panel p.h{color:var(--mut);font-size:.84rem;margin-bottom:16px;}
+  .donut{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .legend{font-size:.9rem;}
+  .legend div{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;border-radius:6px;}
+  .legend div:hover{background:#ffffff10;}
+  .dot{width:12px;height:12px;border-radius:3px;}
+  .legend .v{margin-left:auto;color:var(--mut);font-variant-numeric:tabular-nums;}
+  .ctrls{display:flex;gap:8px;margin-bottom:14px;}
+  .ctrls button{background:#21325a;color:var(--ink);border:1px solid var(--line);padding:7px 14px;border-radius:8px;font-weight:600;cursor:pointer;transition:.15s;font-size:.85rem;}
+  .ctrls button.active,.ctrls button:hover{background:var(--g);color:#06281c;border-color:var(--g);}
+  canvas{width:100%;height:auto;}
+  .full{grid-column:1 / -1;}
+  .bars .brow{display:flex;align-items:center;gap:12px;margin:9px 0;font-size:.9rem;}
+  .bars .lab{width:150px;color:var(--mut);}
+  .bars .bt{flex:1;height:14px;background:#0d1830;border-radius:7px;overflow:hidden;}
+  .bars .bf{height:100%;width:0;border-radius:7px;transition:width 1s ease;}
+  .bars .amt{width:78px;text-align:right;font-variant-numeric:tabular-nums;}
+  footer{border-top:1px solid var(--line);color:var(--mut);font-size:.82rem;text-align:center;padding:20px;}
+  @media(max-width:780px){.cards{grid-template-columns:repeat(2,1fr);}.panels{grid-template-columns:1fr;}.bars .lab{width:110px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Household <span>Financial Independence</span> Tracker</h1>
+  <div class="tag">Brian and Karen Hall | private | snapshot February 2026</div>
+</header>
+<div class="wrap">
+  <div class="cards">
+    <div class="kpi"><small>Invested assets</small><b>$434,294</b><div class="d">seven positions, all index</div></div>
+    <div class="kpi"><small>Emergency fund</small><b>$58,000</b><div class="d">about six months of costs</div></div>
+    <div class="kpi"><small>Monthly surplus</small><b>$5,845</b><div class="d">after every bill is paid</div></div>
+    <div class="kpi"><small>Gross household</small><b>$313,000</b><div class="d">combined annual</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Portfolio allocation</h2>
+      <p class="h">Click a slice in the legend to highlight it.</p>
+      <div class="donut">
+        <svg id="donut" width="180" height="180" viewBox="0 0 42 42"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Savings rate</h2>
+      <p class="h">Share of net income directed to building wealth.</p>
+      <div class="bars" id="srbars">
+        <div class="brow"><span class="lab">Investing</span><div class="bt"><div class="bf" style="background:var(--b)" data-w="8.4"></div></div><span class="amt">$1,500</span></div>
+        <div class="brow"><span class="lab">Free surplus</span><div class="bt"><div class="bf" style="background:var(--g)" data-w="32.6"></div></div><span class="amt">$5,845</span></div>
+        <div class="brow"><span class="lab">Fixed living</span><div class="bt"><div class="bf" style="background:var(--y)" data-w="59"></div></div><span class="amt">$10,605</span></div>
+      </div>
+      <p style="color:var(--mut);font-size:.85rem;margin-top:12px;">Roughly forty one cents of every net dollar is available to invest or save once the surplus is swept.</p>
+    </div>
+
+    <div class="panel full">
+      <h2>Projected invested assets</h2>
+      <p class="h">Compounding the current balance plus monthly contributions. Choose an assumed annual return.</p>
+      <div class="ctrls" id="rates">
+        <button data-r="6">6 percent</button>
+        <button data-r="7" class="active">7 percent</button>
+        <button data-r="8">8 percent</button>
+      </div>
+      <canvas id="proj" width="1000" height="320"></canvas>
+    </div>
+  </div>
+</div>
+<footer>Tracked with the same discipline as training. Index funds, low cost, long horizon. Reviewed on the first of each month.</footer>
+
+<script>
+  var alloc=[
+    {name:"US stock VTSAX",val:327548.40,color:"#60a5fa"},
+    {name:"International VTIAX",val:47977.60,color:"#34d399"},
+    {name:"Bonds BND",val:21967.50,color:"#fbbf24"},
+    {name:"Education 529",val:36800.00,color:"#a78bfa"}
+  ];
+  var total=alloc.reduce(function(s,a){return s+a.val;},0);
+  var svg=document.getElementById('donut'),legend=document.getElementById('legend'),off=25;
+  alloc.forEach(function(a,i){
+    var pct=a.val/total*100;
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx','21');c.setAttribute('cy','21');c.setAttribute('r','15.915');
+    c.setAttribute('fill','transparent');c.setAttribute('stroke',a.color);c.setAttribute('stroke-width','7');
+    c.setAttribute('stroke-dasharray','0 100');c.setAttribute('stroke-dashoffset',off);
+    c.style.transition='stroke-dasharray 1s ease';c.dataset.pct=pct;svg.appendChild(c);
+    setTimeout(function(){c.setAttribute('stroke-dasharray',pct.toFixed(2)+' '+(100-pct).toFixed(2));},120);
+    off-=pct;
+    var row=document.createElement('div');
+    row.innerHTML='<span class="dot" style="background:'+a.color+'"></span>'+a.name+'<span class="v">'+pct.toFixed(1)+'%</span>';
+    row.addEventListener('mouseenter',function(){c.setAttribute('stroke-width','9');});
+    row.addEventListener('mouseleave',function(){c.setAttribute('stroke-width','7');});
+    legend.appendChild(row);
+  });
+
+  document.querySelectorAll('#srbars .bf').forEach(function(b){setTimeout(function(){b.style.width=b.dataset.w+'%';},300);});
+
+  var cv=document.getElementById('proj'),ctx=cv.getContext('2d');
+  var start=434294, monthly=5845+1500, years=20;
+  function draw(rate){
+    var W=cv.width,H=cv.height,padL=70,padB=34,padT=20,padR=20;
+    ctx.clearRect(0,0,W,H);
+    var pts=[],bal=start,r=rate/100/12;
+    for(var m=0;m<=years*12;m++){pts.push(bal);bal=bal*(1+r)+monthly;}
+    var max=pts[pts.length-1];
+    ctx.strokeStyle='#26365a';ctx.fillStyle='#8ea1c0';ctx.font='12px Segoe UI';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var y=padT+(H-padT-padB)*g/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+      ctx.fillText('$'+Math.round(max*(4-g)/4/1000)+'k',8,y+4);}
+    for(var yr=0;yr<=years;yr+=5){var x=padL+(W-padL-padR)*yr/years;ctx.fillText('Yr '+yr,x-10,H-12);}
+    var grad=ctx.createLinearGradient(0,padT,0,H-padB);grad.addColorStop(0,'rgba(52,211,153,.35)');grad.addColorStop(1,'rgba(52,211,153,0)');
+    ctx.beginPath();
+    pts.forEach(function(v,i){var x=padL+(W-padL-padR)*i/(pts.length-1),y=padT+(H-padT-padB)*(1-v/max);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.lineTo(W-padR,H-padB);ctx.lineTo(padL,H-padB);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    ctx.fillStyle='#e8eef7';ctx.font='bold 14px Segoe UI';
+    ctx.fillText('At year 20, about $'+ (Math.round(max/1000)).toLocaleString() +'k',padL+10,padT+20);
+  }
+  draw(7);
+  document.querySelectorAll('#rates button').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('#rates button').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');draw(+btn.dataset.r);
+    });
+  });
+</script>
+</body>
+</html>

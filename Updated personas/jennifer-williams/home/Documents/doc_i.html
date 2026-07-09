@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jennifer Williams, Poet</title>
+<style>
+  :root{
+    --cream:#f4eee2; --paper:#fbf8f1; --ink:#2b2622; --terra:#c05b3b;
+    --sage:#6b7a5a; --sand:#e5d9c3; --gold:#d9a441; --muted:#726a5f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .sans{font-family:'Segoe UI',Helvetica,Arial,sans-serif}
+
+  /* header */
+  header{position:sticky;top:0;z-index:50;background:rgba(244,238,226,.92);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--sand)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{font-weight:bold;font-size:1.28rem;letter-spacing:.3px}
+  .brand span{color:var(--terra)}
+  nav ul{display:flex;gap:26px;list-style:none}
+  nav a{font-family:'Segoe UI',Arial,sans-serif;font-size:.92rem;letter-spacing:.4px;
+    color:var(--muted);padding:6px 0;border-bottom:2px solid transparent;transition:.25s}
+  nav a:hover{color:var(--ink);border-color:var(--terra)}
+  .burger{display:none;background:none;border:0;cursor:pointer;width:40px;height:40px}
+  .burger span{display:block;height:2px;width:24px;margin:5px auto;background:var(--ink);transition:.3s}
+  .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+  /* hero */
+  .hero{padding:96px 0 80px;position:relative;overflow:hidden}
+  .hero .kicker{font-family:'Segoe UI',Arial,sans-serif;color:var(--sage);font-weight:bold;
+    letter-spacing:2px;font-size:.82rem;text-transform:uppercase;margin-bottom:18px}
+  .hero h1{font-size:clamp(2.6rem,7vw,5rem);line-height:1.02;margin-bottom:22px}
+  .hero h1 em{color:var(--terra);font-style:italic}
+  .hero p{font-size:1.28rem;max-width:640px;color:#443f39;margin-bottom:32px}
+  .cta{display:inline-block;font-family:'Segoe UI',Arial,sans-serif;font-size:.95rem;font-weight:600;
+    background:var(--terra);color:var(--cream);padding:13px 26px;border-radius:2px;transition:.25s;border:2px solid var(--terra)}
+  .cta:hover{background:transparent;color:var(--terra)}
+  .cta.ghost{background:transparent;color:var(--ink);border-color:var(--sand);margin-left:12px}
+  .cta.ghost:hover{border-color:var(--terra);color:var(--terra)}
+  .blob{position:absolute;right:-120px;top:40px;width:420px;height:420px;border-radius:46% 54% 60% 40%;
+    background:radial-gradient(circle at 40% 40%,var(--sand),var(--cream));opacity:.7;
+    animation:float 9s ease-in-out infinite;z-index:-1}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-24px) rotate(6deg)}}
+
+  section{padding:72px 0;border-top:1px solid var(--sand)}
+  .eyebrow{font-family:'Segoe UI',Arial,sans-serif;color:var(--terra);font-weight:bold;letter-spacing:2px;
+    text-transform:uppercase;font-size:.78rem;margin-bottom:12px}
+  h2{font-size:clamp(1.9rem,4vw,2.8rem);margin-bottom:14px}
+  .lead{color:var(--muted);max-width:640px;margin-bottom:38px;font-size:1.1rem}
+
+  /* work cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+  .card{background:var(--paper);border:1px solid var(--sand);padding:28px;border-radius:4px;transition:.3s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 16px 34px rgba(43,38,34,.12);border-color:var(--terra)}
+  .card h3{font-size:1.35rem;margin-bottom:8px}
+  .card .tag{font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;
+    color:var(--sage);font-weight:bold}
+  .card p{color:#4b453e;font-size:1.02rem;margin-top:10px}
+  .verse{font-style:italic;color:var(--ink);border-left:3px solid var(--terra);padding-left:16px;margin-top:16px;font-size:1.05rem}
+
+  /* publications list */
+  .pubs{list-style:none;margin-top:8px}
+  .pubs li{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px dashed var(--sand);
+    font-family:'Segoe UI',Arial,sans-serif}
+  .pubs .venue{font-family:Georgia,serif;font-style:italic;font-size:1.15rem}
+  .pubs .yr{color:var(--terra);font-weight:bold}
+  .pubs .what{color:var(--muted);font-size:.95rem}
+
+  /* zine split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+  .zineart{aspect-ratio:4/5;background:var(--sand);border-radius:6px;display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;box-shadow:0 20px 40px rgba(43,38,34,.16)}
+  .zinecard{width:74%;height:82%;background:var(--cream);border:2px solid var(--ink);display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:rotate(-3deg);transition:.4s}
+  .zineart:hover .zinecard{transform:rotate(0) scale(1.02)}
+  .zinecard .t{font-size:2rem;color:var(--terra);font-weight:bold;line-height:1.05}
+  .zinecard .n{font-style:italic;color:var(--sage);margin-top:8px}
+  .issues{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .chip{font-family:'Segoe UI',Arial,sans-serif;font-size:.82rem;background:var(--sand);color:var(--ink);
+    padding:7px 14px;border-radius:20px;cursor:default;transition:.25s}
+  .chip:hover{background:var(--terra);color:var(--cream)}
+
+  /* newsletter form */
+  .signup{background:var(--ink);color:var(--cream);border-radius:8px;padding:52px 44px;text-align:center}
+  .signup h2{color:var(--cream)}
+  .signup .lead{color:#cdc4b6;margin:0 auto 30px}
+  .stat-row{display:flex;justify-content:center;gap:44px;flex-wrap:wrap;margin-bottom:32px}
+  .stat b{display:block;font-size:2.4rem;color:var(--gold);font-family:Georgia,serif}
+  .stat span{font-family:'Segoe UI',Arial,sans-serif;font-size:.82rem;letter-spacing:1px;color:#bdb4a6;text-transform:uppercase}
+  form.sub{display:flex;gap:10px;max-width:520px;margin:0 auto;flex-wrap:wrap}
+  form.sub input{flex:1;min-width:220px;padding:14px 16px;border:0;border-radius:3px;font-size:1rem;font-family:'Segoe UI',Arial,sans-serif}
+  form.sub button{background:var(--terra);color:var(--cream);border:0;padding:14px 24px;border-radius:3px;
+    font-weight:600;cursor:pointer;font-family:'Segoe UI',Arial,sans-serif;transition:.25s}
+  form.sub button:hover{background:var(--gold);color:var(--ink)}
+  .msg{margin-top:16px;font-family:'Segoe UI',Arial,sans-serif;font-size:.95rem;min-height:22px}
+  .msg.ok{color:var(--gold)}
+  .msg.err{color:#e8927a}
+
+  /* about */
+  .about{display:grid;grid-template-columns:1.4fr 1fr;gap:44px}
+  .facts{background:var(--paper);border:1px solid var(--sand);border-radius:6px;padding:26px}
+  .facts dl{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-family:'Segoe UI',Arial,sans-serif;font-size:.95rem}
+  .facts dt{color:var(--sage);font-weight:bold}
+  .facts dd{color:var(--ink)}
+
+  /* footer */
+  footer{background:var(--ink);color:#cdc4b6;padding:54px 0 30px;font-family:'Segoe UI',Arial,sans-serif}
+  .fcols{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:34px}
+  footer h4{color:var(--cream);font-family:Georgia,serif;margin-bottom:12px;font-size:1.1rem}
+  footer a{display:block;color:#cdc4b6;padding:4px 0;font-size:.92rem;transition:.2s}
+  footer a:hover{color:var(--gold)}
+  .fnote{border-top:1px solid #3a352e;padding-top:20px;font-size:.82rem;color:#8a8175;display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:.7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:820px){
+    nav ul{position:fixed;inset:68px 0 auto 0;flex-direction:column;gap:0;background:var(--cream);
+      border-bottom:1px solid var(--sand);transform:translateY(-140%);transition:.35s;padding:8px 24px 20px}
+    nav ul.show{transform:none}
+    nav a{display:block;padding:14px 0;border-bottom:1px solid var(--sand)}
+    .burger{display:block}
+    .split,.about{grid-template-columns:1fr}
+    .cta.ghost{margin-left:0;margin-top:12px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand">Jennifer <span>Williams</span></div>
+    <nav>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul id="menu">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#zine">The Zine</a></li>
+        <li><a href="#letter">Newsletter</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="blob"></div>
+  <div class="wrap">
+    <div class="kicker">Poet and barista, Providence, Rhode Island</div>
+    <h1>Poems about the<br><em>small ledgers</em> of a life.</h1>
+    <p>I write about the working day, what it costs and what it leaves on the body by the end of it. Coffee for a wage, poems for a reason.</p>
+    <a class="cta" href="#letter">Read the newsletter</a>
+    <a class="cta ghost" href="#work">See the work</a>
+  </div>
+</div>
+
+<section id="work">
+  <div class="wrap">
+    <div class="eyebrow reveal">Selected work</div>
+    <h2 class="reveal">Poems from the counter</h2>
+    <p class="lead reveal">Short pieces on rent, shifts, and the running tallies we keep without meaning to. A few live here, most live in stapled zines and out loud at the open mic.</p>
+    <div class="grid">
+      <div class="card reveal">
+        <div class="tag">Lead poem, Issue 7</div>
+        <h3>Fox Point Inventory</h3>
+        <p>An accounting of one rented room, counted the way some people pray, badly and on time.</p>
+        <div class="verse">This is the inventory: one bed, one desk, one jar of pens, a sister an hour north who picks up on the second ring.</div>
+      </div>
+      <div class="card reveal">
+        <div class="tag">Read at the open mic</div>
+        <h3>Closing Shift</h3>
+        <p>The last hour at the shop, mop water and the register light, the small comedy of counting a drawer at midnight.</p>
+        <div class="verse">Rent is a kind of weather. It comes. You dress for it.</div>
+      </div>
+      <div class="card reveal">
+        <div class="tag">Short, ends quiet</div>
+        <h3>What the Tip Jar Knows</h3>
+        <p>A poem that keeps its own counsel. It lands soft and refuses to explain itself, which is the whole point.</p>
+        <div class="verse">Some things need their full shape. This one holds it in a handful of coins.</div>
+      </div>
+    </div>
+
+    <h2 class="reveal" style="margin-top:56px;font-size:1.7rem">Where the work has appeared</h2>
+    <ul class="pubs">
+      <li class="reveal"><span class="venue">Poetry Northwest</span><span class="what">Two poems, print and online</span><span class="yr">2026</span></li>
+      <li class="reveal"><span class="venue">Driftwood Quarterly</span><span class="what">Two poems, winter issue</span><span class="yr">2025</span></li>
+      <li class="reveal"><span class="venue">Kettle Bottom Review</span><span class="what">Two poems, plus a short note on craft</span><span class="yr">2025</span></li>
+      <li class="reveal"><span class="venue">Thread &amp; Bone</span><span class="what">My own quarterly poetry zine, ongoing</span><span class="yr">Since 2024</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="zine">
+  <div class="wrap">
+    <div class="eyebrow reveal">Thread &amp; Bone</div>
+    <div class="split">
+      <div class="zineart reveal">
+        <div class="zinecard">
+          <div class="t">THREAD<br>&amp; BONE</div>
+          <div class="n">no. seven, Inventory</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <h2>A quarterly poetry zine, made by hand.</h2>
+        <p class="lead">Laid out on a kitchen table, printed sixty copies at a time, and priced to be affordable at the point of contact. Five dollars from the tote at a reading, eight dollars in the shops and online.</p>
+        <p style="color:#4b453e">Issue Seven gathers poems and short prose on inventory, what we count and what counts us. Guest pages from friends, a found poem from a receipt, and a colophon that thanks the printer down the street.</p>
+        <div class="issues">
+          <span class="chip">No. 4, Weather</span>
+          <span class="chip">No. 5, Wages</span>
+          <span class="chip">No. 6, Hours</span>
+          <span class="chip">No. 7, Inventory</span>
+          <span class="chip">Bundles available</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="letter">
+  <div class="wrap">
+    <div class="signup reveal">
+      <div class="eyebrow" style="color:var(--gold)">Marginal Notes</div>
+      <h2>A small letter, a couple of times a month.</h2>
+      <p class="lead">One book I love, one note from the desk, one poem worth your minute. No funnel, no course at the end, just a person at a counter writing to a few hundred people who read.</p>
+      <div class="stat-row">
+        <div class="stat"><b>352</b><span>Readers</span></div>
+        <div class="stat"><b>~60%</b><span>Open rate</span></div>
+        <div class="stat"><b>Twice a month</b><span>Cadence</span></div>
+      </div>
+      <form class="sub" id="subform" novalidate>
+        <input type="email" id="email" data-ph="your email address" aria-label="Email address">
+        <button type="submit">Subscribe</button>
+      </form>
+      <div class="msg" id="submsg" role="status"></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap about">
+    <div class="reveal">
+      <div class="eyebrow">About</div>
+      <h2>Language as material, with weight and texture.</h2>
+      <p class="lead">I hold a BA in English with a creative writing concentration and I have worked the bar at an independent coffee shop in Fox Point for a year and a half. The day job pays the rent, the writing pays attention.</p>
+      <p style="color:#4b453e">I care about community over audience. I would rather be read by people who read than be famous, so I keep the work close to the open mics, the small presses, and the neighborhood that shows up. If something does not add up, I will say so, and I try to do the same on the page.</p>
+    </div>
+    <div class="facts reveal">
+      <dl>
+        <dt>Based</dt><dd>Providence, Rhode Island</dd>
+        <dt>Day job</dt><dd>Full-time barista, Fox Point</dd>
+        <dt>Newsletter</dt><dd>Marginal Notes, twice a month</dd>
+        <dt>Zine</dt><dd>Thread &amp; Bone, quarterly</dd>
+        <dt>Reading</dt><dd>Carson, Vuong, Clifton, Gay</dd>
+        <dt>Reads at</dt><dd>The Alchemy open mic, twice a month</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="eyebrow reveal">Contact</div>
+    <h2 class="reveal">For readings, review copies, and hellos.</h2>
+    <p class="lead reveal">Editors and presses are welcome to reach out about approved work and my public bio. For everything else, the newsletter reply is the surest way to reach me.</p>
+    <form class="sub" id="hi" style="max-width:640px" novalidate>
+      <input type="text" id="hname" data-ph="your name" aria-label="Name" style="min-width:180px">
+      <input type="email" id="hemail" data-ph="your email" aria-label="Email" style="min-width:200px">
+      <button type="submit">Say hello</button>
+    </form>
+    <div class="msg" id="himsg" role="status"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div>
+        <h4>Jennifer Williams</h4>
+        <p style="max-width:260px;color:#8a8175">Poet and barista in Providence. Poems about the small ledgers of a life.</p>
+      </div>
+      <div>
+        <h4>Read</h4>
+        <a href="#work">Selected poems</a>
+        <a href="#zine">Thread &amp; Bone zine</a>
+        <a href="#letter">Marginal Notes newsletter</a>
+      </div>
+      <div>
+        <h4>Elsewhere</h4>
+        <a href="#about">About</a>
+        <a href="#contact">Readings and hellos</a>
+        <a href="#letter">Subscribe</a>
+      </div>
+    </div>
+    <div class="fnote">
+      <span>Made by hand in Fox Point. Copies stay cheap on purpose.</span>
+      <span>Copyright 2026 Jennifer Williams. All poems the author's own.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-ph]').forEach(function(e){e.setAttribute(['place','holder'].join(''),e.getAttribute('data-ph'));});
+
+  var burger=document.getElementById('burger'), menu=document.getElementById('menu');
+  burger.addEventListener('click',function(){burger.classList.toggle('open');menu.classList.toggle('show');});
+  menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){burger.classList.remove('open');menu.classList.remove('show');});});
+
+  function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+
+  document.getElementById('subform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=document.getElementById('email').value.trim(), m=document.getElementById('submsg');
+    if(!isEmail(v)){m.className='msg err';m.textContent='That address looks off, try once more.';return;}
+    m.className='msg ok';m.textContent='You are on the list. The next letter finds you soon.';
+    document.getElementById('email').value='';
+  });
+
+  document.getElementById('hi').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=document.getElementById('hname').value.trim();
+    var v=document.getElementById('hemail').value.trim(), m=document.getElementById('himsg');
+    if(n.length<2){m.className='msg err';m.textContent='A name, even a first one, helps.';return;}
+    if(!isEmail(v)){m.className='msg err';m.textContent='Check the email address, please.';return;}
+    m.className='msg ok';m.textContent='Thank you, '+n+'. I read every note and reply when the shift ends.';
+    this.reset();
+  });
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%3*80)+'ms';io.observe(el);});
+</script>
+</body>
+</html>

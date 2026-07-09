@@ -1,0 +1,202 @@
+[
+  {
+    "action": "block",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Block obvious bots",
+    "expression": "(cf.client.bot)",
+    "id": "f899139df5e1059396431415e770c6dd",
+    "paused": "false",
+    "priority": "1",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Challenge high-risk countries",
+    "expression": "(ip.geoip.country in {\"KP\"})",
+    "id": "38b3eff8baf56627478ec76a704e9b52",
+    "paused": "false",
+    "priority": "2",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-02-01T09:00:00.000000Z",
+    "description": "Allow known partners",
+    "expression": "(ip.src in {198.51.100.0/24})",
+    "id": "ec8956637a99787bd197eacd77acce5e",
+    "paused": "false",
+    "priority": "3",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-10-09T11:20:00.000000Z",
+    "description": "Block known Tor exit nodes",
+    "expression": "(ip.src.is_in_tor)",
+    "id": "6301d87c484c704672b01ef921f0f40d",
+    "paused": "false",
+    "priority": "4",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-10-22T14:05:00.000000Z",
+    "description": "Challenge repeated login attempts",
+    "expression": "(http.request.uri.path eq \"/login\" and cf.threat_score gt 10)",
+    "id": "a828a871691ffd19a1e7412205ca27e4",
+    "paused": "false",
+    "priority": "5",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-11-03T09:30:00.000000Z",
+    "description": "Block common vulnerability scanners",
+    "expression": "(http.user_agent contains \"sqlmap\" or http.user_agent contains \"nikto\")",
+    "id": "6f5e4e5a47ec7dd0531c8f28ac5eb39c",
+    "paused": "false",
+    "priority": "6",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2024-11-18T16:45:00.000000Z",
+    "description": "Allow museum office IP range",
+    "expression": "(ip.src in {203.0.113.0/24})",
+    "id": "d7daa3dc029fabaf41d93a444f74ba93",
+    "paused": "false",
+    "priority": "7",
+    "zone_id": "5c906ace1bdc1cfdf0e97debbb98ec4b"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2024-12-01T10:10:00.000000Z",
+    "description": "Challenge requests with no user agent",
+    "expression": "(http.user_agent eq \"\")",
+    "id": "d6c498db4e546acd06f9fcc6baff6ce8",
+    "paused": "false",
+    "priority": "8",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2024-12-14T13:25:00.000000Z",
+    "description": "Block direct access to admin path from outside office",
+    "expression": "(http.request.uri.path contains \"/admin\" and not ip.src in {203.0.113.0/24})",
+    "id": "678755baf42b535181f2c6aaac3b14f5",
+    "paused": "false",
+    "priority": "9",
+    "zone_id": "5c906ace1bdc1cfdf0e97debbb98ec4b"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2024-12-28T08:50:00.000000Z",
+    "description": "Challenge high threat score requests",
+    "expression": "(cf.threat_score gt 25)",
+    "id": "8e934a22faa4c4f3d3e31dc70f245924",
+    "paused": "false",
+    "priority": "10",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2025-01-11T12:15:00.000000Z",
+    "description": "Block requests to wp-login on a non-WordPress site",
+    "expression": "(http.request.uri.path contains \"/wp-login.php\")",
+    "id": "61d4fec660e41f1455e5c23a44c52b99",
+    "paused": "false",
+    "priority": "11",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2025-01-24T15:40:00.000000Z",
+    "description": "Challenge traffic from anonymizing VPNs",
+    "expression": "(ip.src.is_in_european_union and cf.threat_score gt 5)",
+    "id": "4ec42715b4d5a203b5c0b9b570a14e23",
+    "paused": "true",
+    "priority": "12",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2025-02-05T09:05:00.000000Z",
+    "description": "Allow uptime monitoring service",
+    "expression": "(http.user_agent contains \"UptimeRobot\")",
+    "id": "16f4f1a7ae2d39dd13adaf6ed289ed73",
+    "paused": "false",
+    "priority": "13",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2025-02-17T11:30:00.000000Z",
+    "description": "Block requests with SQL keywords in query string",
+    "expression": "(http.request.uri.query contains \"union select\")",
+    "id": "cf7acd6f5b36a9ddd87c5bb48424564e",
+    "paused": "false",
+    "priority": "14",
+    "zone_id": "5c906ace1bdc1cfdf0e97debbb98ec4b"
+  },
+  {
+    "action": "managed_challenge",
+    "created_on": "2025-03-01T14:20:00.000000Z",
+    "description": "Challenge rapid requests to tour booking page",
+    "expression": "(http.request.uri.path contains \"/book\" and cf.threat_score gt 8)",
+    "id": "a3c9e224e4c22c3d9c47b91c03aac337",
+    "paused": "false",
+    "priority": "15",
+    "zone_id": "5c906ace1bdc1cfdf0e97debbb98ec4b"
+  },
+  {
+    "action": "allow",
+    "created_on": "2025-03-13T10:45:00.000000Z",
+    "description": "Allow Google site verification crawler",
+    "expression": "(http.user_agent contains \"Google-Site-Verification\")",
+    "id": "eb5a89de209430489fbb45de54952147",
+    "paused": "false",
+    "priority": "16",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "block",
+    "created_on": "2025-10-07T13:10:00.000000Z",
+    "description": "Block requests spoofing internal host header",
+    "expression": "(http.host ne \"voissync.ai\" and http.request.uri.path contains \"/internal\")",
+    "id": "d8395f0a1dbfb8df045953f629b67ffd",
+    "paused": "false",
+    "priority": "17",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "challenge",
+    "created_on": "2025-10-21T16:00:00.000000Z",
+    "description": "Challenge POST requests to contact form without referer",
+    "expression": "(http.request.method eq \"POST\" and http.request.uri.path eq \"/contact\" and http.referer eq \"\")",
+    "id": "c3f8d0507aa3aba4dc94b9ef41e983eb",
+    "paused": "false",
+    "priority": "18",
+    "zone_id": "5c906ace1bdc1cfdf0e97debbb98ec4b"
+  },
+  {
+    "action": "block",
+    "created_on": "2025-11-04T09:55:00.000000Z",
+    "description": "Block access to exposed environment files",
+    "expression": "(http.request.uri.path contains \"/.env\" or http.request.uri.path contains \"/.git\")",
+    "id": "e027fd8eecf93ed538f7ac85e6049f5c",
+    "paused": "false",
+    "priority": "19",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  },
+  {
+    "action": "allow",
+    "created_on": "2025-11-19T11:35:00.000000Z",
+    "description": "Allow Stripe webhook source range",
+    "expression": "(ip.src in {192.0.2.0/24} and http.request.uri.path contains \"/webhooks/stripe\")",
+    "id": "a9915451de59498b1ad3abb59af7aac8",
+    "paused": "false",
+    "priority": "20",
+    "zone_id": "cfcd208495d565ef66e7dff9f98764da"
+  }
+]

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensory Play Activity Finder</title>
+<style>
+  :root{--ink:#33222b;--plum:#4a2e4d;--plum-d:#3a2340;--terra:#b4532a;--terra-d:#98431f;
+    --cream:#fbf6ef;--sand:#f0e6de;--card:#fff;--muted:#7c6b73;--line:#e6d9cd}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  .sans{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,var(--plum),var(--plum-d));color:#fff;padding:26px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .mk{width:44px;height:44px;border-radius:12px;background:var(--terra);display:grid;place-items:center;font-weight:700;font-size:20px}
+  .brand h1{font-size:20px}.brand span{font-size:12.5px;opacity:.82;font-family:"Segoe UI",sans-serif}
+  .htag{font-family:"Segoe UI",sans-serif;font-size:13px;background:rgba(255,255,255,.14);padding:8px 14px;border-radius:20px}
+  .intro{padding:36px 0 6px}
+  .intro h2{font-size:30px;color:var(--plum)}
+  .intro p{color:var(--muted);max-width:640px;margin-top:8px}
+  .controls{position:sticky;top:0;background:rgba(251,246,239,.95);backdrop-filter:blur(5px);z-index:20;
+    padding:18px 0;border-bottom:1px solid var(--line);margin-top:18px}
+  .search{width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:"Segoe UI",sans-serif;background:#fff}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .chiplabel{font-family:"Segoe UI",sans-serif;font-size:12px;color:var(--muted);align-self:center;margin-right:2px;text-transform:uppercase;letter-spacing:.5px}
+  .chip{font-family:"Segoe UI",sans-serif;font-size:13px;padding:7px 14px;border-radius:20px;border:1px solid var(--line);
+    background:#fff;cursor:pointer;transition:.18s;color:var(--ink)}
+  .chip:hover{border-color:var(--terra)}
+  .chip.on{background:var(--terra);color:#fff;border-color:var(--terra)}
+  .count{font-family:"Segoe UI",sans-serif;font-size:13px;color:var(--muted);margin:16px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;padding-bottom:30px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;
+    animation:pop .35s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .card .cat{font-family:"Segoe UI",sans-serif;font-size:11.5px;font-weight:700;color:var(--terra);text-transform:uppercase;letter-spacing:.5px}
+  .card h3{font-size:19px;margin:6px 0 8px;color:var(--plum)}
+  .card p{font-size:14px;color:var(--muted);flex:1}
+  .card .meta{font-family:"Segoe UI",sans-serif;display:flex;justify-content:space-between;align-items:center;margin-top:14px;
+    padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  .age{background:var(--sand);color:var(--plum);padding:3px 10px;border-radius:10px;font-weight:600}
+  .save{background:none;border:0;cursor:pointer;font-size:20px;color:#c9bcc2;transition:.18s}
+  .save.on{color:var(--terra)}
+  .empty{text-align:center;color:var(--muted);padding:40px;font-family:"Segoe UI",sans-serif;display:none}
+  .signup{background:linear-gradient(135deg,var(--plum),var(--plum-d));color:#fff;border-radius:18px;padding:34px;margin:20px 0 50px;
+    display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
+  @media(max-width:720px){.signup{grid-template-columns:1fr}}
+  .signup h3{font-size:24px}.signup p{opacity:.9;margin-top:8px;font-size:15px}
+  .su{font-family:"Segoe UI",sans-serif;display:flex;gap:10px;flex-wrap:wrap}
+  .su input{flex:1;min-width:180px;padding:12px 14px;border-radius:10px;border:0;font-size:14px}
+  .su button{background:var(--terra);color:#fff;border:0;padding:12px 22px;border-radius:10px;font-weight:700;cursor:pointer;transition:.2s}
+  .su button:hover{background:var(--terra-d)}
+  .suok{font-family:"Segoe UI",sans-serif;font-size:13.5px;margin-top:10px;min-height:16px;color:#f6dccb}
+  footer{background:#2c1c30;color:#c8b6c1;font-family:"Segoe UI",sans-serif;font-size:13px;padding:26px 0}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><div class="mk">S</div><div><h1>Sensory Play Activity Finder</h1><span>A companion to the Sensory Play Resource Guide</span></div></div>
+  <div class="htag">Long Pediatric Therapy</div>
+</div></header>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>Find the right activity in a minute</h2>
+    <p class="sans" style="font-family:'Segoe UI',sans-serif">Filter by the skill you want to build and your child's age. Every activity uses simple materials and can be graded easier or harder. Tap the heart to save your favorites for later.</p>
+  </div>
+</div>
+
+<div class="controls"><div class="wrap">
+  <input class="search" id="q" aria-label="Search activities or materials" value="">
+  <div class="chiplabel" style="margin-top:6px">Type to search by name or materials, for example rice or scissors</div>
+  <div class="chips"><span class="chiplabel">Skill</span>
+    <button class="chip on" data-skill="all">All</button>
+    <button class="chip" data-skill="Tactile">Tactile</button>
+    <button class="chip" data-skill="Fine motor">Fine motor</button>
+    <button class="chip" data-skill="Hand strength">Hand strength</button>
+    <button class="chip" data-skill="Regulation">Regulation</button>
+    <button class="chip" data-skill="Gross motor">Gross motor</button>
+  </div>
+  <div class="chips"><span class="chiplabel">Age</span>
+    <button class="chip on" data-age="all">All ages</button>
+    <button class="chip" data-age="2">2 to 5</button>
+    <button class="chip" data-age="4">4 to 8</button>
+    <button class="chip" data-age="6">6 to 12</button>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">No activities match those filters yet. Try clearing one.</div>
+
+  <div class="signup">
+    <div>
+      <h3>Be first to know when the guide launches</h3>
+      <p>Join the parent list for the full forty activity Sensory Play Resource Guide, plus a free printable each season.</p>
+    </div>
+    <div>
+      <form class="su" id="su" novalidate>
+        <input id="email" type="email" aria-label="Your email address">
+        <button type="submit">Notify me</button>
+      </form>
+      <div class="suok" id="suok"></div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <span>Long Pediatric Therapy, 3812 N 26th St, Suite 201, Tacoma, WA 98407</span>
+  <span>Updated February 2026</span>
+</div></footer>
+
+<script>
+  const DATA=[
+    {t:"Kinetic Sand Letter Hunt",c:"Tactile",a:2,ar:"2 to 5",m:"kinetic sand, letter tiles",d:"Bury and find letter tiles in sand to build tactile tolerance and letter recognition."},
+    {t:"Rice Bin Treasure Sort",c:"Tactile",a:2,ar:"2 to 5",m:"rice, small toys, scoops",d:"Scoop and sort hidden toys from a dry rice bin, tools first so hands stay comfortable."},
+    {t:"Texture Path Walk",c:"Tactile",a:2,ar:"2 to 5",m:"texture tiles",d:"Walk barefoot across different textures to widen what feels safe underfoot."},
+    {t:"Therapy Putty Coin Dig",c:"Hand strength",a:4,ar:"4 to 7",m:"therapy putty, coins",d:"Dig coins out of firm putty to strengthen the small muscles used for writing."},
+    {t:"Spray Bottle Window Art",c:"Hand strength",a:4,ar:"4 to 8",m:"spray bottles, washable paint",d:"Squeeze a spray bottle to paint on a window, building a strong, steady hand."},
+    {t:"Clothespin Color Match",c:"Fine motor",a:2,ar:"3 to 6",m:"clothespins, color cards",d:"Pinch clothespins onto matching color cards to grow pincer strength."},
+    {t:"Tweezer Pom Transfer",c:"Fine motor",a:4,ar:"4 to 7",m:"tweezers, pom poms",d:"Move soft pom poms with tweezers for fine motor precision and focus."},
+    {t:"Scissor Snip Garden",c:"Fine motor",a:4,ar:"4 to 8",m:"paper strips, safety scissors",d:"Snip paper strips into a paper garden to practice controlled scissor skills."},
+    {t:"Vertical Easel Painting",c:"Gross motor",a:4,ar:"4 to 8",m:"easel, washable paint",d:"Paint upright at an easel to build shoulder and wrist stability for writing."},
+    {t:"Obstacle Crawl Course",c:"Gross motor",a:2,ar:"3 to 7",m:"cushions, tunnel, mat",d:"Crawl, climb, and tumble through a soft course for body awareness and heavy work."},
+    {t:"Weighted Lap Story Time",c:"Regulation",a:2,ar:"2 to 6",m:"weighted lap pad, books",d:"Read together under a light weighted pad for calm, focused attention."},
+    {t:"Calm Down Jar",c:"Regulation",a:2,ar:"3 to 10",m:"jar, water, glitter, glue",d:"Shake and watch the glitter settle, a quiet reset for big feelings."}
+  ];
+  let skill="all", age="all", q="";
+  const grid=document.getElementById('grid'), empty=document.getElementById('empty'), count=document.getElementById('count');
+  const saved=new Set();
+  function ageMatch(a){ if(age==="all")return true; if(age==="2")return a<=2; if(age==="4")return a>=4&&a<6; if(age==="6")return a>=6; return true;}
+  function render(){
+    const list=DATA.filter(x=>(skill==="all"||x.c===skill)&&ageMatch(x.a)&&
+      (q===""||(x.t+" "+x.m).toLowerCase().includes(q)));
+    grid.innerHTML="";
+    list.forEach(x=>{
+      const isS=saved.has(x.t);
+      const el=document.createElement('div');el.className="card";
+      el.innerHTML='<div class="cat">'+x.c+'</div><h3>'+x.t+'</h3><p>'+x.d+'</p>'+
+        '<div class="meta"><span>'+x.m+'</span><span class="age">'+x.ar+'</span></div>'+
+        '<div class="meta" style="border:0;padding-top:8px"><span>Ages '+x.ar+'</span>'+
+        '<button class="save'+(isS?' on':'')+'" title="Save">'+(isS?'♥':'♡')+'</button></div>';
+      el.querySelector('.save').addEventListener('click',function(){
+        if(saved.has(x.t))saved.delete(x.t);else saved.add(x.t);render();});
+      grid.appendChild(el);
+    });
+    empty.style.display=list.length?"none":"block";
+    const sv=saved.size?(", "+saved.size+" saved"):"";
+    count.textContent="Showing "+list.length+" of "+DATA.length+" activities"+sv;
+  }
+  document.querySelectorAll('[data-skill]').forEach(b=>b.addEventListener('click',function(){
+    document.querySelectorAll('[data-skill]').forEach(x=>x.classList.remove('on'));
+    this.classList.add('on');skill=this.dataset.skill;render();}));
+  document.querySelectorAll('[data-age]').forEach(b=>b.addEventListener('click',function(){
+    document.querySelectorAll('[data-age]').forEach(x=>x.classList.remove('on'));
+    this.classList.add('on');age=this.dataset.age;render();}));
+  document.getElementById('q').addEventListener('input',function(){q=this.value.trim().toLowerCase();render();});
+  document.getElementById('su').addEventListener('submit',function(ev){ev.preventDefault();
+    const e=document.getElementById('email').value.trim();const ok=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+    const out=document.getElementById('suok');
+    if(ok){out.textContent="Thank you, you are on the list.";this.reset();}
+    else{out.textContent="Please enter a valid email address.";}
+  });
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aortic Valve Outcomes Study, Investigator Dashboard</title>
+<style>
+  :root{
+    --bg:#0c1622; --panel:#13212f; --panel2:#1a2c3d; --line:#23394d;
+    --ink:#e8eef4; --muted:#8aa2b8; --accent:#3fa7ff; --accent2:#2ee6a6;
+    --warn:#ffb454; --red:#ff5c7a; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:
+    radial-gradient(1200px 600px at 80% -10%,#16314a 0,transparent 60%),var(--bg);
+    color:var(--ink);line-height:1.5;min-height:100vh}
+  header{position:sticky;top:0;z-index:30;backdrop-filter:blur(8px);
+    background:rgba(12,22,34,.82);border-bottom:1px solid var(--line)}
+  .bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 22px;gap:18px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.3px}
+  .pulse{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#1e5fa8);
+    display:grid;place-items:center;box-shadow:var(--shadow)}
+  .pulse svg{width:22px;height:22px}
+  nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px;
+    padding:6px 2px;border-bottom:2px solid transparent;transition:.2s}
+  nav a:hover{color:var(--ink);border-color:var(--accent)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .btn{font:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:20px;padding:8px 16px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--muted);transition:.2s}
+  .btn:hover{color:var(--ink);border-color:var(--accent)}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),#1c69b8);color:#04121f;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.1)}
+  .btn.on{color:var(--accent2);border-color:var(--accent2)}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  .hero{display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-bottom:22px}
+  .hero h1{font-size:30px;font-weight:800;letter-spacing:.2px}
+  .hero p{color:var(--muted);margin-top:6px;max-width:560px}
+  .tag{display:inline-block;font-size:12px;color:var(--accent2);border:1px solid #1d5a48;
+    background:#0f2a23;padding:5px 10px;border-radius:20px}
+  .grid{display:grid;gap:18px}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    border-radius:16px;padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .card h3{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .big{font-size:34px;font-weight:800;margin-top:8px}
+  .sub{font-size:12px;color:var(--muted);margin-top:4px}
+  .two{grid-template-columns:1.4fr 1fr}
+  @media(max-width:860px){.two{grid-template-columns:1fr}}
+  .panelttl{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .progress{height:12px;border-radius:8px;background:#0d1a26;overflow:hidden;border:1px solid var(--line)}
+  .progress > i{display:block;height:100%;width:0;border-radius:8px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1.6s cubic-bezier(.2,.7,.2,1)}
+  .rowlbl{display:flex;justify-content:space-between;font-size:13px;margin:14px 0 6px}
+  .rowlbl b{color:var(--ink)} .rowlbl span{color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .bars{display:flex;align-items:flex-end;gap:18px;height:180px;padding-top:10px}
+  .bargrp{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .bcol{width:100%;display:flex;gap:6px;align-items:flex-end;height:140px;justify-content:center}
+  .b{width:26px;border-radius:6px 6px 0 0;align-self:flex-end}
+  .b.s{background:#2c4b66} .b.e{background:linear-gradient(180deg,var(--accent),#1c69b8)}
+  .blab{font-size:12px;color:var(--muted);text-align:center}
+  .timeline{position:relative;margin-top:6px;padding-left:22px}
+  .timeline:before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+  .ev{position:relative;padding:10px 0}
+  .ev:before{content:"";position:absolute;left:-20px;top:14px;width:11px;height:11px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 0 4px rgba(63,167,255,.15)}
+  .ev.done:before{background:var(--accent2)}
+  .ev .d{font-size:12px;color:var(--accent)}
+  .ev .t{font-size:14px;font-weight:600}
+  .ev .m{font-size:12px;color:var(--muted)}
+  .donut{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .legend li{list-style:none;font-size:13px;color:var(--muted);margin:6px 0;display:flex;align-items:center;gap:8px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:24px}
+  .mt{margin-top:18px}
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:18px;padding:5px 11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">
+      <span class="pulse"><svg viewBox="0 0 48 24" fill="none" stroke="#dff0ff" stroke-width="2.4"><path d="M1 12 H10 L14 4 L20 20 L26 8 L30 12 H47"/></svg></span>
+      <span>Coastal Cardiology Research Office</span>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#sites">Sites</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#education">Education</a>
+    </nav>
+    <div class="actions">
+      <button class="btn" id="viewBtn" onclick="toggleView(this)">Show projections</button>
+      <button class="btn primary" onclick="run()">Refresh figures</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero" id="overview">
+    <div>
+      <span class="tag">Protocol CCP-AV-2024-017</span>
+      <h1>Aortic Valve Outcomes Study</h1>
+      <p>Principal investigator view for the multi-center transcatheter versus surgical aortic valve replacement program. Aggregate figures only, consistent with the approved protocol. Last updated February 2026.</p>
+    </div>
+    <div style="text-align:right">
+      <div class="sub">Principal investigator</div>
+      <div style="font-weight:700;font-size:18px">Dr. Jason A. Campbell</div>
+      <div class="sub">Co-PI Dr. James Whitfield, Lakewood Medical Research</div>
+    </div>
+  </section>
+
+  <section class="grid kpis">
+    <div class="card"><h3>Enrolled to date</h3><div class="big" data-count="322">0</div><div class="sub">of 500 target by December 2026</div></div>
+    <div class="card"><h3>Screened</h3><div class="big" data-count="411">0</div><div class="sub">across three active sites</div></div>
+    <div class="card"><h3>Screen failures</h3><div class="big" data-count="89">0</div><div class="sub">21.7 percent of screened</div></div>
+    <div class="card"><h3>CME hours, 2026</h3><div class="big" data-count="28">0</div><div class="sub">of 50 required by Dec 31</div></div>
+  </section>
+
+  <section class="grid two mt">
+    <div class="card">
+      <div class="panelttl">Enrollment progress to target <span class="sub">322 of 500</span></div>
+      <div class="progress" data-w="64.4"><i></i></div>
+      <div class="rowlbl"><b>64.4 percent enrolled</b><span>178 remaining</span></div>
+      <div id="proj" style="display:none;margin-top:10px;font-size:13px;color:var(--accent2);
+        border:1px dashed #1d5a48;border-radius:10px;padding:10px 12px;background:#0f2a23">
+        Projection: at the current monthly pace the study reaches the 500 patient target by December 2026, ahead of database lock.</div>
+
+      <div class="panelttl mt">Enrollment by site</div>
+      <div class="bars">
+        <div class="bargrp"><div class="bcol"><div class="b s" data-h="189" title="Screened 189"></div><div class="b e" data-h="148" title="Enrolled 148"></div></div><div class="blab">Coastal<br>lead site</div></div>
+        <div class="bargrp"><div class="bcol"><div class="b s" data-h="124"></div><div class="b e" data-h="97"></div></div><div class="blab">Lakewood<br>Medical</div></div>
+        <div class="bargrp"><div class="bcol"><div class="b s" data-h="98"></div><div class="b e" data-h="77"></div></div><div class="blab">Summit<br>Heart</div></div>
+      </div>
+      <div class="chiprow">
+        <span class="chip"><span class="dot" style="background:#2c4b66"></span> Screened</span>
+        <span class="chip"><span class="dot" style="background:#3fa7ff"></span> Enrolled</span>
+      </div>
+    </div>
+
+    <div class="card" id="sites">
+      <div class="panelttl">Site detail</div>
+      <table>
+        <thead><tr><th>Site</th><th class="n">Scr</th><th class="n">Fail</th><th class="n">Enr</th></tr></thead>
+        <tbody>
+          <tr><td>Coastal Cardiology (lead)</td><td class="n">189</td><td class="n">41</td><td class="n">148</td></tr>
+          <tr><td>Lakewood Medical Research</td><td class="n">124</td><td class="n">27</td><td class="n">97</td></tr>
+          <tr><td>Summit Heart Institute</td><td class="n">98</td><td class="n">21</td><td class="n">77</td></tr>
+          <tr><td><b>All sites</b></td><td class="n"><b>411</b></td><td class="n"><b>89</b></td><td class="n"><b>322</b></td></tr>
+        </tbody>
+      </table>
+      <div class="panelttl mt">Primary endpoint</div>
+      <p class="sub">Composite of all cause mortality and disabling stroke at twelve months. Secondary endpoints: paravalvular regurgitation, length of stay, and thirty day readmission.</p>
+    </div>
+  </section>
+
+  <section class="grid two mt">
+    <div class="card" id="timeline">
+      <div class="panelttl">Publication and regulatory clock</div>
+      <div class="timeline">
+        <div class="ev done"><div class="d">January 15, 2026</div><div class="t">Continuing review approved</div><div class="m">Valid through January 14, 2027, consent unchanged</div></div>
+        <div class="ev done"><div class="d">February 2026</div><div class="t">Manuscript shell prepared</div><div class="m">Title page and 248 word abstract drafted</div></div>
+        <div class="ev"><div class="d">October 1, 2026</div><div class="t">IRB renewal submission</div><div class="m">Annual continuing review packet</div></div>
+        <div class="ev"><div class="d">October 15, 2026</div><div class="t">Manuscript submission</div><div class="m">Journal of Interventional Practice</div></div>
+        <div class="ev"><div class="d">November 14 to 16, 2026</div><div class="t">Jacksonville Heart Conference</div><div class="m">Chairing structural heart sessions</div></div>
+        <div class="ev"><div class="d">December 2026</div><div class="t">Enrollment close</div><div class="m">500 patient target, then database lock</div></div>
+      </div>
+    </div>
+
+    <div class="card" id="education">
+      <div class="panelttl">CME accrual toward 50 hours</div>
+      <div class="donut">
+        <svg width="150" height="150" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#0d1a26" stroke-width="6"></circle>
+          <circle id="cmeArc" cx="21" cy="21" r="15.9" fill="none" stroke="#2ee6a6" stroke-width="6"
+            stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 21 21)"></circle>
+          <text x="21" y="20" text-anchor="middle" fill="#e8eef4" font-size="7" font-weight="700">28 hrs</text>
+          <text x="21" y="27" text-anchor="middle" fill="#8aa2b8" font-size="3.4">56 percent</text>
+        </svg>
+        <ul class="legend">
+          <li><span class="dot" style="background:#2ee6a6"></span> Structural, 13.5 hrs</li>
+          <li><span class="dot" style="background:#3fa7ff"></span> Interventional, 8 hrs</li>
+          <li><span class="dot" style="background:#ffb454"></span> QI and safety, 2 hrs</li>
+          <li><span class="dot" style="background:#ff5c7a"></span> Pharmacology, 1.5 hrs</li>
+          <li><span class="dot" style="background:#6f7f90"></span> Self study, 3 hrs</li>
+        </ul>
+      </div>
+      <p class="sub mt">22 hours remain to meet the December 31, 2026 requirement. On pace with two conference blocks scheduled in the fall.</p>
+    </div>
+  </section>
+</div>
+
+<footer>Aggregate research summary, internal investigator use. No participant identifiable information is included. Prepared by the Coastal Cardiology Research Office, Jacksonville, FL.</footer>
+
+<script>
+  function run(){
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var end=+el.getAttribute('data-count'),t0=null;
+      function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1300,1);
+        el.textContent=Math.round(end*(0.5-Math.cos(Math.PI*p)/2)).toLocaleString();
+        if(p<1)requestAnimationFrame(step);}
+      requestAnimationFrame(step);
+    });
+    document.querySelectorAll('.progress').forEach(function(p){
+      p.querySelector('i').style.width=p.getAttribute('data-w')+'%';});
+    var maxv=189;
+    document.querySelectorAll('.b').forEach(function(b){
+      var h=+b.getAttribute('data-h');b.style.height=(h/maxv*140)+'px';});
+    var arc=document.getElementById('cmeArc');
+    setTimeout(function(){arc.setAttribute('stroke-dasharray','56 44');},250);
+  }
+  window.addEventListener('load',run);
+  function toggleView(btn){
+    var p=document.getElementById('proj');
+    var open=p.style.display==='none';
+    p.style.display=open?'block':'none';
+    btn.textContent=open?'Hide projections':'Show projections';
+    btn.classList.toggle('on',open);
+  }
+</script>
+</body>
+</html>

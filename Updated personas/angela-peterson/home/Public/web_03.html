@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRRI Community Outreach — Pacific Reef Research Institute</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep:  #03045e;
+    --mid:   #0077b6;
+    --surf:  #00b4d8;
+    --foam:  #90e0ef;
+    --sand:  #caf0f8;
+    --white: #ffffff;
+    --text:  #1a2a3a;
+    --muted: #5a7090;
+    --kelp:  #2d6a4f;
+    --green: #52b788;
+    --coral: #e07050;
+    --gold:  #f6b733;
+    --bg:    #f4f9fd;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Georgia', serif; color: var(--text); background: var(--white); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(3,4,94,0.97); backdrop-filter: blur(10px);
+    height: 58px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; border-bottom: 2px solid var(--surf);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px; text-decoration: none;
+  }
+  .brand-badge {
+    width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--mid), var(--surf));
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .brand-name { color: white; font-family: 'Arial', sans-serif; font-size: 0.88rem; font-weight: bold; }
+  .brand-name span { color: var(--surf); }
+  .nav-list { list-style: none; display: flex; gap: 24px; }
+  .nav-list a {
+    color: var(--foam); text-decoration: none; font-family: 'Arial', sans-serif;
+    font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-list a:hover { color: var(--gold); }
+  .nav-cta {
+    background: var(--surf); color: var(--deep) !important; padding: 7px 18px;
+    border-radius: 4px; font-weight: bold !important; transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--foam) !important; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh; background: linear-gradient(160deg, var(--deep) 0%, #012a4a 45%, #023e8a 75%, var(--mid) 100%);
+    display: flex; align-items: center; padding: 80px 5% 60px;
+    position: relative; overflow: hidden;
+  }
+  /* Animated ocean rings */
+  #hero::before, #hero::after {
+    content: ''; position: absolute; border-radius: 50%; border: 1px solid rgba(0,180,216,0.12);
+    animation: expand 8s ease-in-out infinite;
+  }
+  #hero::before { width: 600px; height: 600px; top: -100px; right: -100px; animation-delay: 0s; }
+  #hero::after  { width: 400px; height: 400px; top: 50px; right: 50px; animation-delay: 2s; }
+  @keyframes expand {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.08); opacity: 0.6; }
+  }
+  .hero-inner { max-width: 700px; position: relative; z-index: 1; }
+  .hero-chip {
+    display: inline-block; background: rgba(0,180,216,0.15); border: 1px solid rgba(0,180,216,0.4);
+    color: var(--surf); padding: 5px 16px; border-radius: 40px; font-family: 'Arial', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+  .hero-inner h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); color: white; line-height: 1.2; animation: fadeUp 0.7s 0.1s ease both; }
+  .hero-inner h1 em { color: var(--gold); font-style: normal; }
+  .hero-inner p { margin-top: 20px; font-size: 1.05rem; color: var(--foam); line-height: 1.8; animation: fadeUp 0.7s 0.2s ease both; }
+  .hero-actions { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; animation: fadeUp 0.7s 0.3s ease both; }
+  .btn { padding: 12px 28px; border-radius: 4px; text-decoration: none; font-family: 'Arial', sans-serif; font-size: 0.88rem; font-weight: bold; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.22s; cursor: pointer; display: inline-block; }
+  .btn-primary { background: var(--surf); color: var(--deep); }
+  .btn-primary:hover { background: var(--foam); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,180,216,0.3); }
+  .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.35); }
+  .btn-outline:hover { border-color: white; transform: translateY(-2px); }
+  .hero-stats { margin-top: 48px; display: flex; gap: 40px; flex-wrap: wrap; animation: fadeUp 0.7s 0.4s ease both; }
+  .hero-stat { }
+  .hero-stat .num { font-size: 2.0rem; color: var(--gold); font-weight: bold; line-height: 1; }
+  .hero-stat .lbl { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--foam); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .hero-image-block {
+    flex: 1; display: flex; justify-content: flex-end; align-items: center;
+    position: relative; z-index: 1; padding-left: 60px; display: none;
+  }
+
+  /* SECTION COMMONS */
+  section { padding: 80px 5%; }
+  .section-tag { font-family: 'Arial', sans-serif; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--surf); margin-bottom: 8px; }
+  h2.sec-title { font-size: clamp(1.6rem, 3.5vw, 2.4rem); color: var(--deep); font-weight: normal; margin-bottom: 12px; }
+  .sec-desc { font-size: 1.0rem; color: var(--muted); max-width: 600px; margin-bottom: 48px; line-height: 1.8; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* MISSION */
+  #mission { background: var(--bg); }
+  .mission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .m-card {
+    background: white; border-radius: 10px; padding: 28px; border-top: 4px solid var(--surf);
+    box-shadow: 0 2px 14px rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .m-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,119,182,0.12); }
+  .m-icon { font-size: 2rem; margin-bottom: 14px; }
+  .m-card h3 { font-size: 1.05rem; color: var(--deep); margin-bottom: 10px; }
+  .m-card p { font-size: 0.92rem; color: var(--muted); line-height: 1.7; }
+
+  /* EVENTS */
+  #events { background: white; }
+  .events-list { display: flex; flex-direction: column; gap: 20px; }
+  .event-row {
+    display: grid; grid-template-columns: 100px 1fr auto;
+    gap: 24px; align-items: start; background: var(--bg);
+    border-radius: 10px; padding: 22px 24px; border-left: 5px solid var(--mid);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .event-row:hover { border-left-color: var(--surf); box-shadow: 0 4px 20px rgba(0,119,182,0.1); }
+  .event-row.upcoming { border-left-color: var(--gold); }
+  .ev-date { text-align: center; }
+  .ev-date .mon { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .ev-date .day { font-size: 2rem; color: var(--deep); font-weight: bold; line-height: 1; }
+  .ev-date .yr { font-family: 'Arial', sans-serif; font-size: 0.7rem; color: var(--muted); }
+  .ev-body h3 { font-size: 1.05rem; color: var(--deep); margin-bottom: 6px; }
+  .ev-body p { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+  .ev-tags { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-family: 'Arial', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.04em; }
+  .tag-loc { background: var(--sand); color: var(--mid); }
+  .tag-att { background: #e8f7ef; color: var(--kelp); }
+  .tag-up { background: #fff8e1; color: #8a6000; }
+  .ev-action { align-self: center; }
+
+  /* FACTS */
+  #facts { background: linear-gradient(160deg, var(--deep) 0%, #012a4a 60%, #023e8a 100%); }
+  #facts .section-tag { color: var(--surf); }
+  #facts h2.sec-title { color: white; }
+  #facts .sec-desc { color: var(--foam); }
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .fact-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(0,180,216,0.2);
+    border-radius: 10px; padding: 24px; transition: background 0.2s, transform 0.2s;
+  }
+  .fact-card:hover { background: rgba(0,180,216,0.1); transform: translateY(-3px); }
+  .fact-card .fact-num { font-size: 2.4rem; color: var(--gold); font-weight: bold; line-height: 1; }
+  .fact-card .fact-label { font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--foam); margin: 6px 0; letter-spacing: 0.06em; text-transform: uppercase; }
+  .fact-card .fact-detail { font-size: 0.88rem; color: rgba(202,240,248,0.75); line-height: 1.6; }
+
+  /* NEWSLETTER */
+  #newsletter { background: var(--bg); }
+  .nl-box {
+    max-width: 600px; margin: 0 auto; text-align: center;
+    background: white; border-radius: 14px; padding: 50px 40px;
+    box-shadow: 0 4px 28px rgba(0,119,182,0.1); border-top: 5px solid var(--surf);
+  }
+  .nl-icon { font-size: 2.8rem; margin-bottom: 18px; }
+  .nl-box h3 { font-size: 1.6rem; color: var(--deep); margin-bottom: 12px; }
+  .nl-box p { font-size: 0.95rem; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+  .nl-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .nl-form input {
+    padding: 12px 18px; border: 1.5px solid #ddd; border-radius: 4px;
+    font-family: 'Georgia', serif; font-size: 0.95rem; outline: none; flex: 1; min-width: 200px;
+    transition: border-color 0.2s;
+  }
+  .nl-form input:focus { border-color: var(--surf); }
+  .nl-note { margin-top: 14px; font-family: 'Arial', sans-serif; font-size: 0.75rem; color: var(--muted); }
+
+  /* PARTNERS */
+  #partners { background: white; }
+  .partner-row { display: flex; flex-wrap: wrap; gap: 20px; }
+  .partner-card {
+    flex: 1; min-width: 180px; background: var(--bg); border-radius: 8px;
+    padding: 20px 18px; text-align: center;
+    border: 1px solid #e0ecf4; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .partner-card:hover { border-color: var(--surf); box-shadow: 0 4px 14px rgba(0,119,182,0.1); }
+  .partner-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .partner-card h4 { font-size: 0.88rem; color: var(--deep); margin-bottom: 4px; }
+  .partner-card p { font-size: 0.78rem; color: var(--muted); }
+
+  /* CONTACT STRIP */
+  #contact-strip { background: var(--deep); padding: 50px 5%; text-align: center; }
+  #contact-strip p { color: var(--foam); font-size: 1.05rem; margin-bottom: 20px; }
+  #contact-strip .email { color: var(--surf); font-size: 1.05rem; display: block; margin-bottom: 24px; }
+
+  /* FOOTER */
+  footer {
+    background: #010824; border-top: 2px solid rgba(0,180,216,0.2);
+    padding: 28px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  footer p { font-family: 'Arial', sans-serif; font-size: 0.8rem; color: rgba(144,224,239,0.5); }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { color: var(--foam); text-decoration: none; font-family: 'Arial', sans-serif; font-size: 0.8rem; }
+  .footer-links a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="brand-badge">🪸</div>
+    <span class="brand-name">PRRI <span>Outreach</span></span>
+  </a>
+  <ul class="nav-list">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#facts">Reef Facts</a></li>
+    <li><a href="#partners">Partners</a></li>
+    <li><a href="#newsletter" class="nav-cta">Newsletter</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-chip">Pacific Reef Research Institute · Community Outreach</div>
+    <h1>Protecting Hawaii's Reefs<br/>Starts <em>Here.</em></h1>
+    <p>The PRRI Community Outreach Program brings coral reef science to Oahu residents, educators, and visitors — through aquarium events, guided reef walks, school workshops, and a public reef health monitoring newsletter.</p>
+    <div class="hero-actions">
+      <a href="#events" class="btn btn-primary">Upcoming Events</a>
+      <a href="#newsletter" class="btn btn-outline">Join the Newsletter</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">1,284</div><div class="lbl">Community Members (2025)</div></div>
+      <div class="hero-stat"><div class="num">6</div><div class="lbl">Events in 2025</div></div>
+      <div class="hero-stat"><div class="num">92</div><div class="lbl">Newsletter Signups</div></div>
+      <div class="hero-stat"><div class="num">14</div><div class="lbl">Educators Reached</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section id="mission">
+  <p class="section-tag reveal">Our Work</p>
+  <h2 class="sec-title reveal">Why Community Outreach Matters</h2>
+  <p class="sec-desc reveal">Research that stays in journals doesn't protect reefs. Our program connects Phase III monitoring data to the people who live, surf, swim, and snorkel alongside Oahu's coastal ecosystems every day.</p>
+  <div class="mission-grid">
+    <div class="m-card reveal">
+      <div class="m-icon">🔬</div>
+      <h3>Science Communication</h3>
+      <p>We translate Phase III monitoring data — coral cover percentages, bleaching alerts, temperature trends — into language and visuals that any community member can understand and act on.</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-icon">🏫</div>
+      <h3>Educator Programs</h3>
+      <p>We bring reef curriculum directly to K–12 teachers, complete with hands-on activities, laminated reef ID guides, and Google Classroom materials they can use in any subject area.</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-icon">🌊</div>
+      <h3>Public Events</h3>
+      <p>From the Waikiki Aquarium to Hanauma Bay, our public events give community members the chance to see real reef footage, ask a marine biologist, and learn what they can do to help.</p>
+    </div>
+    <div class="m-card reveal">
+      <div class="m-icon">📡</div>
+      <h3>Reef Health Alerts</h3>
+      <p>When our monitoring data triggers a bleaching alert — as happened at Waikiki Reef Station C in November 2025 — we communicate that information to the public, not just to funders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <p class="section-tag reveal">Calendar</p>
+  <h2 class="sec-title reveal">Events — 2025 Recap &amp; Upcoming</h2>
+  <p class="sec-desc reveal">All PRRI outreach events are free and open to the public unless noted. Upcoming events subject to change — check back or sign up for the newsletter for updates.</p>
+  <div class="events-list">
+    <div class="event-row upcoming reveal">
+      <div class="ev-date"><div class="mon">Oct</div><div class="day">24</div><div class="yr">2026</div></div>
+      <div class="ev-body">
+        <h3>Reef Health Talk — Waikiki Aquarium</h3>
+        <p>Dr. Angela Peterson presents updated Phase III findings including the Waikiki Reef Station C bleaching situation and what it means for the local reef community. Q&amp;A to follow. Free admission. Aquarium general admission applies.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Waikiki Aquarium, Honolulu</span>
+          <span class="tag tag-up">Upcoming</span>
+        </div>
+      </div>
+      <div class="ev-action"><a href="#newsletter" class="btn btn-primary" style="white-space:nowrap; font-size:0.78rem;">Get Updates</a></div>
+    </div>
+    <div class="event-row reveal">
+      <div class="ev-date"><div class="mon">Dec</div><div class="day">20</div><div class="yr">2025</div></div>
+      <div class="ev-body">
+        <h3>Waikiki Reef Sunrise Walk</h3>
+        <p>Large-format public walk along Waikiki Beach with reef health remarks by Dr. Peterson. Co-presented with Surfrider Foundation Hawaii and Hawaii Wildlife Fund. 40 participants joined the PRRI newsletter.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Waikiki Beach</span>
+          <span class="tag tag-att">752 attendees</span>
+        </div>
+      </div>
+      <div class="ev-action"></div>
+    </div>
+    <div class="event-row reveal">
+      <div class="ev-date"><div class="mon">Dec</div><div class="day">02</div><div class="yr">2025</div></div>
+      <div class="ev-body">
+        <h3>Reef Curriculum Workshop for Educators</h3>
+        <p>Half-day professional development workshop for K–6 teachers with hands-on activities using coral specimens, reef ID slates, and Google Classroom curriculum delivery. 100% rated materials as excellent.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Kaimana Elementary, Honolulu</span>
+          <span class="tag tag-att">14 educators · 100% excellent</span>
+        </div>
+      </div>
+      <div class="ev-action"></div>
+    </div>
+    <div class="event-row reveal">
+      <div class="ev-date"><div class="mon">Nov</div><div class="day">08</div><div class="yr">2025</div></div>
+      <div class="ev-body">
+        <h3>Ocean Discovery Day — Fall Edition</h3>
+        <p>Open-house format with GoPro reef footage, coral ID station, and live Q&amp;A with Dr. Peterson. Featured first public presentation of the Waikiki Reef Station C bleaching alert data. 134 post-event surveys; 94% positive.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Waikiki Aquarium</span>
+          <span class="tag tag-att">182 attendees · 21 signups</span>
+        </div>
+      </div>
+      <div class="ev-action"></div>
+    </div>
+    <div class="event-row reveal">
+      <div class="ev-date"><div class="mon">Jun</div><div class="day">07</div><div class="yr">2025</div></div>
+      <div class="ev-body">
+        <h3>Hanauma Bay Community Reef Walk</h3>
+        <p>Guided snorkel orientation and interpretive reef walk with Dr. Peterson. Participants learned to identify live coral, bleached coral, and algae — the same benchmarks used in Phase III transect surveys.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Hanauma Bay Nature Preserve</span>
+          <span class="tag tag-att">94 participants · 12 signups</span>
+        </div>
+      </div>
+      <div class="ev-action"></div>
+    </div>
+    <div class="event-row reveal">
+      <div class="ev-date"><div class="mon">Apr</div><div class="day">19</div><div class="yr">2025</div></div>
+      <div class="ev-body">
+        <h3>Ocean Discovery Day — Spring</h3>
+        <p>First large-format aquarium event of the 2025 season. GoPro footage from live transect surveys, coral ID activity, and a packed Q&amp;A session. 91% of 142 survey respondents rated the session as informative or highly informative.</p>
+        <div class="ev-tags">
+          <span class="tag tag-loc">Waikiki Aquarium</span>
+          <span class="tag tag-att">208 attendees · 16 signups</span>
+        </div>
+      </div>
+      <div class="ev-action"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FACTS -->
+<section id="facts">
+  <p class="section-tag reveal">Reef Science</p>
+  <h2 class="sec-title reveal">What Our Data Shows</h2>
+  <p class="sec-desc reveal">Phase III monitoring data, collected by Dr. Peterson and the PRRI team at three Oahu sites since 2023. Numbers reflect the latest available readings from 2025–2026 surveys.</p>
+  <div class="facts-grid">
+    <div class="fact-card reveal">
+      <div class="fact-num">44%</div>
+      <div class="fact-label">Peak Live Coral Cover</div>
+      <div class="fact-detail">Hanauma Bay Station C — the healthiest of our three monitoring sites, with excellent water clarity and low human disturbance.</div>
+    </div>
+    <div class="fact-card reveal">
+      <div class="fact-num">7.2%</div>
+      <div class="fact-label">Waikiki Reef C Bleaching</div>
+      <div class="fact-detail">As of February 2026. Our 5% alert threshold was first crossed in November 2025. Monitoring frequency doubled. Community informed via October 2025 aquarium event.</div>
+    </div>
+    <div class="fact-card reveal">
+      <div class="fact-num">37.5%</div>
+      <div class="fact-label">Lanai Lookout Baseline</div>
+      <div class="fact-detail">New monitoring site established December 2025. Baseline live coral cover indicates a relatively undisturbed reef — excellent visibility (24 m) and low bleaching (2.3%).</div>
+    </div>
+    <div class="fact-card reveal">
+      <div class="fact-num">27.5°C</div>
+      <div class="fact-label">Peak Ocean Temp (2025)</div>
+      <div class="fact-detail">Recorded September–October 2025 at Waikiki Reef. Elevated temperatures correlate with increased bleaching at urban sites. Hanauma Bay recovered as temps cooled; Waikiki Station C did not.</div>
+    </div>
+    <div class="fact-card reveal">
+      <div class="fact-num">1,284</div>
+      <div class="fact-label">Community Members (2025)</div>
+      <div class="fact-detail">Reached through 6 outreach events across Oahu — from 14-person educator workshops to a 752-person coastal walk. We exceeded our 2025 community contact target by 28%.</div>
+    </div>
+    <div class="fact-card reveal">
+      <div class="fact-num">85%</div>
+      <div class="fact-label">Endemic Marine Life</div>
+      <div class="fact-detail">Approximately 85% of Hawaii's nearshore marine species are found nowhere else on Earth. What happens to our reefs matters globally, not just locally.</div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <div class="nl-box reveal">
+    <div class="nl-icon">📬</div>
+    <h3>Stay Connected to the Reef</h3>
+    <p>The PRRI Community Reef Health Newsletter goes out quarterly with monitoring updates, bleaching alerts, event announcements, and things you can do to help. No spam, no selling your data — just reef science, delivered to your inbox.</p>
+    <form class="nl-form" onsubmit="handleSignup(event)">
+      <input type="text" placeholder="Your name" id="nl-name" autocomplete="name"/>
+      <input type="email" placeholder="Your email address" id="nl-email" autocomplete="email" required/>
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+    <p class="nl-note" id="nl-msg">Your information is never shared. You can unsubscribe anytime.</p>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <p class="section-tag reveal">Collaboration</p>
+  <h2 class="sec-title reveal">Our Partners</h2>
+  <p class="sec-desc reveal">The PRRI Outreach Program works with organizations across Oahu who share our commitment to reef health and community science.</p>
+  <div class="partner-row">
+    <div class="partner-card reveal">
+      <div class="partner-icon">🌊</div>
+      <h4>Waikiki Aquarium</h4>
+      <p>Host venue for Ocean Discovery Day events and annual aquarium talks</p>
+    </div>
+    <div class="partner-card reveal">
+      <div class="partner-icon">🏄</div>
+      <h4>Surfrider Foundation Hawaii</h4>
+      <p>Co-presenter for the Waikiki Reef Sunrise Walk; beach cleanup partner</p>
+    </div>
+    <div class="partner-card reveal">
+      <div class="partner-icon">🐋</div>
+      <h4>Hawaii Wildlife Fund</h4>
+      <p>Marine debris removal and coastal conservation co-sponsorship</p>
+    </div>
+    <div class="partner-card reveal">
+      <div class="partner-icon">📚</div>
+      <h4>Malama Learning Center</h4>
+      <p>Curriculum development and K–12 educational programming partner</p>
+    </div>
+    <div class="partner-card reveal">
+      <div class="partner-icon">🔬</div>
+      <h4>Coastal Sciences Institute</h4>
+      <p>Joint coral resilience research with Dr. Elena Voss, Hilo</p>
+    </div>
+    <div class="partner-card reveal">
+      <div class="partner-icon">🏛️</div>
+      <h4>NOAA Pacific Islands</h4>
+      <p>Regional monitoring coordination and fellowship collaboration</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT STRIP -->
+<section id="contact-strip">
+  <p>Questions about reef health, our events, or educational partnerships?</p>
+  <span class="email">angela.peterson@Greenridertech.co</span>
+  <a href="mailto:angela.peterson@Greenridertech.co" class="btn btn-outline">Send a Message</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025–2026 Pacific Reef Research Institute · Community Outreach Program · PRRI-2021-047 · Grant CCF-2023-HI-0047</p>
+  <div class="footer-links">
+    <a href="#mission">Mission</a>
+    <a href="#events">Events</a>
+    <a href="#facts">Reef Facts</a>
+    <a href="#newsletter">Newsletter</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 70);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  revEls.forEach(el => io.observe(el));
+
+  // Newsletter form
+  function handleSignup(e) {
+    e.preventDefault();
+    const name = document.getElementById('nl-name').value.trim();
+    const email = document.getElementById('nl-email').value.trim();
+    if (!email) return;
+    document.getElementById('nl-msg').textContent =
+      `Thank you${name ? ', ' + name : ''}! You're on the PRRI reef health newsletter list.`;
+    document.getElementById('nl-msg').style.color = '#2d6a4f';
+    document.getElementById('nl-msg').style.fontWeight = 'bold';
+    e.target.reset();
+  }
+
+  // Smooth nav active
+  const secs = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-list a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    secs.forEach(s => { if (window.scrollY >= s.offsetTop - 70) cur = s.id; });
+    navAs.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--gold)' : '';
+    });
+  });
+</script>
+</body>
+</html>

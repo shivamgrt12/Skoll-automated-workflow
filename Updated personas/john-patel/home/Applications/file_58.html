@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backyard Sky Log</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#141b33; --panel2:#1b2444; --ink:#e8ecf8; --mut:#8b97c0;
+    --accent:#f2b705; --accent2:#5b8cff; --line:#26305a; --good:#4ecb8d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:
+    radial-gradient(1200px 600px at 80% -10%,#1c2752 0,transparent 60%),var(--bg);
+    color:var(--ink);min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(8px);
+    background:rgba(11,16,32,.78);border-bottom:1px solid var(--line)}
+  .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 22px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.4px}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 14px var(--accent)}
+  .nav nav{display:flex;gap:20px}
+  .nav nav a{color:var(--mut);font-size:14px;transition:color .2s}
+  .nav nav a:hover{color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:26px 22px 60px}
+  .hero{display:flex;flex-wrap:wrap;gap:18px;align-items:end;
+    justify-content:space-between;margin:18px 0 26px}
+  .hero h1{font-size:34px;line-height:1.1}
+  .hero p{color:var(--mut);margin-top:8px;max-width:520px}
+  .next{background:linear-gradient(135deg,#1b2444,#10183a);border:1px solid var(--line);
+    border-radius:16px;padding:18px 22px;min-width:260px}
+  .next .lab{color:var(--accent);font-size:12px;letter-spacing:1.5px;font-weight:700}
+  .count{font-size:30px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+  .next small{color:var(--mut)}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;
+    transform:translateY(12px);opacity:0;animation:rise .6s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}
+  .card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{transform:none;opacity:1}}
+  .card .k{color:var(--mut);font-size:13px}
+  .card .v{font-size:28px;font-weight:700;margin-top:6px}
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .panel h2{font-size:16px;margin-bottom:4px}
+  .panel .sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{border:1px solid var(--line);background:transparent;color:var(--mut);
+    padding:7px 14px;border-radius:999px;cursor:pointer;font-size:13px;transition:all .2s}
+  .chip:hover{color:var(--ink)}
+  .chip.on{background:var(--accent);color:#1a1300;border-color:var(--accent);font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+  tbody tr{transition:background .15s}tbody tr:hover{background:var(--panel2)}
+  .tag{font-size:11px;padding:3px 9px;border-radius:6px;background:#243056;color:var(--accent2)}
+  svg{width:100%;height:auto;display:block}
+  .bar{fill:var(--accent2);transition:height .6s,y .6s}
+  footer{border-top:1px solid var(--line);margin-top:40px}
+  .foot{max-width:1100px;margin:0 auto;padding:22px;display:flex;flex-wrap:wrap;
+    gap:10px;justify-content:space-between;color:var(--mut);font-size:13px}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}.nav nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand"><span class="dot"></span> Backyard Sky Log</div>
+    <nav>
+      <a href="#summary">Summary</a>
+      <a href="#sessions">Sessions</a>
+      <a href="#passes">Station passes</a>
+      <a href="#gear">Gear</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <h1>From a fenced backyard in Meyerland</h1>
+      <p>An 8 inch telescope, a paper notebook, and clear nights on the days off. This dashboard tracks what was seen and what is coming up overhead.</p>
+    </div>
+    <div class="next" id="passes">
+      <div class="lab">NEXT STATION PASS</div>
+      <div class="count" id="cd">--</div>
+      <small id="passinfo">October 3, 2026, peak 61 degrees</small>
+    </div>
+  </section>
+
+  <section class="cards" id="summary">
+    <div class="card"><div class="k">Sessions logged</div><div class="v" data-c="8">0</div></div>
+    <div class="card"><div class="k">Objects observed</div><div class="v" data-c="8">0</div></div>
+    <div class="card"><div class="k">Clear nights</div><div class="v" data-c="6">0</div></div>
+    <div class="card"><div class="k">Upcoming passes</div><div class="v" data-c="4">0</div></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel" id="sessions">
+      <h2>Observation sessions</h2>
+      <div class="sub">Filter by what was in the eyepiece</div>
+      <div class="filters" id="filters">
+        <button class="chip on" data-f="all">All</button>
+        <button class="chip" data-f="Planet">Planets</button>
+        <button class="chip" data-f="Deep sky">Deep sky</button>
+        <button class="chip" data-f="Moon">Moon</button>
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Object</th><th>Eyepiece</th><th>Type</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Sessions by month</h2>
+      <div class="sub">Nights at the telescope, last four months</div>
+      <svg id="chart" viewBox="0 0 320 200" role="img" aria-label="bar chart"></svg>
+    </section>
+  </div>
+
+  <section class="panel" id="gear" style="margin-top:18px">
+    <h2>Eyepiece kit</h2>
+    <div class="sub">Tap a piece to see what it is for</div>
+    <div class="filters">
+      <button class="chip gear" data-t="25mm wide field, low power survey of clusters and wide pairs">25 mm</button>
+      <button class="chip gear" data-t="13mm medium power, planets and tighter clusters">13 mm</button>
+      <button class="chip gear" data-t="9mm high power, planetary surface detail on steady nights">9 mm</button>
+      <button class="chip gear" data-t="2x Barlow, doubles the effective power of any eyepiece">2x Barlow</button>
+      <button class="chip gear" data-t="Moon filter, cuts glare near the full phase">Moon filter</button>
+    </div>
+    <p id="gearout" style="color:var(--mut);font-size:14px;min-height:22px">Pick an eyepiece above.</p>
+  </section>
+</div>
+
+<footer>
+  <div class="foot">
+    <div>Backyard Sky Log &middot; kept by J. Patel</div>
+    <div>Logged from Meyerland, Houston &middot; updated February 2026</div>
+  </div>
+</footer>
+
+<script>
+  var sessions=[
+    {d:"2025-11-08",o:"Jupiter",e:"9 mm",t:"Planet"},
+    {d:"2025-11-22",o:"Saturn",e:"13 mm",t:"Planet"},
+    {d:"2025-12-06",o:"Orion Nebula",e:"25 mm",t:"Deep sky"},
+    {d:"2025-12-20",o:"Pleiades",e:"25 mm",t:"Deep sky"},
+    {d:"2026-01-03",o:"Mars",e:"9 mm",t:"Planet"},
+    {d:"2026-01-17",o:"Moon",e:"13 mm",t:"Moon"},
+    {d:"2026-01-31",o:"Jupiter",e:"9 mm",t:"Planet"},
+    {d:"2026-02-14",o:"Double Cluster",e:"25 mm",t:"Deep sky"}
+  ];
+  var rows=document.getElementById("rows");
+  function draw(f){
+    rows.innerHTML="";
+    sessions.filter(function(s){return f=="all"||s.t==f}).forEach(function(s){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+s.d+"</td><td>"+s.o+"</td><td>"+s.e+
+        "</td><td><span class='tag'>"+s.t+"</span></td>";
+      rows.appendChild(tr);
+    });
+  }
+  draw("all");
+  document.getElementById("filters").addEventListener("click",function(e){
+    if(!e.target.dataset.f)return;
+    [].forEach.call(this.children,function(c){c.classList.remove("on")});
+    e.target.classList.add("on"); draw(e.target.dataset.f);
+  });
+  [].forEach.call(document.querySelectorAll(".gear"),function(b){
+    b.addEventListener("click",function(){
+      document.getElementById("gearout").textContent=this.dataset.t;
+    });
+  });
+
+  // animated count up
+  [].forEach.call(document.querySelectorAll("[data-c]"),function(el){
+    var target=+el.dataset.c,n=0,step=Math.max(1,Math.round(target/30));
+    var iv=setInterval(function(){n+=step;if(n>=target){n=target;clearInterval(iv)}
+      el.textContent=n},30);
+  });
+
+  // bar chart (sessions per month)
+  var data=[{m:"Nov",v:2},{m:"Dec",v:2},{m:"Jan",v:2},{m:"Feb",v:1}];
+  var svg=document.getElementById("chart"),W=320,H=200,pad=28,max=3;
+  var bw=44,gap=(W-pad*2-bw*data.length)/(data.length-1);
+  var ns="http://www.w3.org/2000/svg";
+  data.forEach(function(d,i){
+    var x=pad+i*(bw+gap),h=(H-pad*2)*(d.v/max),y=H-pad-h;
+    var r=document.createElementNS(ns,"rect");
+    r.setAttribute("class","bar");r.setAttribute("x",x);r.setAttribute("width",bw);
+    r.setAttribute("rx",6);r.setAttribute("y",H-pad);r.setAttribute("height",0);
+    svg.appendChild(r);
+    setTimeout(function(){r.setAttribute("y",y);r.setAttribute("height",h)},120+i*120);
+    var t=document.createElementNS(ns,"text");
+    t.setAttribute("x",x+bw/2);t.setAttribute("y",H-pad+16);t.setAttribute("fill","#8b97c0");
+    t.setAttribute("font-size","12");t.setAttribute("text-anchor","middle");t.textContent=d.m;
+    svg.appendChild(t);
+    var v=document.createElementNS(ns,"text");
+    v.setAttribute("x",x+bw/2);v.setAttribute("y",y-8);v.setAttribute("fill","#e8ecf8");
+    v.setAttribute("font-size","13");v.setAttribute("text-anchor","middle");v.textContent=d.v;
+    svg.appendChild(v);
+  });
+
+  // countdown to next pass (fixed target date, no live date dependency shown as static demo)
+  var target=new Date("2026-10-03T19:42:00");
+  function tick(){
+    var now=new Date();var diff=Math.max(0,target-now);
+    var dys=Math.floor(diff/8.64e7),hrs=Math.floor(diff%8.64e7/3.6e6),
+        mins=Math.floor(diff%3.6e6/6e4);
+    document.getElementById("cd").textContent=dys+"d "+hrs+"h "+mins+"m";
+  }
+  tick();setInterval(tick,30000);
+</script>
+</body>
+</html>

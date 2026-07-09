@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Return-to-Sport Protocol Tracker - Iron City Sports Medicine</title>
+<style>
+  :root {
+    --primary: #c0392b;
+    --primary-dark: #8c1c13;
+    --primary-light: #f9eceb;
+    --navy: #1a2340;
+    --text: #1a2340;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --gold: #b45309;
+    --gold-light: #fef3c7;
+    --blue: #1d4ed8;
+    --blue-light: #dbeafe;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--navy); color: var(--white); padding: 0;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .header-brand { display: flex; align-items: center; gap: 1rem; }
+  .brand-icon {
+    width: 40px; height: 40px; background: var(--primary); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--white);
+  }
+  .brand-name { font-size: 1rem; font-weight: 700; color: var(--white); }
+  .brand-sub { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
+  .header-info { text-align: right; }
+  .header-info .clinician { font-size: 0.85rem; color: rgba(255,255,255,0.8); }
+  .header-info .license { font-size: 0.72rem; color: rgba(255,255,255,0.4); }
+  .header-tabs {
+    display: flex; border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .tab {
+    padding: 0.75rem 1.5rem; font-size: 0.82rem; cursor: pointer;
+    color: rgba(255,255,255,0.5); border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s; user-select: none;
+  }
+  .tab.active { color: var(--white); border-bottom-color: var(--primary); }
+  .tab:hover:not(.active) { color: rgba(255,255,255,0.75); }
+
+  /* CONTENT */
+  .content { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+  /* PATIENT SELECTOR */
+  .patient-bar {
+    background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+    display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+  }
+  .patient-bar label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .patient-select {
+    padding: 0.55rem 1rem; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 0.9rem; color: var(--text); background: var(--bg);
+    cursor: pointer; min-width: 220px;
+  }
+  .patient-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 4px;
+  }
+  .badge-active { background: var(--green-light); color: var(--green); }
+  .badge-pending { background: var(--gold-light); color: var(--gold); }
+  .badge-complete { background: var(--blue-light); color: var(--blue); }
+
+  /* PATIENT PROFILE */
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .profile-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;
+  }
+  .profile-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 0.75rem; font-weight: 600; }
+  .profile-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.55rem; }
+  .profile-row .key { font-size: 0.8rem; color: var(--muted); }
+  .profile-row .val { font-size: 0.82rem; color: var(--text); font-weight: 600; text-align: right; max-width: 60%; }
+
+  /* PHASE STEPPER */
+  .phase-strip {
+    background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .phase-strip .strip-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 1.25rem; font-weight: 600; }
+  .phases { display: flex; align-items: center; gap: 0; }
+  .phase-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+  .phase-item:not(:last-child)::after {
+    content: ''; position: absolute; top: 16px; left: 50%; width: 100%; height: 2px;
+    background: var(--border); z-index: 0;
+  }
+  .phase-item.done:not(:last-child)::after { background: var(--primary); }
+  .phase-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border);
+    background: var(--white); display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; z-index: 1; position: relative;
+    color: var(--muted);
+  }
+  .phase-item.done .phase-dot { border-color: var(--primary); background: var(--primary); color: var(--white); }
+  .phase-item.current .phase-dot { border-color: var(--primary); background: var(--white); color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+  .phase-name { font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem; text-align: center; max-width: 80px; line-height: 1.3; }
+  .phase-item.done .phase-name, .phase-item.current .phase-name { color: var(--primary); font-weight: 600; }
+  .phase-date { font-size: 0.65rem; color: var(--muted); text-align: center; margin-top: 0.2rem; }
+
+  /* CRITERIA TABLES */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .section-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+  .section-card h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .criteria-item {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+  }
+  .criteria-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border);
+    flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  .check-box.checked { background: var(--green); border-color: var(--green); color: var(--white); font-size: 0.7rem; }
+  .check-box.pending-check { background: var(--gold-light); border-color: var(--gold); }
+  .criteria-text { flex: 1; }
+  .criteria-text .crit-label { font-size: 0.85rem; color: var(--text); }
+  .criteria-text .crit-val { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+  .crit-status { font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 3px; flex-shrink: 0; align-self: center; }
+  .s-pass { background: var(--green-light); color: var(--green); }
+  .s-warn { background: var(--gold-light); color: var(--gold); }
+  .s-fail { background: #fee2e2; color: var(--primary); }
+  .s-na { background: var(--border); color: var(--muted); }
+
+  /* PROGRESS NOTES */
+  .notes-area {
+    width: 100%; min-height: 100px; padding: 0.85rem; border: 1px solid var(--border);
+    border-radius: 6px; font-family: inherit; font-size: 0.88rem; color: var(--text);
+    resize: vertical; background: var(--bg);
+  }
+  .notes-area:focus { outline: none; border-color: var(--primary); }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy); color: rgba(255,255,255,0.4); font-size: 0.72rem;
+    padding: 1rem 2rem; text-align: center; margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .profile-grid, .grid-2 { grid-template-columns: 1fr; }
+    .phases { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .phase-item::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-brand">
+      <div class="brand-icon">+</div>
+      <div>
+        <div class="brand-name">Iron City Sports Medicine</div>
+        <div class="brand-sub">Return-to-Sport Protocol Tracker</div>
+      </div>
+    </div>
+    <div class="header-info">
+      <div class="clinician">Shannon D. Perry, DPT, SCS</div>
+      <div class="license">License PT-4738 &nbsp;|&nbsp; Homewood, Alabama &nbsp;|&nbsp; (205) 555-0291</div>
+    </div>
+  </div>
+  <div class="header-tabs">
+    <div class="tab active" onclick="switchTab(this, 'tab-rts')">Return-to-Sport</div>
+    <div class="tab" onclick="switchTab(this, 'tab-acl')">ACL Protocol</div>
+    <div class="tab" onclick="switchTab(this, 'tab-shoulder')">Shoulder Protocol</div>
+    <div class="tab" onclick="switchTab(this, 'tab-notes')">Session Notes</div>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- PATIENT BAR -->
+  <div class="patient-bar">
+    <label>Patient</label>
+    <select class="patient-select" id="patientSelect" onchange="loadPatient()">
+      <option value="jordan">Jordan Taves - ACL Reconstruction (Post-op week 22)</option>
+      <option value="marcus">Marcus H. - Rotator Cuff Repair (Post-op week 14)</option>
+      <option value="amara">Amara S. - Patellar Tendinopathy (Conservative mgmt, week 8)</option>
+      <option value="darius">Darius C. - Ankle Sprain Grade II (Week 4)</option>
+    </select>
+    <span class="patient-badge badge-active" id="statusBadge">Phase 3 - Active</span>
+    <span style="font-size:0.78rem; color:var(--muted);">DOI: October 2025 &nbsp;|&nbsp; Target RTS: November 2026</span>
+  </div>
+
+  <!-- PROFILE CARDS -->
+  <div class="profile-grid">
+    <div class="profile-card">
+      <div class="label">Patient Information</div>
+      <div class="profile-row"><span class="key">Full Name</span><span class="val" id="ptName">Jordan A. Taves</span></div>
+      <div class="profile-row"><span class="key">DOB</span><span class="val">March 4, 2006</span></div>
+      <div class="profile-row"><span class="key">Sport</span><span class="val">Basketball / Track</span></div>
+      <div class="profile-row"><span class="key">Injury Side</span><span class="val">Left knee</span></div>
+      <div class="profile-row"><span class="key">School</span><span class="val">Crestwood High School</span></div>
+    </div>
+    <div class="profile-card">
+      <div class="label">Surgical Summary</div>
+      <div class="profile-row"><span class="key">Procedure</span><span class="val">ACL Reconstruction (BPTB graft)</span></div>
+      <div class="profile-row"><span class="key">Surgery Date</span><span class="val">October 15, 2025</span></div>
+      <div class="profile-row"><span class="key">Surgeon</span><span class="val">Dr. Anita Lawson</span></div>
+      <div class="profile-row"><span class="key">Post-op Week</span><span class="val">22</span></div>
+      <div class="profile-row"><span class="key">Target Clearance</span><span class="val">November 2026</span></div>
+    </div>
+    <div class="profile-card">
+      <div class="label">Current Measures</div>
+      <div class="profile-row"><span class="key">Quad Strength (LSI)</span><span class="val">84%</span></div>
+      <div class="profile-row"><span class="key">Hamstring (LSI)</span><span class="val">91%</span></div>
+      <div class="profile-row"><span class="key">Single-leg Hop (LSI)</span><span class="val">88%</span></div>
+      <div class="profile-row"><span class="key">Pain (0-10 NRS)</span><span class="val">0-1 with loading</span></div>
+      <div class="profile-row"><span class="key">Effusion</span><span class="val">None current</span></div>
+    </div>
+  </div>
+
+  <!-- PHASE STEPPER -->
+  <div class="phase-strip">
+    <div class="strip-label">Return-to-Sport Phases - Jordan Taves (ACL)</div>
+    <div class="phases">
+      <div class="phase-item done">
+        <div class="phase-dot">&#10003;</div>
+        <div class="phase-name">Phase 1 - Protection</div>
+        <div class="phase-date">Oct - Dec 2025</div>
+      </div>
+      <div class="phase-item done">
+        <div class="phase-dot">&#10003;</div>
+        <div class="phase-name">Phase 2 - Strength</div>
+        <div class="phase-date">Jan - Feb 2026</div>
+      </div>
+      <div class="phase-item done">
+        <div class="phase-dot">&#10003;</div>
+        <div class="phase-name">Phase 3 - Running</div>
+        <div class="phase-date">Oct 2026</div>
+      </div>
+      <div class="phase-item current">
+        <div class="phase-dot">4</div>
+        <div class="phase-name">Phase 4 - Agility</div>
+        <div class="phase-date">Oct - Nov 2026</div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot">5</div>
+        <div class="phase-name">Phase 5 - Sport Drills</div>
+        <div class="phase-date">Nov 2026</div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot">6</div>
+        <div class="phase-name">Clearance</div>
+        <div class="phase-date">Nov 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRITERIA GRIDS -->
+  <div class="grid-2">
+    <div class="section-card">
+      <h3>&#9675; Phase 4 Criteria - Agility and Change of Direction</h3>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Quad LSI greater than or equal to 90%</div>
+          <div class="crit-val">Target: 90%+ &nbsp;|&nbsp; Current: 84%</div>
+        </div>
+        <span class="crit-status s-warn">In Progress</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Single-leg squat: 20 reps without valgus collapse</div>
+          <div class="crit-val">Achieved bilaterally without pain</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Running: 20 min continuous at moderate pace</div>
+          <div class="crit-val">Completed October 2026 - no swelling response</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box pending-check" onclick="toggle(this)"></div>
+        <div class="criteria-text">
+          <div class="crit-label">T-test agility: within 10% of uninvolved</div>
+          <div class="crit-val">Testing scheduled next session</div>
+        </div>
+        <span class="crit-status s-warn">Pending</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box pending-check" onclick="toggle(this)"></div>
+        <div class="criteria-text">
+          <div class="crit-label">Triple hop for distance LSI greater than or equal to 90%</div>
+          <div class="crit-val">Current: 88% - re-test in two sessions</div>
+        </div>
+        <span class="crit-status s-warn">In Progress</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box pending-check" onclick="toggle(this)"></div>
+        <div class="criteria-text">
+          <div class="crit-label">Lateral shuffle 5 yards x 6 reps without compensation</div>
+          <div class="crit-val">Introduced this week</div>
+        </div>
+        <span class="crit-status s-warn">In Progress</span>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>&#9675; Phase 4 Criteria - Strength and Stability</h3>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Hamstring LSI greater than or equal to 90%</div>
+          <div class="crit-val">Current: 91% - criterion met</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Hip abductor strength - symmetrical on dynamometry</div>
+          <div class="crit-val">95% symmetry confirmed Oct 2026</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Zero effusion at rest and 24 hrs post-session</div>
+          <div class="crit-val">Maintained for 6 consecutive weeks</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box checked" onclick="toggle(this)">&#10003;</div>
+        <div class="criteria-text">
+          <div class="crit-label">Pain NRS 0-1 with all loading activities</div>
+          <div class="crit-val">Consistently at 0-1 for 8 weeks</div>
+        </div>
+        <span class="crit-status s-pass">Pass</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box pending-check" onclick="toggle(this)"></div>
+        <div class="criteria-text">
+          <div class="crit-label">Loaded Bulgarian split squat: 1.0x BW</div>
+          <div class="crit-val">Currently at 0.85x BW; progressing weekly</div>
+        </div>
+        <span class="crit-status s-warn">In Progress</span>
+      </div>
+      <div class="criteria-item">
+        <div class="check-box pending-check" onclick="toggle(this)"></div>
+        <div class="criteria-text">
+          <div class="crit-label">Nordic hamstring curl: 6 reps controlled without pain</div>
+          <div class="crit-val">Introduced at week 20; 4 reps currently</div>
+        </div>
+        <span class="crit-status s-warn">In Progress</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION NOTES TAB CONTENT -->
+  <div class="section-card" style="margin-bottom: 1rem;">
+    <h3>&#9675; Clinician Notes - Session Log</h3>
+    <table style="width:100%; border-collapse: collapse; font-size: 0.82rem;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <th style="padding:0.5rem 0.75rem; text-align:left; color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;">Date</th>
+          <th style="padding:0.5rem 0.75rem; text-align:left; color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;">Phase</th>
+          <th style="padding:0.5rem 0.75rem; text-align:left; color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;">Activities</th>
+          <th style="padding:0.5rem 0.75rem; text-align:left; color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;">Outcome / Notes</th>
+          <th style="padding:0.5rem 0.75rem; text-align:left; color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;">Next</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Oct 7, 2026</td>
+          <td style="padding:0.6rem 0.75rem;">Phase 3 - Running</td>
+          <td style="padding:0.6rem 0.75rem;">12 min continuous run, Nordic intro, SL squat progression</td>
+          <td style="padding:0.6rem 0.75rem;">No swelling response. Pain 0 throughout. Quad LSI 82% on KE.</td>
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Extend run to 16 min</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Oct 14, 2026</td>
+          <td style="padding:0.6rem 0.75rem;">Phase 3 - Running</td>
+          <td style="padding:0.6rem 0.75rem;">20 min continuous run, lateral band walk, hip thrust 3x12</td>
+          <td style="padding:0.6rem 0.75rem;">20 min run complete. No compensation noted. Quad LSI 84%.</td>
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Advance to Phase 4 criteria</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Oct 21, 2026</td>
+          <td style="padding:0.6rem 0.75rem;">Phase 4 - Agility</td>
+          <td style="padding:0.6rem 0.75rem;">Lateral shuffle intro, T-test baseline, hop testing</td>
+          <td style="padding:0.6rem 0.75rem;">Triple hop LSI 88%. T-test within 12% of uninvolved. Patient engaged.</td>
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Continue agility progression</td>
+        </tr>
+        <tr>
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Oct 28, 2026</td>
+          <td style="padding:0.6rem 0.75rem;">Phase 4 - Agility</td>
+          <td style="padding:0.6rem 0.75rem;">Full agility circuit, Bulgarian split squat 0.85 BW, Nordic 4 reps</td>
+          <td style="padding:0.6rem 0.75rem;">Good session. Lateral control improving. NRS 1 briefly on Nordic, resolved.</td>
+          <td style="padding:0.6rem 0.75rem; color:var(--muted);">Retest Quad LSI next session</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>&#9675; Add Session Note</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div>
+        <label style="font-size:0.75rem; color:var(--muted); display:block; margin-bottom:0.3rem;">Date</label>
+        <input type="text" value="October 2026" style="width:100%; padding:0.55rem 0.75rem; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; font-family:inherit;" />
+      </div>
+      <div>
+        <label style="font-size:0.75rem; color:var(--muted); display:block; margin-bottom:0.3rem;">Phase</label>
+        <select style="width:100%; padding:0.55rem 0.75rem; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; font-family:inherit;">
+          <option>Phase 4 - Agility and Change of Direction</option>
+          <option>Phase 5 - Sport-Specific Drills</option>
+          <option>Phase 6 - Clearance</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.75rem; color:var(--muted); display:block; margin-bottom:0.3rem;">Pain NRS (0-10)</label>
+        <input type="number" min="0" max="10" value="0" style="width:100%; padding:0.55rem 0.75rem; border:1px solid var(--border); border-radius:6px; font-size:0.88rem; font-family:inherit;" />
+      </div>
+    </div>
+    <label style="font-size:0.75rem; color:var(--muted); display:block; margin-bottom:0.3rem;">Session Activities and Observations</label>
+    <textarea class="notes-area" title="Session notes"></textarea>
+    <div style="margin-top: 1rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+      <button onclick="clearNote()" style="padding:0.65rem 1.5rem; border:1px solid var(--border); border-radius:6px; background:var(--white); font-size:0.88rem; cursor:pointer;">Clear</button>
+      <button onclick="saveNote(this)" style="padding:0.65rem 1.5rem; background:var(--primary); color:var(--white); border:none; border-radius:6px; font-size:0.88rem; font-weight:600; cursor:pointer;">Save Note</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Iron City Sports Medicine &nbsp;|&nbsp; Shannon D. Perry, DPT, SCS &nbsp;|&nbsp; License PT-4738 &nbsp;|&nbsp; Homewood, Alabama &nbsp;|&nbsp; For clinical use only
+</footer>
+
+<script>
+  function toggle(el) {
+    el.classList.toggle('checked');
+    if (el.classList.contains('checked')) {
+      el.innerHTML = '&#10003;';
+      el.classList.remove('pending-check');
+    } else {
+      el.innerHTML = '';
+      el.classList.add('pending-check');
+    }
+  }
+
+  function switchTab(tabEl, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+
+  function loadPatient() {
+    const sel = document.getElementById('patientSelect');
+    const badge = document.getElementById('statusBadge');
+    const name = document.getElementById('ptName');
+    const opts = {
+      jordan: { badge: 'Phase 4 - Active', cls: 'badge-active', name: 'Jordan A. Taves' },
+      marcus: { badge: 'Phase 3 - Active', cls: 'badge-active', name: 'Marcus H.' },
+      amara: { badge: 'Conservative - Week 8', cls: 'badge-pending', name: 'Amara S.' },
+      darius: { badge: 'Phase 1 - Protection', cls: 'badge-pending', name: 'Darius C.' },
+    };
+    const o = opts[sel.value];
+    badge.textContent = o.badge;
+    badge.className = 'patient-badge ' + o.cls;
+    name.textContent = o.name;
+  }
+
+  function saveNote(btn) {
+    btn.textContent = 'Saved';
+    btn.style.background = '#16a34a';
+    setTimeout(() => {
+      btn.textContent = 'Save Note';
+      btn.style.background = '';
+    }, 2000);
+  }
+
+  function clearNote() {
+    document.querySelector('.notes-area').value = '';
+  }
+</script>
+</body>
+</html>

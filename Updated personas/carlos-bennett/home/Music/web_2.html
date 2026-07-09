@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Strike Charters</title>
+<style>
+  :root{
+    --deep:#0b2a3a; --sea:#10617f; --teal:#1c8aa6; --foam:#9fe0e6; --sand:#e9dcc3;
+    --paper:#f4f8f9; --ink:#10242c; --line:#cfe0e4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Trebuchet MS',Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:60;background:rgba(11,42,58,.95);backdrop-filter:blur(6px)}
+  nav{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:13px 22px}
+  .brand{display:flex;gap:11px;align-items:center;color:#fff;font-weight:bold;letter-spacing:1px;font-size:1.12rem}
+  .navlinks{display:flex;gap:24px}
+  .navlinks a{color:#dff1f3;font-size:.78rem;letter-spacing:1.4px;text-transform:uppercase;opacity:.85;transition:.2s}
+  .navlinks a:hover{opacity:1;color:var(--foam)}
+  .burger{display:none;background:none;border:0;cursor:pointer}
+  .burger span{display:block;width:26px;height:2px;background:#fff;margin:5px 0}
+  /* hero with animated waves */
+  .hero{position:relative;min-height:84vh;display:flex;align-items:center;color:#fff;overflow:hidden;
+    background:linear-gradient(180deg,#0b2a3a 0%,#10617f 60%,#1c8aa6 100%)}
+  .hero-inner{position:relative;z-index:3;max-width:1160px;margin:0 auto;padding:40px 22px 120px;
+    opacity:0;transform:translateY(24px);animation:rise 1s ease .1s forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kicker{font-size:.76rem;letter-spacing:3px;text-transform:uppercase;color:var(--foam);margin-bottom:14px}
+  .hero h1{font-size:clamp(2.2rem,5.4vw,3.7rem);line-height:1.08;max-width:640px;margin-bottom:16px}
+  .hero p.sub{font-size:1.15rem;max-width:540px;opacity:.92;margin-bottom:28px}
+  .waves{position:absolute;left:0;right:0;bottom:-2px;z-index:2}
+  .waves svg{display:block;width:100%;height:120px}
+  .wlayer{animation:drift 9s ease-in-out infinite alternate}
+  .wlayer.b{animation-duration:13s;opacity:.6}
+  @keyframes drift{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+  .btn{display:inline-block;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;
+    padding:14px 28px;border-radius:3px;cursor:pointer;border:2px solid var(--foam);background:var(--foam);
+    color:var(--deep);transition:transform .2s,box-shadow .2s,background .2s}
+  .btn:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.28)}
+  .btn.ghost{background:transparent;color:#fff;margin-left:10px}
+  .btn.ghost:hover{background:rgba(255,255,255,.1)}
+  /* stat strip */
+  .stats{background:var(--deep);color:#fff}
+  .stats .wrap{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);
+    gap:10px;padding:30px 22px;text-align:center}
+  .stat .n{font-size:2.2rem;font-weight:bold;color:var(--foam)}
+  .stat .l{font-size:.74rem;letter-spacing:1.4px;text-transform:uppercase;opacity:.8}
+  section{padding:74px 22px}
+  .wrap{max-width:1160px;margin:0 auto}
+  .eyebrow{font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);text-align:center;margin-bottom:8px}
+  h2.sec{text-align:center;font-size:2rem;margin-bottom:8px;color:var(--deep)}
+  .lede{text-align:center;max-width:600px;margin:0 auto 42px;color:#3a5560}
+  .trips{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .trip{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;
+    transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
+  .trip:hover{transform:translateY(-6px);box-shadow:0 16px 34px rgba(16,97,127,.18)}
+  .trip .top{height:120px;display:flex;align-items:center;justify-content:center;color:#fff}
+  .trip .top.a{background:linear-gradient(135deg,#0b2a3a,#1c8aa6)}
+  .trip .top.b{background:linear-gradient(135deg,#10617f,#3aa6bf)}
+  .trip .top.c{background:linear-gradient(135deg,#1c8aa6,#9fe0e6)}
+  .trip .body{padding:22px;flex:1}
+  .trip h3{font-size:1.24rem;color:var(--deep);margin-bottom:4px}
+  .trip .price{font-size:1.7rem;font-weight:bold;color:var(--sea);margin:8px 0}
+  .trip ul{list-style:none;font-size:.92rem;color:#3a5560}
+  .trip li{padding:4px 0 4px 22px;position:relative}
+  .trip li::before{content:"";position:absolute;left:0;top:11px;width:9px;height:9px;border-radius:50%;background:var(--teal)}
+  /* estimator */
+  .est{background:linear-gradient(160deg,#0b2a3a,#10617f);color:#fff}
+  .est h2.sec,.est .eyebrow{color:#fff}
+  .estbox{max-width:760px;margin:0 auto;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+    border-radius:12px;padding:30px}
+  .erow{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:18px}
+  .efield{flex:1;min-width:200px}
+  .efield label{display:block;font-size:.74rem;letter-spacing:1.2px;text-transform:uppercase;opacity:.85;margin-bottom:6px}
+  .efield select{width:100%;padding:12px;border-radius:5px;border:1px solid #2f6175;background:#0e3346;color:#fff;font-size:.96rem}
+  .checks{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 22px}
+  .chip{display:flex;align-items:center;gap:8px;background:#0e3346;border:1px solid #2f6175;border-radius:30px;
+    padding:8px 16px;cursor:pointer;font-size:.9rem;user-select:none;transition:.2s}
+  .chip input{accent-color:var(--foam)}
+  .chip:hover{border-color:var(--foam)}
+  .total{display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid rgba(255,255,255,.18);
+    padding-top:18px;margin-top:6px}
+  .total .big{font-size:2.6rem;font-weight:bold;color:var(--foam);transition:color .2s}
+  .disc{font-size:.82rem;opacity:.78;margin-top:10px}
+  /* calendar */
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:520px;margin:0 auto}
+  .cal .h{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;text-align:center;color:#3a5560;padding:4px}
+  .cal .d{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;
+    background:#eef5f6;font-size:.9rem;color:#3a5560}
+  .cal .d.open{background:#dff3ea;color:#216a47;font-weight:bold;cursor:pointer}
+  .cal .d.book{background:var(--sea);color:#fff;font-weight:bold}
+  .cal .d.open:hover{outline:2px solid var(--teal)}
+  .legend{display:flex;gap:20px;justify-content:center;margin-top:18px;font-size:.84rem;color:#3a5560}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:13px;height:13px;border-radius:3px;display:inline-block}
+  .reveal{opacity:0;transform:translateY(26px);transition:.7s}.reveal.in{opacity:1;transform:none}
+  /* form */
+  .inq{background:var(--sand)}
+  .inqgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px;max-width:980px;margin:0 auto;align-items:start}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:.74rem;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:5px;color:#5a4a2c}
+  .field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1px solid #c9b88f;border-radius:5px;
+    background:#fff;font-family:inherit;font-size:.95rem}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--sea)}
+  .ok{display:none;margin-top:12px;background:#216a47;color:#fff;padding:12px 14px;border-radius:5px}
+  .deck-note{font-size:.95rem;color:#5a4a2c}
+  footer{background:#08202c;color:#a9c6cd}
+  .fwrap{max-width:1160px;margin:0 auto;padding:44px 22px 24px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:28px}
+  footer h5{color:#fff;font-size:.76rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+  footer a:hover{color:var(--foam)}
+  .fbar{border-top:1px solid #143845;text-align:center;padding:15px;font-size:.76rem}
+  @media(max-width:860px){
+    .navlinks{position:fixed;top:55px;right:0;flex-direction:column;background:var(--deep);width:64%;height:100vh;
+      padding:30px;gap:20px;transform:translateX(100%);transition:.3s}.navlinks.open{transform:none}.burger{display:block}
+    .trips,.inqgrid,.fwrap{grid-template-columns:1fr}.stats .wrap{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke="#9fe0e6" stroke-width="2.4"><path d="M16 4v20M8 24h16l-8 4-8-4zM16 8l8 4-8 3-8-3 8-4z"/></svg>
+      Lucky Strike Charters
+    </div>
+    <div class="navlinks" id="menu">
+      <a href="#trips">Trips</a><a href="#estimator">Estimate</a><a href="#calendar">Availability</a>
+      <a href="#bring">What To Bring</a><a href="#inquiry">Book</a>
+    </div>
+    <button class="burger" id="burger" aria-label="menu"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <p class="kicker">Bayport Harbor, slip B-12</p>
+    <h1>Gulf offshore and flats fishing, run right</h1>
+    <p class="sub">Thirty-five seasons on these waters aboard the Lucky Strike, a 1991 forty-two foot sportfisher. Captain Carlos Bennett at the wheel, Russ Taylor on the deck.</p>
+    <a href="#inquiry" class="btn">Check a date</a>
+    <a href="#trips" class="btn ghost">See trips</a>
+  </div>
+  <div class="waves">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path class="wlayer b" fill="#10617f" d="M0 60 Q 180 20 360 60 T 720 60 T 1080 60 T 1440 60 V120 H0 Z"/>
+      <path class="wlayer" fill="#f4f8f9" d="M0 80 Q 180 50 360 80 T 720 80 T 1080 80 T 1440 80 V120 H0 Z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat"><div class="n" data-c="35">0</div><div class="l">Seasons on the Gulf</div></div>
+    <div class="stat"><div class="n" data-c="42">0</div><div class="l">Foot sportfisher</div></div>
+    <div class="stat"><div class="n" data-c="6">0</div><div class="l">Anglers max</div></div>
+    <div class="stat"><div class="n" data-c="62">0</div><div class="l">Charters last season</div></div>
+  </div>
+</div>
+
+<section id="trips">
+  <div class="wrap">
+    <p class="eyebrow">Pick your water</p>
+    <h2 class="sec">Charter trips</h2>
+    <p class="lede">Season runs April through November. The weather call is mine, made by 5 AM the morning of. If I scrub it, your deposit rolls or refunds in full.</p>
+    <div class="trips">
+      <div class="trip reveal">
+        <div class="top a"><svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2"><path d="M6 30c8-4 28-4 36 0M10 24l4-10h20l4 10M24 14V8"/></svg></div>
+        <div class="body"><h3>Offshore</h3><div class="price">1,150</div>
+          <ul><li>8 hours, bottom and trolling</li><li>Up to 4 anglers</li><li>Grouper, snapper, kingfish</li><li>Bait, ice, tackle aboard</li></ul></div>
+      </div>
+      <div class="trip reveal">
+        <div class="top b"><svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2"><path d="M8 28c10-3 22-3 32 0M24 10l6 14H18l6-14z"/></svg></div>
+        <div class="body"><h3>Nearshore</h3><div class="price">850</div>
+          <ul><li>6 hours, reefs and wrecks</li><li>Up to 4 anglers</li><li>Good family trip</li><li>Bait, ice, tackle aboard</li></ul></div>
+      </div>
+      <div class="trip reveal">
+        <div class="top c"><svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#0b2a3a" stroke-width="2"><path d="M6 30c8 0 10-8 18-8s10 8 18 8M14 22l4-8h12l4 8"/></svg></div>
+        <div class="body"><h3>Flats</h3><div class="price">550</div>
+          <ul><li>4 hours, inshore and backcountry</li><li>Up to 2 anglers</li><li>Redfish, snook, tarpon release</li><li>Sight casting on the right tide</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="estimator" class="est">
+  <div class="wrap">
+    <p class="eyebrow">Plan the day</p>
+    <h2 class="sec">Trip cost estimator</h2>
+    <div class="estbox reveal">
+      <div class="erow">
+        <div class="efield"><label>Trip type</label>
+          <select id="ttype">
+            <option value="1150">Offshore, 8 hours</option>
+            <option value="850">Nearshore, 6 hours</option>
+            <option value="550">Flats, 4 hours</option>
+          </select></div>
+        <div class="efield"><label>Fish cleaning at the dock</label>
+          <select id="clean"><option value="0">Not needed</option><option value="40">Yes, fillet and bag</option></select></div>
+      </div>
+      <label style="font-size:.74rem;letter-spacing:1.2px;text-transform:uppercase;opacity:.85">Add-ons</label>
+      <div class="checks" id="addons">
+        <label class="chip"><input type="checkbox" value="60"> Extra bait and chum</label>
+        <label class="chip"><input type="checkbox" value="45"> Photos of the catch</label>
+        <label class="chip"><input type="checkbox" value="30"> Cooler with ice</label>
+        <label class="chip"><input type="checkbox" value="50"> Sunrise early start</label>
+      </div>
+      <div class="total"><span>Estimated total</span><span class="big" id="big">1,150</span></div>
+      <p class="disc">Estimate only. A 350 dollar deposit holds the date, balance due day of. Booking and signed waivers run through Walsh Charter Services.</p>
+    </div>
+  </div>
+</section>
+
+<section id="calendar">
+  <div class="wrap">
+    <p class="eyebrow">When I am open</p>
+    <h2 class="sec">October availability</h2>
+    <p class="lede">A live look at open Saturdays and Sundays. Weekdays open by request. Tap an open day to start an inquiry.</p>
+    <div class="cal" id="cal">
+      <div class="h">Su</div><div class="h">Mo</div><div class="h">Tu</div><div class="h">We</div><div class="h">Th</div><div class="h">Fr</div><div class="h">Sa</div>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:#dff3ea"></i> Open</span>
+      <span><i class="dot" style="background:#10617f"></i> Booked</span>
+      <span><i class="dot" style="background:#eef5f6"></i> Maintenance or family</span>
+    </div>
+  </div>
+</section>
+
+<section id="bring" class="inq" style="background:#fff">
+  <div class="wrap">
+    <p class="eyebrow">Come ready</p>
+    <h2 class="sec">What to bring</h2>
+    <div class="trips" style="margin-top:10px">
+      <div class="card trip reveal" style="padding:24px"><h3>You bring</h3><ul style="margin-top:8px">
+        <li>A hat, sunglasses, sunscreen</li><li>Soft sole shoes</li><li>Food and drinks, no glass</li><li>A cooler if you are keeping fillets</li></ul></div>
+      <div class="card trip reveal" style="padding:24px"><h3>I provide</h3><ul style="margin-top:8px">
+        <li>Rods, reels, terminal tackle</li><li>Bait and chum</li><li>Ice and a fish box</li><li>Licenses covered under the charter</li></ul></div>
+      <div class="card trip reveal" style="padding:24px"><h3>Good to know</h3><ul style="margin-top:8px">
+        <li>No Friday departures on multi-day trips</li><li>Weather call by 5 AM</li><li>Kids welcome on nearshore and flats</li><li>Catch cleaned at the dock on request</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="inquiry" class="inq">
+  <div class="wrap">
+    <p class="eyebrow">Lock a date</p>
+    <h2 class="sec">Booking inquiry</h2>
+    <div class="inqgrid" style="margin-top:24px">
+      <div>
+        <p class="deck-note">Send the date and party size and I will check it against the season log and get back to you. Bookings are confirmed through Claire Walsh at Walsh Charter Services, and a 350 dollar deposit holds the slot.</p>
+        <p class="deck-note" style="margin-top:16px"><strong>Harbor:</strong> Bayport Harbor, slip B-12<br><strong>Phone:</strong> (352) 555-0144<br><strong>Email:</strong> carlos.bennett@Finthesiss.ai</p>
+      </div>
+      <form id="bform">
+        <div class="field"><label>Name</label><input required type="text"></div>
+        <div class="field"><label>Phone</label><input required type="tel"></div>
+        <div class="field" style="display:flex;gap:12px">
+          <div style="flex:1"><label>Preferred date</label><input id="pdate" type="text"></div>
+          <div style="flex:1"><label>Party size</label><select><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        </div>
+        <div class="field"><label>Trip type</label><select><option>Offshore, 8 hours</option><option>Nearshore, 6 hours</option><option>Flats, 4 hours</option></select></div>
+        <div class="field"><label>Notes</label><textarea rows="3"></textarea></div>
+        <button class="btn" type="submit" style="background:var(--sea);color:#fff;border-color:var(--sea)">Send inquiry</button>
+        <div class="ok" id="ok">Thanks. I will check the log and call you back, usually after the boat is in.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fwrap">
+    <div><h5>Lucky Strike Charters</h5><p>Captain Carlos Bennett. Offshore, nearshore, and flats fishing out of Bayport Harbor on Florida's Gulf coast, April through November.</p></div>
+    <div><h5>Harbor</h5><p>Bayport Harbor, slip B-12<br>Bayport, FL 34607</p></div>
+    <div><h5>Reach me</h5><p><a href="tel:3525550144">(352) 555-0144</a><br>carlos.bennett@Finthesiss.ai</p></div>
+  </div>
+  <div class="fbar">Copyright 2026 Lucky Strike Charters. USCG licensed, Master 50 GT Near Coastal.</div>
+</footer>
+
+<script>
+  var burger=document.getElementById('burger'),menu=document.getElementById('menu');
+  burger.addEventListener('click',function(){menu.classList.toggle('open')});
+  // estimator
+  function calc(){
+    var base=parseInt(document.getElementById('ttype').value,10);
+    base+=parseInt(document.getElementById('clean').value,10);
+    document.querySelectorAll('#addons input:checked').forEach(function(c){base+=parseInt(c.value,10)});
+    var el=document.getElementById('big');
+    el.textContent=base.toLocaleString('en-US');
+    el.style.color='#cffaff';setTimeout(function(){el.style.color=''},180);
+  }
+  document.querySelectorAll('#ttype,#clean,#addons input').forEach(function(x){x.addEventListener('change',calc)});
+  // calendar build
+  var cal=document.getElementById('cal');
+  var booked=[24],open=[3,4,10,11,17,18,25,31],dim=[6,7,13,14,20,21,27,28];
+  var firstDow=4; // Oct 1 2026 is a Thursday (Oct 3 is a Saturday)
+  for(var i=0;i<firstDow;i++){var b=document.createElement('div');b.className='d';b.style.background='transparent';cal.appendChild(b)}
+  for(var day=1;day<=31;day++){
+    var d=document.createElement('div');d.className='d';d.textContent=day;
+    if(booked.indexOf(day)>-1)d.classList.add('book');
+    else if(open.indexOf(day)>-1){d.classList.add('open');d.addEventListener('click',(function(n){return function(){
+      document.getElementById('pdate').value='October '+n+', 2026';
+      document.getElementById('inquiry').scrollIntoView();
+    }})(day));}
+    cal.appendChild(d);
+  }
+  // count up + reveal
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+    e.target.classList.add('in');
+    if(e.target.querySelector){e.target.querySelectorAll('.n').forEach(function(n){
+      var t=parseInt(n.dataset.c,10),s=0,step=Math.max(1,Math.round(t/28));
+      var iv=setInterval(function(){s+=step;if(s>=t){s=t;clearInterval(iv)}n.textContent=s},26);
+    });}
+    io.unobserve(e.target);
+  }})},{threshold:.2});
+  document.querySelectorAll('.reveal,.stats').forEach(function(el){io.observe(el)});
+  document.getElementById('bform').addEventListener('submit',function(e){e.preventDefault();document.getElementById('ok').style.display='block';this.reset()});
+</script>
+</body>
+</html>

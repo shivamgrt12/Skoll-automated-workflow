@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Road to the Half - Training Tracker</title>
+<style>
+  :root{--bg:#fff7f3;--ink:#2a1d18;--coral:#ef5d3a;--coral2:#ff8a5c;--plum:#5b2b4e;
+    --line:#f0d8ce;--muted:#9a8278;--mint:#2fa37e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Trebuchet MS",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+  header{background:linear-gradient(120deg,var(--coral),var(--coral2));color:#fff;padding:30px 0}
+  .htop{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  header h1{font-size:1.7rem}
+  header p{opacity:.95;font-size:.95rem;margin-top:4px}
+  .race{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:14px;
+    padding:12px 18px;text-align:right}
+  .race b{font-size:1.5rem;display:block}
+
+  main{padding:28px 0 70px}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:22px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;
+    box-shadow:0 6px 18px rgba(239,93,58,.06)}
+  .stat .l{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+  .stat .n{font-size:2rem;font-weight:bold;color:var(--coral);margin-top:6px}
+  .stat .n small{font-size:.95rem;color:var(--muted)}
+
+  .grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+  @media(max-width:840px){.grid2{grid-template-columns:1fr}}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px}
+  .panel h2{font-size:1.1rem;margin-bottom:2px}
+  .panel .hint{color:var(--muted);font-size:.82rem;margin-bottom:14px}
+
+  .ring{display:flex;align-items:center;gap:22px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{font-size:2rem;font-weight:bold;color:var(--plum)}
+  .ring .cap{color:var(--muted);font-size:.85rem}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+  .pill{font-size:.74rem;padding:3px 10px;border-radius:20px;font-weight:bold}
+  .done{background:#e3f5ee;color:var(--mint)}
+  .plan{background:#fde9e2;color:var(--coral)}
+  .filterbar{display:flex;gap:8px;margin-bottom:14px}
+  .fbtn{border:1px solid var(--line);background:#fff;border-radius:30px;padding:7px 16px;
+    cursor:pointer;font-size:.82rem;color:var(--muted)}
+  .fbtn.on{background:var(--coral);color:#fff;border-color:var(--coral)}
+
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.82rem;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap htop">
+    <div>
+      <h1>Road to the Half</h1>
+      <p>Personal training log, Melville Running Club, Emmarentia Dam loop</p>
+    </div>
+    <div class="race">
+      Race day
+      <b id="countdown">--</b>
+      Joburg City Run, 17 Oct 2026, Marks Park
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="row" id="stats"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Weekly distance trend</h2>
+      <div class="hint">Total kilometres per training week building toward 21.1 km.</div>
+      <svg id="line" viewBox="0 0 640 260" width="100%" height="260" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="panel">
+      <h2>Build completion</h2>
+      <div class="hint">Weeks logged against the full plan.</div>
+      <div class="ring">
+        <svg width="130" height="130">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="#f0d8ce" stroke-width="14"></circle>
+          <circle id="prog" cx="65" cy="65" r="54" fill="none" stroke="#ef5d3a" stroke-width="14"
+            stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339"></circle>
+        </svg>
+        <div>
+          <div class="pct" id="ringpct">0%</div>
+          <div class="cap" id="ringcap"></div>
+        </div>
+      </div>
+      <p style="margin-top:18px;color:var(--muted);font-size:.86rem">
+        Longest run so far: <b style="color:var(--plum)">20.0 km</b> on 28 Feb 2026. Build resumes in October ahead of race week.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Training weeks</h2>
+    <div class="hint">Filter the plan by status.</div>
+    <div class="filterbar" id="filter">
+      <button class="fbtn on" data-f="all">All</button>
+      <button class="fbtn" data-f="done">Completed</button>
+      <button class="fbtn" data-f="plan">Planned</button>
+    </div>
+    <table>
+      <thead><tr><th>Week</th><th>Starting</th><th>Peak run</th><th>Total km</th><th>Status</th></tr></thead>
+      <tbody id="weeks"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer class="wrap">
+  <div>Training tracker &middot; built for personal use</div>
+  <div>Last sync 28 Feb 2026</div>
+</footer>
+
+<script>
+  var weeks=[
+    {w:1,start:"05 Jan 2026",peak:"8 km club run",km:18,done:true},
+    {w:2,start:"12 Jan 2026",peak:"10 km long",km:20,done:true},
+    {w:3,start:"19 Jan 2026",peak:"12 km long",km:24,done:true},
+    {w:4,start:"26 Jan 2026",peak:"14 km long",km:24,done:true},
+    {w:5,start:"02 Feb 2026",peak:"16 km long",km:28,done:true},
+    {w:6,start:"09 Feb 2026",peak:"18 km long",km:30,done:true},
+    {w:7,start:"16 Feb 2026",peak:"20 km long",km:30,done:true},
+    {w:8,start:"23 Feb 2026",peak:"21 km effort",km:26,done:true},
+    {w:9,start:"Oct 2026",peak:"12 km",km:24,done:false},
+    {w:10,start:"Oct 2026",peak:"14 km",km:26,done:false},
+    {w:11,start:"Oct 2026",peak:"16 km",km:30,done:false},
+    {w:12,start:"Oct 2026",peak:"18 km",km:32,done:false},
+    {w:13,start:"Oct 2026",peak:"21.1 km race",km:31,done:false}
+  ];
+  // stats
+  var doneW=weeks.filter(function(x){return x.done});
+  var totalKm=doneW.reduce(function(a,b){return a+b.km},0);
+  document.getElementById('stats').innerHTML=
+    stat('Weeks logged',doneW.length+'<small> / '+weeks.length+'</small>')+
+    stat('Distance banked',totalKm+'<small> km</small>')+
+    stat('Longest run','20.0<small> km</small>')+
+    stat('Best pace','6:12<small> /km</small>');
+  function stat(l,n){return '<div class="stat"><div class="l">'+l+'</div><div class="n">'+n+'</div></div>'}
+
+  // line chart
+  var svg=document.getElementById('line'), W=640,H=260,pad=30;
+  var maxKm=34, n=weeks.length;
+  function x(i){return pad+i*( (W-2*pad)/(n-1) )}
+  function y(v){return H-pad-(v/maxKm)*(H-2*pad)}
+  var pts=weeks.map(function(d,i){return [x(i),y(d.km)]});
+  // grid lines
+  var g='';
+  [10,20,30].forEach(function(v){ g+='<line x1="'+pad+'" y1="'+y(v)+'" x2="'+(W-pad)+'" y2="'+y(v)+'" stroke="#f0d8ce"/>'+
+     '<text x="4" y="'+(y(v)+4)+'" fill="#9a8278" font-size="10">'+v+'</text>'; });
+  var path=pts.map(function(p,i){return (i?'L':'M')+p[0]+' '+p[1]}).join(' ');
+  var area=path+' L'+x(n-1)+' '+(H-pad)+' L'+x(0)+' '+(H-pad)+' Z';
+  var dots=pts.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+(weeks[i].done?'#ef5d3a':'#ff8a5c')+'"/>'}).join('');
+  svg.innerHTML=g+
+    '<defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#ef5d3a" stop-opacity=".30"/>'+
+    '<stop offset="1" stop-color="#ef5d3a" stop-opacity="0"/></linearGradient></defs>'+
+    '<path d="'+area+'" fill="url(#ar)"/>'+
+    '<path id="ln" d="'+path+'" fill="none" stroke="#ef5d3a" stroke-width="3"/>'+dots;
+  var ln=document.getElementById('ln'), len=ln.getTotalLength();
+  ln.style.strokeDasharray=len; ln.style.strokeDashoffset=len;
+  ln.style.transition='stroke-dashoffset 1.6s ease';
+  requestAnimationFrame(function(){ln.style.strokeDashoffset=0});
+
+  // ring
+  var pctVal=Math.round(doneW.length/weeks.length*100);
+  var circ=339, off=circ-(pctVal/100*circ);
+  var prog=document.getElementById('prog');
+  prog.style.transition='stroke-dashoffset 1.4s ease';
+  requestAnimationFrame(function(){prog.style.strokeDashoffset=off});
+  var pc=0; var t=setInterval(function(){pc++;document.getElementById('ringpct').textContent=pc+'%';if(pc>=pctVal)clearInterval(t)},18);
+  document.getElementById('ringcap').textContent=doneW.length+' of '+weeks.length+' weeks done';
+
+  // table + filter
+  function draw(f){
+    var tb=document.getElementById('weeks'); tb.innerHTML='';
+    weeks.filter(function(w){return f==='all'||(f==='done'&&w.done)||(f==='plan'&&!w.done)})
+      .forEach(function(w){
+        var tr=document.createElement('tr');
+        tr.innerHTML='<td>Week '+w.w+'</td><td>'+w.start+'</td><td>'+w.peak+'</td><td>'+w.km+'</td>'+
+          '<td><span class="pill '+(w.done?'done':'plan')+'">'+(w.done?'Completed':'Planned')+'</span></td>';
+        tb.appendChild(tr);
+      });
+  }
+  draw('all');
+  document.getElementById('filter').addEventListener('click',function(e){
+    if(!e.target.classList.contains('fbtn'))return;
+    document.querySelectorAll('.fbtn').forEach(function(b){b.classList.remove('on')});
+    e.target.classList.add('on'); draw(e.target.dataset.f);
+  });
+
+  // countdown to 17 Oct 2026 from a fixed reference (no live clock needed)
+  var race=new Date(2026,9,17), ref=new Date(2026,1,28);
+  var days=Math.round((race-ref)/86400000);
+  document.getElementById('countdown').textContent=days+' days';
+</script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Phil Lane">
+<title>Household Money Dashboard</title>
+<style>
+  :root{
+    --bg:#eff2ef; --panel:#ffffff; --ink:#32382f; --faint:#7e8a7c;
+    --head:#2f4434; --accent:#b06a4a; --green:#567a5b; --line:#dfe4df;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:10;background:var(--head);color:#fff;
+    display:flex;flex-wrap:wrap;align-items:center;gap:18px;padding:12px 22px;
+    box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  header.nav b{font-size:17px;letter-spacing:.3px}
+  header.nav nav{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
+  header.nav nav a{color:#dfe7df;font-size:14px}
+  header.nav nav a:hover{color:#fff}
+  section{max-width:1000px;margin:0 auto;padding:38px 22px}
+  .hero{background:linear-gradient(160deg,#2f4434,#567a5b);color:#fff;max-width:none}
+  .hero .inner{max-width:1000px;margin:0 auto}
+  .hero h1{margin:0 0 8px;font-size:30px}
+  .hero p{margin:0;color:#e3ece4;max-width:640px}
+  h2{color:var(--head);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px}
+  .card .big{font-size:26px;font-weight:700;color:var(--head)}
+  .card .lbl{font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:18px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--faint);font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.4px}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  tfoot td{font-weight:700;color:var(--head);border-top:2px solid var(--head)}
+  .chartwrap{display:flex;flex-wrap:wrap;gap:28px;align-items:center}
+  .legend{font-size:13px}
+  .legend span{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;vertical-align:middle}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+  button{font:inherit;cursor:pointer;border:1px solid var(--head);background:#fff;color:var(--head);
+    padding:8px 14px;border-radius:7px}
+  button:hover{background:var(--head);color:#fff}
+  button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  footer{background:var(--head);color:#cdd8ce;text-align:center;padding:22px;font-size:13px}
+  .note{font-size:13px;color:var(--faint)}
+</style>
+</head>
+<body>
+<header class="nav">
+  <b>Elm Hollow Money Dashboard</b>
+  <nav>
+    <a href="#summary">Summary</a>
+    <a href="#outflow">Monthly Outflow</a>
+    <a href="#ladder">Savings Ladder</a>
+    <a href="#notes">Notes</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="inner">
+    <h1>The Household at 127 Elm Hollow Road</h1>
+    <p>One income, no debt, a paid-off cape, and a steady cushion. This is the plain
+    picture of the month, kept the way Phil keeps everything: written down, checked first
+    of the month, and balanced to the dollar.</p>
+  </div>
+</div>
+
+<section id="summary">
+  <h2>The Month at a Glance</h2>
+  <div class="grid">
+    <div class="card"><div class="lbl">Take-home, monthly</div><div class="big">$2,900</div></div>
+    <div class="card"><div class="lbl">Fixed outflow</div><div class="big">$1,730</div></div>
+    <div class="card"><div class="lbl">Left for savings</div><div class="big">$1,170</div></div>
+    <div class="card"><div class="lbl">Salary, yearly</div><div class="big">$42,000</div></div>
+  </div>
+  <p class="note">Take-home 2,900 minus outflow 1,730 leaves 1,170 a month. No mortgage,
+  no car payment, no debt. The cushion is the point.</p>
+</section>
+
+<section id="outflow">
+  <h2>Where the Month Goes</h2>
+  <p class="note">Eleven line items, summing to exactly 1,730 dollars. Click a bar's row to highlight it.</p>
+  <div class="panel">
+    <div class="chartwrap">
+      <svg id="barChart" width="540" height="300" viewBox="0 0 540 300" role="img" aria-label="Monthly outflow bar chart">
+        <!-- bars drawn by script -->
+      </svg>
+      <div>
+        <table id="outflowTable">
+          <thead><tr><th>Item</th><th class="num">Dollars</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr><td>Total outflow</td><td class="num">$1,730</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ladder">
+  <h2>The Savings Ladder</h2>
+  <p class="note">Where the money sits at the credit union and in the rolled-over IRA.
+  The three certificates total about 100,000 dollars and mature on a schedule through 2027.</p>
+  <div class="panel">
+    <div class="chartwrap">
+      <svg id="donut" width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="Savings breakdown donut chart"></svg>
+      <div>
+        <div class="legend" id="donutLegend"></div>
+        <table style="margin-top:14px">
+          <thead><tr><th>Account</th><th class="num">Balance</th></tr></thead>
+          <tbody>
+            <tr><td>Checking</td><td class="num">$4,800</td></tr>
+            <tr><td>Savings</td><td class="num">$12,500</td></tr>
+            <tr><td>CD ladder (three certificates)</td><td class="num">$100,000</td></tr>
+            <tr><td>Rolled-over IRA</td><td class="num">$95,000</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total set aside</td><td class="num">$212,300</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="toLadder" type="button">Jump to certificate schedule</button>
+  </div>
+  <div class="panel" id="cdSchedule">
+    <h3 style="margin-top:0;color:var(--head)">Certificate maturity schedule</h3>
+    <table>
+      <thead><tr><th>Certificate</th><th class="num">Amount</th><th>Matures</th></tr></thead>
+      <tbody>
+        <tr><td>Rung one</td><td class="num">$34,000</td><td>November 2026</td></tr>
+        <tr><td>Rung two</td><td class="num">$33,000</td><td>February 2027</td></tr>
+        <tr><td>Rung three</td><td class="num">$33,000</td><td>October 2027</td></tr>
+      </tbody>
+      <tfoot><tr><td>Ladder total</td><td class="num">$100,000</td><td></td></tr></tfoot>
+    </table>
+    <p class="note">Each rung comes due in turn, so a portion is always near while the rest keeps earning.</p>
+  </div>
+</section>
+
+<section id="notes">
+  <h2>Notes for the First of the Month</h2>
+  <div class="panel">
+    <ul>
+      <li>Check the balance at the credit union and look back at last month's spending.</li>
+      <li>Confirm escrow at 380 dollars has not ticked up at renewal.</li>
+      <li>Pay the one credit card in full, as always.</li>
+      <li>Nothing over 75 dollars without thinking it through twice.</li>
+    </ul>
+    <p class="note">Kept by Phil Lane, West Brattleboro, Vermont. Reach: phil.lane@mailcove.net.</p>
+  </div>
+</section>
+
+<footer>
+  127 Elm Hollow Road, Brattleboro, VT 05301 &bull; A private household tracker, not advice &bull; Reviewed February 2026
+</footer>
+
+<script>
+  // ---- Monthly outflow bar chart (real numbers, sum to 1730) ----
+  var outflow = [
+    ["Escrow", 380],["Utilities", 310],["Groceries", 320],["Auto insurance", 95],
+    ["Gas", 80],["Phone", 45],["Health", 220],["Meds", 55],["Tithe", 80],
+    ["Dining", 60],["Misc", 85]
+  ];
+  (function(){
+    var svg = document.getElementById("barChart");
+    var tbody = document.querySelector("#outflowTable tbody");
+    var W=540,H=300, padL=92, padB=34, padT=12, padR=14;
+    var max = Math.max.apply(null, outflow.map(function(r){return r[1];})); // 380
+    var n = outflow.length;
+    var plotH = H - padB - padT;
+    var rowH = plotH / n;
+    var barH = rowH * 0.66;
+    var ns="http://www.w3.org/2000/svg";
+    // axis ticks
+    [0,100,200,300,400].forEach(function(v){
+      var x = padL + (v/max)*(W-padL-padR);
+      var ln=document.createElementNS(ns,"line");
+      ln.setAttribute("x1",x);ln.setAttribute("x2",x);
+      ln.setAttribute("y1",padT);ln.setAttribute("y2",H-padB);
+      ln.setAttribute("stroke","#e2e7e2");svg.appendChild(ln);
+      var t=document.createElementNS(ns,"text");
+      t.setAttribute("x",x);t.setAttribute("y",H-padB+16);
+      t.setAttribute("font-size","10");t.setAttribute("fill","#7e8a7c");
+      t.setAttribute("text-anchor","middle");t.textContent=v;svg.appendChild(t);
+    });
+    outflow.forEach(function(r,i){
+      var y = padT + i*rowH + (rowH-barH)/2;
+      var w = (r[1]/max)*(W-padL-padR);
+      var rect=document.createElementNS(ns,"rect");
+      rect.setAttribute("x",padL);rect.setAttribute("y",y);
+      rect.setAttribute("width",w);rect.setAttribute("height",barH);
+      rect.setAttribute("rx","3");rect.setAttribute("fill","#567a5b");
+      rect.setAttribute("data-i",i);svg.appendChild(rect);
+      var lab=document.createElementNS(ns,"text");
+      lab.setAttribute("x",padL-8);lab.setAttribute("y",y+barH/2+4);
+      lab.setAttribute("font-size","11");lab.setAttribute("fill","#32382f");
+      lab.setAttribute("text-anchor","end");lab.textContent=r[0];svg.appendChild(lab);
+      var val=document.createElementNS(ns,"text");
+      val.setAttribute("x",padL+w+6);val.setAttribute("y",y+barH/2+4);
+      val.setAttribute("font-size","11");val.setAttribute("fill","#3a352e");
+      val.textContent="$"+r[1];svg.appendChild(val);
+      // table row
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+r[0]+"</td><td class='num'>$"+r[1]+"</td>";
+      tr.style.cursor="pointer";
+      tr.addEventListener("click",function(){
+        svg.querySelectorAll("rect[data-i]").forEach(function(b){b.setAttribute("fill","#567a5b");});
+        rect.setAttribute("fill","#b06a4a");
+      });
+      tbody.appendChild(tr);
+    });
+  })();
+
+  // ---- Savings donut chart ----
+  (function(){
+    var parts=[
+      ["Checking",4800,"#b06a4a"],
+      ["Savings",12500,"#6e8169"],
+      ["CD ladder",100000,"#2f4434"],
+      ["IRA",95000,"#9aab8f"]
+    ];
+    var total=parts.reduce(function(a,p){return a+p[1];},0); // 212300
+    var svg=document.getElementById("donut");
+    var cx=140,cy=140,r=100,rin=58,ns="http://www.w3.org/2000/svg";
+    var ang=-Math.PI/2;
+    parts.forEach(function(p){
+      var frac=p[1]/total, a2=ang+frac*2*Math.PI;
+      var large = frac>0.5?1:0;
+      var x1=cx+r*Math.cos(ang), y1=cy+r*Math.sin(ang);
+      var x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+      var xi2=cx+rin*Math.cos(a2), yi2=cy+rin*Math.sin(a2);
+      var xi1=cx+rin*Math.cos(ang), yi1=cy+rin*Math.sin(ang);
+      var d=["M",x1,y1,"A",r,r,0,large,1,x2,y2,"L",xi2,yi2,"A",rin,rin,0,large,0,xi1,yi1,"Z"].join(" ");
+      var path=document.createElementNS(ns,"path");
+      path.setAttribute("d",d);path.setAttribute("fill",p[2]);
+      svg.appendChild(path);
+      ang=a2;
+    });
+    var t=document.createElementNS(ns,"text");
+    t.setAttribute("x",cx);t.setAttribute("y",cy-4);t.setAttribute("text-anchor","middle");
+    t.setAttribute("font-size","15");t.setAttribute("font-weight","700");t.setAttribute("fill","#2f4434");
+    t.textContent="$212,300";svg.appendChild(t);
+    var t2=document.createElementNS(ns,"text");
+    t2.setAttribute("x",cx);t2.setAttribute("y",cy+14);t2.setAttribute("text-anchor","middle");
+    t2.setAttribute("font-size","11");t2.setAttribute("fill","#7e8a7c");
+    t2.textContent="set aside";svg.appendChild(t2);
+    var leg=document.getElementById("donutLegend");
+    parts.forEach(function(p){
+      var pct=Math.round(p[1]/total*100);
+      var div=document.createElement("div");
+      div.innerHTML="<span style='background:"+p[2]+"'></span>"+p[0]+", $"+p[1].toLocaleString()+" ("+pct+"%)";
+      leg.appendChild(div);
+    });
+  })();
+
+  // ---- Scroll button ----
+  document.getElementById("toLadder").addEventListener("click",function(){
+    document.getElementById("cdSchedule").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+</script>
+</body>
+</html>

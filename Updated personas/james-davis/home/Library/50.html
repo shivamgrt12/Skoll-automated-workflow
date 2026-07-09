@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>1967 Mustang Fastback - Restoration Project</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  :root {
+    --bg: #f8f5f0;
+    --surface: #ffffff;
+    --card: #fefefe;
+    --border: #e2d9cc;
+    --accent: #c0392b;
+    --accent2: #1a1a2e;
+    --accent3: #e67e22;
+    --text: #1a1a1a;
+    --muted: #6b6560;
+    --light: #f0ece6;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); }
+
+  /* HERO */
+  .hero {
+    background: var(--accent2);
+    min-height: 420px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(192,57,43,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,57,43,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    position: relative;
+    max-width: 700px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    margin-top: 0.8rem;
+    position: relative;
+    max-width: 520px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    position: relative;
+  }
+  .hero-meta .stat { text-align: center; }
+  .hero-meta .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+  .hero-meta .stat-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* SVG MUSTANG SILHOUETTE */
+  .mustang-svg {
+    position: absolute;
+    right: -40px;
+    bottom: -20px;
+    opacity: 0.06;
+    width: 500px;
+  }
+
+  /* NAV STRIP */
+  .nav-strip {
+    background: var(--accent2);
+    border-bottom: 3px solid var(--accent);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .nav-strip a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    padding: 0.9rem 1.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav-strip a:hover, .nav-strip a.active { color: #fff; border-bottom-color: var(--accent); }
+
+  /* CONTAINER */
+  .container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+  /* PROGRESS SECTION */
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.4rem;
+  }
+  .section-heading {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    transition: box-shadow 0.2s;
+  }
+  .progress-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .progress-card .card-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+  .progress-card .card-icon { color: var(--accent); }
+  .progress-card .card-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.9rem; }
+  .prog-bar { background: var(--light); border-radius: 8px; height: 10px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+  .prog-label { display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 0.4rem; }
+  .prog-label .pct { font-weight: 700; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding: 0; list-style: none; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    padding: 0 0 1.8rem 60px;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    position: absolute;
+    left: 12px; top: 4px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 2px var(--border);
+  }
+  .dot-done { background: var(--accent2); box-shadow: 0 0 0 2px var(--accent2); }
+  .dot-active { background: var(--accent); box-shadow: 0 0 0 3px rgba(192,57,43,0.25); animation: pulseDot 2s infinite; }
+  .dot-next { background: var(--light); box-shadow: 0 0 0 2px var(--border); }
+  @keyframes pulseDot { 0%,100% { box-shadow: 0 0 0 3px rgba(192,57,43,0.25); } 50% { box-shadow: 0 0 0 6px rgba(192,57,43,0.12); } }
+  .timeline-date { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+  .timeline-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+  .timeline-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .timeline-cost { display: inline-block; margin-top: 0.4rem; font-size: 0.78rem; background: var(--light); color: var(--accent3); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+  /* PARTS TABLE */
+  .parts-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .parts-card .card-header {
+    background: var(--accent2);
+    color: #fff;
+    padding: 1rem 1.4rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 0.65rem 1rem; text-align: left; font-size: 0.73rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; background: var(--light); border-bottom: 1px solid var(--border); }
+  td { padding: 0.75rem 1rem; font-size: 0.83rem; color: var(--text); border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--light); }
+  .status-received { color: #27ae60; font-weight: 700; }
+  .status-ordered { color: var(--accent3); font-weight: 700; }
+  .status-quoted { color: var(--muted); font-weight: 700; }
+
+  /* BUDGET */
+  .budget-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .budget-card .card-header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1rem 1.4rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .budget-rows { padding: 0.5rem 0; }
+  .budget-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .budget-row:last-child { border-bottom: none; }
+  .b-label { color: var(--muted); }
+  .b-val { font-weight: 700; color: var(--text); }
+  .b-val.highlight { color: var(--accent); }
+  .b-paid { color: #27ae60; }
+  .b-pending { color: var(--accent3); }
+  .budget-total {
+    background: var(--accent2);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.9rem 1.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* COUNTDOWN */
+  .countdown-bar {
+    background: var(--accent2);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+    gap: 1.5rem;
+  }
+  .countdown-label { font-size: 0.88rem; color: rgba(255,255,255,0.65); }
+  .countdown-title { font-size: 1.2rem; font-weight: 800; margin-top: 0.15rem; }
+  .countdown-units { display: flex; gap: 1rem; }
+  .cd-unit { text-align: center; }
+  .cd-num { font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; }
+  .cd-lbl { font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+  .remaining-tasks { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rt-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+  .rt-item i { color: var(--accent); width: 14px; }
+
+  /* GALLERY PLACEHOLDERS */
+  .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+  .gallery-item {
+    background: var(--accent2);
+    border-radius: 8px;
+    aspect-ratio: 4/3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.72rem;
+    text-align: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    overflow: hidden;
+    position: relative;
+  }
+  .gallery-item:hover { opacity: 0.85; }
+  .gallery-item i { font-size: 1.5rem; }
+  .gallery-label { font-size: 0.7rem; padding: 0 0.75rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--accent2);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 1.5rem 2rem;
+    font-size: 0.8rem;
+    margin-top: 3rem;
+  }
+  footer strong { color: #fff; }
+
+  @media (max-width: 900px) {
+    .progress-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 2rem; }
+    .countdown-bar { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <svg class="mustang-svg" viewBox="0 0 600 250" fill="none">
+    <path d="M50 180 Q100 120 200 110 L300 105 L380 90 Q440 80 480 100 L540 120 Q570 135 570 160 L50 180Z" fill="white"/>
+    <rect x="60" y="160" width="60" height="20" rx="6" fill="white" opacity=".5"/>
+    <rect x="430" y="155" width="70" height="22" rx="6" fill="white" opacity=".5"/>
+    <circle cx="100" cy="190" r="28" fill="white" opacity=".4"/>
+    <circle cx="480" cy="190" r="28" fill="white" opacity=".4"/>
+  </svg>
+  <div class="hero-badge">Personal Project - El Paso, TX</div>
+  <h1>1967 Ford Mustang <span>Fastback</span><br>Ground-Up Restoration</h1>
+  <div class="hero-sub">A three-year build started from a bare shell. Target debut at the El Paso Classic Car Show, December 2026.</div>
+  <div class="hero-meta">
+    <div class="stat"><div class="stat-val">70%</div><div class="stat-lbl">Complete</div></div>
+    <div class="stat"><div class="stat-val">$22k</div><div class="stat-lbl">Invested</div></div>
+    <div class="stat"><div class="stat-val">3 yrs</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat"><div class="stat-val">302</div><div class="stat-lbl">V8 Rebuilt</div></div>
+  </div>
+</div>
+
+<!-- NAV STRIP -->
+<div class="nav-strip">
+  <a href="#progress" class="active">Progress</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#parts">Parts Tracker</a>
+  <a href="#budget">Budget</a>
+  <a href="#gallery">Photo Log</a>
+</div>
+
+<div class="container">
+
+  <!-- PROGRESS SECTION -->
+  <div id="progress" style="margin-bottom:2.5rem;">
+    <div class="section-title">Restoration Status</div>
+    <div class="section-heading">Build Progress by System</div>
+
+    <div class="progress-grid">
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-engine card-icon"></i> Engine and Drivetrain</div>
+        <div class="card-desc">302 V8 fully rebuilt. New rings, bearings, cam, and valve job complete. Running and tested on the stand.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--accent2)"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">Complete</span><span class="pct" style="color:var(--accent2)">100%</span></div>
+      </div>
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-car-side card-icon"></i> Body and Paint</div>
+        <div class="card-desc">Rust repair finished. New right front fender and chrome bumper set on order. Surface prep 80% done; paint quoted at Desert Sun Auto Body.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:80%;background:var(--accent)"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">In Progress</span><span class="pct" style="color:var(--accent)">80%</span></div>
+      </div>
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-couch card-icon"></i> Interior</div>
+        <div class="card-desc">Carpet set received. Dashpad and wiring harness installed. Upholstery kit on order from Reynolds Custom Interiors. Seats not started.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:25%;background:var(--accent3)"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">Early stage</span><span class="pct" style="color:var(--accent3)">25%</span></div>
+      </div>
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-bolt card-icon"></i> Electrical</div>
+        <div class="card-desc">Under-dash wiring harness replaced. Lights and gauges operational. Stereo and accessory wiring to follow once interior is complete.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:60%;background:#3498db"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">In Progress</span><span class="pct" style="color:#3498db">60%</span></div>
+      </div>
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-circle card-icon"></i> Suspension and Brakes</div>
+        <div class="card-desc">Front suspension fully rebuilt with new ball joints and tie rods. Rear leaf springs replaced. Brake lines and wheel cylinders done.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:90%;background:#27ae60"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">Near complete</span><span class="pct" style="color:#27ae60">90%</span></div>
+      </div>
+      <div class="progress-card">
+        <div class="card-title"><i class="fa-solid fa-gauge card-icon"></i> Overall</div>
+        <div class="card-desc">Three years in, approximately $22,000 invested. Engine done, body nearly there, interior the final major phase.</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:70%;background:linear-gradient(90deg,var(--accent2),var(--accent))"></div></div>
+        <div class="prog-label"><span style="color:var(--muted)">On track for Dec 2026</span><span class="pct" style="color:var(--accent)">70%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div id="timeline" style="margin-bottom:2.5rem;">
+    <div class="section-title">Build History</div>
+    <div class="section-heading">Project Timeline</div>
+    <ul class="timeline">
+      <li class="timeline-item">
+        <div class="timeline-dot dot-done"></div>
+        <div class="timeline-date">Year 1 - 2023</div>
+        <div class="timeline-title">Shell Acquired and Teardown</div>
+        <div class="timeline-desc">Bought the bare Fastback shell at a local swap meet. Full strip-down completed in the back bay over two months. Identified rust in the floor pans and rocker sections. Stripped to metal throughout.</div>
+        <div class="timeline-cost">Shell: $4,500</div>
+      </li>
+      <li class="timeline-item">
+        <div class="timeline-dot dot-done"></div>
+        <div class="timeline-date">Year 1-2 - 2023 to 2024</div>
+        <div class="timeline-title">Rust Repair and Engine Rebuild</div>
+        <div class="timeline-desc">Floor pan and rocker sections welded and sealed. 302 V8 pulled, sent to the machine shop for a bore, then rebuilt in-house with new rings, bearings, cam, lifters, and a full valve job. Engine back in and running on the stand.</div>
+        <div class="timeline-cost">Engine and body work: $9,300</div>
+      </li>
+      <li class="timeline-item">
+        <div class="timeline-dot dot-done"></div>
+        <div class="timeline-date">Year 2-3 - 2024 to 2025</div>
+        <div class="timeline-title">Suspension, Brakes, and Electrical</div>
+        <div class="timeline-desc">Full front suspension rebuild. Rear leaf springs replaced. Brake lines and cylinders throughout. Under-dash wiring harness installed. Dashpad and carpet received and fitted.</div>
+        <div class="timeline-cost">Suspension and electrical: $4,500</div>
+      </li>
+      <li class="timeline-item">
+        <div class="timeline-dot dot-active"></div>
+        <div class="timeline-date">Now - Late 2025 and into 2026</div>
+        <div class="timeline-title">Body Finishing and Interior (Active Phase)</div>
+        <div class="timeline-desc">Right front fender and chrome bumper set on order. Surface sanding and blocking in progress on Tuesday and Thursday evenings. Upholstery kit ordered from Reynolds Custom Interiors. Paint estimate accepted from Desert Sun Auto Body.</div>
+        <div class="timeline-cost">Body and interior: ~$7,500 remaining</div>
+      </li>
+      <li class="timeline-item">
+        <div class="timeline-dot dot-next"></div>
+        <div class="timeline-date">Target - December 2026</div>
+        <div class="timeline-title">El Paso Classic Car Show Debut</div>
+        <div class="timeline-desc">Entry registration to be submitted October 2026. Target is a completed and fully drivable Fastback ready to show at the El Paso Convention Center. James has said: if it is not right, it does not show.</div>
+        <div class="timeline-cost">Show entry and detail: est. $400</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- TWO COL: Parts + Budget -->
+  <div class="two-col" id="parts" style="margin-bottom:2.5rem;">
+    <div class="parts-card">
+      <div class="card-header"><i class="fa-solid fa-list-check"></i> Parts Tracker</div>
+      <table>
+        <thead>
+          <tr><th>Part</th><th>Supplier</th><th>Cost</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>302 V8 rebuild kit</td>
+            <td>Machine shop</td>
+            <td>$3,100</td>
+            <td class="status-received">Received</td>
+          </tr>
+          <tr>
+            <td>Carpet set, black</td>
+            <td>Reynolds Custom Interiors</td>
+            <td>$260</td>
+            <td class="status-received">Received</td>
+          </tr>
+          <tr>
+            <td>Dashpad reproduction</td>
+            <td>Classic Ford parts dist.</td>
+            <td>$310</td>
+            <td class="status-received">Received</td>
+          </tr>
+          <tr>
+            <td>Under-dash wiring harness</td>
+            <td>Classic Ford parts dist.</td>
+            <td>$380</td>
+            <td class="status-received">Received</td>
+          </tr>
+          <tr>
+            <td>Front fender, right hand</td>
+            <td>Mustang parts network</td>
+            <td>$420</td>
+            <td class="status-received">Received</td>
+          </tr>
+          <tr>
+            <td>Chrome bumper set</td>
+            <td>Mustang parts network</td>
+            <td>$640</td>
+            <td class="status-ordered"><i class="fa-solid fa-truck-fast fa-xs"></i> On Order</td>
+          </tr>
+          <tr>
+            <td>Full upholstery kit</td>
+            <td>Reynolds Custom Interiors</td>
+            <td>$3,500</td>
+            <td class="status-ordered"><i class="fa-solid fa-truck-fast fa-xs"></i> On Order</td>
+          </tr>
+          <tr>
+            <td>Paint and materials</td>
+            <td>Desert Sun Auto Body</td>
+            <td>$4,000</td>
+            <td class="status-quoted" style="color:var(--muted)">Quoted</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="budget" class="budget-card">
+      <div class="card-header"><i class="fa-solid fa-dollar-sign"></i> Budget Summary</div>
+      <div class="budget-rows">
+        <div class="budget-row">
+          <span class="b-label">Shell purchase (2023 swap meet)</span>
+          <span class="b-val b-paid">$4,500</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Engine rebuild and machine work</span>
+          <span class="b-val b-paid">$6,200</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Body repair and materials</span>
+          <span class="b-val b-paid">$3,100</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Suspension and brakes</span>
+          <span class="b-val b-paid">$2,800</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Electrical and wiring</span>
+          <span class="b-val b-paid">$1,100</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Misc parts received to date</span>
+          <span class="b-val b-paid">$4,300</span>
+        </div>
+        <div class="budget-row" style="border-top:2px solid var(--border);margin-top:0.25rem;">
+          <span class="b-label">Total invested to date</span>
+          <span class="b-val highlight">$22,000</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Upholstery - Reynolds Custom Interiors</span>
+          <span class="b-val b-pending">$3,500</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Paint - Desert Sun Auto Body</span>
+          <span class="b-val b-pending">$4,000</span>
+        </div>
+        <div class="budget-row">
+          <span class="b-label">Chrome bumper set (on order)</span>
+          <span class="b-val b-pending">$640</span>
+        </div>
+      </div>
+      <div class="budget-total">
+        <span>Estimated Total at Completion</span>
+        <span>$30,140</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO LOG PLACEHOLDERS -->
+  <div id="gallery">
+    <div class="section-title">Photo Documentation</div>
+    <div class="section-heading">Build Log - Selected Stages</div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Shell at acquisition - swap meet, 2023</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Full teardown in back bay</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Floor pan rust repair - welding</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">302 V8 on the engine stand</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Engine reinstalled and running</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Body sanding in progress - Oct 2025</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Dashpad and carpet fit-up</div>
+      </div>
+      <div class="gallery-item">
+        <i class="fa-solid fa-image"></i>
+        <div class="gallery-label">Current state - Oct 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN TO SHOW -->
+  <div class="countdown-bar">
+    <div>
+      <div class="countdown-label">Target event</div>
+      <div class="countdown-title">El Paso Classic Car Show - December 5, 2026</div>
+    </div>
+    <div class="remaining-tasks">
+      <div class="rt-item"><i class="fa-solid fa-circle-dot"></i> Paint: booked, pending body finish</div>
+      <div class="rt-item"><i class="fa-solid fa-circle-dot"></i> Upholstery: kit en route</div>
+      <div class="rt-item"><i class="fa-solid fa-circle-dot"></i> Chrome bumpers: on order</div>
+      <div class="rt-item"><i class="fa-solid fa-circle-dot"></i> Final detail and entry registration (Oct 2026)</div>
+    </div>
+    <div class="countdown-units" id="countdown">
+      <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-lbl">Days</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-hrs">--</div><div class="cd-lbl">Hours</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-min">--</div><div class="cd-lbl">Min</div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>James Davis</strong> | El Paso, TX | Personal Restoration Project | Davis Auto Repair, Owner
+</footer>
+
+<script>
+  // Countdown to December 5, 2026
+  function updateCountdown() {
+    const target = new Date('2026-12-05T08:00:00');
+    const now = new Date();
+    const diff = target - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hrs').textContent = '0';
+      document.getElementById('cd-min').textContent = '0';
+      return;
+    }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hrs  = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const min  = Math.floor((diff % (1000*60*60)) / (1000*60));
+    document.getElementById('cd-days').textContent = days;
+    document.getElementById('cd-hrs').textContent  = String(hrs).padStart(2,'0');
+    document.getElementById('cd-min').textContent  = String(min).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 30000);
+
+  // Nav active on scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Animate progress bars on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.transition = 'width 1s ease';
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.prog-fill').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

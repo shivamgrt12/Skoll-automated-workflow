@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Setup Planner</title>
+    <meta name="description" content="Event setup configuration and spacing limits.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #475569;
+            --accent: #b45309;
+            --bg-gradient: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
+            --text-main: #1c1917;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .navbar-links {
+            display: flex;
+            gap: 24px;
+        }
+        .navbar-link {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        .navbar-link:hover {
+            color: var(--primary);
+        }
+        /* Main Layout */
+        .main-content {
+            flex: 1;
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        /* Dashboard Container Section */
+        .dashboard-section {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            padding: 40px;
+            scroll-margin-top: 80px; /* Offset for sticky navbar */
+        }
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 30px 40px;
+        }
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 0 12px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .meta-description {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: auto;
+        }
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .kpi-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+            border-color: var(--accent);
+        }
+        .kpi-value {
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .kpi-desc {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 8px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 9999px;
+        }
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: #f8fafc;
+        }
+        /* Checklist Styles */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px 18px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+            transition: border-color 0.2s ease;
+        }
+        .checklist-item:hover {
+            border-color: var(--primary);
+        }
+        .checkbox-custom {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            margin-right: 12px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #ffffff;
+        }
+        .checkbox-custom::after {
+            content: "✓";
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .checklist-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #def7ec;
+            color: #03543f;
+        }
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 30px 40px;
+            text-align: center;
+            font-size: 13px;
+            margin-top: auto;
+            border-top: 1px solid #334155;
+        }
+        .footer-logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .footer-desc {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">Church Setup Planner</a>
+        <div class="navbar-links">
+            <a href="#overview" class="navbar-link">Overview</a>
+            <a href="#metrics" class="navbar-link">Metrics</a>
+            <a href="#data" class="navbar-link">Data Details</a>
+            <a href="#tasks" class="navbar-link">Actions</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <section id="overview" class="dashboard-section hero">
+            <h1>Church Setup Planner</h1>
+            <p class="meta-description">Event setup configuration and spacing limits.</p>
+        </section>
+        
+        <section id="metrics" class="dashboard-section">
+            <h2 class="section-title">Operational KPIs</h2>
+            <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Coffee Hour limit</div>
+            <div class="kpi-value">80</div>
+            <div class="kpi-desc">Max seats in Fellowship Hall</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 75%"></div>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">Bible Study limit</div>
+            <div class="kpi-value">30</div>
+            <div class="kpi-desc">Usual layout configuration</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 100%"></div>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">Vestry Board limit</div>
+            <div class="kpi-value">15</div>
+            <div class="kpi-desc">Boardroom table capacity</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 100%"></div>
+            </div>
+        </div>
+        </div>
+        </section>
+        
+        <section id="data" class="dashboard-section">
+            <h2 class="section-title">Setup Spacing Log</h2><div class="table-responsive"><table><thead><tr><th>Event Classification</th><th>Target Attendance</th><th>Chairs Required</th><th>Tables Required</th></tr></thead><tbody><tr><td>Sunday Fellowship Hour</td><td>80 guests</td><td>60 chairs</td><td>8 round tables</td></tr><tr><td>Wednesday Bible Study</td><td>30 guests</td><td>30 chairs</td><td>4 rect tables</td></tr><tr><td>Monthly Vestry Meeting</td><td>15 board members</td><td>15 chairs</td><td>1 boardroom table</td></tr></tbody></table></div>
+        </section>
+        
+        <section id="tasks" class="dashboard-section">
+            <h2 class="section-title">Coffee Hour Preparation Tasks</h2><ul class="checklist">
+        <li class="checklist-item">
+            <div class="checkbox-custom"></div>
+            <div class="checklist-text">Position 8 round tables in central fellowship hall.</div>
+        </li>
+        
+        <li class="checklist-item">
+            <div class="checkbox-custom"></div>
+            <div class="checklist-text">Arrange 60 folding chairs evenly around tables.</div>
+        </li>
+        
+        <li class="checklist-item">
+            <div class="checkbox-custom"></div>
+            <div class="checklist-text">Pre-heat main coffee percolator unit.</div>
+        </li>
+        
+        <li class="checklist-item">
+            <div class="checkbox-custom"></div>
+            <div class="checklist-text">Verify sanctuary thermostat reads 68 F.</div>
+        </li>
+        </ul>
+        </section>
+    </div>
+    <footer>
+        <div class="footer-logo">Church Setup Planner</div>
+        <div class="footer-desc">Professional Operational Dashboard compiled for G-Persona Administration.</div>
+        <div>&copy; 2026 G-Persona Networks. All Rights Reserved.</div>
+    </footer>
+</body>
+</html>
