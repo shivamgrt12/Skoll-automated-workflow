@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>December Cookie Orders | Momentos by Chris</title>
+<style>
+  :root{--cran:#9c2b3a;--cran-dk:#6e1a26;--forest:#1f6b4a;--gold:#e0b341;
+    --cream:#fff8ef;--ink:#33272a;--soft:#f3e2cf}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Trebuchet MS','Segoe UI',sans-serif;background:var(--cream);color:var(--ink)}
+  header{background:var(--cran);color:var(--cream);text-align:center;padding:30px 18px;position:relative;overflow:hidden}
+  header::before,header::after{content:"\2744";position:absolute;font-size:1.4rem;opacity:.5;animation:drift 7s linear infinite}
+  header::before{left:14%;top:-10px}
+  header::after{left:80%;top:-10px;animation-delay:3s}
+  @keyframes drift{0%{transform:translateY(-10px) rotate(0)}100%{transform:translateY(180px) rotate(360deg)}}
+  header h1{font-size:1.9rem;letter-spacing:1px}
+  header p{opacity:.92;margin-top:6px}
+  .wrap{max-width:760px;margin:24px auto;padding:0 16px}
+  .intro{background:#fff;border:1px solid var(--soft);border-left:6px solid var(--forest);
+    border-radius:10px;padding:16px 20px;margin-bottom:20px}
+  .tiers{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .tier{background:#fff;border:2px solid var(--soft);border-radius:14px;padding:20px;text-align:center;
+    transition:border-color .25s,transform .25s;position:relative}
+  .tier:hover{transform:translateY(-5px)}
+  .tier.sel{border-color:var(--gold);box-shadow:0 8px 20px rgba(224,179,65,.25)}
+  .tier h3{color:var(--cran);margin-bottom:4px}
+  .tier .desc{font-size:.85rem;color:#7a6a64;min-height:38px}
+  .tier .cost{font-size:1.5rem;color:var(--forest);font-weight:bold;margin:10px 0}
+  .stepper{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px}
+  .stepper button{width:34px;height:34px;border-radius:50%;border:none;background:var(--cran);color:#fff;
+    font-size:1.2rem;cursor:pointer;transition:background .2s}
+  .stepper button:hover{background:var(--cran-dk)}
+  .stepper span{min-width:26px;font-size:1.1rem;font-weight:bold}
+  .panel{background:#fff;border:1px solid var(--soft);border-radius:14px;padding:22px;margin-top:22px}
+  label{display:block;margin:12px 0 5px;font-size:.9rem;color:var(--cran-dk);font-weight:bold}
+  input,select{width:100%;padding:11px;border:1px solid #ddc9b3;border-radius:8px;font-family:inherit;background:var(--cream)}
+  input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,179,65,.2)}
+  .summary{background:var(--forest);color:#eafff4;border-radius:14px;padding:20px;margin-top:22px}
+  .summary h3{margin-bottom:10px}
+  .line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.25);font-size:.95rem}
+  .total{display:flex;justify-content:space-between;font-size:1.4rem;font-weight:bold;margin-top:12px}
+  .order-btn{display:block;width:100%;margin-top:16px;background:var(--gold);color:var(--cran-dk);
+    border:none;padding:15px;border-radius:30px;font-size:1.05rem;font-weight:bold;cursor:pointer;transition:transform .2s}
+  .order-btn:hover{transform:scale(1.02)}
+  .done{display:none;background:#eef8ef;border:1px solid #8fbf73;color:#2f6b2f;text-align:center;
+    border-radius:10px;padding:16px;margin-top:16px;font-weight:bold}
+  footer{text-align:center;color:#7a6a64;padding:26px;font-size:.85rem}
+  @media(max-width:520px){.line,.total{font-size:.9rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>December Cookie Orders</h1>
+  <p>Baked by hand in the Murray kitchen, Las Vegas</p>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    Orders open after Thanksgiving and close once two ovens and three evenings are full. Pickup is December 19 or 20, 2026. Royal icing in red, green, and white. Tap a box to add it, then pick your pickup day below.
+  </div>
+
+  <div class="tiers" id="tiers">
+    <div class="tier" data-price="18" data-name="Small box">
+      <h3>Small Box</h3>
+      <div class="desc">One dozen mixed sugar and chocolate chip</div>
+      <div class="cost">$18</div>
+      <div class="stepper"><button type="button" data-d="-1">&minus;</button><span>0</span><button type="button" data-d="1">+</button></div>
+    </div>
+    <div class="tier" data-price="32" data-name="Medium box">
+      <h3>Medium Box</h3>
+      <div class="desc">Two dozen mixed, ribbon tied</div>
+      <div class="cost">$32</div>
+      <div class="stepper"><button type="button" data-d="-1">&minus;</button><span>0</span><button type="button" data-d="1">+</button></div>
+    </div>
+    <div class="tier" data-price="45" data-name="Large gift box">
+      <h3>Large Gift Box</h3>
+      <div class="desc">Three dozen with ribbon, our gift box</div>
+      <div class="cost">$45</div>
+      <div class="stepper"><button type="button" data-d="-1">&minus;</button><span>0</span><button type="button" data-d="1">+</button></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label for="cname">Name for the Order</label>
+    <input id="cname" type="text">
+    <label for="cphone">Phone</label>
+    <input id="cphone" type="tel">
+    <label for="cday">Pickup Day</label>
+    <select id="cday">
+      <option>Saturday, December 19, 2026</option>
+      <option>Sunday, December 20, 2026</option>
+    </select>
+  </div>
+
+  <div class="summary">
+    <h3>Your Order</h3>
+    <div id="lines"><div class="line"><span>No boxes added yet</span><span>$0</span></div></div>
+    <div class="total"><span>Total</span><span id="grand">$0</span></div>
+    <button class="order-btn" id="place">Place Order</button>
+    <div class="done" id="done">Order received. Pay at pickup by cash or QuickPay at @ChrisMurray-Momentos. See you in December.</div>
+  </div>
+</div>
+
+<footer>Momentos by Chris. Cookie program. hello@momentosbychris.com</footer>
+
+<script>
+  var qty={}, prices={};
+  document.querySelectorAll('.tier').forEach(function(t){
+    var name=t.dataset.name, price=+t.dataset.price; qty[name]=0; prices[name]=price;
+    var span=t.querySelector('.stepper span');
+    t.querySelectorAll('.stepper button').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        qty[name]=Math.max(0,qty[name]+(+btn.dataset.d));
+        span.textContent=qty[name];
+        t.classList.toggle('sel',qty[name]>0);
+        render();
+      });
+    });
+  });
+  function render(){
+    var lines=document.getElementById('lines'), html='', grand=0, any=false;
+    Object.keys(qty).forEach(function(n){
+      if(qty[n]>0){ any=true; var sub=qty[n]*prices[n]; grand+=sub;
+        html+='<div class="line"><span>'+n+' x '+qty[n]+'</span><span>$'+sub+'</span></div>';
+      }
+    });
+    if(!any) html='<div class="line"><span>No boxes added yet</span><span>$0</span></div>';
+    lines.innerHTML=html;
+    document.getElementById('grand').textContent='$'+grand;
+  }
+  document.getElementById('place').addEventListener('click',function(){
+    var total=document.getElementById('grand').textContent;
+    if(total==='$0'){ alert('Add at least one box first.'); return; }
+    document.getElementById('done').style.display='block';
+    this.textContent='Order Placed';
+    document.getElementById('done').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+</script>
+</body>
+</html>

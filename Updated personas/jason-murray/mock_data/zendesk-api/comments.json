@@ -1,0 +1,578 @@
+[
+  {
+    "id": "801",
+    "ticket_id": "701",
+    "author_id": "603",
+    "body": "Following the self-host guide but the postgres container keeps exiting with code 1 on docker compose up.",
+    "public": "true",
+    "created_at": "2025-03-18T05:24:29Z"
+  },
+  {
+    "id": "802",
+    "ticket_id": "701",
+    "author_id": "602",
+    "body": "Thanks for the report! That exit code usually means the data volume was initialized with a different POSTGRES_PASSWORD. Can you paste the last 20 lines of docker compose logs db?",
+    "public": "true",
+    "created_at": "2025-03-18T09:08:52Z"
+  },
+  {
+    "id": "803",
+    "ticket_id": "701",
+    "author_id": "603",
+    "body": "Yep, it says the password authentication failed for the existing volume.",
+    "public": "true",
+    "created_at": "2025-03-18T17:00:04Z"
+  },
+  {
+    "id": "804",
+    "ticket_id": "701",
+    "author_id": "602",
+    "body": "That confirms it. Since this is a fresh setup, the safest fix is to remove the stale volume with docker compose down -v and bring it back up so it re-initializes with your current password. Back up first if you had any test data.",
+    "public": "true",
+    "created_at": "2025-03-18T21:21:51Z"
+  },
+  {
+    "id": "805",
+    "ticket_id": "701",
+    "author_id": "603",
+    "body": "That did it, all containers healthy now. Thanks Jason!",
+    "public": "true",
+    "created_at": "2025-03-19T06:42:49Z"
+  },
+  {
+    "id": "806",
+    "ticket_id": "702",
+    "author_id": "605",
+    "body": "Configured GitHub OAuth but the callback returns a redirect_uri mismatch error.",
+    "public": "true",
+    "created_at": "2025-03-27T17:46:50Z"
+  },
+  {
+    "id": "807",
+    "ticket_id": "702",
+    "author_id": "602",
+    "body": "The callback URL in your GitHub OAuth app has to match RIDGELINE_BASE_URL exactly, including the scheme and any trailing path. It should be https://your-domain/auth/github/callback. Can you confirm both values?",
+    "public": "true",
+    "created_at": "2025-03-27T21:16:16Z"
+  },
+  {
+    "id": "808",
+    "ticket_id": "702",
+    "author_id": "605",
+    "body": "Ah, I had http instead of https in the GitHub app. Fixed and it works now.",
+    "public": "true",
+    "created_at": "2025-03-28T15:58:11Z"
+  },
+  {
+    "id": "809",
+    "ticket_id": "703",
+    "author_id": "604",
+    "body": "Importing my Pocket export and it stops around 400 bookmarks with no error shown.",
+    "public": "true",
+    "created_at": "2025-10-07T18:33:12Z"
+  },
+  {
+    "id": "810",
+    "ticket_id": "703",
+    "author_id": "602",
+    "body": "Thanks Sofia. There was a known issue where the importer timed out on large exports. Which version are you on, and roughly how big is the export file?",
+    "public": "true",
+    "created_at": "2025-10-08T04:41:32Z"
+  },
+  {
+    "id": "811",
+    "ticket_id": "703",
+    "author_id": "604",
+    "body": "I am on v3.1 and the file is about 1,200 entries.",
+    "public": "true",
+    "created_at": "2025-10-08T15:59:40Z"
+  },
+  {
+    "id": "812",
+    "ticket_id": "703",
+    "author_id": "602",
+    "body": "v3.2 ships with chunked importing that fixes exactly this. Please upgrade and re-run the import, it will skip the ones already added. Let me know if it stalls again.",
+    "public": "true",
+    "created_at": "2025-10-08T20:13:58Z"
+  },
+  {
+    "id": "813",
+    "ticket_id": "703",
+    "author_id": "604",
+    "body": "Upgraded and all 1,200 came through. Appreciate it!",
+    "public": "true",
+    "created_at": "2025-10-09T07:19:38Z"
+  },
+  {
+    "id": "814",
+    "ticket_id": "704",
+    "author_id": "606",
+    "body": "I clicked annual by mistake and would like a refund back to the monthly plan.",
+    "public": "true",
+    "created_at": "2025-10-22T06:05:55Z"
+  },
+  {
+    "id": "815",
+    "ticket_id": "704",
+    "author_id": "602",
+    "body": "No problem at all. I have refunded the annual charge in Stripe and switched you back to the monthly plan. The refund usually lands in 5-10 business days.",
+    "public": "true",
+    "created_at": "2025-10-22T15:19:23Z"
+  },
+  {
+    "id": "816",
+    "ticket_id": "705",
+    "author_id": "607",
+    "body": "Would love single-key shortcuts to archive and tag bookmarks faster.",
+    "public": "true",
+    "created_at": "2025-10-31T02:00:59Z"
+  },
+  {
+    "id": "817",
+    "ticket_id": "705",
+    "author_id": "602",
+    "body": "Great idea, this is on my roadmap. I am thinking e to archive and t to open the tag picker. I will add it to the Ridgeline issues board and ping you when it ships.",
+    "public": "true",
+    "created_at": "2025-11-01T02:19:28Z"
+  },
+  {
+    "id": "818",
+    "ticket_id": "706",
+    "author_id": "608",
+    "body": "After upgrading, the search box returns nothing even for titles I know exist.",
+    "public": "true",
+    "created_at": "2025-11-04T16:12:49Z"
+  },
+  {
+    "id": "819",
+    "ticket_id": "706",
+    "author_id": "602",
+    "body": "Sounds like the search index did not rebuild after the migration. Can you run ridgeline reindex from the CLI container and tell me if it completes without errors?",
+    "public": "true",
+    "created_at": "2025-11-04T19:12:19Z"
+  },
+  {
+    "id": "820",
+    "ticket_id": "706",
+    "author_id": "608",
+    "body": "It threw a permission error on the index directory at first, fixed the volume mount and reran it. Search works now.",
+    "public": "true",
+    "created_at": "2025-11-05T14:54:04Z"
+  },
+  {
+    "id": "821",
+    "ticket_id": "707",
+    "author_id": "610",
+    "body": "Renewed my Lets Encrypt cert but the container still serves the old expired one.",
+    "public": "true",
+    "created_at": "2025-11-10T02:21:22Z"
+  },
+  {
+    "id": "822",
+    "ticket_id": "707",
+    "author_id": "602",
+    "body": "The bundled nginx caches the cert until reload. After renewal, run docker compose exec proxy nginx -s reload, or just restart the proxy container. That picks up the new cert without downtime for the app.",
+    "public": "true",
+    "created_at": "2025-11-10T16:48:59Z"
+  },
+  {
+    "id": "823",
+    "ticket_id": "707",
+    "author_id": "610",
+    "body": "Reloaded the proxy and the new cert is live. Thanks!",
+    "public": "true",
+    "created_at": "2025-11-11T04:02:08Z"
+  },
+  {
+    "id": "824",
+    "ticket_id": "708",
+    "author_id": "611",
+    "body": "I see two Stripe charges for the same December subscription period.",
+    "public": "true",
+    "created_at": "2025-11-17T17:21:12Z"
+  },
+  {
+    "id": "825",
+    "ticket_id": "708",
+    "author_id": "602",
+    "body": "Checking Stripe now, leaving a private note for myself.",
+    "public": "false",
+    "created_at": "2025-11-17T18:50:57Z"
+  },
+  {
+    "id": "826",
+    "ticket_id": "708",
+    "author_id": "602",
+    "body": "Confirmed there was a duplicate invoice caused by a retry on a webhook timeout. I have refunded the second charge fully. Really sorry about that, and thanks for catching it.",
+    "public": "true",
+    "created_at": "2025-11-18T02:19:43Z"
+  },
+  {
+    "id": "827",
+    "ticket_id": "708",
+    "author_id": "611",
+    "body": "Refund came through, all good. Thanks for the quick turnaround.",
+    "public": "true",
+    "created_at": "2025-11-18T02:42:09Z"
+  },
+  {
+    "id": "828",
+    "ticket_id": "709",
+    "author_id": "613",
+    "body": "The save button in the extension spins forever on Firefox 122.",
+    "public": "true",
+    "created_at": "2025-11-28T15:37:58Z"
+  },
+  {
+    "id": "829",
+    "ticket_id": "709",
+    "author_id": "602",
+    "body": "Thanks Aisha. Firefox 122 tightened its cross-origin cookie handling which broke the extension auth call. I pushed extension v1.4 to AMO with a fix, can you update and retry?",
+    "public": "true",
+    "created_at": "2025-11-29T00:51:27Z"
+  },
+  {
+    "id": "830",
+    "ticket_id": "709",
+    "author_id": "613",
+    "body": "Updated to 1.4 and saving works again. Thank you!",
+    "public": "true",
+    "created_at": "2025-11-29T12:42:00Z"
+  },
+  {
+    "id": "831",
+    "ticket_id": "710",
+    "author_id": "612",
+    "body": "Moving my self-hosted instance to a new server, what is the safe way to move the postgres volume?",
+    "public": "true",
+    "created_at": "2025-12-07T11:48:00Z"
+  },
+  {
+    "id": "832",
+    "ticket_id": "710",
+    "author_id": "602",
+    "body": "Cleanest path is a logical dump: docker compose exec db pg_dump -U ridgeline ridgeline > backup.sql, copy that to the new host, then restore into a fresh instance with psql. Avoid copying the raw volume across different postgres minor versions.",
+    "public": "true",
+    "created_at": "2025-12-07T16:32:13Z"
+  },
+  {
+    "id": "833",
+    "ticket_id": "710",
+    "author_id": "612",
+    "body": "Dumped and restored cleanly on the new box. Everything is there. Thanks!",
+    "public": "true",
+    "created_at": "2025-12-08T12:43:53Z"
+  },
+  {
+    "id": "834",
+    "ticket_id": "711",
+    "author_id": "615",
+    "body": "My imported items came in but none of the original tags carried over.",
+    "public": "true",
+    "created_at": "2025-12-15T13:01:09Z"
+  },
+  {
+    "id": "835",
+    "ticket_id": "711",
+    "author_id": "602",
+    "body": "The Instapaper export only includes folders, not tags, so there is nothing for the importer to map. I added an option in v3.5 to import folders as tags. Re-run the import with that toggle on and they should come through.",
+    "public": "true",
+    "created_at": "2025-12-16T03:28:46Z"
+  },
+  {
+    "id": "836",
+    "ticket_id": "711",
+    "author_id": "615",
+    "body": "Folders-as-tags worked perfectly. Thanks for adding that.",
+    "public": "true",
+    "created_at": "2025-12-16T11:19:58Z"
+  },
+  {
+    "id": "837",
+    "ticket_id": "712",
+    "author_id": "614",
+    "body": "Set up Google OAuth on my self-host and getting invalid_client on sign in.",
+    "public": "true",
+    "created_at": "2025-12-23T22:57:51Z"
+  },
+  {
+    "id": "838",
+    "ticket_id": "712",
+    "author_id": "602",
+    "body": "invalid_client almost always means the client secret has a trailing space or got truncated in the env file. Can you regenerate the secret in Google Cloud Console and paste it fresh into GOOGLE_OAUTH_SECRET, then restart the app container?",
+    "public": "true",
+    "created_at": "2025-12-24T03:12:09Z"
+  },
+  {
+    "id": "839",
+    "ticket_id": "712",
+    "author_id": "614",
+    "body": "It was a stray newline in my .env. Cleaned it up and Google sign in works now.",
+    "public": "true",
+    "created_at": "2025-12-25T00:38:37Z"
+  },
+  {
+    "id": "840",
+    "ticket_id": "713",
+    "author_id": "616",
+    "body": "Please add a one-click export of all bookmarks as JSON for backups.",
+    "public": "true",
+    "created_at": "2025-12-30T02:03:36Z"
+  },
+  {
+    "id": "841",
+    "ticket_id": "713",
+    "author_id": "602",
+    "body": "Reasonable request. There is a CLI export today but a UI button would be nicer. I have added it to the roadmap for the v4 release and will follow up here when it lands.",
+    "public": "true",
+    "created_at": "2025-12-30T22:45:12Z"
+  },
+  {
+    "id": "842",
+    "ticket_id": "714",
+    "author_id": "617",
+    "body": "I switch to dark mode but it reverts to light every time I refresh the page.",
+    "public": "true",
+    "created_at": "2026-01-06T23:02:27Z"
+  },
+  {
+    "id": "843",
+    "ticket_id": "714",
+    "author_id": "602",
+    "body": "That was a bug where the theme preference was not being persisted for users without an account-level setting. Fixed in v3.7. Are you on the hosted version or self-hosting? If self-hosting, please pull the latest image.",
+    "public": "true",
+    "created_at": "2026-01-07T03:01:48Z"
+  },
+  {
+    "id": "844",
+    "ticket_id": "714",
+    "author_id": "617",
+    "body": "Hosted version, and it sticks now after the update. Thanks!",
+    "public": "true",
+    "created_at": "2026-01-07T21:43:43Z"
+  },
+  {
+    "id": "845",
+    "ticket_id": "715",
+    "author_id": "619",
+    "body": "I cancelled before renewal but was charged anyway, requesting a refund.",
+    "public": "true",
+    "created_at": "2026-01-14T00:04:36Z"
+  },
+  {
+    "id": "846",
+    "ticket_id": "715",
+    "author_id": "602",
+    "body": "Sorry about that. I see the cancellation landed a few hours after the renewal cron ran. I have fully refunded the charge and confirmed the subscription is now cancelled so it will not renew again.",
+    "public": "true",
+    "created_at": "2026-01-14T12:47:30Z"
+  },
+  {
+    "id": "847",
+    "ticket_id": "716",
+    "author_id": "618",
+    "body": "Behind nginx my instance throws 502 when I open many bookmarks at once.",
+    "public": "true",
+    "created_at": "2026-01-20T09:39:17Z"
+  },
+  {
+    "id": "848",
+    "ticket_id": "716",
+    "author_id": "602",
+    "body": "A 502 under burst load usually means the app workers are saturated. How many CPU cores does the host have, and have you set RIDGELINE_WORKERS in your env? The default of 4 can be low for heavy use.",
+    "public": "true",
+    "created_at": "2026-01-20T13:38:37Z"
+  },
+  {
+    "id": "849",
+    "ticket_id": "716",
+    "author_id": "618",
+    "body": "Two cores, and I had not set the worker count. Bumped it and raised the nginx proxy timeout.",
+    "public": "true",
+    "created_at": "2026-01-20T21:07:23Z"
+  },
+  {
+    "id": "850",
+    "ticket_id": "716",
+    "author_id": "602",
+    "body": "On two cores I would keep workers at 4 and add proxy_read_timeout 60s in nginx, which you have done. Let me know if the 502s come back under load.",
+    "public": "true",
+    "created_at": "2026-01-21T01:21:41Z"
+  },
+  {
+    "id": "851",
+    "ticket_id": "716",
+    "author_id": "618",
+    "body": "No more 502s even with a big batch open. Thanks for the help.",
+    "public": "true",
+    "created_at": "2026-01-21T22:18:14Z"
+  },
+  {
+    "id": "852",
+    "ticket_id": "717",
+    "author_id": "609",
+    "body": "The bookmark list overlaps the header on Safari iOS 17.",
+    "public": "true",
+    "created_at": "2026-01-25T10:49:18Z"
+  },
+  {
+    "id": "853",
+    "ticket_id": "717",
+    "author_id": "602",
+    "body": "Thanks for the screenshot, I can reproduce it. It is a safe-area-inset issue on iOS Safari. I pushed a CSS fix in v3.9. Can you hard refresh and confirm the header no longer overlaps?",
+    "public": "true",
+    "created_at": "2026-01-25T21:17:35Z"
+  },
+  {
+    "id": "854",
+    "ticket_id": "717",
+    "author_id": "609",
+    "body": "Looks great now on my iPhone. Thank you!",
+    "public": "true",
+    "created_at": "2026-01-26T09:00:39Z"
+  },
+  {
+    "id": "855",
+    "ticket_id": "718",
+    "author_id": "620",
+    "body": "Extension says token expired and wont reconnect to my self-hosted instance.",
+    "public": "true",
+    "created_at": "2026-01-28T08:37:48Z"
+  },
+  {
+    "id": "856",
+    "ticket_id": "718",
+    "author_id": "602",
+    "body": "The extension token has a 30-day lifetime. If reconnecting fails, your instance may be on an older build that did not expose the refresh endpoint. Open the extension options, click Disconnect, then re-pair with a fresh token from your account settings.",
+    "public": "true",
+    "created_at": "2026-01-28T12:52:06Z"
+  },
+  {
+    "id": "857",
+    "ticket_id": "718",
+    "author_id": "620",
+    "body": "Re-paired with a new token and it is saving again. Thanks!",
+    "public": "true",
+    "created_at": "2026-01-29T09:18:44Z"
+  },
+  {
+    "id": "858",
+    "ticket_id": "719",
+    "author_id": "607",
+    "body": "Looking for a recommended cron approach to back up the postgres data nightly.",
+    "public": "true",
+    "created_at": "2026-02-03T23:11:40Z"
+  },
+  {
+    "id": "859",
+    "ticket_id": "719",
+    "author_id": "602",
+    "body": "I run a nightly host cron that calls docker compose exec -T db pg_dump -U ridgeline ridgeline | gzip > /backups/ridgeline-$(date +%F).sql.gz and prunes files older than 14 days. I just added a docs page for this, link in the self-host guide under Backups.",
+    "public": "true",
+    "created_at": "2026-02-04T08:25:09Z"
+  },
+  {
+    "id": "860",
+    "ticket_id": "719",
+    "author_id": "607",
+    "body": "Set up the cron and verified a restore from last night. Solid, thanks!",
+    "public": "true",
+    "created_at": "2026-02-04T20:08:13Z"
+  },
+  {
+    "id": "861",
+    "ticket_id": "720",
+    "author_id": "621",
+    "body": "It would be great to subscribe to an RSS feed filtered by a specific tag.",
+    "public": "true",
+    "created_at": "2026-02-17T20:46:41Z"
+  },
+  {
+    "id": "862",
+    "ticket_id": "720",
+    "author_id": "602",
+    "body": "There is already a global RSS feed, and a per-tag feed is a nice extension of that. I have logged it on the roadmap and will reply here when it is built.",
+    "public": "true",
+    "created_at": "2026-02-18T18:58:01Z"
+  },
+  {
+    "id": "863",
+    "ticket_id": "721",
+    "author_id": "622",
+    "body": "After importing my Raindrop export every bookmark appears twice.",
+    "public": "true",
+    "created_at": "2026-03-10T18:24:00Z"
+  },
+  {
+    "id": "864",
+    "ticket_id": "721",
+    "author_id": "602",
+    "body": "That happens if the import is run twice, since Raindrop exports do not carry stable IDs for dedupe. I added a de-duplicate by URL tool under Settings, Maintenance in v3.11. Run it and it will collapse the duplicates safely.",
+    "public": "true",
+    "created_at": "2026-03-11T09:51:27Z"
+  },
+  {
+    "id": "865",
+    "ticket_id": "721",
+    "author_id": "622",
+    "body": "Ran the dedupe tool and I am back to one copy of each. Thanks Jason.",
+    "public": "true",
+    "created_at": "2026-03-11T20:04:46Z"
+  },
+  {
+    "id": "866",
+    "ticket_id": "722",
+    "author_id": "604",
+    "body": "Items I archive on desktop come back as unread on my phone after a sync.",
+    "public": "true",
+    "created_at": "2026-03-24T06:00:39Z"
+  },
+  {
+    "id": "867",
+    "ticket_id": "722",
+    "author_id": "602",
+    "body": "Thanks for the detail. This looks like a last-write-wins conflict where the mobile client is replaying a stale state. Can you tell me the app version on both devices and roughly how long between archiving and the sync?",
+    "public": "true",
+    "created_at": "2026-03-24T21:28:06Z"
+  },
+  {
+    "id": "868",
+    "ticket_id": "722",
+    "author_id": "604",
+    "body": "Desktop is web v3.12, phone app is 2.1. Usually a few minutes between archiving and opening the phone.",
+    "public": "true",
+    "created_at": "2026-03-25T16:54:54Z"
+  },
+  {
+    "id": "869",
+    "ticket_id": "722",
+    "author_id": "602",
+    "body": "Reproduced it. The mobile app on 2.1 sends an outdated updated_at and the server accepts it. I am shipping a fix to use server-side conflict resolution in the next app release. Leaving this pending until that goes out.",
+    "public": "false",
+    "created_at": "2026-03-31T20:00:39Z"
+  },
+  {
+    "id": "870",
+    "ticket_id": "723",
+    "author_id": "623",
+    "body": "I want to downgrade from the annual plan to monthly at renewal, how do I do that?",
+    "public": "true",
+    "created_at": "2026-10-01T16:27:17Z"
+  },
+  {
+    "id": "871",
+    "ticket_id": "723",
+    "author_id": "602",
+    "body": "You can do it yourself under Settings, Billing, Change Plan, and pick Monthly. It takes effect at your next renewal date so you keep the annual benefits until then. Want me to flag the account so it switches automatically?",
+    "public": "true",
+    "created_at": "2026-10-04T16:30:24Z"
+  },
+  {
+    "id": "872",
+    "ticket_id": "724",
+    "author_id": "603",
+    "body": "Running the v4 upgrade and the schema migration halts with a constraint error.",
+    "public": "true",
+    "created_at": "2026-10-06T08:08:52Z"
+  }
+]

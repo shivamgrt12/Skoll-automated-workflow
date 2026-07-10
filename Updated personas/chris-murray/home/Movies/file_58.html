@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentos by Chris | Business Dashboard</title>
+<style>
+  :root{--bg:#0f1720;--panel:#17222e;--line:#243443;--teal:#2dd4bf;--amber:#f5b04c;
+    --rose:#f472a6;--blue:#5aa9e6;--ink:#e7eef5;--mut:#90a4b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--panel);border-bottom:1px solid var(--line);padding:18px 26px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  header h1{font-size:1.25rem;font-weight:600}
+  header .sub{color:var(--mut);font-size:.85rem}
+  .filters{display:flex;gap:8px}
+  .filters button{background:transparent;border:1px solid var(--line);color:var(--mut);
+    padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;transition:.2s}
+  .filters button.active,.filters button:hover{background:var(--teal);color:#08231f;border-color:var(--teal)}
+  main{max-width:1080px;margin:auto;padding:24px}
+  .kpis{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:24px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .kpi .label{color:var(--mut);font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+  .kpi .val{font-size:2rem;font-weight:700;margin-top:6px}
+  .kpi.t .val{color:var(--teal)} .kpi.a .val{color:var(--amber)}
+  .kpi.r .val{color:var(--rose)} .kpi.b .val{color:var(--blue)}
+  .panels{display:grid;gap:18px;grid-template-columns:1.4fr 1fr}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel h2{font-size:1rem;margin-bottom:4px}
+  .panel .hint{color:var(--mut);font-size:.78rem;margin-bottom:14px}
+  svg{width:100%;height:auto;display:block}
+  .bar{transition:height .9s cubic-bezier(.2,.8,.2,1),y .9s cubic-bezier(.2,.8,.2,1)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:.8rem;color:var(--mut)}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .tag{font-size:.72rem;padding:2px 8px;border-radius:10px}
+  .paid{background:#13361f;color:#5fd08a} .due{background:#3a2a12;color:#f5b04c}
+  footer{color:var(--mut);text-align:center;padding:22px;font-size:.8rem;border-top:1px solid var(--line);margin-top:20px}
+  @media(max-width:760px){.panels{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Momentos by Chris, Business Dashboard</h1>
+    <div class="sub">Sole proprietorship overview. Counted as of February 2026.</div></div>
+  <div class="filters">
+    <button data-year="2025">2025</button>
+    <button data-year="2026" class="active">2026 to date</button>
+  </div>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi t"><div class="label">Event Revenue</div><div class="val" data-count="29600" data-prefix="$">$0</div></div>
+    <div class="kpi a"><div class="label">Cookie Sales</div><div class="val" data-count="3600" data-prefix="$">$0</div></div>
+    <div class="kpi r"><div class="label">Net Profit</div><div class="val" data-count="20020" data-prefix="$">$0</div></div>
+    <div class="kpi b"><div class="label">Events Booked</div><div class="val" data-count="11" data-prefix="">0</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Revenue by Quarter</h2>
+      <div class="hint">Event fees and cookie sales, dollars</div>
+      <svg viewBox="0 0 480 240" id="barChart" role="img" aria-label="Quarterly revenue bar chart"></svg>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--teal)"></i>Event fees</span>
+        <span><i class="dot" style="background:var(--amber)"></i>Cookie sales</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Expense Mix</h2>
+      <div class="hint">Schedule C categories, 2025</div>
+      <svg viewBox="0 0 240 240" id="donut" role="img" aria-label="Expense donut chart"></svg>
+      <div class="legend" id="donutLegend"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Upcoming Bookings</h2>
+    <div class="hint">Active client pipeline</div>
+    <table>
+      <thead><tr><th>Client</th><th>Event</th><th>Date</th><th class="num">Fee</th><th>Deposit</th></tr></thead>
+      <tbody>
+        <tr><td>Mariana Rodriguez</td><td>Quinceanera</td><td>Oct 24, 2026</td><td class="num">$4,000</td><td><span class="tag paid">Received</span></td></tr>
+        <tr><td>Camila Fuentes</td><td>Quinceanera</td><td>Nov 14, 2026</td><td class="num">$4,500</td><td><span class="tag paid">Received</span></td></tr>
+        <tr><td>Aguilar Family</td><td>Quinceanera</td><td>Mar 20, 2027</td><td class="num">Pending</td><td><span class="tag due">Open</span></td></tr>
+        <tr><td>Navarro Family</td><td>Sweet Sixteen</td><td>Apr 17, 2027</td><td class="num">Pending</td><td><span class="tag due">Open</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<footer>Momentos by Chris. Internal figures, not for distribution. Las Vegas, Nevada.</footer>
+
+<script>
+  // animated KPI counters
+  function animate(el){
+    var target=+el.dataset.count, pre=el.dataset.prefix, start=0, t0=null;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/1100,1);
+      var v=Math.floor(start+(target-start)*(p*(2-p)));
+      el.textContent=pre+v.toLocaleString(); if(p<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('[data-count]').forEach(animate);
+
+  // bar chart data per filter
+  var DATA={
+    '2026':[['Q1',9200,1100],['Q2',5400,200],['Q3',6800,300],['Q4',8200,2000]],
+    '2025':[['Q1',7100,900],['Q2',6200,150],['Q3',7400,250],['Q4',8900,2300]]
+  };
+  function drawBars(year){
+    var rows=DATA[year], svg=document.getElementById('barChart');
+    svg.innerHTML=''; var W=480,H=240,pad=34, max=12000, n=rows.length, gw=(W-pad*2)/n;
+    var ns='http://www.w3.org/2000/svg';
+    [0,3000,6000,9000,12000].forEach(function(g){
+      var y=H-pad-(g/max)*(H-pad*2);
+      var l=document.createElementNS(ns,'line');
+      l.setAttribute('x1',pad);l.setAttribute('x2',W-pad);l.setAttribute('y1',y);l.setAttribute('y2',y);
+      l.setAttribute('stroke','#243443');svg.appendChild(l);
+      var tx=document.createElementNS(ns,'text');tx.setAttribute('x',4);tx.setAttribute('y',y+4);
+      tx.setAttribute('fill','#90a4b8');tx.setAttribute('font-size','9');tx.textContent=g/1000+'k';svg.appendChild(tx);
+    });
+    rows.forEach(function(r,i){
+      var x=pad+i*gw+10, bw=(gw-26)/2;
+      [['#2dd4bf',r[1],0],['#f5b04c',r[2],bw+4]].forEach(function(s){
+        var h=(s[1]/max)*(H-pad*2), y=H-pad-h;
+        var b=document.createElementNS(ns,'rect');
+        b.setAttribute('class','bar');b.setAttribute('x',x+s[2]);b.setAttribute('width',bw);
+        b.setAttribute('y',H-pad);b.setAttribute('height',0);b.setAttribute('rx',3);b.setAttribute('fill',s[0]);
+        svg.appendChild(b);
+        setTimeout(function(){b.setAttribute('y',y);b.setAttribute('height',h);},60+i*70);
+      });
+      var lab=document.createElementNS(ns,'text');lab.setAttribute('x',x+bw);lab.setAttribute('y',H-pad+15);
+      lab.setAttribute('fill','#90a4b8');lab.setAttribute('font-size','10');lab.setAttribute('text-anchor','middle');
+      lab.textContent=r[0];svg.appendChild(lab);
+    });
+  }
+
+  // donut
+  function drawDonut(){
+    var parts=[['Supplies',7420,'#2dd4bf'],['Mileage',1950,'#5aa9e6'],
+      ['Cookie goods',1180,'#f5b04c'],['Fees and other',2630,'#f472a6']];
+    var total=parts.reduce(function(a,b){return a+b[1];},0);
+    var svg=document.getElementById('donut'),ns='http://www.w3.org/2000/svg';
+    var cx=120,cy=120,r=80,sw=34,off=0,C=2*Math.PI*r;
+    var leg=document.getElementById('donutLegend');
+    parts.forEach(function(p){
+      var frac=p[1]/total, len=frac*C;
+      var c=document.createElementNS(ns,'circle');
+      c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+      c.setAttribute('fill','none');c.setAttribute('stroke',p[2]);c.setAttribute('stroke-width',sw);
+      c.setAttribute('stroke-dasharray','0 '+C);c.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+      c.style.transition='stroke-dasharray 1s ease';svg.appendChild(c);
+      var thisOff=off;
+      setTimeout(function(){c.setAttribute('stroke-dasharray',len+' '+(C-len));
+        c.setAttribute('stroke-dashoffset',-thisOff);},120);
+      off+=len;
+      var s=document.createElement('span');
+      s.innerHTML='<i class="dot" style="background:'+p[2]+'"></i>'+p[0]+' '+Math.round(frac*100)+'%';
+      leg.appendChild(s);
+    });
+    var tt=document.createElementNS(ns,'text');tt.setAttribute('x',cx);tt.setAttribute('y',cy-2);
+    tt.setAttribute('text-anchor','middle');tt.setAttribute('fill','#e7eef5');tt.setAttribute('font-size','18');
+    tt.setAttribute('font-weight','700');tt.textContent='$13.2k';svg.appendChild(tt);
+    var ts=document.createElementNS(ns,'text');ts.setAttribute('x',cx);ts.setAttribute('y',cy+16);
+    ts.setAttribute('text-anchor','middle');ts.setAttribute('fill','#90a4b8');ts.setAttribute('font-size','10');
+    ts.textContent='total expenses';svg.appendChild(ts);
+  }
+
+  drawBars('2026'); drawDonut();
+  document.querySelectorAll('.filters button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filters button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); drawBars(b.dataset.year);
+    });
+  });
+</script>
+</body>
+</html>

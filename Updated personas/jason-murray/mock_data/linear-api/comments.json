@@ -1,0 +1,162 @@
+[
+  {
+    "id": "cmt-103-1",
+    "body": "Went with 15-min access tokens + 30-day refresh in an httpOnly SameSite=Lax cookie. Login is rate limited to 5/min per IP. Tests green.",
+    "issueId": "ISS-103",
+    "userId": "user-jason",
+    "createdAt": "2025-10-01T11:10:39",
+    "updatedAt": "2025-10-01T11:10:39"
+  },
+  {
+    "id": "cmt-103-2",
+    "body": "Nice. Can we surface a clearer error than 'invalid credentials' when the account just isn't verified yet? Confused me in testing.",
+    "issueId": "ISS-103",
+    "userId": "user-jake",
+    "createdAt": "2025-10-01T16:02:21",
+    "updatedAt": "2025-10-01T16:02:21"
+  },
+  {
+    "id": "cmt-104-1",
+    "body": "Keyset pagination is in - cursor is base64(created_at,id). Way faster than OFFSET on my seed data of 10k bookmarks.",
+    "issueId": "ISS-104",
+    "userId": "user-jason",
+    "createdAt": "2025-10-08T10:08:08",
+    "updatedAt": "2025-10-08T10:08:08"
+  },
+  {
+    "id": "cmt-107-1",
+    "body": "Reading pane feels good. Bumped line-height to 1.7 and capped measure at 68ch for readability. Shortcuts cheatsheet shows on '?'.",
+    "issueId": "ISS-107",
+    "userId": "user-jake",
+    "createdAt": "2025-11-21T18:50:08",
+    "updatedAt": "2025-11-21T18:50:08"
+  },
+  {
+    "id": "cmt-107-2",
+    "body": "Love it. Merged after the keyboard map tweak. This is the feature I'll actually use daily.",
+    "issueId": "ISS-107",
+    "userId": "user-jason",
+    "createdAt": "2025-11-22T19:23:35",
+    "updatedAt": "2025-11-22T19:23:35"
+  },
+  {
+    "id": "cmt-108-1",
+    "body": "Outbox pattern working - search results show up within ~2s of saving a bookmark. Algolia free tier is plenty for now.",
+    "issueId": "ISS-108",
+    "userId": "user-jason",
+    "createdAt": "2025-12-06T18:38:19",
+    "updatedAt": "2025-12-06T18:38:19"
+  },
+  {
+    "id": "cmt-109-1",
+    "body": "Found it - worker wasn't committing the outbox cursor until the whole batch flushed, so a restart replayed creates but dropped deletes. Moved to per-event ack.",
+    "issueId": "ISS-109",
+    "userId": "user-jason",
+    "createdAt": "2026-10-01T22:26:18",
+    "updatedAt": "2026-10-01T22:26:18"
+  },
+  {
+    "id": "cmt-109-2",
+    "body": "Reindexed prod and confirmed deleted links are gone from search. Closing.",
+    "issueId": "ISS-109",
+    "userId": "user-jason",
+    "createdAt": "2026-10-04T22:34:24",
+    "updatedAt": "2026-10-04T22:34:24"
+  },
+  {
+    "id": "cmt-110-1",
+    "body": "Chart deploys cleanly to the k3s box. Cloudflare tunnel ingress is up at ridgelinesystems.com. Reindex CronJob runs nightly at 3am PT.",
+    "issueId": "ISS-110",
+    "userId": "user-jason",
+    "createdAt": "2026-10-05T22:47:55",
+    "updatedAt": "2026-10-05T22:47:55"
+  },
+  {
+    "id": "cmt-111-1",
+    "body": "Checkout flow stubbed against Stripe test mode. Still need to gate Pro features and handle the subscription cancel webhook. Picking back up tonight.",
+    "issueId": "ISS-111",
+    "userId": "user-jason",
+    "createdAt": "2026-10-12T09:25:00",
+    "updatedAt": "2026-10-12T09:25:00"
+  },
+  {
+    "id": "cmt-112-1",
+    "body": "Root cause: the logging middleware buffered the body before the Stripe handler could verify the signature. Reading raw body first with io.ReadAll then re-setting it. PR up for review.",
+    "issueId": "ISS-112",
+    "userId": "user-jason",
+    "createdAt": "2026-10-12T09:40:00",
+    "updatedAt": "2026-10-12T09:40:00"
+  },
+  {
+    "id": "cmt-113-1",
+    "body": "Thinking Klaviyo over Mailchimp here since the segment API is nicer. Will spike both before committing.",
+    "issueId": "ISS-113",
+    "userId": "user-jason",
+    "createdAt": "2026-10-04T09:16:36",
+    "updatedAt": "2026-10-04T09:16:36"
+  },
+  {
+    "id": "cmt-117-1",
+    "body": "Fixed the FOUC by inlining a tiny theme script in index.html that reads localStorage before paint. No more flash.",
+    "issueId": "ISS-117",
+    "userId": "user-jake",
+    "createdAt": "2025-03-21T11:01:41",
+    "updatedAt": "2025-03-21T11:01:41"
+  },
+  {
+    "id": "cmt-119-1",
+    "body": "Closing as wont-do. The bookmark naming is already in the public API docs and the rename buys us nothing. Not worth the migration.",
+    "issueId": "ISS-119",
+    "userId": "user-jason",
+    "createdAt": "2025-03-29T09:17:50",
+    "updatedAt": "2025-03-29T09:17:50"
+  },
+  {
+    "id": "cmt-121-1",
+    "body": "Confirmed the leak with pprof - one goroutine per IP, none ever returning. Replaced with a single sweep goroutine that evicts stale buckets every minute. Memory flat now.",
+    "issueId": "ISS-121",
+    "userId": "user-jason",
+    "createdAt": "2026-03-28T23:07:00",
+    "updatedAt": "2026-03-28T23:07:00"
+  },
+  {
+    "id": "cmt-122-1",
+    "body": "Mocked up the settings layout in Figma - tabbed: Profile / Security / Data. Sharing the link in Discord. Data export as a download button bottom-right.",
+    "issueId": "ISS-122",
+    "userId": "user-jake",
+    "createdAt": "2026-10-05T21:40:36",
+    "updatedAt": "2026-10-05T21:40:36"
+  },
+  {
+    "id": "cmt-122-2",
+    "body": "Layout looks great. I'll wire the export endpoint to stream JSON so big accounts don't blow memory.",
+    "issueId": "ISS-122",
+    "userId": "user-jason",
+    "createdAt": "2026-10-06T05:24:19",
+    "updatedAt": "2026-10-06T05:24:19"
+  },
+  {
+    "id": "cmt-201-1",
+    "body": "Poller supports HTTP and raw TCP checks, interval per target in the config YAML. Storing results in Postgres with a 90-day retention window.",
+    "issueId": "ISS-201",
+    "userId": "user-jason",
+    "createdAt": "2026-03-29T22:43:07",
+    "updatedAt": "2026-03-29T22:43:07"
+  },
+  {
+    "id": "cmt-202-1",
+    "body": "Sparkline component done - using a tiny inline SVG instead of a chart lib to keep the bundle small. Need real data from the poller to tune the buckets.",
+    "issueId": "ISS-202",
+    "userId": "user-jake",
+    "createdAt": "2026-10-12T08:45:00",
+    "updatedAt": "2026-10-12T08:45:00"
+  },
+  {
+    "id": "cmt-203-1",
+    "body": "Want the Discord ping to fire only after 3 consecutive failures so a single blip doesn't wake me at 2am. Will reuse the webhook from our gaming server.",
+    "issueId": "ISS-203",
+    "userId": "user-jason",
+    "createdAt": "2026-10-05T08:42:44",
+    "updatedAt": "2026-10-05T08:42:44"
+  }
+]
