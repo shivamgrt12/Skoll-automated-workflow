@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Board</title>
+<style>
+  :root{--bg:#0e1411;--panel:#15201a;--line:#274033;--ink:#eaf3ee;--mut:#8fae9d;--g:#5fc98a;--y:#e3c45a;--o:#e8915a;--b:#5aa9d0;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);padding:24px}
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+  h1{font-size:22px}.sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .pill{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--mut)}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card .n{font-size:24px;font-weight:700}.card .l{color:var(--mut);font-size:12px;margin-top:3px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  button{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+  button.active{background:var(--g);border-color:var(--g);color:#0c130f;font-weight:700}
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .col{background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:200px}
+  .col h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin-bottom:10px;display:flex;justify-content:space-between}
+  .venue{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+  .venue .vn{font-weight:600;font-size:13px}
+  .venue .vt{color:var(--mut);font-size:11px;margin:3px 0 7px}
+  .venue .meta{font-size:11px;color:#bcd2c5;line-height:1.5}
+  .chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:5px;margin-top:7px;color:#0c130f;font-weight:600}
+  footer{color:var(--mut);font-size:11px;text-align:center;margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Route Board, Linea Taco + Torta Co.</h1>
+      <div class="sub">Launch venue scouting for the truck, Charleston area, updated February 2026</div></div>
+    <div class="pill">Target open: fourth quarter 2026</div>
+  </header>
+
+  <div class="summary">
+    <div class="card"><div class="n">8</div><div class="l">Venues scouted</div></div>
+    <div class="card"><div class="n">5</div><div class="l">Evening and weekend spots</div></div>
+    <div class="card"><div class="n">1</div><div class="l">Weekday lunch route idea</div></div>
+    <div class="card"><div class="n">3</div><div class="l">Already reached out</div></div>
+  </div>
+
+  <div class="controls" id="filter">
+    <button data-f="all" class="active">All</button>
+    <button data-f="Brewery">Breweries</button>
+    <button data-f="Market">Markets</button>
+    <button data-f="Music">Music and events</button>
+    <button data-f="Lunch">Weekday lunch</button>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <footer>Personal scouting board. Contact only on days off, never during a Linden &amp; Rye shift. Confirm commissary and permits before booking any recurring slot.</footer>
+</div>
+
+<script>
+var stages=[["Idea","var(--b)"],["To contact","var(--o)"],["Reached out","var(--y)"],["Interested","var(--g)"]];
+var venues=[
+ {n:"Eastside Brewing Co.",type:"Brewery lot",cat:"Brewery",contact:"Events team",phone:"(843) 555-0301",days:"Thu to Sat evening",stage:"To contact"},
+ {n:"Old City Brewing",type:"Brewery lot",cat:"Brewery",contact:"Taproom manager",phone:"(843) 555-0312",days:"Fri and Sat",stage:"To contact"},
+ {n:"Peninsula Brewing",type:"Brewery rooftop",cat:"Brewery",contact:"Booking office",phone:"(843) 555-0327",days:"Fri evening",stage:"Reached out"},
+ {n:"Crosstown Music Hall",type:"Music venue lot",cat:"Music",contact:"Vendor coordinator",phone:"(843) 555-0340",days:"Weekend nights",stage:"To contact"},
+ {n:"Johns Island Farmers Market",type:"Weekend market",cat:"Market",contact:"Market office",phone:"(843) 555-0355",days:"Saturday morning",stage:"Interested"},
+ {n:"Park Circle events",type:"Neighborhood",cat:"Music",contact:"Rec department",phone:"(843) 555-0361",days:"Sunday afternoon",stage:"To contact"},
+ {n:"Lowcountry Distillery",type:"Event lawn",cat:"Music",contact:"Private events",phone:"(843) 555-0378",days:"Concert nights",stage:"Idea"},
+ {n:"Tech office park",type:"Weekday lunch stop",cat:"Lunch",contact:"Facilities team",phone:"(843) 555-0389",days:"Tue to Fri lunch",stage:"Idea"}
+];
+function render(filter){
+  var board=document.getElementById("board"); board.innerHTML="";
+  stages.forEach(function(s){
+    var list=venues.filter(function(v){return v.stage===s[0] && (filter==="all"||v.cat===filter)});
+    var col=document.createElement("div"); col.className="col";
+    col.innerHTML='<h3><span>'+s[0]+'</span><span>'+list.length+'</span></h3>';
+    list.forEach(function(v){
+      var card=document.createElement("div"); card.className="venue";
+      card.innerHTML='<div class="vn">'+v.n+'</div><div class="vt">'+v.type+'</div>'+
+        '<div class="meta">'+v.contact+'<br>'+v.phone+'<br>Best: '+v.days+'</div>'+
+        '<span class="chip" style="background:'+s[1]+'">'+v.cat+'</span>';
+      col.appendChild(card);
+    });
+    board.appendChild(col);
+  });
+}
+render("all");
+document.getElementById("filter").addEventListener("click",function(e){
+  if(e.target.tagName!=="BUTTON")return;
+  this.querySelectorAll("button").forEach(function(b){b.classList.remove("active")});
+  e.target.classList.add("active"); render(e.target.getAttribute("data-f"));
+});
+</script>
+</body>
+</html>
