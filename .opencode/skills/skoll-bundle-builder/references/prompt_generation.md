@@ -101,7 +101,8 @@ internal extraction (you will include a trimmed version in the design notes late
   versus send, things outside their expertise. These become the red lines the task hides.
 
 Pick the single richest focal event that can plausibly demand eight to ten hours of
-competent human work. If two events are rich, pick the one that touches the most surfaces.
+competent human work. If two events are rich, pick the richest single event; surfaces
+only count insofar as that one event genuinely lives across them.
 
 ---
 
@@ -111,10 +112,14 @@ A complex prompt is the visible shadow of a complex job. Design the job first. D
 write down, for your own use, the following. You will hand these to the bundle stage later.
 
 1. **The whole job.** One sentence naming the focal event and the outcome the person wants.
-2. **The workstreams.** Four to eight independent streams of work the job breaks into.
-   Each stream should be pursuable on its own surface so the agent is rewarded for fanning
-   out into parallel subagents. If you cannot find at least four genuinely parallel streams,
-   the task will not force subagents and is not hard enough. Redesign. Cross check each
+2. **The workstreams.** Break the ONE job into its natural workstreams — however many it
+   honestly has (typically three to six). Every workstream must serve the same focal event
+   and the same outcome. Apply the deletion test to each stream: if this stream were dropped,
+   would the focal deliverables still be complete? If yes, it is padding — cut it. Never
+   invent a stream to reach a count, and never bolt on side errands (a weather check for its
+   own sake, a hobby side-quest, a social post, a family errand) that do not feed the focal
+   outcome. The litmus test is: one owner, one event, one outcome — every sentence in the
+   prompt must trace back to the focal event. Cross check each
    stream against the environment capability reference. The surface it runs on must be one
    the persona is connected to, and that surface must actually support the action the stream
    needs. A stream that no connected service can carry is a fantasy and must be cut or moved.
@@ -240,11 +245,11 @@ the breadth of work compactly rather than enumerating every stream as its own cl
 Call out the deliverables they expect saved, as outcomes a person wants and never as file
 names or field lists. State the judgment expectations, such as newest source wins and name
 what you trusted and what you set aside. Do not break the body into sections. Keep it flowing
-as one paragraph. Reach the word band by widening the world the job touches, the surfaces in
-play, the stakes, and the scale of what must be worked through, never by walking the agent
-through how to do it. The breadth of the job, not the length of the prose, is what forces
-subagents. A prompt that points at many surfaces at once is harder to single thread than one
-that walks through each, so point widely.
+as one paragraph. The depth of the job is what creates the hours. Point at one job
+whose data load is wide — many records, many conflicting sources, several systems the same
+event genuinely lives across — never at many jobs. Reach the word band by deepening the world
+of the one event, its stakes, its conflicting sources, and the scale of what must be worked
+through, never by adding events and never by walking the agent through how to do it.
 
 ### 4.2 If the operator chose multi turn
 
@@ -264,6 +269,11 @@ Produce one heavy opening turn exactly as above, then two or three light follow 
 
 ### 4.3 Hard style gates, check every one before you output
 
+- English only. Write every turn body entirely in English, regardless of the persona's
+  cultural background or the language used inside the persona files. Persona flavour
+  survives through names and at most an occasional loanword the persona would naturally
+  drop, never through non-English phrases or sentences. The drafting language for every
+  bundle is English.
 - No unnecessary context. The agent already holds every file, the persona, and the
   environment. Strip anything it can read for itself. Do not restate what is in a file. Do
   not name the systems to use. Do not map an entity to a service. Do not hand over the plan.
@@ -285,8 +295,11 @@ Produce one heavy opening turn exactly as above, then two or three light follow 
   an absolute persona calendar date only when a date is truly needed.
 - One paragraph only. The whole turn body is a single flowing paragraph. Do not split it on
   a change of subject. The subjects flow together inside the one paragraph.
-- The opening turn must force multiple subagents. If one capable thread could comfortably
-  do it in sequence, it is too thin. Deepen the parallel surfaces.
+- The opening turn must carry enough parallel depth that a capable agent could fan out into
+  subagents when they are enabled. If one capable thread could comfortably finish it in a
+  short linear sequence, it is too thin. That depth must come from the volume of records, the
+  conflicting sources, and the reconciliation the one focal event demands, never from adding
+  events or side errands to reach a count.
 - Voice match. It must sound like this persona, not like an assistant or a spec.
 - Do not leak the conflicts, the decoys, the red lines, or the answer values. The prompt
   states expectations of judgment, never the hidden traps.

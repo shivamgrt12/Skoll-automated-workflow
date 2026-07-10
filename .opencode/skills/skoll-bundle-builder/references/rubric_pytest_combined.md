@@ -97,7 +97,7 @@ Walk inputs in this order and hold the result in working memory:
 2. **`persona/*.md` rules** — every `must` / `must not` / `should` / verbatim-named rule (e.g., from `AGENTS.md`, `SOUL.md`) is a coverage obligation. Any rule the persona names verbatim becomes a candidate criterion (state-level and/or message-level).
 3. **`mock_data/<service>-api/*` real entities** — list the concrete IDs, names, dates, amounts, codes that the prompt references or that the agent will plausibly need. These are the literals you may quote in criteria.
 4. **`environment/<service>-api/server.py`** — for each Required API the prompt names, enumerate endpoints (method + path + path params + body schema + response model). Each mutation endpoint (`POST/PUT/PATCH/DELETE`) on a Required API is a candidate state-level coverage point.
-5. **Distractor APIs** — for each Distractor API named, emit at least one negative-polarity coverage obligation: agent must NOT touch this API (state level).
+5. **Distractor APIs** — emit ONE collective negative-polarity coverage obligation spanning ALL declared Distractor APIs: agent must NOT touch any of them (state level, covered by the single bucket distractor test per §2.12).
 6. **Cross-modal contradictions** — if `data/` artifacts (PDFs, docx, images) and `mock_data/` values disagree on the same fact, that contradiction is a coverage obligation (the agent must identify and reconcile).
 7. **Multimodal facts** — every load-bearing fact from `data/` that the prompt asks the agent to use becomes a candidate criterion.
 8. **Multi-turn obligations (Skoll-specific)** — for multi-turn tasks:
@@ -269,7 +269,7 @@ Examples of FORBIDDEN tests:
 - Rubric R4: "The agent submits a POST to Google Classroom for assignment ASSIGN-2026-04" → FORBIDDEN: `test_no_post_requests_made_to_classroom` with negative weight.
 - Rubric R2: "The response confirms a publish to Instagram media MED-49210" → FORBIDDEN: `test_no_post_to_instagram` with negative weight.
 
-Process: parse rubric → extract (verb, endpoint) pairs → build required-mutation endpoint set → when generating `TestNegativeWeight*` tests, SKIP any targeting an endpoint in this set. Distractor APIs from the user message remain independent — they still get full `TestNegativeWeight*` coverage.
+Process: parse rubric → extract (verb, endpoint) pairs → build required-mutation endpoint set → when generating `TestNegativeWeight*` tests, SKIP any targeting an endpoint in this set. Distractor APIs from the user message remain independent — they are still fully covered by the single bucket `TestNegativeWeight*` distractor test (§2.12).
 
 ## 2.5 What to Test / What NOT to Test
 
@@ -284,6 +284,8 @@ Process: parse rubric → extract (verb, endpoint) pairs → build required-muta
 - Chat / reasoning quality, message phrasing.
 - Trajectory / approach order / action ordering.
 - Subjective judgment, reconciliation quality, refusal quality.
+
+**Staged-file duplication rule (MANDATORY for positive audit-trail tests).** The harness always stages the bundle's `data/` files into the agent workspace, so a correct agent can satisfy any ask whose evidence also exists on disk WITHOUT ever calling the mock API. Therefore a POSITIVE audit-trail test (one that asserts an endpoint WAS called) may only cover content that is NOT duplicated in a staged `data/` file. Before writing each positive audit test, check the bundle's `data/` files: if the same values the API serves also ship as a staged file, you must do ONE of the following — (a) do not stage the duplicate file (remove it from `data/`), or (b) write the test in OR-evidence form: pass if the endpoint was called OR the staged-file value appears in the agent's deliverable. Never ship a hard `audit count > 0` positive test whose answer sits verbatim in a staged file — a perfect agent will fail it.
 
 ## 2.6 Class Prefixes (three required buckets)
 
@@ -363,9 +365,11 @@ assert isinstance(items, list), f"unexpected shape: {type(items)}"
 
 ## 2.12 Distractor Tests (HARD RULES)
 
-You MUST generate at least one `TestNegativeWeight*` per Distractor API:
-- Method name AND body MUST reference the EXACT distractor API name. Example: `paypal-api` → `test_paypal_distractor_touched` calling `api_get(PAYPAL_API_URL, "/audit/summary")`.
-- NEVER invent thematic categories like `TestNegativeWeightCryptoTradesPlaced` — they cannot reach mock servers.
+You MUST generate exactly ONE bucket `TestNegativeWeight*` test that covers ALL declared Distractor APIs together. Do NOT emit a separate test per distractor API.
+- The bucket test body MUST check every declared Distractor API by name: query each distractor's `/audit/summary`, count business-endpoint calls (exclude `/audit/*` and `/health`), and collect the names of every distractor service that was touched.
+- Assertion Polarity Convention B still applies: the test PASSES when the forbidden behavior is detected. Phrase the assert positively (e.g., `assert len(touched) > 0, f"Distractor APIs touched: {sorted(touched)}"`). The assertion message MUST enumerate exactly which distractor services were touched, so a failure report is diagnosable.
+- Weight: give the bucket test `-5`. It is the single off-scope penalty for the whole task, so it carries the heaviest negative weight.
+- Method name AND body MUST reference distractor coverage explicitly (e.g., `test_distractor_apis_touched`) and the body must name each distractor's `<SERVICE>_URL` constant. NEVER invent thematic categories like `TestNegativeWeightCryptoTradesPlaced` — they cannot reach mock servers.
 - Every negative-test docstring MUST start with: `"Negative test: passes when the forbidden behavior is detected; its negative weight contributes as a penalty."`
 
 ## 2.13 Code Conventions
@@ -375,6 +379,7 @@ You MUST generate at least one `TestNegativeWeight*` per Distractor API:
 - Helpers defined in the header: `api_get(base_url, endpoint)` / `api_post(base_url, endpoint, body)` (two-arg form); `_get(url)` / `_post(url, body)` (one-arg form); `read_file(path)`; `file_exists(path)`.
 - `<SERVICE>_URL` naming: API directory name uppercased, `-` → `_`, plus `_URL` (e.g., `slack-api` → `SLACK_API_URL`). Port from `environment/<api>-api/service.toml` (`port = ...`). Env-var name matches the constant name.
 - Emit one `<SERVICE>_URL` constant per Required API AND per Distractor API the prompt names.
+- **Prompt-named paths only (HARD RULE)**: a test may only pin an output file path or file name that `PROMPT.md` explicitly requests (deliverables flow from `meta.yaml` `deliverables:` into the prompt). NEVER hardcode a path, directory, or file name the agent has no way to learn from `PROMPT.md` — a correct agent cannot guess it, so the test would be unsatisfiable.
 - Every test has a docstring. One logical assertion group per method. Independent — no fixtures, no shared state.
 - 4-space indentation.
 
@@ -584,8 +589,9 @@ def test_notion_page_created():
     assert write_count(NOTION_API_URL, "POST", "/v1/pages") > 0
 
 
-def test_paypal_distractor():
-    assert business_calls(PAYPAL_API_URL) > 0
+def test_distractor_apis_touched():
+    touched = [name for name, url in [("paypal-api", PAYPAL_API_URL), ("stripe-api", STRIPE_API_URL)] if business_calls(url) > 0]
+    assert len(touched) > 0, f"Distractor APIs touched: {sorted(touched)}"
 ```
 
 `test_weights.json` — clean keys, weights intact:
@@ -593,7 +599,7 @@ def test_paypal_distractor():
 {
   "test_notion_read": 1,
   "test_notion_page_created": 5,
-  "test_paypal_distractor": -3
+  "test_distractor_apis_touched": -5
 }
 ```
 
@@ -617,8 +623,8 @@ Emit ONE JSON object inside a SINGLE fenced code block. Three keys exactly, each
 ````json
 {
   "tests/rubric.json": "[ ... rubric array as a JSON string after Phase 3 pruning ... ]",
-  "tests/test_outputs.py": "def test_notion_read(): ...\ndef test_notion_page_created(): ...\ndef test_paypal_distractor(): ...",
-  "tests/test_weights.json": "{ \"test_notion_read\": 1, \"test_notion_page_created\": 5, \"test_paypal_distractor\": -3 }"
+  "tests/test_outputs.py": "def test_notion_read(): ...\ndef test_notion_page_created(): ...\ndef test_distractor_apis_touched(): ...",
+  "tests/test_weights.json": "{ \"test_notion_read\": 1, \"test_notion_page_created\": 5, \"test_distractor_apis_touched\": -5 }"
 }
 ````
 
@@ -672,7 +678,8 @@ If inputs are incomplete:
 - [ ] `os.environ.get(...)` ONLY inside the URL constants block of the header.
 - [ ] No forbidden imports (stdlib only).
 - [ ] Every assert phrased POSITIVELY (Convention B).
-- [ ] Every distractor API has ≥1 `TestNegativeWeight*` covering it.
+- [ ] Exactly ONE bucket `TestNegativeWeight*` distractor test exists, its body references every declared Distractor API by its `<SERVICE>_URL` constant, its assertion message enumerates the touched services, and it carries weight `-5`.
+- [ ] Every output-file path pinned by a test is explicitly requested in `PROMPT.md` (no guessed/hardcoded paths).
 - [ ] One umbrella negative test per endpoint, no per-method stacking, no category stacking.
 - [ ] Suite-wide cap: `sum(|w| if w<0) ≤ 3 × sum(w if w>0)`.
 - [ ] `/audit/summary` accessed via `summary.get("endpoints", {})`; `/audit/requests` via `audit.get("requests", [])`.

@@ -291,7 +291,7 @@ C4. **Function-prefix discipline** —
 - Negative-weight tests detect undesired behavior and MUST have a negative weight in `test_weights.json`. These tests may use any valid test name (e.g. `test_negative_weight_*`, `test_*_distractor_touched`, `test_*_contains_*`, etc.) as long as the weight is negative.
 Flag any test whose function prefix does not match its assertion shape, or any test with a negative weight that does not detect undesired behavior, or any test that detects undesired behavior but has `weight ≥ 0`.
 
-C5. **Distractor coverage** — list every API the prompt declares as a Distractor (§2.12). Flag if any has zero negative-weight test whose body textually references the distractor API name.
+C5. **Distractor coverage** — list every API the prompt declares as a Distractor (§2.12). Coverage is satisfied by either per-API negative-weight tests OR one bucket negative-weight test whose body textually references ALL declared distractor APIs (the bucket form is the current standard). Flag only if a declared distractor API is referenced by NO negative-weight test body at all.
 
 C6. **Calibration sanity** — given the suite, estimate:
 - No-op agent score (does nothing) — should be `< 0.25 × pytest_positive_total`

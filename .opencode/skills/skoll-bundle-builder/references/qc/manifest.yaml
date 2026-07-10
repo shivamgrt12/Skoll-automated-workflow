@@ -4,10 +4,18 @@
 severity:
   10_rubric_qc.md: block
   20_test_outputs_qc.md: block
-  # Persona team ships mock_data as JSON-only; harness team confirmed JSON is
-  # accepted at runtime. The schema-divergence findings this gate raises against
-  # the canonical CSV schema are therefore expected and non-blocking.
-  30_mock_data_qc.py: warn
+  # Escalated to block (2027-01): harness boot logs proved the earlier
+  # "JSON-only mock_data is accepted at runtime" assumption wrong. Seed IDs that
+  # violate a mock service's declared column types (e.g. string 'ACT-001' in an
+  # int id column) or collide on the declared primary key make the harness
+  # _mutable_store loader serve EMPTY tables at boot, zeroing every dependent
+  # pytest probe. This gate detects exactly that defect class, so it must block.
+  30_mock_data_qc.py: block
+  # Boot-simulation gate: loads the bundle's mock_data overlays through the
+  # harness's own _mutable_store loader (local SKOLL_GK copy) and fails on
+  # loader errors, empty tables, or primary-key collisions - reproducing the
+  # harness boot exactly.
+  35_mock_boot_check.py: block
   # Deterministic scan for stub/placeholder values left in the assembled
   # mock_data JSON after enrichment. Warn: a stray placeholder is a cleanup nit,
   # not a reason to fail the whole bundle.
