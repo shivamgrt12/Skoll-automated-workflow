@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avalanche Level 1 Field Course</title>
+<style>
+  :root{--ink:#16202b;--bg:#f3f6f9;--card:#ffffff;--line:#dce4ec;--blue:#1f5f8b;
+    --ice:#3f97c4;--deep:#11304a;--sun:#e7913a;--ok:#2f8f5b;--sub:#5b7184;--warn:#c0392b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);
+    background:var(--bg);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line)}
+  nav{max-width:1140px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--deep)}
+  .logo .mark{width:30px;height:30px;border-radius:8px;
+    background:conic-gradient(from 200deg,var(--ice),var(--blue),var(--deep));}
+  .links{display:flex;gap:24px;font-size:14px;color:var(--sub)}
+  .links a:hover{color:var(--deep)}
+  .reg-btn{background:var(--sun);color:#241404;padding:10px 18px;border-radius:24px;font-weight:700;
+    font-size:13px;border:none;cursor:pointer;transition:transform .15s}
+  .reg-btn:hover{transform:translateY(-2px)}
+  .hero{background:linear-gradient(155deg,var(--deep),#1f5f8b 70%,#3f97c4);color:#eaf3f9;
+    position:relative;overflow:hidden}
+  .hero-in{max-width:1140px;margin:0 auto;padding:74px 22px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+  .badge{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px}
+  h1{font-size:clamp(32px,5vw,56px);line-height:1.05;margin:16px 0;font-weight:800}
+  .hero p{color:#cfe2ee;font-size:18px;max-width:520px}
+  .enroll{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:24px}
+  .enroll h3{font-size:15px;letter-spacing:1px;text-transform:uppercase;color:#bcd6e6}
+  .bar{height:14px;border-radius:10px;background:rgba(255,255,255,.16);margin:14px 0 8px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,var(--sun),#f4c430);transition:width 1.4s ease}
+  .enroll .row{display:flex;justify-content:space-between;font-size:13px;color:#cfe2ee}
+  .enroll button{margin-top:16px;width:100%;background:#eaf3f9;color:var(--deep);border:none;
+    padding:12px;border-radius:12px;font-weight:800;cursor:pointer}
+  section{max-width:1140px;margin:0 auto;padding:70px 22px}
+  h2{font-size:clamp(24px,3.5vw,36px);font-weight:800;color:var(--deep);margin-bottom:8px}
+  .lead{color:var(--sub);max-width:600px;margin-bottom:26px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 6px 18px rgba(17,48,74,.05)}
+  .card .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:800;margin-bottom:12px}
+  .card h3{font-size:17px;margin-bottom:6px;color:var(--deep)}
+  .card p{font-size:14px;color:var(--sub)}
+  .sched{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .day h3{background:var(--deep);color:#eaf3f9;padding:14px 20px;font-size:16px}
+  .day ul{list-style:none;padding:8px 20px 18px}
+  .day li{display:flex;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .day li:last-child{border:none}
+  .day b{color:var(--blue);min-width:70px}
+  .price{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    background:linear-gradient(135deg,#11304a,#1f5f8b);color:#eaf3f9;border-radius:20px;padding:34px}
+  .price .big{font-size:54px;font-weight:800}
+  .price ul{list-style:none;font-size:14px;color:#cfe2ee}
+  .price li{padding:3px 0}
+  .price li::before{content:"✓ ";color:var(--sun);font-weight:800}
+  .faq .q{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .faq button{width:100%;text-align:left;background:none;border:none;padding:16px 20px;font-size:15px;
+    font-weight:700;color:var(--deep);cursor:pointer;display:flex;justify-content:space-between}
+  .faq .a{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 20px;color:var(--sub);font-size:14px}
+  .faq .a p{padding:0 0 16px}
+  form{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;display:grid;gap:14px;max-width:620px}
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{font-size:13px;font-weight:700;color:var(--deep);display:block;margin-bottom:5px}
+  input,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px;font-family:inherit;color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--ice)}
+  .submit{background:var(--sun);color:#241404;border:none;padding:13px;border-radius:12px;font-weight:800;cursor:pointer}
+  .msg{display:none;padding:13px 16px;border-radius:10px;font-size:14px}
+  .msg.show{display:block;background:#e7f3ec;border:1px solid var(--ok);color:#1d6b43}
+  footer{background:var(--deep);color:#cfe2ee;margin-top:40px}
+  .foot{max-width:1140px;margin:0 auto;padding:40px 22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:13px}
+  .foot b{color:#fff}
+  @media(max-width:880px){.hero-in{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}
+    .sched{grid-template-columns:1fr}.f2{grid-template-columns:1fr}.links{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="logo"><div class="mark"></div> Teton Summit Avalanche Education</div>
+    <div class="links"><a href="#course">Course</a><a href="#schedule">Schedule</a><a href="#price">Pricing</a><a href="#faq">FAQ</a></div>
+    <button class="reg-btn" onclick="document.getElementById('register').scrollIntoView()">Reserve a spot</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-in">
+    <div>
+      <span class="badge">TWO DAY FIELD INTENSIVE</span>
+      <h1>Avalanche Level 1 in the Tetons</h1>
+      <p>Learn to recognize avalanche terrain, read the snowpack, plan a tour, and rescue a partner.
+         Taught by a working avalanche forecaster, mostly outside in real terrain.</p>
+    </div>
+    <div class="enroll">
+      <h3>Next session</h3>
+      <p style="font-size:22px;font-weight:800;margin:6px 0">January 16 to 17, 2027</p>
+      <div class="row"><span id="spotsText">Loading</span><span id="capText">15 max</span></div>
+      <div class="bar"><i id="fillBar"></i></div>
+      <div class="row"><span>Meeting point</span><span>Teton Pass winter lot, 7:30 AM</span></div>
+      <button onclick="document.getElementById('register').scrollIntoView()">Hold my place</button>
+    </div>
+  </div>
+</div>
+
+<section id="course">
+  <h2>What you will learn</h2>
+  <p class="lead">Classroom theory is kept short. Most of the weekend is spent in the field with rescue gear,
+     reading the snow under the guidance of a Level 3 forecaster.</p>
+  <div class="grid3">
+    <div class="card"><div class="ic" style="background:var(--blue)">1</div><h3>Read the terrain</h3>
+      <p>Spot avalanche slopes by angle, shape, and how they connect above you.</p></div>
+    <div class="card"><div class="ic" style="background:var(--ice)">2</div><h3>Understand the snowpack</h3>
+      <p>Dig a pit, run simple stability tests, and find the weak layer that matters.</p></div>
+    <div class="card"><div class="ic" style="background:var(--sun)">3</div><h3>Plan with the advisory</h3>
+      <p>Turn the daily hazard forecast into a route with a real margin of safety.</p></div>
+    <div class="card"><div class="ic" style="background:var(--deep)">4</div><h3>Companion rescue</h3>
+      <p>Beacon search, probe, and strategic shoveling, practiced until it is automatic.</p></div>
+    <div class="card"><div class="ic" style="background:var(--ok)">5</div><h3>Group decisions</h3>
+      <p>Make calls as a party, manage spacing, and speak up when something looks wrong.</p></div>
+    <div class="card"><div class="ic" style="background:var(--blue)">6</div><h3>Build a habit</h3>
+      <p>Leave with a routine you can repeat on every tour for the rest of the winter.</p></div>
+  </div>
+</section>
+
+<section id="schedule" style="padding-top:0">
+  <h2>Two day schedule</h2>
+  <p class="lead">Both days start with a trailhead beacon check, the first lesson of the day.</p>
+  <div class="sched">
+    <div class="day"><h3>Day one</h3><ul>
+      <li><b>7:30</b>Trailhead beacon check and gear review</li>
+      <li><b>8:00</b>Avalanche formation and terrain recognition</li>
+      <li><b>10:00</b>Trip planning and the daily advisory</li>
+      <li><b>12:00</b>Companion rescue, beacon, probe, shovel</li>
+      <li><b>2:30</b>Single and multiple burial practice</li>
+      <li><b>4:00</b>Debrief and homework</li>
+    </ul></div>
+    <div class="day"><h3>Day two</h3><ul>
+      <li><b>7:30</b>Weather and snowpack briefing</li>
+      <li><b>8:30</b>Snowpack tests, hand pit to compression test</li>
+      <li><b>11:00</b>Tour with terrain and decision making</li>
+      <li><b>2:30</b>Group debrief and next steps</li>
+      <li><b>3:30</b>Certificates and wrap</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="price" style="padding-top:0">
+  <h2>Pricing</h2>
+  <p class="lead">One flat fee covers both field days and the instruction. Rentals are available on request.</p>
+  <div class="price">
+    <div><div class="big">$375</div><div style="color:#cfe2ee">per student, two full days</div></div>
+    <ul>
+      <li>Small group, capped at fifteen students</li>
+      <li>Taught by a Level 3 avalanche forecaster</li>
+      <li>Rescue gear coaching and a snowpack pit</li>
+      <li>Certificate on completion</li>
+      <li>Transceiver, probe, shovel rental on request</li>
+    </ul>
+  </div>
+</section>
+
+<section id="register" style="padding-top:0">
+  <h2>Reserve a spot</h2>
+  <p class="lead">Spots are limited to keep the group small enough for real coaching. Reserve and we will
+     follow up by email with payment and gear details.</p>
+  <form id="regForm" novalidate>
+    <div class="f2">
+      <div><label for="rn">Full name</label><input id="rn" type="text" autocomplete="name"></div>
+      <div><label for="re">Email</label><input id="re" type="email" autocomplete="email"></div>
+    </div>
+    <div class="f2">
+      <div><label for="rp">Phone</label><input id="rp" type="tel" autocomplete="tel"></div>
+      <div><label for="rg">Gear rental</label><select id="rg"><option>None, I have my own kit</option>
+        <option>Beacon</option><option>Beacon and probe</option><option>Full set</option></select></div>
+    </div>
+    <div><label for="rx">Touring experience</label><select id="rx">
+      <option>New to backcountry travel</option><option>Some tours, no formal course</option>
+      <option>Experienced, want a refresher</option></select></div>
+    <button class="submit" type="submit">Request my place</button>
+    <div class="msg" id="regMsg">Thanks, your request is in. We will email you to confirm payment and the gear list.</div>
+  </form>
+</section>
+
+<section id="faq" style="padding-top:0">
+  <h2>Common questions</h2>
+  <div class="faq" id="faq">
+    <div class="q"><button>Do I need my own avalanche gear?<span>+</span></button>
+      <div class="a"><p>A transceiver, probe, and shovel are required, but rentals are available on request when
+         you register. Bring a touring setup or splitboard and full winter layers.</p></div></div>
+    <div class="q"><button>What if I have never toured before?<span>+</span></button>
+      <div class="a"><p>That is welcome. The course is built for recreational travelers, including people on
+         their first season. We keep terrain reasonable and the group small.</p></div></div>
+    <div class="q"><button>Does the course run in bad weather?<span>+</span></button>
+      <div class="a"><p>Yes, in most conditions. We adjust terrain to keep the day safe and useful. Real winter
+         weather is part of the learning.</p></div></div>
+    <div class="q"><button>Who teaches it?<span>+</span></button>
+      <div class="a"><p>A senior ski patroller and Avalanche Level 3 forecaster who co-authors the resort daily
+         advisory and has taught these public courses for several seasons.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <div><b>Teton Summit Avalanche Education</b><br>Public Avalanche Level 1 courses, Teton Pass area</div>
+    <div>Questions<br><a href="mailto:jeff.peterson@Greenridertech.in">jeff.peterson@Greenridertech.in</a></div>
+    <div>Meeting point<br>Teton Pass winter lot, 7:30 AM both days</div>
+    <div style="align-self:end">In partnership with the resort. Courses fill quickly each season.</div>
+  </div>
+</footer>
+
+<script>
+  // animated enrollment counter
+  var filled=9, cap=15;
+  var pct=Math.round(filled/cap*100);
+  setTimeout(function(){document.getElementById('fillBar').style.width=pct+'%';},250);
+  var st=document.getElementById('spotsText');
+  var n=0; var iv=setInterval(function(){n++;st.textContent=n+' of '+cap+' spots reserved';
+    if(n>=filled)clearInterval(iv);},90);
+  // FAQ accordion
+  document.querySelectorAll('#faq .q button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var a=b.nextElementSibling, open=a.style.maxHeight && a.style.maxHeight!=='0px';
+      document.querySelectorAll('#faq .a').forEach(function(x){x.style.maxHeight='0px';});
+      document.querySelectorAll('#faq .q span').forEach(function(x){x.textContent='+';});
+      if(!open){a.style.maxHeight=a.scrollHeight+'px';b.querySelector('span').textContent='-';}
+    });
+  });
+  // registration validation
+  document.getElementById('regForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=document.getElementById('rn'),em=document.getElementById('re');
+    if(!n.value.trim()){n.focus();n.style.borderColor='#c0392b';return;}
+    if(!/.+@.+\..+/.test(em.value)){em.focus();em.style.borderColor='#c0392b';return;}
+    document.getElementById('regMsg').classList.add('show');
+    this.reset();
+  });
+</script>
+</body>
+</html>
