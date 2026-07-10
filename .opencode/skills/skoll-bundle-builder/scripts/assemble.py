@@ -37,6 +37,35 @@ PERSONA_DYNAMIC_ORDER = ["HEARTBEAT"]
 DEFAULT_RUNTIME_MODEL = "claude-sonnet-4-20250514"
 DEFAULT_RUNTIME_THINKING = "off"
 
+# task.yaml `task_type` controlled vocabulary. The meta must declare one of these.
+TASK_TYPES = (
+    "Search & Retrieval",
+    "Productivity Flow",
+    "Code Intelligence",
+    "Creative Synthesis",
+    "Skill Use & Orchestration",
+    "Skill Creation & Editing",
+    "Communication & Messaging",
+    "Device & Environment Control",
+    "Memory & Personalization",
+    "Scheduling & Long-Running",
+    "Proactive Assistance",
+    "Social Interaction",
+    "Multi-Turn Robustness",
+    "Safety Alignment",
+)
+
+# task.yaml `platform` controlled vocabulary.
+PLATFORMS = ("MacOs", "linux")
+DEFAULT_PLATFORM = "MacOs"
+
+# Matches a PROMPT.md turn banner like `--- TURN 1 ---`.
+_TURN_MARKER = re.compile(r"^-{2,}\s*TURN\s+\d+\s*-{2,}\s*$", re.IGNORECASE | re.MULTILINE)
+
+# Collapses any run of whitespace (incl. newlines) to a single space, so a
+# multi-line source becomes one flowing paragraph.
+_WS_RUN = re.compile(r"\s+")
+
 
 def _read(path: Path) -> str:
     return path.read_text().rstrip("\n")
@@ -97,45 +126,24 @@ def _copy_tree(src: Path, dst: Path) -> None:
     shutil.copytree(src, dst)
 
 
-def build_task_yaml(meta: dict, system_prompt: str, probes: int, criteria: int) -> str:
-    shape = meta["shape"]
+def build_task_description(meta: dict, prompt_md: str) -> str:
+    source = meta.get("task_description") or _TURN_MARKER.sub("", prompt_md)
+    return _WS_RUN.sub(" ", source).strip()
+
+
+def build_task_yaml(meta: dict, system_prompt: str, task_description: str) -> str:
     doc_lines = [
-        f"task_id: {meta['task_id']}",
-        f"variant: {meta['variant']}",
-        f"principal: {meta['principal']}",
-        f"timezone: {meta['timezone']}",
-        f"domain: {meta['domain']}",
-        "shape:",
-        f"  turns: {shape['turns']}",
-        f"  days: {shape['days']}",
-        f"  difficulty: {shape['difficulty']}",
-        f"  multi_agent_complex_turns: {json.dumps(shape.get('multi_agent_complex_turns', []))}",
+        f"task_type: {meta['task_type']}",
+        "task_description: |",
+        _indent_block(task_description, 2),
+        "system_prompt: |-",
+        _indent_block(system_prompt, 2),
+        f"platform: {meta.get('platform', DEFAULT_PLATFORM)}",
+        "required_apis:",
     ]
-    threshold = meta.get("confirmation_threshold")
-    if threshold:
-        doc_lines += [
-            "confirmation_threshold:",
-            f"  single_charge_usd: {threshold['single_charge_usd']}",
-            f"  recurring_monthly_usd: {threshold['recurring_monthly_usd']}",
-        ]
-    doc_lines.append(f"drafting_language: {meta.get('drafting_language', 'en')}")
-    doc_lines.append("required_apis:")
     doc_lines += [f"  - {api}" for api in meta["required_apis"]]
     doc_lines.append("distractor_apis:")
     doc_lines += [f"  - {api}" for api in meta["distractor_apis"]]
-    doc_lines.append("deliverables:")
-    doc_lines += [f"  - {d}" for d in meta.get("deliverables", [])]
-    doc_lines += [
-        "grading:",
-        "  channel_a: test_outputs.py",
-        "  channel_b: rubric.json",
-        "  weights: test_weights.json",
-        f"  pytest_probes: {probes}",
-        f"  rubric_criteria: {criteria}",
-        f"persona: {meta['principal']}",
-        "system_prompt: |-",
-        _indent_block(system_prompt, 2),
-    ]
     return "\n".join(doc_lines) + "\n"
 
 
@@ -173,6 +181,19 @@ def build_readme(meta: dict, work_dir: Path, probes: int, criteria: int) -> str:
 
 REQUIRED_API_FLOOR = 12
 BANNED_APIS = frozenset({"dropbox-api", "google-drive-api", "google-contacts-api"})
+
+
+def _validate_meta_schema(meta: dict) -> list[str]:
+    errors: list[str] = []
+    task_type = meta.get("task_type")
+    if task_type is None:
+        errors.append(f"task_type is required; pick one of {list(TASK_TYPES)}")
+    elif task_type not in TASK_TYPES:
+        errors.append(f"task_type {task_type!r} is not a valid type; pick one of {list(TASK_TYPES)}")
+    platform = meta.get("platform", DEFAULT_PLATFORM)
+    if platform not in PLATFORMS:
+        errors.append(f"platform {platform!r} is not valid; pick one of {list(PLATFORMS)}")
+    return errors
 
 
 def _validate_apis_against_inputs(meta: dict, input_dir: Path, registry: dict) -> list[str]:
@@ -225,7 +246,7 @@ def assemble(
     meta = yaml.safe_load(meta_path.read_text())
     registry = build_registry(harness_dir)
 
-    errors = _validate_apis_against_inputs(meta, input_dir, registry)
+    errors = _validate_meta_schema(meta) + _validate_apis_against_inputs(meta, input_dir, registry)
     if errors:
         return errors
 
@@ -238,8 +259,9 @@ def assemble(
     system_prompt = build_system_prompt(input_dir, templates_dir, meta)
     probes = count_pytest_probes(work_dir / "test_outputs.py")
     criteria = count_rubric_criteria(work_dir / "rubric.json")
+    task_description = build_task_description(meta, (work_dir / "PROMPT.md").read_text())
 
-    (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, probes, criteria))
+    (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, task_description))
     (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria))
 
     for fname in ("PROMPT.md", "rubric.json", "test_outputs.py", "test_weights.json", "TRUTH.md"):

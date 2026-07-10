@@ -391,11 +391,6 @@ import subprocess
 import sqlite3
 from urllib.request import Request, urlopen
 
-try:
-    import pytest
-except ImportError:
-    pytest = None
-
 # URL constants — emit one line per Required + Distractor API the prompt names
 SLACK_API_URL = os.environ.get("SLACK_API_URL", "http://localhost:8013")
 # ... add one line per API, port read from environment/<api>-api/service.toml ...

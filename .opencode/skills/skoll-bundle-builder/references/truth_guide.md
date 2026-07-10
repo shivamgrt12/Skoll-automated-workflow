@@ -25,7 +25,7 @@ A complete task bundle looks like this (names are stable across tasks):
 ```
 <TASK_DIR>/
 ├── README.md                  # human overview: turn map, traps, red lines
-├── task.yaml                  # machine facts: ids, apis, turns/days/difficulty, variant, system_prompt
+├── task.yaml                  # machine facts: task_type, task_description, system_prompt, platform, required/distractor apis
 ├── rubric.json                # Channel B — LLM-judge criteria R1..Rn (the +/- rubric)
 ├── test_outputs.py            # Channel A — deterministic pytest probes (audit-based)
 ├── test_weights.json          # weight (±) for every probe in test_outputs.py
