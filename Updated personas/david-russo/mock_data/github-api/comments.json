@@ -1,0 +1,162 @@
+[
+  {
+    "id": "1000001",
+    "issue_number": "1001",
+    "repo": "beu-eastbridge-portal",
+    "user": "drusso-apush",
+    "body": "Reproducing consistently. The SSO callback URL is hitting /auth/callback but the session is not being persisted before the redirect. I think the issue is the cookie SameSite attribute. We set it to Strict which blocks the SSO round-trip. Changing to Lax for the session cookie should fix it.",
+    "created_at": "2025-11-10T10:00:00Z"
+  },
+  {
+    "id": "1000002",
+    "issue_number": "1001",
+    "repo": "beu-eastbridge-portal",
+    "user": "kmonteiro-beu",
+    "body": "Good catch on SameSite. I tested with Lax in a local branch and the login completes. Submitting a PR shortly. Need someone to QA with an actual bps.edu SSO account before we merge.",
+    "created_at": "2025-11-12T09:00:00Z"
+  },
+  {
+    "id": "1000003",
+    "issue_number": "1002",
+    "repo": "beu-eastbridge-portal",
+    "user": "drusso-apush",
+    "body": "The petition counter is stored in a Redux slice but the component reads directly from a local state variable that is only updated on mount. I need to wire it to the Redux store. Working on it but wanted to document the root cause.",
+    "created_at": "2025-11-18T09:00:00Z"
+  },
+  {
+    "id": "1000004",
+    "issue_number": "1004",
+    "repo": "apush-dbq-generator",
+    "user": "tsullivan-ebhs",
+    "body": "This bit me during class last week. We were doing a Period 4 review and after the 6th prompt it just repeated the first one. Really awkward in front of students. Happy to test the fix when it's ready.",
+    "created_at": "2025-10-24T10:00:00Z"
+  },
+  {
+    "id": "1000005",
+    "issue_number": "1004",
+    "repo": "apush-dbq-generator",
+    "user": "drusso-apush",
+    "body": "Fix is in PR 1004. I added 8 more Period 4 prompts (Jackson, nullification, market revolution, Native removal, Second Great Awakening, tariff controversy, Texas annexation, manifest destiny) and added a shuffle to prevent order repetition. Should be more than sufficient for any n value.",
+    "created_at": "2025-10-27T10:00:00Z"
+  },
+  {
+    "id": "1000006",
+    "issue_number": "1005",
+    "repo": "beueastbridge.org",
+    "user": "kmonteiro-beu",
+    "body": "The menu close issue is straightforward. The click handler on the nav links only fires the navigation event, not the toggle. Added an explicit close call to each link's onClick. PR is up.",
+    "created_at": "2026-03-25T10:00:00Z"
+  },
+  {
+    "id": "1000007",
+    "issue_number": "1005",
+    "repo": "beueastbridge.org",
+    "user": "drusso-apush",
+    "body": "Tested on my iPhone 15 and Android tablet. Works correctly on both now. Good catch Kevin. Merging.",
+    "created_at": "2026-03-28T09:00:00Z"
+  },
+  {
+    "id": "1000008",
+    "issue_number": "1007",
+    "repo": "beu-eastbridge-portal",
+    "user": "kmonteiro-beu",
+    "body": "Found the bug. The presigned URL lambda was calling get_role() which returns the IAM role, not the member role. Changed to get_membership_tier() and now regular members get a valid 15-minute presigned URL. Tested with 4 different member accounts.",
+    "created_at": "2025-10-11T10:00:00Z"
+  },
+  {
+    "id": "1000009",
+    "issue_number": "1007",
+    "repo": "beu-eastbridge-portal",
+    "user": "drusso-apush",
+    "body": "Great fix. This was causing a lot of Freshdesk tickets. Closing this issue. Thanks Kevin.",
+    "created_at": "2025-10-19T09:00:00Z"
+  },
+  {
+    "id": "1000010",
+    "issue_number": "1008",
+    "repo": "primary-source-api",
+    "user": "drusso-apush",
+    "body": "I talked with Derek Wright at BPS IT. When a whole class accesses simultaneously they share the school's egress IP, so the per-IP limit is way too restrictive. Increasing to 100 req/min per IP should work for now. If other schools start using this heavily we can switch to per-session tokens.",
+    "created_at": "2025-11-06T10:00:00Z"
+  },
+  {
+    "id": "1000011",
+    "issue_number": "1009",
+    "repo": "apush-resource-vault",
+    "user": "drusso-apush",
+    "body": "Etsy's API supports a digital_file endpoint. I can generate a zip on the server side and host it on S3, then update the Etsy listing download to point there. The challenge is keeping the zip in sync when individual files update. Need to think about the automation.",
+    "created_at": "2025-12-04T10:00:00Z"
+  },
+  {
+    "id": "1000012",
+    "issue_number": "1012",
+    "repo": "apush-timeline-tool",
+    "user": "jcosta-ebhs",
+    "body": "Confirmed blank on Safari 16.3 on a MacBook we use in the lab. Chrome and Firefox on the same machine work fine. I can provide the exact console errors if that helps.",
+    "created_at": "2025-10-19T10:00:00Z"
+  },
+  {
+    "id": "1000013",
+    "issue_number": "1012",
+    "repo": "apush-timeline-tool",
+    "user": "drusso-apush",
+    "body": "Thanks James, the console errors would be very helpful. The subgrid fallback should be doable. I'm planning to test a flex-based fallback layout that still reads well on Safari 16. Will update when I have a branch.",
+    "created_at": "2025-10-21T09:00:00Z"
+  },
+  {
+    "id": "1000014",
+    "issue_number": "1013",
+    "repo": "russoteacheshistory",
+    "user": "drusso-apush",
+    "body": "Root cause was a draft post with a null date field in its frontmatter. The RSS generator was calling .toISOString() on null. Fixed with a guard and a fallback to the file mtime. Deployed and confirmed feed is working.",
+    "created_at": "2025-12-03T09:00:00Z"
+  },
+  {
+    "id": "1000015",
+    "issue_number": "1014",
+    "repo": "beu-eastbridge-portal",
+    "user": "drusso-apush",
+    "body": "This is the same category gap that caused the hall duty grievance last month to be misfiled as 'Other'. I have the Article 20 text from the contract. Will add as 'Article 20 - Working Conditions and Hours'. Kevin, can you review the PR when it is up?",
+    "created_at": "2025-11-28T10:00:00Z"
+  },
+  {
+    "id": "1000016",
+    "issue_number": "1014",
+    "repo": "beu-eastbridge-portal",
+    "user": "kmonteiro-beu",
+    "body": "Yes, tag me for review. This is high priority. Building reps have been complaining that the form doesn't reflect the actual contract articles. Let's also add Article 25 Prep Time while we are in there.",
+    "created_at": "2025-11-30T09:00:00Z"
+  },
+  {
+    "id": "1000017",
+    "issue_number": "1017",
+    "repo": "beu-eastbridge-portal",
+    "user": "drusso-apush",
+    "body": "Dark mode is lower priority for me personally but I know a few night-owl reps who use the portal at 9pm for grievance filings. If the CSS variable approach is clean I am fine merging it. Priya, can you prototype it and show me a screenshot first?",
+    "created_at": "2025-12-08T09:00:00Z"
+  },
+  {
+    "id": "1000018",
+    "issue_number": "1017",
+    "repo": "beu-eastbridge-portal",
+    "user": "p.bhatt-ebhs",
+    "body": "I have a branch with the basic variable swap. Dark background is #1a1a2e and the text shifts to #e0e0e0. I'll share a screenshot in the PR. It looks clean and does not break the contract campaign banner colors.",
+    "created_at": "2025-12-09T09:00:00Z"
+  },
+  {
+    "id": "1000019",
+    "issue_number": "1019",
+    "repo": "beu-contract-2026",
+    "user": "drusso-apush",
+    "body": "Talking points are drafted and shared in the PR. Key messages: 1) 5% annual raise for three years, 2) 30-minute protected prep period daily, 3) Class size cap of 28 students. Kevin reviewed and added the solidarity framing language. Ready to distribute to building reps.",
+    "created_at": "2025-12-08T10:00:00Z"
+  },
+  {
+    "id": "1000020",
+    "issue_number": "1020",
+    "repo": "labor-history-unit",
+    "user": "drusso-apush",
+    "body": "I am going through each lesson plan HTML file unit by unit. Unit 1 and 2 alt text is done in the accessibility PR. Units 3-6 still need it. If any contributors want to help, I have a spreadsheet listing all images that still need descriptive alt text. Comment here and I will share it.",
+    "created_at": "2025-11-30T10:00:00Z"
+  }
+]
