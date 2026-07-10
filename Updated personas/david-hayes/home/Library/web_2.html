@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dearborn Eagles U-12 Coach Dashboard</title>
+<style>
+  :root{--pitch:#1f7a3d;--pitchdk:#155a2c;--gold:#f2c14e;--ink:#10241a;--paper:#f3f7f4;
+    --card:#fff;--line:#dbe7df;--accent:#e23b34;--muted:#5d756a}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--paper);color:var(--ink)}
+  header{background:linear-gradient(120deg,var(--pitchdk),var(--pitch));color:#fff;padding:0}
+  .top{max-width:1080px;margin:auto;padding:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  .crest{display:flex;align-items:center;gap:14px}
+  .badge{width:46px;height:46px;background:var(--gold);color:var(--pitchdk);font-weight:900;
+    display:grid;place-items:center;border-radius:10px 10px 10px 2px;transform:rotate(-4deg);font-size:1.4rem}
+  .crest h1{font-size:1.3rem;letter-spacing:.5px}
+  .crest small{opacity:.85;display:block;font-weight:400}
+  .season-pill{background:rgba(255,255,255,.15);padding:8px 16px;border-radius:30px;font-size:.85rem}
+
+  main{max-width:1080px;margin:auto;padding:26px 22px 60px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:26px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;width:5px;height:100%;background:var(--pitch)}
+  .kpi .v{font-size:2rem;font-weight:800}
+  .kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+  .kpi.accent::before{background:var(--accent)}
+  .kpi.gold::before{background:var(--gold)}
+
+  .panels{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px}
+  .panel h2{font-size:1.05rem;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+  .tabs{display:flex;gap:6px}
+  .tab{font-size:.78rem;padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:var(--paper);cursor:pointer;transition:.2s}
+  .tab.active{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:.85rem}
+  .bar-row .nm{width:78px;flex:none}
+  .track{flex:1;background:var(--paper);border-radius:8px;height:22px;overflow:hidden}
+  .fill{height:100%;border-radius:8px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1);
+    background:linear-gradient(90deg,var(--pitch),#3aa55f)}
+  .fill.a{background:linear-gradient(90deg,var(--accent),#f06a64)}
+  .bar-row .vv{width:26px;text-align:right;font-weight:700}
+
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+  tbody tr:hover{background:var(--paper)}
+  td.num{text-align:center;font-weight:600}
+
+  .sched li{list-style:none;display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+  .sched li:last-child{border:0}
+  .when{color:var(--muted);font-size:.8rem}
+  .tagH{background:#e7f4ec;color:var(--pitch);padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700}
+  .tagA{background:#fdeceb;color:var(--accent);padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700}
+
+  footer{background:var(--ink);color:#cfe0d6;text-align:center;padding:18px;font-size:.82rem}
+  @media(max-width:780px){.panels{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="crest">
+      <div class="badge">E</div>
+      <div><h1>Dearborn Eagles U-12</h1><small>Coach dashboard, Dearborn Youth Athletic Association</small></div>
+    </div>
+    <div class="season-pill">Fall 2026 season &bull; Coach David Hayes</div>
+  </div>
+</header>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v">16</div><div class="l">Players on roster</div></div>
+    <div class="kpi gold"><div class="v">55</div><div class="l">Goals for</div></div>
+    <div class="kpi"><div class="v">45</div><div class="l">Assists</div></div>
+    <div class="kpi accent"><div class="v">Semis</div><div class="l">Best finish, last fall</div></div>
+  </div>
+
+  <div class="panels">
+    <div>
+      <div class="panel">
+        <h2>Top contributors
+          <div class="tabs">
+            <span class="tab active" onclick="setMetric('g',this)">Goals</span>
+            <span class="tab" onclick="setMetric('a',this)">Assists</span>
+          </div>
+        </h2>
+        <div id="bars"></div>
+      </div>
+      <div class="panel">
+        <h2>Full roster and stats</h2>
+        <table>
+          <thead><tr><th>Player</th><th>Pos</th><th>Age</th><th style="text-align:center">G</th><th style="text-align:center">A</th></tr></thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Upcoming fixtures</h2>
+        <ul class="sched" id="sched"></ul>
+      </div>
+      <div class="panel">
+        <h2>Season goal</h2>
+        <p style="font-size:.9rem;color:var(--muted);margin-bottom:12px">Win the fall championship and stand up a U-14 division for next year.</p>
+        <div class="track" style="height:14px"><div class="fill" id="goalbar" style="background:linear-gradient(90deg,var(--gold),#f7d987)"></div></div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Practice attendance this season: <b>92%</b></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Dearborn Eagles U-12 &bull; Practices Tuesday and Thursday, 5:30 to 7:00 PM at Hemlock Park &bull; Coordination through the Eagles Parents group</footer>
+
+<script>
+  var roster=[
+    {n:"Aiden M.",p:"FWD",age:11,g:9,a:4},{n:"Lucas R.",p:"MID",age:12,g:6,a:7},
+    {n:"Mateo S.",p:"DEF",age:10,g:1,a:2},{n:"Noah K.",p:"FWD",age:11,g:8,a:3},
+    {n:"Eli T.",p:"GK",age:12,g:0,a:0},{n:"Owen B.",p:"MID",age:10,g:4,a:5},
+    {n:"Jayden H.",p:"DEF",age:11,g:2,a:1},{n:"Caleb F.",p:"FWD",age:12,g:7,a:6},
+    {n:"Diego A.",p:"MID",age:10,g:3,a:4},{n:"Hassan Z.",p:"DEF",age:11,g:1,a:0},
+    {n:"Liam P.",p:"FWD",age:12,g:5,a:2},{n:"Ethan G.",p:"MID",age:10,g:2,a:3},
+    {n:"Sami D.",p:"DEF",age:11,g:0,a:1},{n:"Ryan C.",p:"FWD",age:12,g:4,a:2},
+    {n:"Omar Y.",p:"GK",age:10,g:0,a:0},{n:"Tariq N.",p:"MID",age:11,g:3,a:5}
+  ];
+  var fixtures=[
+    {d:"Oct 1",o:"Season opener practice",t:"H",w:"5:30 PM, Hemlock Park"},
+    {d:"Oct 3",o:"vs Westside United",t:"H",w:"9:00 AM, Hemlock Park"},
+    {d:"Oct 10",o:"vs Lincoln Park Strikers",t:"A",w:"10:00 AM, away"},
+    {d:"Oct 17",o:"vs Allen Park Comets",t:"H",w:"9:00 AM, Hemlock Park"},
+    {d:"Oct 24",o:"vs Taylor Thunder",t:"A",w:"10:00 AM, away"},
+    {d:"Oct 31",o:"vs Wyandotte Wave",t:"H",w:"9:00 AM, Hemlock Park"}
+  ];
+  // roster table
+  var rb=document.getElementById('rosterBody');
+  roster.forEach(function(r){
+    rb.innerHTML+="<tr><td>"+r.n+"</td><td>"+r.p+"</td><td class='num'>"+r.age+"</td><td class='num'>"+r.g+"</td><td class='num'>"+r.a+"</td></tr>";
+  });
+  // schedule
+  var sc=document.getElementById('sched');
+  fixtures.forEach(function(f){
+    var tag=f.t==="H"?"<span class='tagH'>HOME</span>":"<span class='tagA'>AWAY</span>";
+    sc.innerHTML+="<li><div><b>"+f.o+"</b><div class='when'>"+f.w+"</div></div><div style='text-align:right'><div>"+f.d+"</div>"+tag+"</div></li>";
+  });
+  // bars
+  function setMetric(m,el){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+    if(el)el.classList.add('active');
+    var data=roster.slice().sort(function(x,y){return (m==='g'?y.g-x.g:y.a-x.a)}).slice(0,7);
+    var max=Math.max.apply(null,data.map(function(d){return m==='g'?d.g:d.a}));
+    var html="";
+    data.forEach(function(d){
+      var val=m==='g'?d.g:d.a;
+      html+="<div class='bar-row'><span class='nm'>"+d.n+"</span><div class='track'><div class='fill "+(m==='a'?'a':'')+"' data-w='"+(val/max*100)+"'></div></div><span class='vv'>"+val+"</span></div>";
+    });
+    document.getElementById('bars').innerHTML=html;
+    requestAnimationFrame(function(){
+      document.querySelectorAll('#bars .fill').forEach(function(f){f.style.width=f.dataset.w+"%"});
+    });
+  }
+  setMetric('g',null);
+  setTimeout(function(){document.getElementById('goalbar').style.width="78%"},250);
+</script>
+</body>
+</html>
