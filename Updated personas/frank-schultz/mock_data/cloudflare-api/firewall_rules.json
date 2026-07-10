@@ -1,0 +1,202 @@
+[
+  {
+    "id": "fw0001fai",
+    "zone_id": "zone-MCWC Chronic Pain Program-ai-0001",
+    "description": "Block known bad bot user agents",
+    "action": "block",
+    "expression": "(cf.person.bot)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-02-01T08:00:00Z"
+  },
+  {
+    "id": "fw0002fai",
+    "zone_id": "zone-MCWC Chronic Pain Program-ai-0001",
+    "description": "Rate limit login endpoint",
+    "action": "challenge",
+    "expression": "(http.request.uri.path eq \"/auth/login\")",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0003fai",
+    "zone_id": "zone-MCWC Chronic Pain Program-ai-0001",
+    "description": "Block SQL injection attempts",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"SELECT\" or http.request.uri.query contains \"UNION\")",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2023-02-15T08:00:00Z"
+  },
+  {
+    "id": "fw0004api",
+    "zone_id": "zone-MCWC Chronic Pain Program-api-0003",
+    "description": "Require API key header",
+    "action": "block",
+    "expression": "(not http.request.headers[\"x-api-key\"] ne \"\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0005api",
+    "zone_id": "zone-MCWC Chronic Pain Program-api-0003",
+    "description": "Block non-US traffic to internal API",
+    "action": "challenge",
+    "expression": "(ip.geoip.country ne \"US\")",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2024-01-10T08:00:00Z"
+  },
+  {
+    "id": "fw0006app",
+    "zone_id": "zone-MCWC Chronic Pain Program-app-0002",
+    "description": "Block credential stuffing pattern",
+    "action": "managed_challenge",
+    "expression": "(http.request.method eq \"POST\" and http.request.uri.path contains \"/login\" and cf.threat_score gt 10)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-15T08:00:00Z"
+  },
+  {
+    "id": "fw0007app",
+    "zone_id": "zone-MCWC Chronic Pain Program-app-0002",
+    "description": "Allow known IP ranges - Bitterroot Rehab office",
+    "action": "allow",
+    "expression": "(ip.src.country eq \"US\" and not cf.person.bot)",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0008brh",
+    "zone_id": "zone-bitterroot-org-0009",
+    "description": "Block bad bot traffic on participant portal",
+    "action": "block",
+    "expression": "(cf.person.bot and http.request.uri.path contains \"/portal\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2022-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0009stg",
+    "zone_id": "zone-MCWC Chronic Pain Program-stg-0005",
+    "description": "Block all non-MCWC Chronic Pain Program IPs from staging",
+    "action": "block",
+    "expression": "(ip.src.country ne \"US\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0010fai",
+    "zone_id": "zone-MCWC Chronic Pain Program-ai-0001",
+    "description": "Block XSS attempt patterns",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"<script>\" or http.request.body contains \"<script>\")",
+    "paused": "false",
+    "priority": "4",
+    "created_on": "2023-02-01T08:00:00Z"
+  },
+  {
+    "id": "fw0011auth",
+    "zone_id": "zone-MCWC Chronic Pain Program-auth-0014",
+    "description": "Managed challenge on auth endpoints",
+    "action": "managed_challenge",
+    "expression": "(cf.threat_score gt 5)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-10T08:00:00Z"
+  },
+  {
+    "id": "fw0012auth",
+    "zone_id": "zone-MCWC Chronic Pain Program-auth-0014",
+    "description": "Block TOR exit nodes",
+    "action": "block",
+    "expression": "(ip.src.is_in_european_union eq false and cf.threat_score gt 30)",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0013portal",
+    "zone_id": "zone-MCWC Chronic Pain Program-portal-0013",
+    "description": "Rate limit participant portal login",
+    "action": "challenge",
+    "expression": "(http.request.uri.path eq \"/login\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-15T08:00:00Z"
+  },
+  {
+    "id": "fw0014fio",
+    "zone_id": "zone-frankschultz-io-0011",
+    "description": "Block comment spam bots",
+    "action": "block",
+    "expression": "(cf.person.bot and http.request.method eq \"POST\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2024-03-15T08:00:00Z"
+  },
+  {
+    "id": "fw0015ppp",
+    "zone_id": "zone-painpacingpro-0012",
+    "description": "Block high threat score requests",
+    "action": "managed_challenge",
+    "expression": "(cf.threat_score gt 20)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2024-03-05T08:00:00Z"
+  },
+  {
+    "id": "fw0016api",
+    "zone_id": "zone-MCWC Chronic Pain Program-api-0003",
+    "description": "Block large payload attacks",
+    "action": "block",
+    "expression": "(http.request.body.size gt 1000000)",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2024-02-01T08:00:00Z"
+  },
+  {
+    "id": "fw0017app",
+    "zone_id": "zone-MCWC Chronic Pain Program-app-0002",
+    "description": "Block file inclusion attempts",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"../\" or http.request.uri.path contains \"..\\\\\")",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2023-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0018brh",
+    "zone_id": "zone-bitterroot-org-0009",
+    "description": "Challenge high threat traffic",
+    "action": "challenge",
+    "expression": "(cf.threat_score gt 15)",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2022-03-01T08:00:00Z"
+  },
+  {
+    "id": "fw0019fai",
+    "zone_id": "zone-MCWC Chronic Pain Program-ai-0001",
+    "description": "Security headers enforcement check",
+    "action": "log",
+    "expression": "(not http.request.headers[\"x-forwarded-for\"] ne \"\")",
+    "paused": "true",
+    "priority": "5",
+    "created_on": "2025-01-01T08:00:00Z"
+  },
+  {
+    "id": "fw0020cdn",
+    "zone_id": "zone-MCWC Chronic Pain Program-cdn-0016",
+    "description": "Block hotlinking from unknown origins",
+    "action": "block",
+    "expression": "(http.referer ne \"\" and not http.referer contains \"finthesiss.ai\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2023-03-10T08:00:00Z"
+  }
+]

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hot Line Board</title>
+<style>
+  :root{--bg:#10141c;--panel:#171d28;--line:#26303f;--ink:#e9eef5;--mut:#8c9bb0;--hot:#e8743b;--cold:#3fa9c9;--grill:#d9a441;--prep:#6bbf73;--pastry:#b07fd1;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);padding:24px;line-height:1.45}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+  h1{font-size:22px;letter-spacing:.3px}
+  .sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .pill{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--mut)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .n{font-size:26px;font-weight:700}
+  .card .l{color:var(--mut);font-size:12px;margin-top:4px}
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:22px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;color:#0c0f15}
+  .off{color:var(--mut);font-style:italic}
+  .controls{margin:0 0 12px;display:flex;gap:8px;flex-wrap:wrap}
+  button{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+  button.active{background:var(--hot);border-color:var(--hot);color:#0c0f15;font-weight:700}
+  .bar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--hot),var(--grill))}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:10px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--hot);border-radius:8px;padding:14px;font-size:13px;color:#cdd7e3}
+  h2{font-size:14px;margin-bottom:10px;color:var(--ink)}
+  .row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .row .name{width:120px;font-size:12px}
+  .row .val{width:42px;text-align:right;font-size:12px;color:var(--mut)}
+  .track{flex:1;background:#0c0f15;border-radius:7px;overflow:hidden}
+  footer{color:var(--mut);font-size:11px;text-align:center;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Hot Line Board, Linden &amp; Rye</h1>
+      <div class="sub">Sous chef station planner, week of February 17, 2026, Tuesday to Saturday service</div>
+    </div>
+    <div class="pill">Maintained by Daniel Rodriguez</div>
+  </header>
+
+  <div class="kpis">
+    <div class="card"><div class="n">5</div><div class="l">Cooks on rotation</div></div>
+    <div class="card"><div class="n">239</div><div class="l">Scheduled labor hours</div></div>
+    <div class="card"><div class="n">48</div><div class="l">Duck taco specials, last weekend</div></div>
+    <div class="card"><div class="n">26%</div><div class="l">Target food cost</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Shift grid</h2>
+      <div class="controls" id="dayctl">
+        <button data-day="all" class="active">All days</button>
+        <button data-day="Tue">Tue</button><button data-day="Wed">Wed</button>
+        <button data-day="Thu">Thu</button><button data-day="Fri">Fri</button><button data-day="Sat">Sat</button>
+      </div>
+      <table id="grid">
+        <thead><tr><th>Cook</th><th class="d Tue">Tue</th><th class="d Wed">Wed</th><th class="d Thu">Thu</th><th class="d Fri">Fri</th><th class="d Sat">Sat</th><th>Station</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--hot)"></span>Hot line</span>
+        <span><span class="dot" style="background:var(--grill)"></span>Grill</span>
+        <span><span class="dot" style="background:var(--cold)"></span>Cold</span>
+        <span><span class="dot" style="background:var(--prep)"></span>Prep</span>
+        <span><span class="dot" style="background:var(--pastry)"></span>Pastry</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Weekly hours by cook</h2>
+      <div id="bars"></div>
+    </div>
+  </div>
+
+  <div class="note">
+    Duck taco test plating runs Friday and Saturday. Carlos delivers Thursday morning, six duck breasts held for the special. Brunch prep is heavy Saturday, so Tomas starts stocks early and Priya covers cold from open. Keep the smoke present but not aggressive.
+  </div>
+
+  <footer>Internal kitchen planner, not for service printout. Refreshed each Monday before the order goes to the supplier.</footer>
+</div>
+
+<script>
+  var station = {
+    "Daniel Rodriguez":["Hot line / expo","hot"],
+    "Marcus Bell":["Grill / saute","grill"],
+    "Priya Nair":["Garde manger / cold","cold"],
+    "Tomas Reyes":["Prep / stocks","prep"],
+    "Aisha Okafor":["Pastry / desserts","pastry"]
+  };
+  var color={hot:"var(--hot)",grill:"var(--grill)",cold:"var(--cold)",prep:"var(--prep)",pastry:"var(--pastry)"};
+  var sched = {
+    "Daniel Rodriguez":{Tue:"2:00p",Wed:"2:00p",Thu:"1:00p",Fri:"1:00p",Sat:"1:00p"},
+    "Marcus Bell":{Tue:"2:30p",Wed:"2:30p",Thu:"2:00p",Fri:"1:30p",Sat:"1:30p"},
+    "Priya Nair":{Tue:"1:00p",Wed:"OFF",Thu:"1:00p",Fri:"12:00p",Sat:"12:00p"},
+    "Tomas Reyes":{Tue:"1:00p",Wed:"1:00p",Thu:"OFF",Fri:"12:00p",Sat:"12:00p"},
+    "Aisha Okafor":{Tue:"OFF",Wed:"1:00p",Thu:"1:00p",Fri:"1:00p",Sat:"1:00p"}
+  };
+  var hours={"Daniel Rodriguez":53,"Marcus Bell":50,"Priya Nair":46,"Tomas Reyes":46,"Aisha Okafor":44};
+  var days=["Tue","Wed","Thu","Fri","Sat"];
+  var tb=document.querySelector("#grid tbody");
+  Object.keys(sched).forEach(function(name){
+    var st=station[name]; var tr=document.createElement("tr");
+    var cells="<td>"+name+"</td>";
+    days.forEach(function(d){
+      var v=sched[name][d];
+      if(v==="OFF") cells+='<td class="cell '+d+' off">off</td>';
+      else cells+='<td class="cell '+d+'"><span class="tag" style="background:'+color[st[1]]+'">'+v+'</span></td>';
+    });
+    cells+="<td>"+st[0]+"</td>";
+    tr.innerHTML=cells; tb.appendChild(tr);
+  });
+  var bars=document.getElementById("bars"); var max=Math.max.apply(null,Object.values(hours));
+  Object.keys(hours).forEach(function(name){
+    var pct=Math.round(hours[name]/max*100);
+    var div=document.createElement("div"); div.className="row";
+    div.innerHTML='<div class="name">'+name.split(" ")[0]+'</div><div class="track"><div class="bar" style="width:'+pct+'%"></div></div><div class="val">'+hours[name]+'h</div>';
+    bars.appendChild(div);
+  });
+  document.getElementById("dayctl").addEventListener("click",function(e){
+    if(e.target.tagName!=="BUTTON") return;
+    var day=e.target.getAttribute("data-day");
+    this.querySelectorAll("button").forEach(function(b){b.classList.remove("active")});
+    e.target.classList.add("active");
+    days.forEach(function(d){
+      var show=(day==="all"||day===d);
+      document.querySelectorAll("."+d).forEach(function(c){c.style.display=show?"":"none"});
+    });
+  });
+</script>
+</body>
+</html>

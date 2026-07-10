@@ -1,0 +1,1100 @@
+[
+  {
+    "id": "t1_c001",
+    "post_id": "t3_p001",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "sync.Pool earns its keep when you have lots of short-lived same-size buffers in a hot path. JSON encoders and bytes.Buffer are the classic wins.",
+    "score": "188",
+    "created_utc": "1755803600"
+  },
+  {
+    "id": "t1_c002",
+    "post_id": "t3_p001",
+    "parent_id": "t1_c001",
+    "author": "jmurray_dev",
+    "body": "That matches what I'm seeing. Pooling the encode buffers dropped allocs per request hard. Anything with variable size I left alone.",
+    "score": "96",
+    "created_utc": "1755807200"
+  },
+  {
+    "id": "t1_c003",
+    "post_id": "t3_p001",
+    "parent_id": "t3_p001",
+    "author": "context_deadline",
+    "body": "Benchmark with and without before you commit. Half the time the pool is noise and you just added a footgun for the next reader.",
+    "score": "74",
+    "created_utc": "1755811000"
+  },
+  {
+    "id": "t1_c004",
+    "post_id": "t3_p002",
+    "parent_id": "t3_p002",
+    "author": "etcd_anxiety",
+    "body": "Same here. Typed result wrappers and numeric constraints stuck. Tried a generic repository layer and ripped it out within a month.",
+    "score": "112",
+    "created_utc": "1758205000"
+  },
+  {
+    "id": "t1_c005",
+    "post_id": "t3_p002",
+    "parent_id": "t1_c004",
+    "author": "jmurray_dev",
+    "body": "The generic repo trap got me too. An interface plus three concrete impls read better than one clever generic one.",
+    "score": "143",
+    "created_utc": "1758209000"
+  },
+  {
+    "id": "t1_c006",
+    "post_id": "t3_p003",
+    "parent_id": "t3_p003",
+    "author": "selfhost_sam",
+    "body": "Just spun this up behind my reverse proxy. Import from a Pocket export worked first try. Nicely boring in the best way.",
+    "score": "61",
+    "created_utc": "1771206000"
+  },
+  {
+    "id": "t1_c007",
+    "post_id": "t3_p003",
+    "parent_id": "t1_c006",
+    "author": "jmurray_dev",
+    "body": "Appreciate it. The importer was the part I sweated most, so that's good to hear. Single binary plus Postgres, nothing fancy.",
+    "score": "88",
+    "created_utc": "1771209600"
+  },
+  {
+    "id": "t1_c008",
+    "post_id": "t3_p003",
+    "parent_id": "t3_p003",
+    "author": "etcd_anxiety",
+    "body": "Been waiting for a Go-based read-it-later that isn't abandoned. Starred. Does it do full-text search on saved articles?",
+    "score": "47",
+    "created_utc": "1771213000"
+  },
+  {
+    "id": "t1_c009",
+    "post_id": "t3_p004",
+    "parent_id": "t3_p004",
+    "author": "goroutine_grace",
+    "body": "errgroup with context is the right default. You only hand-roll a WaitGroup when you genuinely don't care about the first error.",
+    "score": "97",
+    "created_utc": "1763104000"
+  },
+  {
+    "id": "t1_c010",
+    "post_id": "t3_p004",
+    "parent_id": "t1_c009",
+    "author": "jmurray_dev",
+    "body": "And errgroup.SetLimit covers the case people used to reach for a semaphore channel for. Standardizing on it was the right call for us.",
+    "score": "64",
+    "created_utc": "1763108000"
+  },
+  {
+    "id": "t1_c011",
+    "post_id": "t3_p005",
+    "parent_id": "t3_p005",
+    "author": "context_deadline",
+    "body": "Table-driven plus t.Parallel inside the subtest is the combo. Just remember to capture the loop variable or you'll chase ghosts.",
+    "score": "58",
+    "created_utc": "1766404000"
+  },
+  {
+    "id": "t1_c012",
+    "post_id": "t3_p005",
+    "parent_id": "t1_c011",
+    "author": "yaml_wrangler",
+    "body": "Good callout. Go 1.22 fixed the loop var sharp edge so newer code is safer, but worth knowing if you're on an older toolchain.",
+    "score": "33",
+    "created_utc": "1766408000"
+  },
+  {
+    "id": "t1_c013",
+    "post_id": "t3_p006",
+    "parent_id": "t3_p006",
+    "author": "cablechaos",
+    "body": "Cable management is genuinely the hardest 80% of a clean rack. Looks great. What did you use for the velcro runs?",
+    "score": "120",
+    "created_utc": "1756404000"
+  },
+  {
+    "id": "t1_c014",
+    "post_id": "t3_p006",
+    "parent_id": "t1_c013",
+    "author": "rackmonkey",
+    "body": "Velcro ties and a horizontal cable manager every couple U. Took an afternoon but worth a year of guilt.",
+    "score": "76",
+    "created_utc": "1756408000"
+  },
+  {
+    "id": "t1_c015",
+    "post_id": "t3_p007",
+    "parent_id": "t3_p007",
+    "author": "proxmox_pat",
+    "body": "Single NUC running k3s is so underrated. People overbuild for a homelab and then never touch it. Whole-stack idle draw on this?",
+    "score": "84",
+    "created_utc": "1768903600"
+  },
+  {
+    "id": "t1_c016",
+    "post_id": "t3_p007",
+    "parent_id": "t1_c015",
+    "author": "jmurray_dev",
+    "body": "Sits around 12W idle. It hosts Ridgeline and a status dashboard and barely notices. Quiet enough to live on my desk.",
+    "score": "59",
+    "created_utc": "1768907200"
+  },
+  {
+    "id": "t1_c017",
+    "post_id": "t3_p007",
+    "parent_id": "t3_p007",
+    "author": "selfhost_sam",
+    "body": "k3s on a NUC is my exact recommendation for anyone starting out. You learn real Kubernetes without the power bill of a rack.",
+    "score": "71",
+    "created_utc": "1768911000"
+  },
+  {
+    "id": "t1_c018",
+    "post_id": "t3_p008",
+    "parent_id": "t3_p008",
+    "author": "rackmonkey",
+    "body": "The unlabeled patch panel at 1am is a rite of passage nobody asks for. Label maker is the cheapest sanity you can buy.",
+    "score": "65",
+    "created_utc": "1760304000"
+  },
+  {
+    "id": "t1_c019",
+    "post_id": "t3_p009",
+    "parent_id": "t3_p009",
+    "author": "jmurray_dev",
+    "body": "For a Postgres lab the power-loss protection is worth it. Refurb enterprise with high TBW left has been rock solid for me, fsync stays honest.",
+    "score": "52",
+    "created_utc": "1773603600"
+  },
+  {
+    "id": "t1_c020",
+    "post_id": "t3_p009",
+    "parent_id": "t1_c019",
+    "author": "proxmox_pat",
+    "body": "That's the nudge I needed. Consumer NVMe lying about flushes is exactly what I was worried about. Going refurb enterprise.",
+    "score": "29",
+    "created_utc": "1773607200"
+  },
+  {
+    "id": "t1_c021",
+    "post_id": "t3_p010",
+    "parent_id": "t3_p010",
+    "author": "cablechaos",
+    "body": "Kill A Watt is the most eye-opening 30 dollars in this hobby. Nostalgia towers are almost always the hidden power hog.",
+    "score": "48",
+    "created_utc": "1779003600"
+  },
+  {
+    "id": "t1_c022",
+    "post_id": "t3_p011",
+    "parent_id": "t3_p011",
+    "author": "keebmaker_pnw",
+    "body": "Clean first solder build. Lubed linears in a gasket case is peak quiet. Which switches and what lube did you use?",
+    "score": "133",
+    "created_utc": "1757703600"
+  },
+  {
+    "id": "t1_c023",
+    "post_id": "t3_p011",
+    "parent_id": "t1_c022",
+    "author": "jmurray_dev",
+    "body": "Linears hand-lubed with 205g0. Tedious but it's the difference maker. PE foam under the plate took the last bit of ping out.",
+    "score": "97",
+    "created_utc": "1757707200"
+  },
+  {
+    "id": "t1_c024",
+    "post_id": "t3_p011",
+    "parent_id": "t3_p011",
+    "author": "soldered_switches",
+    "body": "Hand-lubing your first set is a labor of love and you can hear it. Looks great, congrats on the solder build.",
+    "score": "54",
+    "created_utc": "1757711000"
+  },
+  {
+    "id": "t1_c025",
+    "post_id": "t3_p012",
+    "parent_id": "t3_p012",
+    "author": "soldered_switches",
+    "body": "Eleven months is practically on time for a GB these days. Those legends are gorgeous though. Doubleshot PBT?",
+    "score": "61",
+    "created_utc": "1761503600"
+  },
+  {
+    "id": "t1_c026",
+    "post_id": "t3_p013",
+    "parent_id": "t3_p013",
+    "author": "jmurray_dev",
+    "body": "Tape mod plus one PE foam layer is the best zero-dollar upgrade in the hobby. Did the same to a budget board and barely recognized it.",
+    "score": "70",
+    "created_utc": "1770003600"
+  },
+  {
+    "id": "t1_c027",
+    "post_id": "t3_p013",
+    "parent_id": "t1_c026",
+    "author": "keebmaker_pnw",
+    "body": "Agreed, just don't stack too many foam layers or it goes dead and muffled. One PE layer is the sweet spot.",
+    "score": "31",
+    "created_utc": "1770007200"
+  },
+  {
+    "id": "t1_c028",
+    "post_id": "t3_p014",
+    "parent_id": "t3_p014",
+    "author": "keebmaker_pnw",
+    "body": "Lubed tactiles or quiet linears land in that gap. Not mushy like silents but won't carry across an open office.",
+    "score": "44",
+    "created_utc": "1782003600"
+  },
+  {
+    "id": "t1_c029",
+    "post_id": "t3_p014",
+    "parent_id": "t1_c028",
+    "author": "jmurray_dev",
+    "body": "Seconding lubed linears in a quiet case. I type next to coworkers daily and nobody has complained. Silents always felt dead to me too.",
+    "score": "38",
+    "created_utc": "1782007200"
+  },
+  {
+    "id": "t1_c030",
+    "post_id": "t3_p015",
+    "parent_id": "t3_p015",
+    "author": "rainier_rider",
+    "body": "Naan and Curry near Pine is my answer every time. The garlic naan alone wins the argument. Downtown is overrated for this.",
+    "score": "57",
+    "created_utc": "1759503600"
+  },
+  {
+    "id": "t1_c031",
+    "post_id": "t3_p015",
+    "parent_id": "t1_c030",
+    "author": "jmurray_dev",
+    "body": "That's the exact spot I had in mind. Telling my coworker the debate is settled. Garlic naan is non-negotiable.",
+    "score": "41",
+    "created_utc": "1759507200"
+  },
+  {
+    "id": "t1_c032",
+    "post_id": "t3_p015",
+    "parent_id": "t3_p015",
+    "author": "emerald_city_dev",
+    "body": "Controversial but the downtown place uses too much cream for me. Capitol Hill spots hit the spice better.",
+    "score": "22",
+    "created_utc": "1759511000"
+  },
+  {
+    "id": "t1_c033",
+    "post_id": "t3_p016",
+    "parent_id": "t3_p016",
+    "author": "emerald_city_dev",
+    "body": "Completely changed my weekends. I take the train to trailheads up north now instead of fighting I-5 parking.",
+    "score": "68",
+    "created_utc": "1764803600"
+  },
+  {
+    "id": "t1_c034",
+    "post_id": "t3_p016",
+    "parent_id": "t1_c033",
+    "author": "rainier_rider",
+    "body": "Exactly this. Light rail plus a short bus and I'm at the trail without ever touching my car. Game changer.",
+    "score": "35",
+    "created_utc": "1764807200"
+  },
+  {
+    "id": "t1_c035",
+    "post_id": "t3_p017",
+    "parent_id": "t3_p017",
+    "author": "jmurray_dev",
+    "body": "Run this stretch most Saturday mornings. On a clear day with the mountain out it really doesn't get old. Nice shot.",
+    "score": "62",
+    "created_utc": "1774803600"
+  },
+  {
+    "id": "t1_c036",
+    "post_id": "t3_p017",
+    "parent_id": "t1_c035",
+    "author": "emerald_city_dev",
+    "body": "Caught it right after sunrise before the bike traffic picked up. Worth the early alarm.",
+    "score": "28",
+    "created_utc": "1774807200"
+  },
+  {
+    "id": "t1_c037",
+    "post_id": "t3_p018",
+    "parent_id": "t3_p018",
+    "author": "rackmonkey",
+    "body": "Be at the lot by 7:30 on a fall Saturday or you'll circle. By 9 it's full and people park along the road for a mile.",
+    "score": "40",
+    "created_utc": "1785603600"
+  },
+  {
+    "id": "t1_c038",
+    "post_id": "t3_p019",
+    "parent_id": "t3_p019",
+    "author": "jmurray_dev",
+    "body": "Boring and reliable is exactly the right framing for backups. 3-2-1, automated, and tested restores. The untested backup doesn't exist.",
+    "score": "91",
+    "created_utc": "1758803600"
+  },
+  {
+    "id": "t1_c039",
+    "post_id": "t3_p019",
+    "parent_id": "t1_c038",
+    "author": "selfhost_sam",
+    "body": "The tested-restore line is the whole point. Half the people with backups have never actually restored one. Glad it landed.",
+    "score": "53",
+    "created_utc": "1758807200"
+  },
+  {
+    "id": "t1_c040",
+    "post_id": "t3_p020",
+    "parent_id": "t3_p020",
+    "author": "jmurray_dev",
+    "body": "Built one for exactly this reason after Pocket. Ridgeline is Go plus Postgres, single binary, self-hostable. Link's in my post history if useful.",
+    "score": "77",
+    "created_utc": "1776703600"
+  },
+  {
+    "id": "t1_c041",
+    "post_id": "t3_p020",
+    "parent_id": "t1_c040",
+    "author": "etcd_anxiety",
+    "body": "That's the one I ended up on actually. The Pocket import was painless. Exactly the low-maintenance Go option I was hoping existed.",
+    "score": "44",
+    "created_utc": "1776707200"
+  },
+  {
+    "id": "t1_c042",
+    "post_id": "t3_p020",
+    "parent_id": "t3_p020",
+    "author": "yaml_wrangler",
+    "body": "Wallabag is the usual answer but it's PHP and heavier than I want. Keen to try the Go alternatives in this thread.",
+    "score": "26",
+    "created_utc": "1776711000"
+  },
+  {
+    "id": "t1_c043",
+    "post_id": "t3_p021",
+    "parent_id": "t3_p021",
+    "author": "jmurray_dev",
+    "body": "Automatic TLS behind one reverse proxy was the moment self-hosting stopped being a chore for me. No more cert renewal cron jobs at 2am.",
+    "score": "83",
+    "created_utc": "1781003600"
+  },
+  {
+    "id": "t1_c044",
+    "post_id": "t3_p021",
+    "parent_id": "t1_c043",
+    "author": "proxmox_pat",
+    "body": "Same realization here. Wildcard cert via DNS challenge and I never think about renewals again. Should have done it years ago.",
+    "score": "37",
+    "created_utc": "1781007200"
+  },
+  {
+    "id": "t1_c045",
+    "post_id": "t3_p022",
+    "parent_id": "t3_p022",
+    "author": "jmurray_dev",
+    "body": "Stuck finalizer is almost always it. kubectl patch to drop the finalizer unsticks it, but figure out why the controller never cleared it.",
+    "score": "104",
+    "created_utc": "1762003600"
+  },
+  {
+    "id": "t1_c046",
+    "post_id": "t3_p022",
+    "parent_id": "t1_c045",
+    "author": "yaml_wrangler",
+    "body": "Yep, force-patching the finalizer was the unstick. The real fix was reinstalling the CRD's controller so cleanup actually ran. Thanks for writing it up.",
+    "score": "47",
+    "created_utc": "1762007200"
+  },
+  {
+    "id": "t1_c047",
+    "post_id": "t3_p022",
+    "parent_id": "t3_p022",
+    "author": "context_deadline",
+    "body": "Always uninstall the controller before deleting the CRD, not after. Learned that one the same painful way.",
+    "score": "39",
+    "created_utc": "1762011000"
+  },
+  {
+    "id": "t1_c048",
+    "post_id": "t3_p023",
+    "parent_id": "t3_p023",
+    "author": "etcd_anxiety",
+    "body": "For a small team, plain Services plus good metrics and tracing gets you 90% of the value. Mesh earns its cost around mTLS-everywhere or heavy traffic policy.",
+    "score": "88",
+    "created_utc": "1772403600"
+  },
+  {
+    "id": "t1_c049",
+    "post_id": "t3_p023",
+    "parent_id": "t1_c048",
+    "author": "jmurray_dev",
+    "body": "This. We held off on a mesh and just invested in observability. Haven't hit the wall where the YAML and sidecar overhead would pay for itself yet.",
+    "score": "66",
+    "created_utc": "1772407200"
+  },
+  {
+    "id": "t1_c050",
+    "post_id": "t3_p024",
+    "parent_id": "t3_p024",
+    "author": "goroutine_grace",
+    "body": "Startup probe plus a saner liveness timeout is the standard fix for GC pauses tripping it. Glad you wrote it down, people rediscover this constantly.",
+    "score": "72",
+    "created_utc": "1789303600"
+  },
+  {
+    "id": "t1_c051",
+    "post_id": "t3_p024",
+    "parent_id": "t1_c050",
+    "author": "jmurray_dev",
+    "body": "Exactly. The liveness probe was healthchecking during a stop-the-world pause and declaring it dead. Startup probe gave it room to warm up. Painful afternoon.",
+    "score": "58",
+    "created_utc": "1789306800"
+  },
+  {
+    "id": "t1_c052",
+    "post_id": "t3_p024",
+    "parent_id": "t3_p024",
+    "author": "proxmox_pat",
+    "body": "Tight liveness timeouts cause more outages than they prevent. Reserve liveness for true deadlock, use readiness for everything load-related.",
+    "score": "41",
+    "created_utc": "1789310000"
+  },
+  {
+    "id": "t1_c001-s0",
+    "post_id": "t3_p001",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Billing-service integration refactor is the sprint focus this week.",
+    "score": "188",
+    "created_utc": "1755807200"
+  },
+  {
+    "id": "t1_c001-s1",
+    "post_id": "t3_p002",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Pair-programmed the provisioning API with Priya over lunch.",
+    "score": "188",
+    "created_utc": "1755810800"
+  },
+  {
+    "id": "t1_c001-s2",
+    "post_id": "t3_p003",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "On-call rotation next week; reviewing runbooks and escalation paths.",
+    "score": "188",
+    "created_utc": "1755814400"
+  },
+  {
+    "id": "t1_c001-s3",
+    "post_id": "t3_p004",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Go is the daily driver, Python for the small tooling around it.",
+    "score": "188",
+    "created_utc": "1755818000"
+  },
+  {
+    "id": "t1_c001-s4",
+    "post_id": "t3_p005",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Squad shooter with Jake tonight, solo roguelike on the weekend.",
+    "score": "188",
+    "created_utc": "1755821600"
+  },
+  {
+    "id": "t1_c001-s5",
+    "post_id": "t3_p006",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cleaned the dust filters on the PC at 1 AM, evens out the day.",
+    "score": "188",
+    "created_utc": "1755825200"
+  },
+  {
+    "id": "t1_c001-s6",
+    "post_id": "t3_p007",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Sunday call with Dad in Sacramento, practical and warm as always.",
+    "score": "188",
+    "created_utc": "1755828800"
+  },
+  {
+    "id": "t1_c001-s7",
+    "post_id": "t3_p008",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mom's care package came — snacks and socks; answered 60% of her texts.",
+    "score": "188",
+    "created_utc": "1755832400"
+  },
+  {
+    "id": "t1_c001-s8",
+    "post_id": "t3_p009",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mia sent a meme and a track, roasting me with love as usual.",
+    "score": "188",
+    "created_utc": "1755836000"
+  },
+  {
+    "id": "t1_c001-s9",
+    "post_id": "t3_p010",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Marcus left good code-review feedback on the PR today.",
+    "score": "188",
+    "created_utc": "1755839600"
+  },
+  {
+    "id": "t1_c001-s10",
+    "post_id": "t3_p011",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Gym at Cascade Fitness before work — lift, then cardio.",
+    "score": "188",
+    "created_utc": "1755843200"
+  },
+  {
+    "id": "t1_c001-s11",
+    "post_id": "t3_p012",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Saturday run on the Burke-Gilman if the weather holds.",
+    "score": "188",
+    "created_utc": "1755846800"
+  },
+  {
+    "id": "t1_c001-s12",
+    "post_id": "t3_p013",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Stir-fry tonight; texted Mom for the mac and cheese clarification.",
+    "score": "188",
+    "created_utc": "1755850400"
+  },
+  {
+    "id": "t1_c001-s13",
+    "post_id": "t3_p014",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cold brew from Elm Coffee, one at home and one at the office.",
+    "score": "188",
+    "created_utc": "1755854000"
+  },
+  {
+    "id": "t1_c001-s14",
+    "post_id": "t3_p015",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Half-built side project in Notion, abandoned right as it got good.",
+    "score": "188",
+    "created_utc": "1755857600"
+  },
+  {
+    "id": "t1_c001-s15",
+    "post_id": "t3_p016",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "IPA Friday with Jake at Pike Street Grill.",
+    "score": "188",
+    "created_utc": "1755861200"
+  },
+  {
+    "id": "t1_c001-s16",
+    "post_id": "t3_p017",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Terraform and Docker changes merged, Kubernetes rollout clean.",
+    "score": "188",
+    "created_utc": "1755864800"
+  },
+  {
+    "id": "t1_c001-s17",
+    "post_id": "t3_p018",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Reading Designing Data-Intensive Applications on the bus.",
+    "score": "188",
+    "created_utc": "1755868400"
+  },
+  {
+    "id": "t1_c001-s18",
+    "post_id": "t3_p019",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Equity unlocks around August, the one-year mark at Ridgeline.",
+    "score": "188",
+    "created_utc": "1755872000"
+  },
+  {
+    "id": "t1_c001-s19",
+    "post_id": "t3_p020",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Day hike in the Cascades planned if the forecast cooperates.",
+    "score": "188",
+    "created_utc": "1755875600"
+  },
+  {
+    "id": "t1_c001-s20",
+    "post_id": "t3_p021",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Lo-fi playlist for focus; I refuse to share the decompression one.",
+    "score": "188",
+    "created_utc": "1755879200"
+  },
+  {
+    "id": "t1_c001-s21",
+    "post_id": "t3_p022",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Leo pinged on Discord with a tech article and a voice chat.",
+    "score": "188",
+    "created_utc": "1755882800"
+  },
+  {
+    "id": "t1_c001-s22",
+    "post_id": "t3_p023",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Naan and Curry for dinner — chicken tikka and garlic naan.",
+    "score": "188",
+    "created_utc": "1755886400"
+  },
+  {
+    "id": "t1_c001-s23",
+    "post_id": "t3_p024",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Planning the Japan trip to meet extended family, finally.",
+    "score": "188",
+    "created_utc": "1755890000"
+  },
+  {
+    "id": "t1_c001-s24",
+    "post_id": "t3_p001",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Billing-service integration refactor is the sprint focus this week. (2)",
+    "score": "188",
+    "created_utc": "1755893600"
+  },
+  {
+    "id": "t1_c001-s25",
+    "post_id": "t3_p002",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Pair-programmed the provisioning API with Priya over lunch. (2)",
+    "score": "188",
+    "created_utc": "1755897200"
+  },
+  {
+    "id": "t1_c001-s26",
+    "post_id": "t3_p003",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "On-call rotation next week; reviewing runbooks and escalation paths. (2)",
+    "score": "188",
+    "created_utc": "1755900800"
+  },
+  {
+    "id": "t1_c001-s27",
+    "post_id": "t3_p004",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Go is the daily driver, Python for the small tooling around it. (2)",
+    "score": "188",
+    "created_utc": "1755904400"
+  },
+  {
+    "id": "t1_c001-s28",
+    "post_id": "t3_p005",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Squad shooter with Jake tonight, solo roguelike on the weekend. (2)",
+    "score": "188",
+    "created_utc": "1755908000"
+  },
+  {
+    "id": "t1_c001-s29",
+    "post_id": "t3_p006",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cleaned the dust filters on the PC at 1 AM, evens out the day. (2)",
+    "score": "188",
+    "created_utc": "1755911600"
+  },
+  {
+    "id": "t1_c001-s30",
+    "post_id": "t3_p007",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Sunday call with Dad in Sacramento, practical and warm as always. (2)",
+    "score": "188",
+    "created_utc": "1755915200"
+  },
+  {
+    "id": "t1_c001-s31",
+    "post_id": "t3_p008",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mom's care package came — snacks and socks; answered 60% of her texts. (2)",
+    "score": "188",
+    "created_utc": "1755918800"
+  },
+  {
+    "id": "t1_c001-s32",
+    "post_id": "t3_p009",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mia sent a meme and a track, roasting me with love as usual. (2)",
+    "score": "188",
+    "created_utc": "1755922400"
+  },
+  {
+    "id": "t1_c001-s33",
+    "post_id": "t3_p010",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Marcus left good code-review feedback on the PR today. (2)",
+    "score": "188",
+    "created_utc": "1755926000"
+  },
+  {
+    "id": "t1_c001-s34",
+    "post_id": "t3_p011",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Gym at Cascade Fitness before work — lift, then cardio. (2)",
+    "score": "188",
+    "created_utc": "1755929600"
+  },
+  {
+    "id": "t1_c001-s35",
+    "post_id": "t3_p012",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Saturday run on the Burke-Gilman if the weather holds. (2)",
+    "score": "188",
+    "created_utc": "1755933200"
+  },
+  {
+    "id": "t1_c001-s36",
+    "post_id": "t3_p013",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Stir-fry tonight; texted Mom for the mac and cheese clarification. (2)",
+    "score": "188",
+    "created_utc": "1755936800"
+  },
+  {
+    "id": "t1_c001-s37",
+    "post_id": "t3_p014",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cold brew from Elm Coffee, one at home and one at the office. (2)",
+    "score": "188",
+    "created_utc": "1755940400"
+  },
+  {
+    "id": "t1_c001-s38",
+    "post_id": "t3_p015",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Half-built side project in Notion, abandoned right as it got good. (2)",
+    "score": "188",
+    "created_utc": "1755944000"
+  },
+  {
+    "id": "t1_c001-s39",
+    "post_id": "t3_p016",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "IPA Friday with Jake at Pike Street Grill. (2)",
+    "score": "188",
+    "created_utc": "1755947600"
+  },
+  {
+    "id": "t1_c001-s40",
+    "post_id": "t3_p017",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Terraform and Docker changes merged, Kubernetes rollout clean. (2)",
+    "score": "188",
+    "created_utc": "1755951200"
+  },
+  {
+    "id": "t1_c001-s41",
+    "post_id": "t3_p018",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Reading Designing Data-Intensive Applications on the bus. (2)",
+    "score": "188",
+    "created_utc": "1755954800"
+  },
+  {
+    "id": "t1_c001-s42",
+    "post_id": "t3_p019",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Equity unlocks around August, the one-year mark at Ridgeline. (2)",
+    "score": "188",
+    "created_utc": "1755958400"
+  },
+  {
+    "id": "t1_c001-s43",
+    "post_id": "t3_p020",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Day hike in the Cascades planned if the forecast cooperates. (2)",
+    "score": "188",
+    "created_utc": "1755962000"
+  },
+  {
+    "id": "t1_c001-s44",
+    "post_id": "t3_p021",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Lo-fi playlist for focus; I refuse to share the decompression one. (2)",
+    "score": "188",
+    "created_utc": "1755965600"
+  },
+  {
+    "id": "t1_c001-s45",
+    "post_id": "t3_p022",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Leo pinged on Discord with a tech article and a voice chat. (2)",
+    "score": "188",
+    "created_utc": "1755969200"
+  },
+  {
+    "id": "t1_c001-s46",
+    "post_id": "t3_p023",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Naan and Curry for dinner — chicken tikka and garlic naan. (2)",
+    "score": "188",
+    "created_utc": "1755972800"
+  },
+  {
+    "id": "t1_c001-s47",
+    "post_id": "t3_p024",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Planning the Japan trip to meet extended family, finally. (2)",
+    "score": "188",
+    "created_utc": "1755976400"
+  },
+  {
+    "id": "t1_c001-s48",
+    "post_id": "t3_p001",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Billing-service integration refactor is the sprint focus this week. (3)",
+    "score": "188",
+    "created_utc": "1755980000"
+  },
+  {
+    "id": "t1_c001-s49",
+    "post_id": "t3_p002",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Pair-programmed the provisioning API with Priya over lunch. (3)",
+    "score": "188",
+    "created_utc": "1755983600"
+  },
+  {
+    "id": "t1_c001-s50",
+    "post_id": "t3_p003",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "On-call rotation next week; reviewing runbooks and escalation paths. (3)",
+    "score": "188",
+    "created_utc": "1755987200"
+  },
+  {
+    "id": "t1_c001-s51",
+    "post_id": "t3_p004",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Go is the daily driver, Python for the small tooling around it. (3)",
+    "score": "188",
+    "created_utc": "1755990800"
+  },
+  {
+    "id": "t1_c001-s52",
+    "post_id": "t3_p005",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Squad shooter with Jake tonight, solo roguelike on the weekend. (3)",
+    "score": "188",
+    "created_utc": "1755994400"
+  },
+  {
+    "id": "t1_c001-s53",
+    "post_id": "t3_p006",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cleaned the dust filters on the PC at 1 AM, evens out the day. (3)",
+    "score": "188",
+    "created_utc": "1755998000"
+  },
+  {
+    "id": "t1_c001-s54",
+    "post_id": "t3_p007",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Sunday call with Dad in Sacramento, practical and warm as always. (3)",
+    "score": "188",
+    "created_utc": "1756001600"
+  },
+  {
+    "id": "t1_c001-s55",
+    "post_id": "t3_p008",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mom's care package came — snacks and socks; answered 60% of her texts. (3)",
+    "score": "188",
+    "created_utc": "1756005200"
+  },
+  {
+    "id": "t1_c001-s56",
+    "post_id": "t3_p009",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Mia sent a meme and a track, roasting me with love as usual. (3)",
+    "score": "188",
+    "created_utc": "1756008800"
+  },
+  {
+    "id": "t1_c001-s57",
+    "post_id": "t3_p010",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Marcus left good code-review feedback on the PR today. (3)",
+    "score": "188",
+    "created_utc": "1756012400"
+  },
+  {
+    "id": "t1_c001-s58",
+    "post_id": "t3_p011",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Gym at Cascade Fitness before work — lift, then cardio. (3)",
+    "score": "188",
+    "created_utc": "1756016000"
+  },
+  {
+    "id": "t1_c001-s59",
+    "post_id": "t3_p012",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Saturday run on the Burke-Gilman if the weather holds. (3)",
+    "score": "188",
+    "created_utc": "1756019600"
+  },
+  {
+    "id": "t1_c001-s60",
+    "post_id": "t3_p013",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Stir-fry tonight; texted Mom for the mac and cheese clarification. (3)",
+    "score": "188",
+    "created_utc": "1756023200"
+  },
+  {
+    "id": "t1_c001-s61",
+    "post_id": "t3_p014",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Cold brew from Elm Coffee, one at home and one at the office. (3)",
+    "score": "188",
+    "created_utc": "1756026800"
+  },
+  {
+    "id": "t1_c001-s62",
+    "post_id": "t3_p015",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Half-built side project in Notion, abandoned right as it got good. (3)",
+    "score": "188",
+    "created_utc": "1756030400"
+  },
+  {
+    "id": "t1_c001-s63",
+    "post_id": "t3_p016",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "IPA Friday with Jake at Pike Street Grill. (3)",
+    "score": "188",
+    "created_utc": "1756034000"
+  },
+  {
+    "id": "t1_c001-s64",
+    "post_id": "t3_p017",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Terraform and Docker changes merged, Kubernetes rollout clean. (3)",
+    "score": "188",
+    "created_utc": "1756037600"
+  },
+  {
+    "id": "t1_c001-s65",
+    "post_id": "t3_p018",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Reading Designing Data-Intensive Applications on the bus. (3)",
+    "score": "188",
+    "created_utc": "1756041200"
+  },
+  {
+    "id": "t1_c001-s66",
+    "post_id": "t3_p019",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Equity unlocks around August, the one-year mark at Ridgeline. (3)",
+    "score": "188",
+    "created_utc": "1756044800"
+  },
+  {
+    "id": "t1_c001-s67",
+    "post_id": "t3_p020",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Day hike in the Cascades planned if the forecast cooperates. (3)",
+    "score": "188",
+    "created_utc": "1756048400"
+  },
+  {
+    "id": "t1_c001-s68",
+    "post_id": "t3_p021",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Lo-fi playlist for focus; I refuse to share the decompression one. (3)",
+    "score": "188",
+    "created_utc": "1756052000"
+  },
+  {
+    "id": "t1_c001-s69",
+    "post_id": "t3_p022",
+    "parent_id": "t3_p001",
+    "author": "goroutine_grace",
+    "body": "Leo pinged on Discord with a tech article and a voice chat. (3)",
+    "score": "188",
+    "created_utc": "1756055600"
+  }
+]

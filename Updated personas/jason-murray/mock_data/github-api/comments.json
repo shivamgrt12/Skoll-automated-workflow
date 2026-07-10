@@ -1,0 +1,226 @@
+[
+  {
+    "id": "4000001",
+    "issue_number": "142",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "Confirmed the panic is in normalizeURL — url.Parse happily accepts a schemeless string and then .Host is empty. Going to prepend https:// before parsing. Fix in #149.",
+    "created_at": "2026-02-20T22:14:34Z"
+  },
+  {
+    "id": "4000002",
+    "issue_number": "142",
+    "repo": "ridgeline",
+    "user": "tomas-alvarez",
+    "body": "Nice catch. Might also want to reject obviously-bad inputs (spaces, no dot) so people don't save junk.",
+    "created_at": "2026-02-21T07:05:36Z"
+  },
+  {
+    "id": "4000003",
+    "issue_number": "143",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "Going with a generated tsvector column + GIN index, weighting title (A) over body (B). Avoids a separate search service entirely. Draft PR up in #144.",
+    "created_at": "2026-03-30T17:49:58Z"
+  },
+  {
+    "id": "4000004",
+    "issue_number": "144",
+    "repo": "ridgeline",
+    "user": "tomas-alvarez",
+    "body": "Looks solid. One thing: ts_rank can be slow on big result sets — consider limiting before ranking, or rank only the top-N candidates. Otherwise LGTM.",
+    "created_at": "2026-10-05T06:33:05Z"
+  },
+  {
+    "id": "4000005",
+    "issue_number": "144",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "Good point, added a candidate prefilter on the GIN index before ranking. Re-running the benchmark tonight on the homelab box.",
+    "created_at": "2026-10-06T10:38:27Z"
+  },
+  {
+    "id": "4000006",
+    "issue_number": "145",
+    "repo": "ridgeline",
+    "user": "sofia-reyes",
+    "body": "Repro: save https://go.dev/blog/* posts, open reader view, all the fenced code is gone. Pretty sure it's the bluemonday policy not allowing pre/code.",
+    "created_at": "2026-03-22T20:11:13Z"
+  },
+  {
+    "id": "4000007",
+    "issue_number": "150",
+    "repo": "ridgeline",
+    "user": "sofia-reyes",
+    "body": "Code comes back now, but the language class is being stripped so syntax highlighting is plain. Can we allow class=\"language-*\" on code? Marking changes requested.",
+    "created_at": "2026-10-04T20:57:10Z"
+  },
+  {
+    "id": "4000008",
+    "issue_number": "150",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "Yep, added language-* to the allowlist. CI snapshot is failing on an unrelated fixture though — looking into it before I re-request review.",
+    "created_at": "2026-10-05T19:11:00Z"
+  },
+  {
+    "id": "4000009",
+    "issue_number": "147",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "Root cause: the logging middleware reads and discards the body, so by the time the Stripe handler runs the bytes are gone and the HMAC is computed over nothing. Buffering it once fixes it.",
+    "created_at": "2026-02-12T00:54:44Z"
+  },
+  {
+    "id": "4000010",
+    "issue_number": "148",
+    "repo": "ridgeline",
+    "user": "daniel-okafor",
+    "body": "Clean fix. Worth adding a test that sends a tampered payload and asserts we reject it, not just the happy path. Approving once that's in.",
+    "created_at": "2026-02-13T20:10:06Z"
+  },
+  {
+    "id": "4000011",
+    "issue_number": "146",
+    "repo": "ridgeline",
+    "user": "jmurray-dev",
+    "body": "CI green, merging. Thanks dependabot.",
+    "created_at": "2026-03-17T17:11:30Z"
+  },
+  {
+    "id": "4000012",
+    "issue_number": "61",
+    "repo": "glanceboard",
+    "user": "jmurray-dev",
+    "body": "Confirmed — one unreachable host with a 30s TCP timeout was stalling every other check. Moving to a bounded worker pool with per-check context timeouts. PR in #62.",
+    "created_at": "2026-01-15T21:17:09Z"
+  },
+  {
+    "id": "4000013",
+    "issue_number": "62",
+    "repo": "glanceboard",
+    "user": "raj-patel",
+    "body": "Tested against my flaky NAS and the dashboard stays responsive now. Approving.",
+    "created_at": "2026-01-19T00:59:40Z"
+  },
+  {
+    "id": "4000014",
+    "issue_number": "63",
+    "repo": "glanceboard",
+    "user": "hannah-lin",
+    "body": "+1 on this. A simple up gauge per target plus latency would already make it scrapeable from Prometheus. Happy to test the branch.",
+    "created_at": "2026-03-17T06:38:14Z"
+  },
+  {
+    "id": "4000015",
+    "issue_number": "64",
+    "repo": "glanceboard",
+    "user": "jmurray-dev",
+    "body": "Branch is up. Exposes glanceboard_target_up, a latency histogram, and queue depth. Still draft until I add the scrape config to the homelab-notes repo.",
+    "created_at": "2026-10-01T09:43:23Z"
+  },
+  {
+    "id": "4000016",
+    "issue_number": "31",
+    "repo": "homelab-k8s",
+    "user": "jmurray-dev",
+    "body": "Reproduced again after last night's power blip. Sealed-secrets controller races the CRDs. Trying a Flux dependsOn ordering in #34, but it's flaky so leaving it draft.",
+    "created_at": "2026-03-29T22:23:10Z"
+  },
+  {
+    "id": "4000017",
+    "issue_number": "18",
+    "repo": "go-snippets",
+    "user": "tomas-alvarez",
+    "body": "Hit this in prod-ish code — past ~63 attempts the duration went negative and the retry loop went wild. Capping the shift is the right call.",
+    "created_at": "2026-02-07T23:30:47Z"
+  },
+  {
+    "id": "4000018",
+    "issue_number": "19",
+    "repo": "go-snippets",
+    "user": "jmurray-dev",
+    "body": "Clamped the exponent at 62 and clamp the result to maxDelay. Also added optional full-jitter since you mentioned thundering herd. Tests cover the boundary.",
+    "created_at": "2026-02-08T20:07:23Z"
+  },
+  {
+    "id": "4000019",
+    "issue_number": "7",
+    "repo": "dotfiles",
+    "user": "leo-barros",
+    "body": "Lost my carefully-tuned .zshrc to this on a fresh laptop, ha. A .bak before symlinking would've saved me. Thanks for jumping on it.",
+    "created_at": "2026-03-19T18:48:19Z"
+  },
+  {
+    "id": "4000020",
+    "issue_number": "9",
+    "repo": "dotfiles",
+    "user": "jmurray-dev",
+    "body": "install.sh now moves any existing target to <file>.bak and prints what it backed up. Can you try it on your machine before I merge?",
+    "created_at": "2026-03-22T23:15:43Z"
+  },
+  {
+    "id": "4000021",
+    "issue_number": "14",
+    "repo": "raft-kv",
+    "user": "jmurray-dev",
+    "body": "Pretty sure the leader never decrements nextIndex on the conflict reply, so a restarted follower never converges. Off-by-one in the prevLogTerm check too. Attempting a fix in #16.",
+    "created_at": "2025-12-28T04:33:36Z"
+  },
+  {
+    "id": "4000022",
+    "issue_number": "16",
+    "repo": "raft-kv",
+    "user": "jmurray-dev",
+    "body": "Replication recovers now in the slow-restart case, but under fast restarts the test still flakes occasionally. Parking this — it's a learning repo and snapshotting (#15) is the bigger gap anyway.",
+    "created_at": "2025-12-31T15:57:22Z"
+  },
+  {
+    "id": "4000023",
+    "issue_number": "8",
+    "repo": "pg-migrate",
+    "user": "nina-kowalski",
+    "body": "Reproduced cleanly — rolling back two steps tried to drop the parent table before the child. Reversing the order on rollback fixes it for us.",
+    "created_at": "2026-03-01T09:01:09Z"
+  },
+  {
+    "id": "4000024",
+    "issue_number": "9",
+    "repo": "pg-migrate",
+    "user": "jmurray-dev",
+    "body": "Sorted down migrations descending before applying and added a two-step rollback test. Thanks for the clear repro Nina.",
+    "created_at": "2026-03-01T20:14:18Z"
+  },
+  {
+    "id": "4000025",
+    "issue_number": "4",
+    "repo": "go-worker-pool",
+    "user": "raj-patel",
+    "body": "Submit-after-Close hanging forever bit me in a shutdown path. Returning a sentinel error feels much nicer than a deadlock. LGTM direction-wise.",
+    "created_at": "2026-03-28T05:29:55Z"
+  },
+  {
+    "id": "4000026",
+    "issue_number": "10",
+    "repo": "go-rate-limiter",
+    "user": "daniel-okafor",
+    "body": "The boundary burst is real — sent 2x the limit right at rollover and it all went through. You need the weighted previous-window count. Repo looks paused though, no rush.",
+    "created_at": "2025-12-26T12:55:09Z"
+  },
+  {
+    "id": "4000027",
+    "issue_number": "21",
+    "repo": "ridgeline-cli",
+    "user": "sofia-reyes",
+    "body": "Env var fallback works great, no more --token on every call. Approving.",
+    "created_at": "2026-03-08T07:18:44Z"
+  },
+  {
+    "id": "4000028",
+    "issue_number": "23",
+    "repo": "ridgeline-cli",
+    "user": "jmurray-dev",
+    "body": "tm open <id> now resolves the URL and opens it in the default browser. Tested on macOS and Linux; Windows uses rundll32. Merging.",
+    "created_at": "2026-03-19T18:18:24Z"
+  }
+]

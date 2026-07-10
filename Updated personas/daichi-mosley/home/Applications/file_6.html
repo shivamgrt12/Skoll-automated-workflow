@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Line Status</title>
+<style>
+  :root{--bg:#0c1424;--panel:#142036;--ink:#e8eefc;--mut:#8ea3c6;--gold:#d8a13a;--steel:#4f86c6;--good:#46b27a;--warn:#d97a45;--line:#23314f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:linear-gradient(160deg,#0a1120,#0c1424 40%,#0e1830);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;padding:28px;min-height:100vh}
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
+  h1{font-size:26px;letter-spacing:.5px;font-weight:600}
+  .sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .tag{font-family:Consolas,monospace;font-size:12px;color:var(--gold);border:1px solid var(--line);padding:6px 10px;border-radius:6px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .k{font-family:Consolas,monospace;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+  .card .v{font-size:26px;font-weight:600;margin-top:8px}
+  .card .n{font-size:12px;color:var(--mut);margin-top:4px}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;margin-top:10px}
+  .pill.ok{background:rgba(70,178,122,.15);color:var(--good)}
+  .pill.soon{background:rgba(217,122,69,.15);color:var(--warn)}
+  .row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .panel h2{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--ink)}
+  .panel h2 span{color:var(--mut);font-weight:400;font-size:12px}
+  svg text{fill:var(--mut);font-size:11px;font-family:Consolas,monospace}
+  .bar{fill:var(--steel)}
+  .bar.hi{fill:var(--gold)}
+  .legrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .legrow:last-child{border:0}
+  .legrow .d{color:var(--mut);font-family:Consolas,monospace;font-size:12px}
+  .gauge-wrap{display:flex;align-items:center;gap:18px;margin-top:6px}
+  .foot{color:var(--mut);font-size:11px;text-align:center;margin-top:24px;font-family:Consolas,monospace}
+  .route{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .route span{font-family:Consolas,monospace;font-size:12px;background:#0e1a30;border:1px solid var(--line);padding:5px 9px;border-radius:6px;color:#bcd0ef}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Line Status</h1>
+      <div class="sub">First Officer rotation, currency, and the numbers I watch between trips</div>
+    </div>
+    <div class="tag">SEA BASE &nbsp;/&nbsp; UPDATED JAN 2026</div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="k">Medical</div>
+      <div class="v">First Class</div>
+      <div class="n">renews early 2027</div>
+      <span class="pill ok">current</span>
+    </div>
+    <div class="card">
+      <div class="k">Recurrent sim</div>
+      <div class="v">Oct 17</div>
+      <div class="n">full flight simulator, 2026</div>
+      <span class="pill soon">scheduled</span>
+    </div>
+    <div class="card">
+      <div class="k">Seniority</div>
+      <div class="v">847</div>
+      <div class="n">of about 4,200 pilots</div>
+      <span class="pill ok">up for upgrade</span>
+    </div>
+    <div class="card">
+      <div class="k">Block, last 30 days</div>
+      <div class="v">84.2</div>
+      <div class="n">hours, six legs flown</div>
+      <span class="pill ok">on target</span>
+    </div>
+  </div>
+
+  <div class="row" style="margin-bottom:16px">
+    <div class="panel">
+      <h2>Block hours by month <span>rolling six, base SEA</span></h2>
+      <svg viewBox="0 0 560 220" width="100%" height="220" role="img" aria-label="block hours by month">
+        <line x1="40" y1="180" x2="540" y2="180" stroke="#23314f"/>
+        <line x1="40" y1="120" x2="540" y2="120" stroke="#1a2640" stroke-dasharray="3 4"/>
+        <line x1="40" y1="60"  x2="540" y2="60"  stroke="#1a2640" stroke-dasharray="3 4"/>
+        <text x="6" y="184">0</text><text x="6" y="124">50</text><text x="6" y="64">100</text>
+        <!-- data: Aug 78, Sep 82, Oct 85, Nov 80, Dec 76, Jan 84 ; scale 100h=120px -->
+        <g>
+          <rect class="bar" x="60"  y="93.6" width="50" height="86.4"/><text x="74" y="196">Aug</text>
+          <rect class="bar" x="140" y="81.6" width="50" height="98.4"/><text x="154" y="196">Sep</text>
+          <rect class="bar" x="220" y="78"   width="50" height="102"/><text x="234" y="196">Oct</text>
+          <rect class="bar" x="300" y="84"   width="50" height="96"/><text x="314" y="196">Nov</text>
+          <rect class="bar" x="380" y="88.8" width="50" height="91.2"/><text x="394" y="196">Dec</text>
+          <rect class="bar hi" x="460" y="79.2" width="50" height="100.8"/><text x="474" y="196">Jan</text>
+        </g>
+      </svg>
+    </div>
+    <div class="panel">
+      <h2>Currency board</h2>
+      <div class="legrow"><span>Type rating, 737</span><span class="d">current</span></div>
+      <div class="legrow"><span>First Class medical</span><span class="d">to 2027</span></div>
+      <div class="legrow"><span>Recurrent sim</span><span class="d">Oct 17, 2026</span></div>
+      <div class="legrow"><span>Line check</span><span class="d">filed</span></div>
+      <div class="legrow"><span>Passport, known crew</span><span class="d">valid</span></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel">
+      <h2>Pay snapshot <span>per the January earnings statement</span></h2>
+      <div class="legrow"><span>Annual salary reference</span><span class="d">175,000</span></div>
+      <div class="legrow"><span>Gross, semi monthly</span><span class="d">7,291.67</span></div>
+      <div class="legrow"><span>Net, semi monthly</span><span class="d">4,507.61</span></div>
+      <div class="legrow"><span>Retirement, employee 12%</span><span class="d">875.00</span></div>
+      <div class="legrow"><span>Employer match, 8%</span><span class="d">separate</span></div>
+    </div>
+    <div class="panel">
+      <h2>Recent pairings</h2>
+      <div class="route">
+        <span>SEA &#8594; LAX</span><span>LAX &#8594; SEA</span><span>SEA &#8594; ORD</span>
+        <span>SEA &#8594; JFK</span><span>JFK &#8594; SEA</span>
+      </div>
+      <p style="color:var(--mut);font-size:12px;margin-top:14px;line-height:1.6">Three and four day trips out of the home base, narrowbody short and transcon. Per diem runs about 138 to 185 a pairing. The tablet bag is always packed by the door.</p>
+    </div>
+  </div>
+
+  <div class="foot">Personal flight dashboard. Numbers are mine, kept current between rotations. Not a company record.</div>
+</div>
+</body>
+</html>

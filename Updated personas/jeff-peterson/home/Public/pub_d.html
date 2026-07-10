@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Avalanche Conditions Dashboard</title>
+<style>
+  :root{--bg:#0b1220;--panel:#131d2e;--panel2:#0f1827;--line:#243349;--ink:#e8eef6;--sub:#8da3bd;
+    --low:#5fae54;--mod:#f3d54e;--con:#ef8e3a;--high:#e0473a;--blue:#46a0d6;--accent:#46a0d6}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:
+    radial-gradient(1200px 500px at 80% -10%,#1b2c45,#0b1220 60%);color:var(--ink);line-height:1.55}
+  a{color:inherit;text-decoration:none}
+  header{border-bottom:1px solid var(--line);background:rgba(11,18,32,.85);backdrop-filter:blur(8px);
+    position:sticky;top:0;z-index:30}
+  nav{max-width:1180px;margin:0 auto;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+  .title{display:flex;align-items:center;gap:12px;font-weight:800}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--con);box-shadow:0 0 0 5px rgba(239,142,58,.18)}
+  .links{display:flex;gap:22px;font-size:13px;color:var(--sub)}
+  .links a:hover{color:var(--ink)}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  .banner{background:linear-gradient(120deg,#3a2410,#5a3414);border:1px solid #7a4a1d;border-radius:18px;
+    padding:24px 26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .banner .lvl{font-size:13px;letter-spacing:2px;color:#f3c89a;font-weight:700}
+  .banner h1{font-size:clamp(26px,4vw,40px);margin:4px 0}
+  .banner .sub{color:#f0d3b4;font-size:14px}
+  .ratingTag{padding:10px 20px;border-radius:30px;font-weight:800;font-size:15px;background:var(--con);color:#241303}
+  .meta-row{display:flex;gap:18px;flex-wrap:wrap;margin:14px 2px 0;color:var(--sub);font-size:13px}
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .card h2{font-size:15px;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-bottom:14px}
+  .bands{display:grid;gap:10px}
+  .band{display:grid;grid-template-columns:150px 1fr 130px;align-items:center;gap:12px;
+    background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .2s}
+  .band:hover{border-color:var(--accent)}
+  .band.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .band b{font-size:14px}.band small{color:var(--sub);display:block;font-size:12px}
+  .pill{justify-self:end;padding:6px 14px;border-radius:20px;font-weight:800;font-size:12px;color:#101010}
+  .p-mod{background:var(--mod)}.p-con{background:var(--con)}.p-low{background:var(--low);color:#fff}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .m{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .m b{font-size:28px;display:block;color:var(--accent)}.m small{color:var(--sub)}
+  .chart-card{margin-top:18px}
+  svg{display:block;width:100%;height:auto}
+  .legend{display:flex;gap:18px;font-size:12px;color:var(--sub);margin-top:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  .profile{display:flex;flex-direction:column;gap:8px}
+  .layer{display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;font-size:13px}
+  .layer .barwrap{height:26px;background:var(--panel2);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .layer .lay{height:100%;width:0;border-radius:8px;display:flex;align-items:center;padding-left:10px;
+    font-size:11px;color:#0a0f17;font-weight:700;transition:width 1.2s ease}
+  .feed li{list-style:none;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink)}
+  .feed li:last-child{border:none}.feed small{color:var(--sub)}
+  .feed b{color:var(--accent)}
+  .ctl{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .ctl button{background:var(--panel2);border:1px solid var(--line);color:var(--sub);padding:8px 14px;
+    border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+  .ctl button.on{background:var(--accent);color:#06131f;border-color:var(--accent)}
+  footer{border-top:1px solid var(--line);margin-top:30px;color:var(--sub);font-size:12px}
+  .foot{max-width:1180px;margin:0 auto;padding:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}.two{grid-template-columns:1fr}.links{display:none}
+    .band{grid-template-columns:120px 1fr 90px}}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="title"><span class="dot"></span> Teton Summit Resort &middot; Avalanche Advisory</div>
+    <div class="links"><a href="#bottom">Bottom line</a><a href="#weather">Weather</a><a href="#snow">Snowpack</a><a href="#obs">Observations</a></div>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="banner" id="bottom">
+    <div>
+      <div class="lvl">BOTTOM LINE FOR TODAY</div>
+      <h1>Considerable on wind loaded slopes</h1>
+      <div class="sub">Human triggered slides are likely on northeast through east aspects near and above
+        treeline. Conservative terrain choices are the call today.</div>
+    </div>
+    <div style="text-align:right">
+      <div class="ratingTag">CONSIDERABLE</div>
+      <div class="meta-row" style="justify-content:flex-end"><span>Issued February 9, 2026, 5:45 AM</span></div>
+    </div>
+  </div>
+  <div class="meta-row">
+    <span>Forecaster: Jeff Peterson, Avalanche Level 3, cert A3-WY-1188</span>
+    <span>Zone: Teton Pass and resort backcountry</span>
+    <span>Next update: tomorrow, 6:00 AM</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Hazard by elevation</h2>
+      <p style="color:var(--sub);font-size:13px;margin-bottom:12px">Select a band to read the detail. Ratings
+         are highest on wind loaded northeast and east aspects.</p>
+      <div class="bands" id="bands">
+        <div class="band sel" data-k="above">
+          <div><b>Above treeline</b><small>Over 9,500 ft</small></div>
+          <div id="d-above" style="color:var(--sub);font-size:13px">Wind loaded slabs on NE through E, considerable.</div>
+          <span class="pill p-con">Considerable</span>
+        </div>
+        <div class="band" data-k="near">
+          <div><b>Near treeline</b><small>8,500 to 9,500 ft</small></div>
+          <div id="d-near" style="color:var(--sub);font-size:13px">Fresh slabs forming on cross loaded features.</div>
+          <span class="pill p-con">Considerable</span>
+        </div>
+        <div class="band" data-k="below">
+          <div><b>Below treeline</b><small>Under 8,500 ft</small></div>
+          <div id="d-below" style="color:var(--sub);font-size:13px">Less wind effect, watch steep sheltered pockets.</div>
+          <span class="pill p-mod">Moderate</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Conditions snapshot</h2>
+      <div class="metrics">
+        <div class="m"><b>18 cm</b><small>new snow, last 24 hours</small></div>
+        <div class="m"><b>SW</b><small>wind, 15 to 25 mph ridgetop</small></div>
+        <div class="m"><b>-7 C</b><small>ridgetop high today</small></div>
+        <div class="m"><b>95 cm</b><small>depth of the weak layer</small></div>
+      </div>
+      <div class="ctl">
+        <button class="on" data-series="temp">Temperature</button>
+        <button data-series="snow">New snow</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card chart-card" id="weather">
+    <h2>Ridgetop trend, last eight readings</h2>
+    <svg id="lineChart" viewBox="0 0 720 260" role="img" aria-label="trend chart"></svg>
+    <div class="legend"><span><i style="background:var(--blue)"></i><span id="legLabel">Air temperature, C</span></span>
+      <span><i style="background:#7a8aa0"></i>Reading taken at the 5:30 AM report</span></div>
+  </div>
+
+  <div class="two">
+    <div class="card" id="snow">
+      <h2>Snowpack profile, Mount Glory shoulder</h2>
+      <div class="profile" id="profile"></div>
+      <p style="color:var(--sub);font-size:12px;margin-top:12px">The persistent facet layer near 95 cm produced
+         CT14 Q2 and ECTP21, with a propagation saw test of 38 of 100 to end. That layer is listening.</p>
+    </div>
+    <div class="card">
+      <h2>Recent observations</h2>
+      <ul class="feed">
+        <li><b>Whumpfing</b> reported on a NE test slope near treeline. <small>Today, 7:10 AM</small></li>
+        <li><b>Shooting cracks</b> off the skis on a wind loaded roll. <small>Today, 6:50 AM</small></li>
+        <li><b>Control result</b> on a Cody Bowl start zone, soft slab to the crust. <small>Today, 6:20 AM</small></li>
+        <li><b>Pit data</b> at the Mount Glory shoulder, facet layer reactive. <small>Yesterday, 2:30 PM</small></li>
+        <li><b>New snow</b> 18 cm overnight on a steady southwest wind. <small>Today, 5:30 AM</small></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot">
+    <div><b>Teton Summit Resort Patrol.</b> This dashboard mirrors the posted daily advisory once released.</div>
+    <div>Draft view for the patrol team. Do not release before the official posting time.</div>
+  </div>
+</footer>
+
+<script>
+  // band detail selection
+  document.getElementById('bands').addEventListener('click',function(e){
+    var b=e.target.closest('.band'); if(!b)return;
+    document.querySelectorAll('.band').forEach(function(x){x.classList.remove('sel')});
+    b.classList.add('sel');
+  });
+
+  // line chart data (from the 5:30 AM ridgetop log)
+  var data={
+    temp:{label:"Air temperature, C", vals:[-12,-15.5,-8,-18,-10.5,-6,-9.5,-4.5], unit:"C"},
+    snow:{label:"New snow, cm", vals:[6,11,3,0,8,14,18,5], unit:"cm"}
+  };
+  var labels=["Dec 8","Dec 15","Dec 27","Jan 5","Jan 12","Jan 28","Feb 9","Feb 16"];
+  var current="temp";
+  function drawChart(key){
+    var d=data[key], vals=d.vals, W=720,H=260,padL=44,padR=16,padT=18,padB=34;
+    var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+    if(min===max){min-=1;max+=1;}
+    var rng=max-min;
+    function X(i){return padL+(W-padL-padR)*i/(vals.length-1);}
+    function Y(v){return padT+(H-padT-padB)*(1-(v-min)/rng);}
+    var grid="";
+    for(var g=0;g<=4;g++){var yy=padT+(H-padT-padB)*g/4;
+      grid+='<line x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'" stroke="#243349" stroke-width="1"/>';
+      var val=(max-rng*g/4).toFixed(0);
+      grid+='<text x="'+(padL-8)+'" y="'+(yy+4)+'" fill="#8da3bd" font-size="11" text-anchor="end">'+val+'</text>';}
+    var pts=vals.map(function(v,i){return X(i)+','+Y(v)}).join(' ');
+    var area='M'+X(0)+','+(H-padB)+' L'+vals.map(function(v,i){return X(i)+','+Y(v)}).join(' L')+' L'+X(vals.length-1)+','+(H-padB)+' Z';
+    var dots="",xlabels="";
+    vals.forEach(function(v,i){dots+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="4" fill="#46a0d6"/>';
+      xlabels+='<text x="'+X(i)+'" y="'+(H-12)+'" fill="#8da3bd" font-size="10" text-anchor="middle">'+labels[i]+'</text>';});
+    var svg=document.getElementById('lineChart');
+    svg.innerHTML=grid+'<path d="'+area+'" fill="rgba(70,160,214,.14)"/>'+
+      '<polyline points="'+pts+'" fill="none" stroke="#46a0d6" stroke-width="2.5" stroke-linejoin="round" '+
+      'stroke-dasharray="1600" stroke-dashoffset="1600"><animate attributeName="stroke-dashoffset" from="1600" to="0" dur="1.2s" fill="freeze"/></polyline>'+
+      dots+xlabels;
+    document.getElementById('legLabel').textContent=d.label;
+  }
+  drawChart('temp');
+  document.querySelectorAll('.ctl button').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.ctl button').forEach(function(b){b.classList.remove('on')});
+      btn.classList.add('on'); current=btn.getAttribute('data-series'); drawChart(current);
+    });
+  });
+
+  // snowpack profile bars
+  var layers=[
+    {d:"0 cm",name:"New storm snow",w:30,c:"#cfe0ee"},
+    {d:"18 cm",name:"Wind slab",w:46,c:"#9fc0dc"},
+    {d:"41 cm",name:"Old surface",w:58,c:"#7aa0c0"},
+    {d:"72 cm",name:"Melt freeze crust",w:80,c:"#b9863f"},
+    {d:"95 cm",name:"Persistent facets, concern",w:96,c:"#ef8e3a"},
+    {d:"120 cm",name:"Basal depth hoar",w:70,c:"#c0392b"}
+  ];
+  var pf=document.getElementById('profile');
+  layers.forEach(function(l,i){
+    var row=document.createElement('div');row.className='layer';
+    row.innerHTML='<span style="color:var(--sub)">'+l.d+'</span>'+
+      '<div class="barwrap"><div class="lay" style="background:'+l.c+'">'+l.name+'</div></div>';
+    pf.appendChild(row);
+    setTimeout(function(){row.querySelector('.lay').style.width=l.w+'%';},200+i*140);
+  });
+</script>
+</body>
+</html>

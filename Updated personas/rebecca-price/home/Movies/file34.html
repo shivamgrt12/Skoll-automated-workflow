@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Reflections with Rebecca</title>
+<style>
+  :root{--bg:#14101c;--bg2:#1d1730;--card:#241c3a;--ink:#f3eefb;--muted:#b7a9d2;
+    --amber:#f2b138;--rose:#e0608a;--line:#33294f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  a{color:var(--amber);text-decoration:none}
+  header{position:sticky;top:0;z-index:40;background:rgba(20,16,28,.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line)}
+  .bar{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+  .logo{font-weight:800;letter-spacing:.5px}
+  .logo b{color:var(--amber)}
+  .logo small{display:block;font-weight:400;color:var(--muted);font-size:.72rem;letter-spacing:2px}
+  .links{display:flex;gap:20px}
+  .links a{color:var(--muted);font-size:.92rem}.links a:hover{color:var(--ink)}
+  .hero{max-width:1100px;margin:0 auto;padding:70px 22px 40px;text-align:center}
+  .hero .kicker{color:var(--amber);letter-spacing:3px;font-size:.78rem;text-transform:uppercase}
+  .hero h1{font-size:3rem;margin:14px 0;background:linear-gradient(90deg,var(--amber),var(--rose));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:52ch;margin:0 auto;font-size:1.1rem}
+  .live{display:inline-flex;align-items:center;gap:8px;margin-top:22px;background:var(--card);
+    border:1px solid var(--line);padding:8px 16px;border-radius:30px;font-size:.9rem;color:var(--muted)}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--rose);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(224,96,138,.6)}70%{box-shadow:0 0 0 12px rgba(224,96,138,0)}100%{box-shadow:0 0 0 0 rgba(224,96,138,0)}}
+  section{max-width:1100px;margin:0 auto;padding:40px 22px}
+  h2{font-size:1.5rem;margin-bottom:18px}
+  h2 .accent{color:var(--amber)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .ep{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;
+    transition:transform .2s, border-color .2s;animation:rise .6s both}
+  .ep:hover{transform:translateY(-4px);border-color:var(--amber)}
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .ep .num{color:var(--muted);font-size:.78rem;letter-spacing:1px}
+  .ep h3{margin:6px 0 4px;font-size:1.12rem}
+  .ep .guest{color:var(--rose);font-size:.9rem;margin-bottom:14px}
+  .play{display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;border-radius:30px;
+    background:linear-gradient(90deg,var(--amber),var(--rose));color:#1b1330;font-weight:700;
+    padding:9px 18px;font-size:.9rem;transition:transform .15s}
+  .play:hover{transform:scale(1.04)}
+  .play .tri{width:0;height:0;border-left:11px solid #1b1330;border-top:7px solid transparent;
+    border-bottom:7px solid transparent}
+  .nowbar{position:fixed;left:0;right:0;bottom:0;transform:translateY(110%);transition:transform .4s;
+    background:#0c0814;border-top:1px solid var(--line);z-index:60}
+  .nowbar.show{transform:none}
+  .now-inner{max-width:1100px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:16px}
+  .equalizer{display:flex;align-items:flex-end;gap:3px;height:24px}
+  .equalizer span{width:4px;background:var(--amber);animation:eq 1s infinite ease-in-out}
+  .equalizer span:nth-child(2){animation-delay:.2s}.equalizer span:nth-child(3){animation-delay:.4s}
+  .equalizer span:nth-child(4){animation-delay:.1s}
+  @keyframes eq{0%,100%{height:6px}50%{height:24px}}
+  .now-inner .meta{flex:1}.now-inner .meta b{display:block}
+  .now-inner .meta span{color:var(--muted);font-size:.85rem}
+  .closeNow{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+    padding:6px 12px;cursor:pointer}
+  .signup{background:linear-gradient(120deg,var(--bg2),var(--card));border:1px solid var(--line);
+    border-radius:20px;padding:34px;display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center}
+  .signup h2{margin-bottom:8px}.signup p{color:var(--muted)}
+  form .row{display:flex;gap:10px;margin-top:14px}
+  form input{flex:1;background:#15101f;border:1px solid var(--line);color:var(--ink);
+    padding:12px 14px;border-radius:10px;font-size:.95rem}
+  form input:focus{outline:2px solid var(--amber)}
+  form button{background:var(--amber);border:none;color:#1b1330;font-weight:700;border-radius:10px;
+    padding:0 20px;cursor:pointer}
+  .msg{margin-top:12px;font-size:.9rem;min-height:20px}
+  .msg.ok{color:#7fe0a8}.msg.err{color:var(--rose)}
+  .thanks{opacity:0;transform:scale(.9);transition:.4s}
+  .thanks.show{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line);margin-top:40px}
+  .foot{max-width:1100px;margin:0 auto;padding:28px 22px;color:var(--muted);font-size:.88rem;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:840px){.grid{grid-template-columns:1fr}.signup{grid-template-columns:1fr}.links{display:none}
+    .hero h1{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo">Morning <b>Reflections</b><small>WGSP 1490 AM</small></div>
+    <div class="links"><a href="#episodes">Episodes</a><a href="#guest">Guest Spotlight</a><a href="#join">Newsletter</a></div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="kicker">Saturdays 7 to 9 AM Central</div>
+  <h1>Two hours of music, faith, and Memphis stories.</h1>
+  <p>Devotion, community announcements, and honest conversation with the people who make this city kinder.</p>
+  <div class="live"><span class="dot"></span> Next live broadcast: Saturday at 7:00 AM</div>
+</div>
+
+<section id="episodes">
+  <h2>Recent <span class="accent">Episodes</span></h2>
+  <div class="grid" id="epGrid"></div>
+</section>
+
+<section id="guest">
+  <h2>Guest <span class="accent">Spotlight</span></h2>
+  <div class="ep" style="max-width:640px">
+    <div class="num">FEBRUARY 2026</div>
+    <h3>Depression in the Black Church</h3>
+    <div class="guest">with Dr. Raheema Osei, Psychiatrist</div>
+    <p style="color:var(--muted)">A frank, compassionate conversation about naming what hurts and why faith and care belong in the same room.</p>
+    <button class="play" data-title="Depression in the Black Church" data-guest="Dr. Raheema Osei">
+      <span class="tri"></span> Play segment</button>
+  </div>
+</section>
+
+<section id="join">
+  <div class="signup">
+    <div>
+      <h2>The Saturday <span class="accent">Note</span></h2>
+      <p>A short weekly email: one devotional thought and a preview of the next guest. No noise, just encouragement.</p>
+    </div>
+    <div>
+      <form id="nl" novalidate>
+        <div class="row">
+          <input type="email" id="email" aria-label="Email" autocomplete="email">
+          <button type="submit">Subscribe</button>
+        </div>
+        <div class="msg" id="msg"></div>
+        <div class="thanks" id="thanks">Welcome aboard. Watch for the first note this Saturday morning.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer><div class="foot">
+  <div>Hosted by Rebecca Price, BCC</div>
+</div></footer>
+
+<div class="nowbar" id="nowbar">
+  <div class="now-inner">
+    <div class="equalizer"><span></span><span></span><span></span><span></span></div>
+    <div class="meta"><b id="nowTitle">Now playing</b><span id="nowGuest"></span></div>
+    <button class="closeNow" id="closeNow">Stop</button>
+  </div>
+</div>
+
+<script>
+  var episodes=[
+    {n:"EP 24 &middot; JAN 2026",t:"Chaplaincy in Trauma Settings",g:"Rev. Cynthia Porter"},
+    {n:"EP 25 &middot; FEB 2026",t:"Love as Ministry",g:"Pastor Evelyn Tate"},
+    {n:"EP 26 &middot; FEB 2026",t:"Discipline and Spiritual Growth",g:"Keisha Monroe"},
+    {n:"EP 22 &middot; DEC 2025",t:"Advent Hope and Community Light",g:"Pastor William Greer"},
+    {n:"EP 21 &middot; DEC 2025",t:"Teaching as Ministry",g:"Brenda Price-Hall"},
+    {n:"EP 17 &middot; SEP 2025",t:"A Mother's Faith",g:"Dorothy Price"}
+  ];
+  var grid=document.getElementById('epGrid');
+  episodes.forEach(function(e,i){
+    var d=document.createElement('div'); d.className='ep'; d.style.animationDelay=(i*0.08)+'s';
+    d.innerHTML='<div class="num">'+e.n+'</div><h3>'+e.t+'</h3>'+
+      '<div class="guest">with '+e.g+'</div>'+
+      '<button class="play" data-title="'+e.t+'" data-guest="'+e.g+'"><span class="tri"></span> Play segment</button>';
+    grid.appendChild(d);
+  });
+  var nowbar=document.getElementById('nowbar');
+  document.body.addEventListener('click',function(ev){
+    var b=ev.target.closest('.play'); if(!b)return;
+    document.getElementById('nowTitle').textContent=b.getAttribute('data-title');
+    document.getElementById('nowGuest').textContent='with '+b.getAttribute('data-guest');
+    nowbar.classList.add('show');
+  });
+  document.getElementById('closeNow').addEventListener('click',function(){nowbar.classList.remove('show');});
+
+  document.getElementById('nl').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var email=document.getElementById('email').value.trim();
+    var msg=document.getElementById('msg'), thanks=document.getElementById('thanks');
+    var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if(!ok){msg.className='msg err';msg.textContent='Please enter a valid email address.';thanks.classList.remove('show');return;}
+    msg.className='msg ok';msg.textContent='';thanks.classList.add('show');
+    document.getElementById('email').value='';
+  });
+</script>
+</body>
+</html>

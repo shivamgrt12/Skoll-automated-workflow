@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Blue, 1972 Chevelle SS Build Log</title>
+<style>
+  :root{--night:#0d1620;--deep:#13243a;--ice:#7db7e8;--chrome:#cfd8e3;--blue:#1c5fb0;
+    --paper:#0f1a26;--card:#16263a;--line:#27405c;--gold:#e0a93b;--text:#dde6f0;--muted:#8aa1ba}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--night);color:var(--text);line-height:1.6}
+  .hero{min-height:62vh;display:grid;place-items:center;text-align:center;position:relative;overflow:hidden;
+    background:radial-gradient(circle at 50% 20%,#1d3a5f 0%,#0d1620 70%)}
+  .hero::after{content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(115deg,transparent 0 60px,rgba(125,183,232,.04) 60px 62px)}
+  .hero-c{position:relative;z-index:2;padding:30px}
+  .tag{letter-spacing:5px;color:var(--ice);font-size:.8rem;text-transform:uppercase;animation:fade 1s both}
+  .hero h1{font-size:clamp(2.4rem,6vw,4.4rem);margin:10px 0;
+    background:linear-gradient(90deg,#fff,var(--chrome),var(--ice));-webkit-background-clip:text;background-clip:text;color:transparent;animation:fade 1s .15s both}
+  .hero p{color:var(--muted);max-width:540px;margin:auto;animation:fade 1s .3s both}
+  @keyframes fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .scroll-hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--ice);animation:bob 1.6s infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+  .wrap{max-width:1000px;margin:auto;padding:60px 22px}
+  h2{font-size:1.8rem;margin-bottom:6px}
+  .sub{color:var(--muted);margin-bottom:28px}
+
+  .fund{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:50px}
+  .fund .row{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:8px}
+  .meter{height:18px;background:#0c1622;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .meter span{display:block;height:100%;width:0;border-radius:10px;
+    background:linear-gradient(90deg,var(--blue),var(--ice));transition:width 1.4s ease}
+  .fund .big{font-size:1.5rem;font-weight:800;color:#fff}
+
+  .timeline{position:relative;margin-left:14px;padding-left:30px;border-left:2px solid var(--line)}
+  .ev{position:relative;margin-bottom:26px;opacity:0;transform:translateX(18px);transition:.6s}
+  .ev.in{opacity:1;transform:none}
+  .ev::before{content:"";position:absolute;left:-39px;top:4px;width:14px;height:14px;border-radius:50%;
+    background:var(--ice);box-shadow:0 0 0 4px rgba(125,183,232,.18)}
+  .ev .dt{color:var(--ice);font-size:.8rem;font-weight:700;letter-spacing:1px}
+  .ev h3{margin:3px 0 4px;font-size:1.1rem}
+  .ev p{color:var(--muted);font-size:.92rem}
+  .ev .cost{display:inline-block;margin-top:6px;background:#0c1622;border:1px solid var(--line);
+    color:var(--gold);font-size:.78rem;padding:2px 10px;border-radius:20px}
+
+  .specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:40px 0}
+  .spec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;transition:.25s}
+  .spec:hover{transform:translateY(-5px);border-color:var(--ice)}
+  .spec .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:1px}
+  .spec .vv{font-size:1.15rem;font-weight:700;margin-top:4px}
+
+  .goal{background:linear-gradient(120deg,var(--deep),#0d1620);border:1px solid var(--line);
+    border-radius:16px;padding:34px;text-align:center}
+  .goal h2{color:#fff}
+  footer{text-align:center;padding:26px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-c">
+    <div class="tag">Back bay project</div>
+    <h1>Project Blue</h1>
+    <p>The slow, careful rebuild of a 1972 Chevelle SS. Part inheritance, part therapy, all done after hours with the right torque and no shortcuts.</p>
+  </div>
+  <div class="scroll-hint">&#9660;</div>
+</section>
+
+<div class="wrap">
+  <h2>Build fund</h2>
+  <div class="sub">Saving toward paint, body, and the final assembly.</div>
+  <div class="fund">
+    <div class="row"><span>Saved so far</span><span>Goal before paint and body</span></div>
+    <div class="row"><span class="big">3,200 dollars</span><span class="big">11,200 dollars</span></div>
+    <div class="meter"><span id="fundbar"></span></div>
+    <div class="row" style="margin-top:10px"><span>Roughly 8,000 dollars to go</span><span id="pct">29%</span></div>
+  </div>
+
+  <h2>Restoration timeline</h2>
+  <div class="sub">Every stage logged, every fastener catalogued.</div>
+  <div class="timeline" id="tl"></div>
+
+  <div class="specs">
+    <div class="spec"><div class="k">Year</div><div class="vv">1972</div></div>
+    <div class="spec"><div class="k">Engine</div><div class="vv">454 big block</div></div>
+    <div class="spec"><div class="k">Color</div><div class="vv">Original blue</div></div>
+    <div class="spec"><div class="k">Brakes</div><div class="vv">Front disc swap</div></div>
+    <div class="spec"><div class="k">Hours logged</div><div class="vv">66+</div></div>
+  </div>
+
+  <div class="goal">
+    <h2>The finish line</h2>
+    <p style="color:var(--muted);max-width:560px;margin:14px auto 0">Roll it onto Woodward for the Dream Cruise, the same route walked every August while the car sat in pieces. Glass and chrome go back on this fall, then prep for paint.</p>
+  </div>
+</div>
+
+<footer>Project Blue build log &bull; Maintained by David Hayes &bull; Hayes Auto Works back bay</footer>
+
+<script>
+  var events=[
+    {d:"JUN 2024",t:"Teardown begins",p:"Stripped the interior and trim, catalogued every fastener in labelled bags.",c:""},
+    {d:"JUL 2024",t:"Pulled the 454",p:"Big block out and onto the engine stand in the back bay for a full rebuild.",c:""},
+    {d:"SEP 2024",t:"Media blast",p:"Quarter panels blasted, found surface rust on the driver side to address.",c:"220 dollars"},
+    {d:"JAN 2025",t:"Machine work",p:"Block machined and cylinders honed, two week turn at the machine shop.",c:"640 dollars"},
+    {d:"FEB 2025",t:"Short block reassembled",p:"New pistons and bearings, everything torqued to spec.",c:"930 dollars"},
+    {d:"OCT 2025",t:"Front disc conversion",p:"Better stopping power for cruise speeds, kit fitted and bled.",c:"520 dollars"},
+    {d:"DEC 2025",t:"New wiring harness",p:"Fresh harness and gauges, every circuit labelled for the next person.",c:"380 dollars"},
+    {d:"JAN 2026",t:"Prep and primer",p:"Final body prep and primer down, color stays original blue.",c:"260 dollars"},
+    {d:"OCT 2026",t:"Glass and chrome",p:"Target for fall: reinstall glass and chrome ahead of cruise season.",c:"290 dollars"}
+  ];
+  var tl=document.getElementById('tl');
+  events.forEach(function(e){
+    var c=e.c?"<span class='cost'>"+e.c+"</span>":"";
+    tl.innerHTML+="<div class='ev'><div class='dt'>"+e.d+"</div><h3>"+e.t+"</h3><p>"+e.p+"</p>"+c+"</div>";
+  });
+  var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting)x.target.classList.add('in')})},{threshold:.2});
+  document.querySelectorAll('.ev').forEach(function(e){io.observe(e)});
+  setTimeout(function(){document.getElementById('fundbar').style.width="29%"},300);
+</script>
+</body>
+</html>

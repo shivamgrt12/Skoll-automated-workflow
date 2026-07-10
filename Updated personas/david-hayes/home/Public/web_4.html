@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hayes Auto Works, Expansion Analytics</title>
+<style>
+  :root{--ink:#1a1f24;--panel:#fff;--bg:#eef1f4;--line:#dde3e9;--brand:#0f5c4a;--brand2:#1d8a6e;
+    --amber:#e0992b;--red:#c8503e;--muted:#697686;--grid:#e7ecf1}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--ink);color:#fff;padding:20px 0;position:sticky;top:0;z-index:20}
+  .hd{max-width:1080px;margin:auto;padding:0 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .hd h1{font-size:1.2rem}.hd small{color:#9fb0bf}
+  .badge{background:var(--brand2);padding:6px 14px;border-radius:30px;font-size:.78rem}
+  main{max-width:1080px;margin:auto;padding:26px 22px 60px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
+  .c{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(26,31,36,.04)}
+  .c .lbl{color:var(--muted);font-size:.8rem}
+  .c .num{font-size:1.9rem;font-weight:800;margin-top:4px}
+  .c .delta{font-size:.78rem;margin-top:4px}
+  .up{color:var(--brand2)} .flat{color:var(--muted)}
+
+  .row2{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 4px 14px rgba(26,31,36,.04)}
+  .panel h2{font-size:1.02rem;margin-bottom:4px}
+  .panel .cap{color:var(--muted);font-size:.82rem;margin-bottom:16px}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:12px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+
+  .uof li{list-style:none;margin:11px 0;font-size:.88rem}
+  .uof .top{display:flex;justify-content:space-between;margin-bottom:4px}
+  .uof .tr{background:var(--bg);border-radius:6px;height:10px;overflow:hidden}
+  .uof .fl{height:100%;width:0;border-radius:6px;transition:width 1.2s ease}
+
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.5px}
+  td.r{text-align:right;font-variant-numeric:tabular-nums}
+  .total td{font-weight:800;border-top:2px solid var(--ink)}
+  footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}
+  @media(max-width:780px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <div><h1>Hayes Auto Works, Expansion Analytics</h1><small>Internal planning snapshot, prepared February 2026</small></div>
+    <div class="badge">Third bay project</div>
+  </div>
+</header>
+
+<main>
+  <div class="cards">
+    <div class="c"><div class="lbl">Avg monthly revenue</div><div class="num" data-c="27000" data-pre="$">$0</div><div class="delta up">Stable, trailing 6 months</div></div>
+    <div class="c"><div class="lbl">Avg net to owner</div><div class="num" data-c="6000" data-pre="$">$0</div><div class="delta flat">After parts, payroll, opex</div></div>
+    <div class="c"><div class="lbl">Operating reserve</div><div class="num" data-c="22000" data-pre="$">$0</div><div class="delta flat">Business account</div></div>
+    <div class="c"><div class="lbl">Owner credit</div><div class="num" data-c="740">0</div><div class="delta up">FICO score</div></div>
+  </div>
+
+  <div class="row2">
+    <div>
+      <div class="panel">
+        <h2>Monthly revenue and net, trailing six months</h2>
+        <div class="cap">Revenue bars with net to owner trend line, in thousands of dollars.</div>
+        <svg id="chart" viewBox="0 0 620 260" width="100%" role="img" aria-label="Revenue chart"></svg>
+        <div class="legend">
+          <span><i style="background:var(--brand)"></i>Revenue</span>
+          <span><i style="background:var(--amber)"></i>Net to owner</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Use of funds</h2>
+        <div class="cap">Total project cost 50,000 dollars.</div>
+        <ul class="uof" id="uof"></ul>
+      </div>
+      <div class="panel">
+        <h2>Financing</h2>
+        <table>
+          <tr><td>SBA loan, pre-qualified</td><td class="r">$45,000</td></tr>
+          <tr><td>Owner contribution</td><td class="r">$5,000</td></tr>
+          <tr class="total"><td>Total project</td><td class="r">$50,000</td></tr>
+        </table>
+        <p class="cap" style="margin-top:12px">Projected revenue lift once the second technician is fully booked: 6,000 to 8,000 dollars per month. Final financials due October 15, 2026.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Hayes Auto Works LLC &bull; 6847 Warren Ave, East Dearborn, MI 48126 &bull; Planning use only</footer>
+
+<script>
+  // animated counters
+  document.querySelectorAll('.num').forEach(function(el){
+    var end=+el.dataset.c, pre=el.dataset.pre||"", t0=null, dur=1200;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1);
+      var val=Math.floor(end*(0.5-Math.cos(p*Math.PI)/2));
+      el.textContent=pre+val.toLocaleString(); if(p<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  });
+
+  // SVG bar + line chart
+  var months=["Sep","Oct","Nov","Dec","Jan","Feb"];
+  var rev=[27.4,28.9,26.7,24.8,26.9,27.3];
+  var net=[6.0,6.9,5.7,4.6,5.7,6.0];
+  var svg=document.getElementById('chart'), W=620,H=260,pad=34, max=32;
+  function y(v){return H-pad-(v/max)*(H-pad*2)}
+  var ns="http://www.w3.org/2000/svg", out="";
+  // gridlines
+  for(var g=0;g<=32;g+=8){ var yy=y(g);
+    out+="<line x1='"+pad+"' y1='"+yy+"' x2='"+(W-pad)+"' y2='"+yy+"' stroke='#e7ecf1'/>";
+    out+="<text x='"+(pad-6)+"' y='"+(yy+4)+"' font-size='9' fill='#8593a3' text-anchor='end'>"+g+"</text>";
+  }
+  var bw=46, step=(W-pad*2)/months.length;
+  months.forEach(function(m,i){
+    var x=pad+step*i+(step-bw)/2, h=(rev[i]/max)*(H-pad*2);
+    out+="<rect x='"+x+"' y='"+(H-pad)+"' width='"+bw+"' height='0' rx='4' fill='#0f5c4a'><animate attributeName='height' to='"+h+"' dur='0.9s' fill='freeze' begin='"+(i*0.08)+"s'/><animate attributeName='y' to='"+(H-pad-h)+"' dur='0.9s' fill='freeze' begin='"+(i*0.08)+"s'/></rect>";
+    out+="<text x='"+(x+bw/2)+"' y='"+(H-pad+15)+"' font-size='10' fill='#697686' text-anchor='middle'>"+m+"</text>";
+  });
+  // net line
+  var pts=net.map(function(v,i){return (pad+step*i+step/2)+","+y(v)}).join(" ");
+  out+="<polyline points='"+pts+"' fill='none' stroke='#e0992b' stroke-width='3' stroke-linejoin='round' stroke-dasharray='1000' stroke-dashoffset='1000'><animate attributeName='stroke-dashoffset' to='0' dur='1.1s' fill='freeze' begin='.4s'/></polyline>";
+  net.forEach(function(v,i){ out+="<circle cx='"+(pad+step*i+step/2)+"' cy='"+y(v)+"' r='4' fill='#e0992b' opacity='0'><animate attributeName='opacity' to='1' dur='.3s' fill='freeze' begin='"+(0.9+i*0.05)+"s'/></circle>"; });
+  svg.innerHTML=out;
+
+  // use of funds bars
+  var uof=[{n:"Second service bay",v:35000,c:"#0f5c4a"},{n:"Hydraulic two post lift",v:8000,c:"#1d8a6e"},
+    {n:"Electrical upgrade, 240V",v:5000,c:"#e0992b"},{n:"Permits and inspections",v:2000,c:"#c8503e"}];
+  var u=document.getElementById('uof'), mx=35000;
+  uof.forEach(function(d){
+    u.innerHTML+="<li><div class='top'><span>"+d.n+"</span><span><b>$"+d.v.toLocaleString()+"</b></span></div><div class='tr'><div class='fl' data-w='"+(d.v/mx*100)+"' style='background:"+d.c+"'></div></div></li>";
+  });
+  requestAnimationFrame(function(){document.querySelectorAll('#uof .fl').forEach(function(f){f.style.width=f.dataset.w+"%"})});
+</script>
+</body>
+</html>

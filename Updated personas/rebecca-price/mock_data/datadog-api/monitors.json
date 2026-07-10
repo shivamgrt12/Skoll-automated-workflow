@@ -1,0 +1,98 @@
+[
+  {
+    "id": "1001",
+    "name": "Morning Reflections podcast feed unavailable",
+    "type": "service check",
+    "query": "avg(last_5m):avg:http.can_connect{url:https://morningreflections.wgsp.com/feed.xml} < 1",
+    "message": "Podcast RSS feed is unreachable - listeners can't subscribe or refresh. Notify tj.jackson@gmail.com",
+    "overall_state": "OK",
+    "priority": "1",
+    "tags": "service:podcast-feed;host:wgsp-web-01",
+    "created": "2025-12-10T10:00:00-06:00",
+    "modified": "2026-01-13T08:00:00-06:00"
+  },
+  {
+    "id": "1002",
+    "name": "Show website high response time",
+    "type": "metric alert",
+    "query": "avg(last_5m):avg:trace.http.request.duration{service:morning-reflections-site} > 3.0",
+    "message": "Morning Reflections site response time above 3s - listeners may see slow page loads during Saturday broadcast window.",
+    "overall_state": "Warn",
+    "priority": "2",
+    "tags": "service:morning-reflections-site;host:wgsp-web-01",
+    "created": "2025-12-15T10:00:00-06:00",
+    "modified": "2026-01-16T07:30:00-06:00"
+  },
+  {
+    "id": "1003",
+    "name": "Audio stream server CPU saturation",
+    "type": "metric alert",
+    "query": "avg(last_10m):avg:system.cpu.user{host:wgsp-stream-01} > 85",
+    "message": "Stream server CPU near saturation - audio quality may degrade during live Saturday broadcast.",
+    "overall_state": "OK",
+    "priority": "2",
+    "tags": "host:wgsp-stream-01;service:live-stream",
+    "created": "2025-10-04T10:00:00-05:00",
+    "modified": "2026-01-11T09:00:00-06:00"
+  },
+  {
+    "id": "1004",
+    "name": "Podcast episode download spike",
+    "type": "metric alert",
+    "query": "avg(last_15m):avg:podcast.episode.downloads{host:wgsp-web-01} > 2000",
+    "message": "Unusual download spike - episode may have been picked up by an external aggregator. Monitor bandwidth.",
+    "overall_state": "OK",
+    "priority": "3",
+    "tags": "service:podcast-feed;host:wgsp-web-01",
+    "created": "2025-10-13T10:00:00-05:00",
+    "modified": "2026-01-07T12:00:00-06:00"
+  },
+  {
+    "id": "1005",
+    "name": "Show website disk space low",
+    "type": "service check",
+    "query": "avg(last_5m):avg:system.disk.in_use{host:wgsp-web-01} > 0.88",
+    "message": "Disk usage high on wgsp-web-01 - archive audio files may need rotation to cold storage.",
+    "overall_state": "OK",
+    "priority": "2",
+    "tags": "host:wgsp-web-01;team:wgsp-ops",
+    "created": "2025-10-21T10:00:00-05:00",
+    "modified": "2026-01-07T06:00:00-06:00"
+  },
+  {
+    "id": "1006",
+    "name": "Contact form email delivery failure",
+    "type": "service check",
+    "query": "avg(last_10m):avg:mail.delivery.success{service:morning-reflections-site} < 1",
+    "message": "Listener contact form emails not delivering - check SMTP relay on wgsp-web-01.",
+    "overall_state": "OK",
+    "priority": "2",
+    "tags": "service:morning-reflections-site;host:wgsp-web-01",
+    "created": "2025-10-30T10:00:00-05:00",
+    "modified": "2026-01-10T11:00:00-06:00"
+  },
+  {
+    "id": "1007",
+    "name": "Podcast feed SSL certificate expiry",
+    "type": "service check",
+    "query": "avg(last_1h):avg:tls.days_left{host:wgsp-web-01} < 14",
+    "message": "SSL cert on podcast domain expires within 14 days - renew before Saturday broadcast or listeners get security warnings.",
+    "overall_state": "OK",
+    "priority": "1",
+    "tags": "service:podcast-feed;host:wgsp-web-01",
+    "created": "2025-11-08T10:00:00-06:00",
+    "modified": "2026-01-14T08:00:00-06:00"
+  },
+  {
+    "id": "1008",
+    "name": "Grace Community Church media page unavailable",
+    "type": "service check",
+    "query": "avg(last_5m):avg:http.can_connect{url:https://gracecommunitychurch.org/media} < 1",
+    "message": "Grace Community Church media page is down - Sunday sermon recordings and meditation links unavailable.",
+    "overall_state": "OK",
+    "priority": "3",
+    "tags": "service:church-media;host:church-web-01",
+    "created": "2025-11-18T10:00:00-06:00",
+    "modified": "2026-01-12T10:00:00-06:00"
+  }
+]

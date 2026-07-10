@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finca Miles | Estate Operations Dashboard</title>
+<style>
+  :root{
+    --bg:#11150f; --panel:#1b2118; --panel2:#222a1d; --line:#2f3a26;
+    --txt:#e7ecdd; --mut:#9aa888; --teal:#4fb0a3; --amber:#e0a73a; --green:#7cb342; --rust:#cf6b3a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);
+    background-image:radial-gradient(circle at 90% -10%,rgba(79,176,163,.10),transparent 40%);min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    padding:20px 30px;border-bottom:1px solid var(--line);background:rgba(17,21,15,.85);position:sticky;top:0;z-index:20;backdrop-filter:blur(6px)}
+  .ttl{display:flex;align-items:center;gap:14px}
+  .mark{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--teal));
+    display:grid;place-items:center;font-weight:800;color:#0e120b;font-size:1.1rem}
+  h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+  .sub{font-size:.78rem;color:var(--mut);letter-spacing:2px;text-transform:uppercase}
+  .meta{font-size:.8rem;color:var(--mut);text-align:right}
+  .meta b{color:var(--amber)}
+  .wrap{padding:26px 30px;max-width:1180px;margin:0 auto}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-20px;top:-20px;width:80px;height:80px;border-radius:50%;background:rgba(124,179,66,.08)}
+  .kpi .lab{font-size:.72rem;color:var(--mut);letter-spacing:1.4px;text-transform:uppercase}
+  .kpi .val{font-size:1.9rem;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+  .kpi .val small{font-size:.9rem;color:var(--mut);font-weight:400}
+  .kpi .trend{font-size:.76rem;margin-top:6px}
+  .up{color:var(--green)} .flat{color:var(--amber)}
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:18px}
+  .panel h2{font-size:1rem;font-weight:600;margin-bottom:4px}
+  .panel .hint{font-size:.78rem;color:var(--mut);margin-bottom:16px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{font-size:.78rem;padding:7px 15px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--mut);cursor:pointer;transition:.2s}
+  .chip:hover{border-color:var(--teal);color:var(--txt)}
+  .chip.on{background:var(--teal);color:#08120f;border-color:var(--teal);font-weight:600}
+  /* bar chart */
+  .bars{display:flex;align-items:flex-end;gap:14px;height:230px;padding-top:10px;border-bottom:1px solid var(--line)}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+  .bar .col{width:70%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--green),var(--teal));
+    height:0;transition:height 1s cubic-bezier(.2,.8,.2,1);position:relative;min-height:2px}
+  .bar.dim .col{background:linear-gradient(180deg,#3a4a2c,#2c3a26);opacity:.5}
+  .bar .col:hover{filter:brightness(1.15)}
+  .bar .tip{position:absolute;top:-30px;background:#0c0f09;border:1px solid var(--line);padding:3px 8px;border-radius:6px;
+    font-size:.72rem;white-space:nowrap;opacity:0;transition:.2s;pointer-events:none}
+  .bar:hover .tip{opacity:1}
+  .bar .lab{font-size:.74rem;color:var(--mut);margin-top:8px}
+  /* donut */
+  .donut-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .legend{font-size:.84rem}
+  .legend div{display:flex;align-items:center;gap:8px;margin:7px 0}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:.74rem;letter-spacing:1px;text-transform:uppercase}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:hover td{background:rgba(79,176,163,.05)}
+  .pill{font-size:.72rem;padding:2px 9px;border-radius:12px;background:rgba(224,167,58,.15);color:var(--amber)}
+  .pill.org{background:rgba(124,179,66,.16);color:var(--green)}
+  /* irrigation line */
+  .line-wrap{margin-top:4px}
+  footer{border-top:1px solid var(--line);color:var(--mut);font-size:.8rem;padding:22px 30px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:840px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="ttl">
+    <div class="mark">FM</div>
+    <div><h1>Estate Operations Dashboard</h1><div class="sub">Finca Miles, Baena</div></div>
+  </div>
+  <div class="meta">Season <b>2025-26</b><br>Updated 18 Feb 2026</div>
+</header>
+
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi"><div class="lab">Olives milled</div><div class="val">78,700 <small>kg</small></div><div class="trend up">8 parcels, same-day milling</div></div>
+    <div class="kpi"><div class="lab">Oil produced</div><div class="val">11,812 <small>L</small></div><div class="trend up">Avg yield 15.0%</div></div>
+    <div class="kpi"><div class="lab">Gross revenue</div><div class="val">94,964 <small>EUR</small></div><div class="trend flat">Premium plus pool</div></div>
+    <div class="kpi"><div class="lab">Flagship panel</div><div class="val">86.5 <small>/100</small></div><div class="trend up">Lot MIL-2526-006</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Yield by parcel</h2>
+      <div class="hint">Oil produced per parcel in litres. Filter by grove to compare blocks.</div>
+      <div class="filters" id="filters">
+        <button class="chip on" data-g="all">All groves</button>
+        <button class="chip" data-g="N">North</button>
+        <button class="chip" data-g="E">East (organic)</button>
+        <button class="chip" data-g="S">South</button>
+        <button class="chip" data-g="O">West and Casa</button>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Output allocation</h2>
+      <div class="hint">Where this season's oil goes.</div>
+      <div class="donut-row">
+        <svg width="170" height="170" viewBox="0 0 42 42" id="donut">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#2c3a26" stroke-width="6"></circle>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#7cb342" stroke-width="6"
+            stroke-dasharray="60 40" stroke-dashoffset="25" id="seg1" style="transition:stroke-dasharray 1.1s ease"></circle>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#4fb0a3" stroke-width="6"
+            stroke-dasharray="40 60" stroke-dashoffset="-35" id="seg2" style="transition:stroke-dasharray 1.1s ease"></circle>
+          <text x="21" y="20" text-anchor="middle" fill="#e7ecdd" font-size="6" font-weight="700">11,812</text>
+          <text x="21" y="26" text-anchor="middle" fill="#9aa888" font-size="3">litres</text>
+        </svg>
+        <div class="legend">
+          <div><span class="dot" style="background:#4fb0a3"></span> Premium single estate, 40%</div>
+          <div><span class="dot" style="background:#7cb342"></span> Cooperative pool, 60%</div>
+          <div style="color:var(--mut);margin-top:12px;font-size:.78rem">Premium lots carry a certificate of analysis and trace to parcel and pressing.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Premium lot quality</h2>
+      <div class="hint">Early, low-acidity lots carry the highest polyphenols and best panel scores.</div>
+      <table>
+        <thead><tr><th>Lot</th><th>Parcel</th><th class="num">Acidity %</th><th class="num">Polyphenols</th><th class="num">Panel</th></tr></thead>
+        <tbody>
+          <tr><td>MIL-2526-006</td><td>N-1</td><td class="num">0.16</td><td class="num">612</td><td class="num">86.5</td></tr>
+          <tr><td>MIL-2526-001</td><td>N-1</td><td class="num">0.18</td><td class="num">588</td><td class="num">85.0</td></tr>
+          <tr><td>MIL-2526-018</td><td>S-1</td><td class="num">0.20</td><td class="num">392</td><td class="num">82.0</td></tr>
+          <tr><td>MIL-2526-027</td><td>S-1</td><td class="num">0.33</td><td class="num">300</td><td class="num">78.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Irrigation modernisation</h2>
+      <div class="hint">Flood to precision drip, parcel by parcel. Tap a phase.</div>
+      <div class="filters">
+        <button class="chip on" id="p1">Phase 1, done</button>
+        <button class="chip" id="p2">Phase 2, planned</button>
+      </div>
+      <div class="line-wrap" id="phaseBox">
+        <table>
+          <tr><td>Parcel</td><td class="num" id="pPar">N-1, Norte Alto</td></tr>
+          <tr><td>Area</td><td class="num" id="pArea">6.0 ha</td></tr>
+          <tr><td>Status</td><td class="num"><span class="pill org" id="pStat">Drip since Nov 2025</span></td></tr>
+          <tr><td>Controller</td><td class="num" id="pCtrl">HydroSense</td></tr>
+          <tr><td>Project value</td><td class="num" id="pVal">in service</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Parcel ledger</h2>
+    <div class="hint">Full season detail. East grove parcels are in organic conversion, certification expected first quarter 2027.</div>
+    <table>
+      <thead><tr><th>Parcel</th><th>Variety</th><th class="num">Olives kg</th><th class="num">Oil L</th><th class="num">Yield %</th><th>Note</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <div>Finca Miles, Carretera de Cordoba, 14850 Baena, Cordoba</div>
+  <div>Operational view, internal use. Figures reconcile to the season production report.</div>
+</footer>
+
+<script>
+  var parcels=[
+    {id:'C-1',g:'O',v:'Picual and Hojiblanca',kg:3600,oil:541,y:15.0,note:'House block'},
+    {id:'E-1',g:'E',v:'Picual',kg:10000,oil:1501,y:15.0,note:'organic'},
+    {id:'E-2',g:'E',v:'Picual',kg:7000,oil:994,y:14.2,note:'organic'},
+    {id:'E-3',g:'E',v:'Hojiblanca',kg:5400,oil:807,y:14.9,note:'organic'},
+    {id:'N-1',g:'N',v:'Picual',kg:18500,oil:2785,y:15.1,note:'drip'},
+    {id:'N-2',g:'N',v:'Picual',kg:14000,oil:2162,y:15.4,note:'Phase 2'},
+    {id:'O-1',g:'O',v:'Hojiblanca',kg:8200,oil:1270,y:15.5,note:'West'},
+    {id:'S-1',g:'S',v:'Picual',kg:12000,oil:1752,y:14.6,note:'South'}
+  ];
+  var maxOil=Math.max.apply(null,parcels.map(function(p){return p.oil}));
+  var barsEl=document.getElementById('bars');
+  function drawBars(filter){
+    barsEl.innerHTML='';
+    parcels.forEach(function(p){
+      var on=(filter==='all'||p.g===filter);
+      var b=document.createElement('div');
+      b.className='bar'+(on?'':' dim');
+      b.innerHTML='<div class="tip">'+p.id+': '+p.oil.toLocaleString()+' L</div><div class="col"></div><div class="lab">'+p.id+'</div>';
+      barsEl.appendChild(b);
+      var col=b.querySelector('.col');
+      setTimeout(function(){col.style.height=(p.oil/maxOil*100)+'%';},40);
+    });
+  }
+  drawBars('all');
+  document.getElementById('filters').addEventListener('click',function(e){
+    if(e.target.classList.contains('chip')){
+      this.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on')});
+      e.target.classList.add('on');
+      drawBars(e.target.dataset.g);
+    }
+  });
+  // ledger
+  var led=document.getElementById('ledger');
+  parcels.forEach(function(p){
+    var org=p.note==='organic';
+    led.innerHTML+='<tr><td>'+p.id+'</td><td>'+p.v+'</td><td class="num">'+p.kg.toLocaleString()+
+      '</td><td class="num">'+p.oil.toLocaleString()+'</td><td class="num">'+p.y.toFixed(1)+
+      '</td><td>'+(org?'<span class="pill org">organic</span>':'<span class="pill">'+p.note+'</span>')+'</td></tr>';
+  });
+  // donut animation on load
+  window.addEventListener('load',function(){
+    document.getElementById('seg1').setAttribute('stroke-dasharray','60 40');
+    document.getElementById('seg2').setAttribute('stroke-dasharray','40 60');
+  });
+  // irrigation phase toggle
+  var p1=document.getElementById('p1'),p2=document.getElementById('p2');
+  var data={
+    one:{par:'N-1, Norte Alto',area:'6.0 ha',stat:'Drip since Nov 2025',ctrl:'HydroSense',val:'in service',cls:'pill org'},
+    two:{par:'N-2, Norte Bajo',area:'5.5 ha',stat:'Scheduled Oct 2026',ctrl:'HydroSense, extended',val:'47,800 EUR, 40% EU grant',cls:'pill'}
+  };
+  function setPhase(d){
+    document.getElementById('pPar').textContent=d.par;
+    document.getElementById('pArea').textContent=d.area;
+    var s=document.getElementById('pStat');s.textContent=d.stat;s.className=d.cls;
+    document.getElementById('pCtrl').textContent=d.ctrl;
+    document.getElementById('pVal').textContent=d.val;
+  }
+  p1.addEventListener('click',function(){p1.classList.add('on');p2.classList.remove('on');setPhase(data.one)});
+  p2.addEventListener('click',function(){p2.classList.add('on');p1.classList.remove('on');setPhase(data.two)});
+</script>
+</body>
+</html>

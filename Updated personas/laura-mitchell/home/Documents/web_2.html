@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Dashboard</title>
+<style>
+  :root{--bg:#15181c;--panel:#1e2228;--line:#2c323a;--text:#e8e3d8;--muted:#8b93a0;
+    --teal:#5fb3a3;--amber:#e0b15e;--rose:#d68f8f;--violet:#9b8cc4}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  header.bar{display:flex;justify-content:space-between;align-items:center;padding:18px 32px;
+    border-bottom:1px solid var(--line);background:var(--panel)}
+  header .logo{font-size:1.1rem;letter-spacing:.04em}
+  header .logo span{color:var(--teal)}
+  .tabs{display:flex;gap:6px}
+  .tab{background:none;border:1px solid var(--line);color:var(--muted);padding:8px 16px;border-radius:20px;
+    font-size:.78rem;cursor:pointer;transition:all .25s}
+  .tab.active,.tab:hover{background:var(--teal);color:#10241f;border-color:var(--teal)}
+  main{padding:28px 32px;max-width:1180px;margin:0 auto}
+  h1.page{font-size:1.4rem;font-weight:600;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.86rem;margin-bottom:26px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin-bottom:26px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;
+    opacity:0;transform:translateY(14px);animation:in .6s forwards}
+  .kpi:nth-child(2){animation-delay:.1s}.kpi:nth-child(3){animation-delay:.2s}.kpi:nth-child(4){animation-delay:.3s}
+  @keyframes in{to{opacity:1;transform:translateY(0)}}
+  .kpi .label{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.1em}
+  .kpi .val{font-size:2rem;font-weight:600;margin-top:8px}
+  .kpi .delta{font-size:.8rem;margin-top:4px}
+  .up{color:var(--teal)}.flat{color:var(--amber)}
+  .panels{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .panel h2{font-size:1rem;font-weight:600;margin-bottom:18px}
+  .bars{display:flex;align-items:flex-end;gap:14px;height:200px;padding-top:10px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+  .bar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--teal),#3c7a6e);
+    height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .bar-col span{font-size:.72rem;color:var(--muted)}
+  .legend{display:flex;flex-direction:column;gap:14px}
+  .lg{display:flex;align-items:center;justify-content:space-between;font-size:.86rem}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+  .ring-wrap{display:flex;justify-content:center;margin-bottom:18px}
+  footer.bar{margin-top:30px;padding:18px 32px;border-top:1px solid var(--line);color:var(--muted);
+    font-size:.78rem;display:flex;justify-content:space-between}
+  @media(max-width:780px){.panels{grid-template-columns:1fr}.tabs{display:none}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="logo">Laura Creates <span>Studio Console</span></div>
+  <div class="tabs">
+    <button class="tab active">Overview</button>
+    <button class="tab">Clients</button>
+    <button class="tab">Lettering</button>
+  </div>
+</header>
+
+<main>
+  <h1 class="page">Quarter Overview</h1>
+  <div class="sub">Trailing period through February 2026. Figures in US dollars.</div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="label">Studio Revenue</div><div class="val" data-count="3200">0</div><div class="delta up">+8% on prior month</div></div>
+    <div class="kpi"><div class="label">Active Clients</div><div class="val" data-count="5">0</div><div class="delta flat">Steady retainers</div></div>
+    <div class="kpi"><div class="label">Lettering Bookings</div><div class="val" data-count="6">0</div><div class="delta up">+2 this season</div></div>
+    <div class="kpi"><div class="label">Followers</div><div class="val" data-count="5200">0</div><div class="delta up">Growing slowly</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Monthly Income, October to February</h2>
+      <div class="bars" id="bars">
+        <div class="bar-col"><div class="bar" data-h="62"></div><span>Oct</span></div>
+        <div class="bar-col"><div class="bar" data-h="74"></div><span>Nov</span></div>
+        <div class="bar-col"><div class="bar" data-h="58"></div><span>Dec</span></div>
+        <div class="bar-col"><div class="bar" data-h="80"></div><span>Jan</span></div>
+        <div class="bar-col"><div class="bar" data-h="92"></div><span>Feb</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Income Mix</h2>
+      <div class="ring-wrap">
+        <svg width="150" height="150" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#2c323a" stroke-width="6"></circle>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#5fb3a3" stroke-width="6"
+            stroke-dasharray="60 40" stroke-dashoffset="25" transform="rotate(-90 21 21)"></circle>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e0b15e" stroke-width="6"
+            stroke-dasharray="25 75" stroke-dashoffset="-35" transform="rotate(-90 21 21)"></circle>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#9b8cc4" stroke-width="6"
+            stroke-dasharray="15 85" stroke-dashoffset="-60" transform="rotate(-90 21 21)"></circle>
+        </svg>
+      </div>
+      <div class="legend">
+        <div class="lg"><span><span class="dot" style="background:#5fb3a3"></span>Brand and identity</span><b>60%</b></div>
+        <div class="lg"><span><span class="dot" style="background:#e0b15e"></span>Lettering and events</span><b>25%</b></div>
+        <div class="lg"><span><span class="dot" style="background:#9b8cc4"></span>Workshops</span><b>15%</b></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="bar">
+  <span>Laura Creates Studio LLC</span>
+  <span>Internal view, refreshed February 2026</span>
+</footer>
+
+<script>
+  function animate(){
+    document.querySelectorAll('.bar').forEach(function(b){b.style.height=b.dataset.h+'%';});
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var target=+el.dataset.count, start=0, t0=null;
+      function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/1100,1);
+        el.textContent=Math.floor(p*target).toLocaleString(); if(p<1)requestAnimationFrame(step);}
+      requestAnimationFrame(step);
+    });
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      t.classList.add('active');
+    });
+  });
+  window.addEventListener('load',animate);
+</script>
+</body>
+</html>

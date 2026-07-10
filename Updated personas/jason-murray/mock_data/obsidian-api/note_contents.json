@@ -1,0 +1,106 @@
+[
+  {
+    "path": "Daily/2026-10-12.md",
+    "content": "2026-10-12\\n\\n- [ ] Prep notes for [[Work/Billing refactor notes|billing refactor]] 1:1 with Marcus on Wed\\n- [ ] Finish [[System Design/Rate limiter|rate limiter]] re-read before sprint planning\\n- On-call rotation starts next Mon (Oct 19) — reread [[Work/On-call runbook notes]].\\n- Cooked stir-fry tonight, finally nailed the velveting step.\\n"
+  },
+  {
+    "path": "Daily/2026-10-09.md",
+    "content": "2026-10-09\\n\\n- Friday wrap at 5:30, dinner with Jake at Pike Street Grill.\\n- Shipped the pagination fix on billing-api. Notes in [[Work/Billing refactor notes]].\\n- Idea: apply [[Go/Worker pools]] pattern to Ridgeline's link-fetcher backlog.\\n"
+  },
+  {
+    "path": "Reflections/Weekly 2026-W41.md",
+    "content": "Weekly reflection — 2026-W41\\n\\n## What went well\\n- Got the billing pagination bug fixed and reviewed. See [[Work/Billing refactor notes]].\\n- Re-read [[System Design/Rate limiter]] and actually understood the sliding-window-counter tradeoff this time.\\n\\n## What was hard\\n- Context cancellation propagation bit me again in a goroutine leak. Reviewed [[Go/Context package]].\\n\\n## Next week\\n- On-call rotation Oct 19-25. Skim [[Work/On-call runbook notes]] Friday.\\n- Keep chipping at [[Ridgeline/Architecture decisions]] — the queue choice is still open.\\n\\n## Personal\\n- Feeling more settled at Ridgeline. A year in and I can actually navigate the codebase without grep panic.\\n"
+  },
+  {
+    "path": "Reflections/Weekly 2026-W36.md",
+    "content": "Weekly reflection — 2026-W36\\n\\n## What went well\\n- Finished [[Databases/Postgres indexing]] notes and applied a partial index that dropped a slow query from 1.2s to 40ms.\\n- Paired with Priya on the K8s operator; [[Infra/K8s operators]] notes helped.\\n\\n## What was hard\\n- Still shaky on transaction isolation. Went back to [[DDIA/Ch7 Transactions]].\\n\\n## Next week\\n- Start [[System Design/Rate limiter]] design study.\\n- Ridgeline: decide on the search backend.\\n"
+  },
+  {
+    "path": "Go/Concurrency patterns.md",
+    "content": "Go concurrency patterns\\n\\nNotes from daily work + The Go Programming Language. Related: [[Go/Worker pools]], [[Go/Context package]].\\n\\n## Fan-out / fan-in\\n- Spawn N workers reading from one channel, merge results into one output channel.\\n- Always close the input channel from the producer side, never the consumer.\\n\\n## Pipeline\\n- Each stage is a function taking an inbound channel and returning an outbound one.\\n- Use a done channel (or context.Context) to signal cancellation downstream.\\n\\n## sync primitives\\n- sync.WaitGroup for waiting on a known set of goroutines.\\n- sync.Once for lazy init. errgroup.Group when any goroutine error should cancel the rest.\\n\\n## Gotchas\\n- Loop variable capture in goroutines (pre-1.22) — pass as arg.\\n- Leaked goroutines blocked on a channel nobody writes to. See [[Go/Context package]].\\n"
+  },
+  {
+    "path": "Go/Error handling.md",
+    "content": "Go error handling\\n\\n## Wrapping\\n- fmt.Errorf(\\\"doing X: %w\\\", err) to wrap; errors.Is / errors.As to inspect.\\n- Wrap with context at each layer, but don't wrap then immediately log — pick one.\\n\\n## Sentinel errors\\n- Define var ErrNotFound = errors.New(\\\"not found\\\") for expected branches.\\n- Prefer typed errors when callers need fields (e.g. a ValidationError with a field name).\\n\\n## At the boundary\\n- HTTP handlers translate domain errors to status codes in one place.\\n- Used this in Ridgeline — see [[Ridgeline/Architecture decisions]].\\n\\n## Don't\\n- Don't panic for ordinary control flow. Reserve panic for truly unrecoverable init.\\n"
+  },
+  {
+    "path": "Go/Context package.md",
+    "content": "Go context package\\n\\n## Rules of thumb\\n- Pass ctx as the first arg, never store it in a struct.\\n- context.Background() at the top (main, tests); context.TODO() when unsure.\\n- Always defer cancel() after WithCancel / WithTimeout to avoid leaks.\\n\\n## Cancellation\\n- Select on ctx.Done() in any blocking loop. Return ctx.Err().\\n- This is how you stop the goroutine leaks noted in [[Go/Concurrency patterns]].\\n\\n## Values\\n- context.WithValue only for request-scoped data (trace ids), not optional params.\\n\\n## Real example\\n- Ridgeline's link-fetcher uses a 10s WithTimeout per outbound fetch.\\n"
+  },
+  {
+    "path": "Go/Worker pools.md",
+    "content": "Go worker pools\\n\\nA bounded pool to cap concurrency. Builds on [[Go/Concurrency patterns]].\\n\\ngo\\njobs := make(chan Job)\\nfor i := 0; i < n; i++ {\\n    go worker(ctx, jobs, results)\\n}\\n\\n\\n## Notes\\n- Size the pool to the bottleneck (CPU vs IO). For Ridgeline's fetcher (IO-bound) I run ~20 workers.\\n- Use context for shutdown — see [[Go/Context package]].\\n- Backpressure comes free from the unbuffered jobs channel.\\n"
+  },
+  {
+    "path": "Databases/Postgres indexing.md",
+    "content": "Postgres indexing\\n\\n## B-tree (default)\\n- Good for equality + range. Leftmost-prefix rule for composite indexes.\\n\\n## Partial indexes\\n- CREATE INDEX ... WHERE status = 'active' — huge win for the billing table at work.\\n- Dropped a hot query from 1.2s to 40ms (see [[Reflections/Weekly 2026-W36]]).\\n\\n## Covering / INCLUDE\\n- Index-only scans when all selected cols are in the index.\\n\\n## GIN\\n- For jsonb and full-text. Ridgeline tag search uses a GIN index on tags.\\n\\n## Check with\\n- EXPLAIN (ANALYZE, BUFFERS). More in [[Databases/Postgres tuning notes]].\\n"
+  },
+  {
+    "path": "Databases/Postgres tuning notes.md",
+    "content": "Postgres tuning notes\\n\\n- work_mem is per-operation × connections — beware OOM on bursty workloads.\\n- shared_buffers: 25% of RAM as a starting point.\\n- effective_cache_size: ~50-75% of RAM, hint for the planner.\\n- Vacuum/analyze after bulk loads; watch for bloat.\\n- Connection pooling via pgbouncer for the homelab Ridgeline DB.\\n- Indexing strategy lives in [[Databases/Postgres indexing]].\\n"
+  },
+  {
+    "path": "Infra/K8s operators.md",
+    "content": "Kubernetes operators\\n\\n## Pattern\\n- CRD defines desired state; controller reconciles actual -> desired in a loop.\\n- Reconcile must be idempotent and level-triggered (not edge-triggered).\\n\\n## Building blocks\\n- controller-runtime (Go). Watch -> queue -> Reconcile(req).\\n- Set owner references so child objects get garbage collected.\\n\\n## Homelab\\n- Ran one on my homelab k8s cluster to manage Ridgeline deploys. See [[Ridgeline/Architecture decisions]].\\n\\n## Gotchas\\n- Don't block in Reconcile; requeue with backoff instead.\\n"
+  },
+  {
+    "path": "Infra/Terraform modules.md",
+    "content": "Terraform modules\\n\\n## Structure\\n- A module = inputs (variables), resources, outputs. Keep them small and composable.\\n- Pin provider + module versions. Remote state in S3 with DynamoDB lock at work.\\n\\n## Patterns\\n- Use for_each over count when items have stable keys (avoids destroy/recreate churn).\\n- terraform plan in CI, apply gated on review.\\n\\n## Homelab\\n- I keep a small module for the homelab DNS + Cloudflare records.\\n"
+  },
+  {
+    "path": "Infra/AWS Lambda notes.md",
+    "content": "AWS Lambda notes\\n\\n## Cold starts\\n- Go binaries cold-start fast (~50-100ms). Provisioned concurrency for latency-sensitive paths.\\n\\n## Patterns\\n- Keep handlers thin; init clients outside the handler for reuse across invocations.\\n- Idempotency keys for anything triggered by SQS/SNS (at-least-once delivery).\\n\\n## At work\\n- A few Lambdas handle webhook ingestion feeding the billing pipeline. See [[Work/Billing refactor notes]].\\n"
+  },
+  {
+    "path": "System Design/Rate limiter.md",
+    "content": "Rate limiter design\\n\\n## Algorithms\\n- Token bucket: smooth, allows bursts up to bucket size.\\n- Leaky bucket: smooths output, no bursts.\\n- Fixed window: simple but boundary spikes.\\n- Sliding window counter: best balance — finally clicked this week (see [[Reflections/Weekly 2026-W41]]).\\n\\n## Distributed\\n- Redis with Lua for atomic check-and-decrement.\\n- Consistent hashing to shard limiter keys — see [[System Design/Consistent hashing]].\\n\\n## Ridgeline\\n- Per-API-key token bucket on the public Ridgeline API.\\n"
+  },
+  {
+    "path": "System Design/URL shortener.md",
+    "content": "URL shortener design\\n\\n## Core\\n- Generate short code: base62 of an auto-increment id, or a hash + collision check.\\n- KV store maps code -> long URL. Read-heavy, cache aggressively.\\n\\n## Scale\\n- Partition by code prefix; see [[System Design/Consistent hashing]].\\n- 301 vs 302: use 302 if you want click analytics.\\n\\n## Notes\\n- Ridgeline reuses a similar short-code scheme for shareable bookmark links.\\n"
+  },
+  {
+    "path": "System Design/Consistent hashing.md",
+    "content": "Consistent hashing\\n\\n## Why\\n- Adding/removing a node only remaps ~1/N of keys instead of all.\\n\\n## How\\n- Hash nodes + keys onto a ring; key goes to the next node clockwise.\\n- Virtual nodes to even out the distribution.\\n\\n## Used in\\n- Distributed [[System Design/Rate limiter]] sharding.\\n- DDIA covers this under partitioning — see [[DDIA/Ch6 Partitioning]].\\n"
+  },
+  {
+    "path": "DDIA/Ch5 Replication.md",
+    "content": "DDIA Ch5 — Replication\\n\\n## Leader-based\\n- Single leader, async vs sync replication. Sync = durable but slow; async = fast but can lose writes on failover.\\n\\n## Replication lag problems\\n- Read-your-writes, monotonic reads, consistent prefix reads.\\n\\n## Multi-leader / leaderless\\n- Conflict resolution (LWW, version vectors). Quorum reads/writes (w + r > n).\\n\\n## Connects to\\n- Partitioning in [[DDIA/Ch6 Partitioning]] and transactions in [[DDIA/Ch7 Transactions]].\\n"
+  },
+  {
+    "path": "DDIA/Ch6 Partitioning.md",
+    "content": "DDIA Ch6 — Partitioning\\n\\n## Strategies\\n- By key range: efficient range scans, risk of hot spots.\\n- By hash of key: even distribution, loses range queries.\\n\\n## Rebalancing\\n- Fixed number of partitions; dynamic partitioning. Avoid hash-mod-N (remaps everything).\\n- This is exactly the [[System Design/Consistent hashing]] motivation.\\n\\n## Secondary indexes\\n- Local (document-partitioned) vs global (term-partitioned).\\n\\n## See also\\n- [[DDIA/Ch5 Replication]].\\n"
+  },
+  {
+    "path": "DDIA/Ch7 Transactions.md",
+    "content": "DDIA Ch7 — Transactions\\n\\n## ACID\\n- The 'I' is the slippery one. Isolation levels trade safety for performance.\\n\\n## Isolation levels\\n- Read committed -> snapshot isolation (MVCC) -> serializable.\\n- Anomalies: dirty reads, non-repeatable reads, phantoms, write skew.\\n\\n## Serializable\\n- Actual serial execution, 2PL, or SSI (serializable snapshot isolation).\\n\\n## Notes\\n- Postgres uses MVCC for snapshot isolation. Tuning in [[Databases/Postgres tuning notes]].\\n- Came back to this twice — see [[Reflections/Weekly 2026-W36]].\\n"
+  },
+  {
+    "path": "Ridgeline/Architecture decisions.md",
+    "content": "Ridgeline architecture decisions\\n\\nSelf-hosted read-it-later tool. Go + Postgres backend, React/Tailwind frontend, homelab k8s.\\n\\n## ADR-001: Monolith first\\n- Single Go binary. Split later only if needed. No premature microservices.\\n\\n## ADR-002: Postgres for everything\\n- Bookmarks, tags (GIN index), full-text search. Schema in [[Ridgeline/Postgres schema notes]].\\n\\n## ADR-003: Link fetcher\\n- Bounded [[Go/Worker pools]] with per-fetch [[Go/Context package]] timeouts.\\n\\n## Open\\n- [ ] Job queue: in-Postgres (SKIP LOCKED) vs Redis. Leaning Postgres to avoid another moving part.\\n- [ ] Search: keep Postgres FTS or add a dedicated engine.\\n"
+  },
+  {
+    "path": "Ridgeline/Postgres schema notes.md",
+    "content": "Ridgeline Postgres schema notes\\n\\n## Tables\\n- bookmarks(id, user_id, url, title, created_at, archived)\\n- tags(id, name), bookmark_tags(bookmark_id, tag_id)\\n\\n## Indexes\\n- GIN on a tsvector of title+description for FTS.\\n- Partial index WHERE archived = false for the active list. Pattern from [[Databases/Postgres indexing]].\\n\\n## Notes\\n- SELECT ... FOR UPDATE SKIP LOCKED candidate for the fetch queue (see [[Ridgeline/Architecture decisions]]).\\n"
+  },
+  {
+    "path": "Work/On-call runbook notes.md",
+    "content": "On-call runbook notes\\n\\nMy personal cheatsheet before the Oct 19-25 rotation.\\n\\n## First response\\n- Ack the PagerDuty page, check Datadog dashboard, look at the recent deploys.\\n- Communicate early in the incident channel, even just 'investigating'.\\n\\n## Common pages\\n- billing-api p95 latency -> check DB connections + slow queries ([[Databases/Postgres indexing]]).\\n- Webhook backlog -> Lambda concurrency limit ([[Infra/AWS Lambda notes]]).\\n\\n## Escalation\\n- Dave owns billing-service; Marcus is the manager escalation.\\n- Postmortem template in the team wiki.\\n"
+  },
+  {
+    "path": "Work/Billing refactor notes.md",
+    "content": "Billing refactor notes\\n\\nContext for the Oct 14 1:1 with Marcus.\\n\\n## Done\\n- Fixed the pagination bug (off-by-one on the cursor) — shipped Oct 9.\\n\\n## In progress\\n- Extracting the invoice calculation into a pure function so it's unit-testable.\\n- Error wrapping cleanup using patterns from [[Go/Error handling]].\\n\\n## Risks\\n- The webhook ingestion Lambdas need idempotency keys ([[Infra/AWS Lambda notes]]).\\n"
+  },
+  {
+    "path": "Books/Go Programming Language notes.md",
+    "content": "The Go Programming Language — notes\\n\\nWorking through Donovan & Kernighan in my first months at Ridgeline.\\n\\n## Ch8-9: Goroutines & channels\\n- This is the foundation for [[Go/Concurrency patterns]].\\n- select, buffered vs unbuffered, the happens-before guarantees.\\n\\n## Ch5: Functions\\n- deferred calls, error handling idioms -> [[Go/Error handling]].\\n\\n## Takeaway\\n- The language is small on purpose. Re-reading beats skimming.\\n"
+  },
+  {
+    "path": "Reflections/First month at Ridgeline.md",
+    "content": "First month at Ridgeline\\n\\nStarted Aug 2025 as a junior backend eng. Writing this to remember the beginner feeling.\\n\\n## Wins\\n- Shipped my first PR (a small log-level fix) in week two.\\n- Marcus is a patient manager; Priya has been a great unofficial mentor.\\n\\n## Hard\\n- The Go codebase is bigger than anything from school. Reading [[Books/Go Programming Language notes]] on the side.\\n- Imposter syndrome is real, but everyone googles things.\\n\\n## Goal\\n- By next summer, own a service end to end. (Update: a year in and billing is basically mine.)\\n"
+  },
+  {
+    "path": "Inbox/quick capture.md",
+    "content": "- idea: add SKIP LOCKED job queue to Ridgeline instead of Redis ([[Ridgeline/Architecture decisions]])\\n- TODO: ask Dave about billing-service escalation path before on-call week\\n- read: that blog post on Postgres index-only scans\\n- gift idea: mechanical keyboard kit for Jake's birthday (Oct 17)\\n"
+  }
+]

@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily symptom tracker · Heather Cole</title>
+<meta name="description" content="A small interactive tracker for daily pain, energy, and medications. Saves to your browser only.">
+<style>
+  :root{
+    --bg:#fbf7fb;
+    --ink:#26172a;
+    --muted:#7a6b80;
+    --line:#ebe1ec;
+    --card:#ffffff;
+    --primary:#663366;
+    --primary-2:#7d4280;
+    --accent:#d68aa8;
+    --soft:#f1e3ef;
+    --good:#4d9466;
+    --warn:#c67c20;
+    --bad:#b03a52;
+    --shadow:0 8px 28px rgba(60,30,60,.07);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  a{color:var(--primary)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  header{background:var(--primary);color:#fff;padding:14px 0;position:sticky;top:0;z-index:10}
+  .nav{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand-mark{width:34px;height:34px;border-radius:8px;background:var(--accent);color:var(--primary);font-weight:900;display:grid;place-items:center}
+  .brand small{display:block;font-size:11px;color:#e9d3e6;letter-spacing:.5px;text-transform:uppercase;font-weight:500}
+  .nav ul{list-style:none;padding:0;margin:0;display:flex;gap:18px}
+  .nav a{color:#f1d4ed;font-size:14px;font-weight:500;text-decoration:none}
+  .nav a:hover{color:#fff}
+
+  main{padding:32px 0 80px}
+  h1{font-size:32px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);margin:0 0 24px;font-size:15px}
+
+  .grid{display:grid;grid-template-columns:1.1fr 1.4fr;gap:24px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+  .card h2{font-size:18px;margin:0 0 4px}
+  .card .hint{color:var(--muted);font-size:13px;margin:0 0 18px}
+
+  .field{margin-bottom:14px}
+  label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px}
+  label .v{color:var(--primary);font-weight:800;letter-spacing:0;text-transform:none;font-size:13px}
+  input[type=date],input[type=text],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink);background:#fff}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(102,51,102,.12)}
+  textarea{min-height:70px;resize:vertical}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:var(--soft);border-radius:999px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--primary);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--primary);cursor:pointer;border:3px solid #fff}
+
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;background:#fff;cursor:pointer;transition:.15s ease;color:var(--ink)}
+  .pill:hover{border-color:var(--accent)}
+  .pill.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  .meds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .meds .med{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;background:#fff}
+  .meds .med b{font-weight:600}
+  .num{display:flex;align-items:center;gap:6px}
+  .num button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:700}
+  .num button:hover{background:var(--soft)}
+  .num input{width:36px;text-align:center;border:none;font-size:14px;padding:4px;background:transparent}
+
+  .save-row{display:flex;gap:10px;align-items:center;margin-top:8px}
+  .btn{cursor:pointer;border:none;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;transition:.15s ease}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-2)}
+  .btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--soft)}
+  .saved{font-size:13px;color:var(--good);font-weight:600;display:none}
+  .saved.show{display:inline-flex;align-items:center;gap:6px;animation:fadein .3s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  /* dashboard */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .kpi span{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;font-weight:700}
+  .kpi b{display:block;font-size:22px;color:var(--primary);margin-top:4px}
+  .kpi small{color:var(--muted);font-size:11px}
+
+  .chart-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
+  .chart-wrap h3{margin:0 0 6px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  svg{display:block;width:100%;height:auto}
+
+  .heat{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:8px}
+  .heat span{aspect-ratio:1/1;border-radius:4px;background:#f4ecf2;display:grid;place-items:center;font-size:9px;color:#fff;font-weight:700}
+  .heat span.l1{background:#f4ecf2;color:transparent}
+  .heat span.l2{background:#e4c8d8}
+  .heat span.l3{background:#d68aa8}
+  .heat span.l4{background:#a64a72}
+  .heat-key{display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-top:10px}
+  .heat-key span{width:14px;height:14px;border-radius:3px;display:inline-block}
+
+  .log-list{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+  .log{display:grid;grid-template-columns:90px 70px 80px 1fr 30px;gap:8px;font-size:13px;padding:8px 6px;align-items:center;border-bottom:1px dashed var(--line)}
+  .log:last-child{border:none}
+  .log b{color:var(--primary)}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700;text-transform:uppercase}
+  .b-low{background:#e3f2e8;color:var(--good)}
+  .b-med{background:#fbeed1;color:var(--warn)}
+  .b-hi{background:#f8d9df;color:var(--bad)}
+  .del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px}
+  .del:hover{color:var(--bad)}
+
+  footer{background:#33163a;color:#d5c0d3;padding:28px 0;font-size:13px;margin-top:60px}
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:#e9c8e5}
+
+  @media (max-width: 880px){
+    .grid{grid-template-columns:1fr}
+    .kpis{grid-template-columns:1fr 1fr}
+    .heat{grid-template-columns:repeat(7,1fr)}
+    .meds{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><div class="brand-mark">HC</div><div>Daily symptom tracker<small>For the Fox Valley pelvic pain handout</small></div></div>
+    <ul>
+      <li><a href="#log">Log today</a></li>
+      <li><a href="#dash">Dashboard</a></li>
+      <li><a href="#history">History</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>How are you feeling today?</h1>
+  <p class="sub">A small daily log. Saves to your browser only. No accounts, no servers.</p>
+
+  <div class="grid">
+    <!-- form -->
+    <section class="card" id="log">
+      <h2>Today's entry</h2>
+      <p class="hint">Takes about 60 seconds. You can skip anything that doesn't apply.</p>
+
+      <div class="field">
+        <label>Date <span class="v" id="dateLabel"></span></label>
+        <input type="date" id="entryDate">
+      </div>
+
+      <div class="field">
+        <label>Pelvic pain <span class="v" id="painV">3</span> / 10</label>
+        <input type="range" id="pain" min="0" max="10" value="3">
+      </div>
+      <div class="field">
+        <label>Energy <span class="v" id="energyV">6</span> / 10</label>
+        <input type="range" id="energy" min="0" max="10" value="6">
+      </div>
+      <div class="field">
+        <label>Sleep last night <span class="v" id="sleepV">7.5</span> hours</label>
+        <input type="range" id="sleep" min="0" max="12" step="0.5" value="7.5">
+      </div>
+
+      <div class="field">
+        <label>Symptoms today</label>
+        <div class="pills" id="symptoms">
+          <span class="pill" data-s="cramps">Cramps</span>
+          <span class="pill" data-s="spotting">Spotting</span>
+          <span class="pill" data-s="nausea">Nausea</span>
+          <span class="pill" data-s="bloating">Bloating</span>
+          <span class="pill" data-s="fatigue">Fatigue</span>
+          <span class="pill" data-s="headache">Headache</span>
+          <span class="pill" data-s="painful_bm">Painful BM</span>
+          <span class="pill" data-s="back">Back pain</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Medications today</label>
+        <div class="meds">
+          <div class="med"><b>Dienogest 2 mg</b><div class="num"><button data-m="dn" data-d="-1">−</button><input id="med_dn" value="0" readonly><button data-m="dn" data-d="1">+</button></div></div>
+          <div class="med"><b>Naproxen 500 mg</b><div class="num"><button data-m="np" data-d="-1">−</button><input id="med_np" value="0" readonly><button data-m="np" data-d="1">+</button></div></div>
+          <div class="med"><b>Tylenol 500 mg</b><div class="num"><button data-m="ty" data-d="-1">−</button><input id="med_ty" value="0" readonly><button data-m="ty" data-d="1">+</button></div></div>
+          <div class="med"><b>Heat pad sessions</b><div class="num"><button data-m="ht" data-d="-1">−</button><input id="med_ht" value="0" readonly><button data-m="ht" data-d="1">+</button></div></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Note (optional)</label>
+        <textarea id="note"></textarea>
+      </div>
+
+      <div class="save-row">
+        <button class="btn btn-primary" id="saveBtn">Save entry</button>
+        <button class="btn btn-ghost" id="resetBtn" type="button">Clear form</button>
+        <span class="saved" id="saved">Saved to this browser.</span>
+      </div>
+    </section>
+
+    <!-- dashboard -->
+    <section>
+      <div id="dash" class="card" style="padding:20px">
+        <div class="kpis" id="kpis">
+          <div class="kpi"><span>Entries</span><b id="kEntries">0</b><small>this view</small></div>
+          <div class="kpi"><span>Avg pain</span><b id="kAvgPain">n/a</b><small>last 14 days</small></div>
+          <div class="kpi"><span>Naproxen</span><b id="kNap">0</b><small>doses, last 14</small></div>
+          <div class="kpi"><span>High-pain days</span><b id="kHi">0</b><small>≥ 7 / 10</small></div>
+        </div>
+
+        <div class="chart-wrap">
+          <h3>Pain over time</h3>
+          <svg viewBox="0 0 600 200" id="trend" aria-label="Pain over time"></svg>
+        </div>
+
+        <div class="chart-wrap">
+          <h3>Last 14 days · pain heatmap</h3>
+          <div class="heat" id="heat"></div>
+          <div class="heat-key">
+            <span style="background:#f4ecf2"></span>none
+            <span style="background:#e4c8d8"></span>low
+            <span style="background:#d68aa8"></span>med
+            <span style="background:#a64a72"></span>high
+          </div>
+        </div>
+      </div>
+
+      <div id="history" class="card" style="margin-top:18px">
+        <h2>Recent entries</h2>
+        <p class="hint">Last 10 saved. Click the × to remove an entry.</p>
+        <div id="logList" class="log-list"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div>Built by Heather Cole, APRN-NP · Fox Valley Women's Health · For personal use only</div>
+    <div><a href="mailto:hello@heather-cole.com">hello@heather-cole.com</a> · (920) 555-0133</div>
+  </div>
+</footer>
+
+<script>
+const KEY = "hc.tracker.v1";
+const SEED = [
+  { d: "2026-02-12", pain: 2, energy: 7, sleep: 7.5, syms: [], meds:{dn:1,np:0,ty:0,ht:0}, note: "" },
+  { d: "2026-02-11", pain: 3, energy: 6, sleep: 7.0, syms: ["fatigue"], meds:{dn:1,np:0,ty:0,ht:0}, note: "" },
+  { d: "2026-02-10", pain: 6, energy: 4, sleep: 6.0, syms: ["cramps","fatigue"], meds:{dn:1,np:1,ty:0,ht:1}, note: "Back early afternoon" },
+  { d: "2026-02-09", pain: 7, energy: 3, sleep: 5.5, syms: ["cramps","nausea","fatigue"], meds:{dn:1,np:2,ty:1,ht:2}, note: "Long shift, late dinner" },
+  { d: "2026-02-08", pain: 5, energy: 5, sleep: 6.5, syms: ["bloating"], meds:{dn:1,np:1,ty:0,ht:0}, note: "" },
+  { d: "2026-02-07", pain: 3, energy: 7, sleep: 7.0, syms: [], meds:{dn:1,np:0,ty:0,ht:0}, note: "Easy run with Rachel" },
+  { d: "2026-02-06", pain: 2, energy: 7, sleep: 7.5, syms: [], meds:{dn:1,np:0,ty:0,ht:0}, note: "" },
+  { d: "2026-02-05", pain: 3, energy: 6, sleep: 7.0, syms: ["back"], meds:{dn:1,np:0,ty:0,ht:0}, note: "" },
+];
+
+function load(){
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(d) && d.length) return d; } catch(e){}
+  return SEED.slice();
+}
+function save(d){ try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){} }
+
+let data = load();
+
+const today = new Date().toISOString().slice(0,10);
+document.getElementById('entryDate').value = today;
+document.getElementById('dateLabel').textContent = today;
+document.getElementById('entryDate').addEventListener('change', e => document.getElementById('dateLabel').textContent = e.target.value);
+
+['pain','energy','sleep'].forEach(id => {
+  const el = document.getElementById(id);
+  const v = document.getElementById(id+'V');
+  el.addEventListener('input', () => v.textContent = el.value);
+});
+
+// pills
+document.querySelectorAll('#symptoms .pill').forEach(p => {
+  p.addEventListener('click', () => p.classList.toggle('on'));
+});
+
+// medication steppers
+document.querySelectorAll('.num button').forEach(b => {
+  b.addEventListener('click', () => {
+    const id = 'med_' + b.dataset.m;
+    const el = document.getElementById(id);
+    let n = parseInt(el.value||'0',10) + parseInt(b.dataset.d,10);
+    if (n < 0) n = 0;
+    if (n > 8) n = 8;
+    el.value = n;
+  });
+});
+
+function getForm(){
+  return {
+    d: document.getElementById('entryDate').value,
+    pain: +document.getElementById('pain').value,
+    energy: +document.getElementById('energy').value,
+    sleep: +document.getElementById('sleep').value,
+    syms: Array.from(document.querySelectorAll('#symptoms .pill.on')).map(p=>p.dataset.s),
+    meds: {
+      dn:+document.getElementById('med_dn').value,
+      np:+document.getElementById('med_np').value,
+      ty:+document.getElementById('med_ty').value,
+      ht:+document.getElementById('med_ht').value,
+    },
+    note: document.getElementById('note').value.trim()
+  };
+}
+function clearForm(){
+  document.getElementById('entryDate').value = today;
+  document.getElementById('dateLabel').textContent = today;
+  document.getElementById('pain').value=3; document.getElementById('painV').textContent='3';
+  document.getElementById('energy').value=6; document.getElementById('energyV').textContent='6';
+  document.getElementById('sleep').value=7.5; document.getElementById('sleepV').textContent='7.5';
+  document.querySelectorAll('#symptoms .pill').forEach(p=>p.classList.remove('on'));
+  ['dn','np','ty','ht'].forEach(k => document.getElementById('med_'+k).value='0');
+  document.getElementById('note').value='';
+}
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const entry = getForm();
+  data = data.filter(e => e.d !== entry.d);
+  data.unshift(entry);
+  data.sort((a,b)=>b.d.localeCompare(a.d));
+  save(data);
+  render();
+  const s = document.getElementById('saved');
+  s.classList.add('show');
+  setTimeout(()=>s.classList.remove('show'), 2500);
+});
+document.getElementById('resetBtn').addEventListener('click', clearForm);
+
+function render(){
+  // KPIs over last 14 days
+  const cutoff = new Date(Date.parse(today) - 13*86400000);
+  const recent = data.filter(e => new Date(e.d) >= cutoff && new Date(e.d) <= new Date(today));
+  document.getElementById('kEntries').textContent = data.length;
+  const pains = recent.map(e=>e.pain);
+  document.getElementById('kAvgPain').textContent = pains.length ? (pains.reduce((a,b)=>a+b,0)/pains.length).toFixed(1) : 'n/a';
+  document.getElementById('kNap').textContent = recent.reduce((a,e)=>a+(e.meds&&e.meds.np||0),0);
+  document.getElementById('kHi').textContent = recent.filter(e=>e.pain>=7).length;
+
+  // line chart, last 14 days
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.parse(today) - i*86400000).toISOString().slice(0,10);
+    const e = data.find(x=>x.d===d);
+    days.push({d, pain: e ? e.pain : null});
+  }
+  const svg = document.getElementById('trend');
+  const W=600, H=200, padL=30, padR=10, padT=14, padB=28;
+  const xW = W - padL - padR, yH = H - padT - padB;
+  const stepX = xW/(days.length-1);
+  let pts = "", area="";
+  days.forEach((p,i)=>{
+    const x = padL + i*stepX;
+    if (p.pain != null) {
+      const y = padT + yH - (p.pain/10)*yH;
+      pts += (pts ? " L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+      area += (area ? " L" : "M"+x.toFixed(1)+" "+(padT+yH)+" L") + x.toFixed(1) + " " + y.toFixed(1);
+    }
+  });
+  if (area) area += " L"+(padL+xW)+" "+(padT+yH)+" Z";
+  // gridlines + labels
+  let grid="", labels="";
+  for (let v = 0; v <= 10; v += 2) {
+    const y = padT + yH - (v/10)*yH;
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#f0e6ee" stroke-width="1"/>`;
+    labels += `<text x="${padL-6}" y="${y+4}" font-size="10" fill="#888" text-anchor="end">${v}</text>`;
+  }
+  let xlabels="";
+  days.forEach((p,i)=>{
+    if (i % 2 === 0) {
+      const x = padL + i*stepX;
+      const lbl = p.d.slice(5);
+      xlabels += `<text x="${x}" y="${H-8}" font-size="10" fill="#888" text-anchor="middle">${lbl}</text>`;
+    }
+  });
+  // markers
+  let marks = "";
+  days.forEach((p,i)=>{
+    if (p.pain != null) {
+      const x = padL + i*stepX;
+      const y = padT + yH - (p.pain/10)*yH;
+      const c = p.pain>=7?"#b03a52":p.pain>=4?"#c67c20":"#4d9466";
+      marks += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+    }
+  });
+  svg.innerHTML = `
+    ${grid}
+    <path d="${area}" fill="url(#g)" opacity="0.4"/>
+    <path d="${pts}" stroke="#663366" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    ${marks}
+    ${labels}${xlabels}
+    <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#d68aa8"/><stop offset="100%" stop-color="#fbf7fb"/></linearGradient></defs>
+  `;
+
+  // heatmap
+  const heat = document.getElementById('heat');
+  heat.innerHTML = "";
+  days.forEach(p => {
+    const span = document.createElement('span');
+    let cls = 'l1';
+    if (p.pain != null) {
+      if (p.pain >= 7) cls='l4';
+      else if (p.pain >= 4) cls='l3';
+      else if (p.pain >= 1) cls='l2';
+      span.textContent = p.pain;
+    }
+    span.className = cls;
+    span.title = p.d + (p.pain != null ? ' · pain ' + p.pain : ' · no entry');
+    heat.appendChild(span);
+  });
+
+  // log list
+  const list = document.getElementById('logList');
+  list.innerHTML = "";
+  data.slice(0,10).forEach((e,i) => {
+    const div = document.createElement('div');
+    div.className = 'log';
+    const sev = e.pain >= 7 ? 'b-hi' : e.pain >= 4 ? 'b-med' : 'b-low';
+    const sevLbl = e.pain >= 7 ? 'high' : e.pain >= 4 ? 'med' : 'low';
+    div.innerHTML = `
+      <b>${e.d}</b>
+      <span class="badge ${sev}">${sevLbl}</span>
+      <span>Pain ${e.pain}/10</span>
+      <span>${(e.syms||[]).join(', ') || (e.note ? e.note : '')}</span>
+      <button class="del" title="Remove" data-i="${i}">×</button>
+    `;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i;
+    data.splice(i,1);
+    save(data); render();
+  }));
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foster Parent Interest Form</title>
+<style>
+  :root{
+    --bg:#eef3f1; --card:#ffffff; --ink:#22332e; --mut:#6f7e78;
+    --green:#2c7a62; --green-dk:#1f5b49; --gold:#e0a93b; --line:#dde7e3; --err:#c8533f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;
+    min-height:100vh;display:flex;flex-direction:column}
+  header.site{background:var(--green-dk);color:#eafff7;padding:0}
+  header .bar{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;height:60px;padding:0 20px}
+  header .mark{width:32px;height:32px;border-radius:8px;background:var(--gold);color:var(--green-dk);
+    display:grid;place-items:center;font-weight:800}
+  header .t{font-weight:700;letter-spacing:.3px}
+
+  main{flex:1;display:flex;justify-content:center;padding:34px 18px}
+  .card{background:var(--card);width:100%;max-width:640px;border-radius:18px;border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(25,70,55,.10);overflow:hidden;align-self:flex-start}
+
+  .progress{height:6px;background:#e7efeb}
+  .progress .fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:33%;
+    transition:width .4s ease}
+
+  .pad{padding:30px 34px 12px}
+  .step-meta{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:6px}
+  h1{font-size:1.5rem;margin-bottom:4px}
+  .lede{color:var(--mut);margin-bottom:24px;font-size:.96rem}
+
+  .step{display:none;animation:fade .35s ease}
+  .step.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  label{display:block;font-weight:600;font-size:.92rem;margin:16px 0 6px}
+  input,select,textarea{width:100%;font:inherit;padding:12px 13px;border:1.5px solid var(--line);
+    border-radius:10px;background:#fbfdfc;transition:border-color .2s,box-shadow .2s}
+  input:focus,select:focus,textarea:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 3px rgba(44,122,98,.15)}
+  textarea{min-height:92px;resize:vertical}
+  .hint{color:var(--mut);font-size:.8rem;margin-top:4px}
+  .field.bad input,.field.bad select,.field.bad textarea{border-color:var(--err);background:#fdf3f1}
+  .errline{color:var(--err);font-size:.8rem;margin-top:4px;display:none}
+  .field.bad .errline{display:block}
+
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .chip{border:1.5px solid var(--line);border-radius:30px;padding:9px 16px;cursor:pointer;font-size:.9rem;
+    user-select:none;transition:.18s}
+  .chip.on{background:var(--green);color:#fff;border-color:var(--green)}
+
+  .actions{display:flex;justify-content:space-between;align-items:center;padding:18px 34px 30px}
+  .btn{border:0;border-radius:30px;padding:12px 26px;font:inherit;font-weight:700;cursor:pointer;transition:.2s}
+  .btn.primary{background:var(--green);color:#fff}
+  .btn.primary:hover{background:var(--green-dk)}
+  .btn.ghost{background:none;color:var(--green-dk)}
+  .btn.ghost:hover{text-decoration:underline}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .done{text-align:center;padding:46px 34px}
+  .done .ring{width:74px;height:74px;border-radius:50%;background:var(--green);margin:0 auto 18px;
+    display:grid;place-items:center;color:#fff;font-size:2rem;animation:pop .5s ease}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+  footer.site{background:#16302b;color:#9fb4ad;text-align:center;font-size:.85rem;padding:22px}
+  @media(max-width:520px){.pad,.actions{padding-left:20px;padding-right:20px}}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <span class="mark">PR</span>
+    <span class="t">Foster Parent Interest Form</span>
+  </div>
+</header>
+
+<main>
+  <form class="card" id="form" novalidate>
+    <div class="progress"><div class="fill" id="fill"></div></div>
+
+    <div class="pad step active" data-step="1">
+      <div class="step-meta">Step 1 of 3 &middot; About you</div>
+      <h1>Let us start with the basics</h1>
+      <p class="lede">This is the first step toward a fall or spring cohort. Nothing here commits you to anything.</p>
+      <div class="field"><label>Full name</label><input data-req type="text"><div class="errline">Please tell us your name.</div></div>
+      <div class="field"><label>Email</label><input data-req data-email type="email"><div class="errline">Enter a valid email so we can reach you.</div></div>
+      <div class="field"><label>Phone</label><input type="tel"><div class="hint">Evenings are easiest for a call.</div></div>
+    </div>
+
+    <div class="pad step" data-step="2">
+      <div class="step-meta">Step 2 of 3 &middot; Your situation</div>
+      <h1>A little about your household</h1>
+      <p class="lede">There are no wrong answers. We train single parents, renters, and partners of every kind.</p>
+      <div class="field"><label>Which cohort are you aiming for?</label>
+        <select data-req>
+          <option value="">Choose one</option>
+          <option>Fall cohort, starting October</option>
+          <option>Spring cohort, next year</option>
+          <option>Not sure yet, send me details</option>
+        </select><div class="errline">Pick the cohort you have in mind.</div>
+      </div>
+      <div class="field"><label>Which evenings can you commit to?</label>
+        <div class="chips" id="chips">
+          <span class="chip" data-v="Tue">Tuesdays</span>
+          <span class="chip" data-v="Thu">Thursdays</span>
+          <span class="chip" data-v="Both">Both, 6:30 to 9:00 PM</span>
+        </div><div class="hint">Sessions run twice a week for ten weeks.</div>
+      </div>
+    </div>
+
+    <div class="pad step" data-step="3">
+      <div class="step-meta">Step 3 of 3 &middot; In your words</div>
+      <h1>What brought you here?</h1>
+      <p class="lede">A sentence or two is plenty. This helps us prepare for our first call.</p>
+      <div class="field"><label>Why are you thinking about fostering?</label>
+        <textarea data-req></textarea>
+        <div class="errline">A sentence or two helps us prepare.</div>
+      </div>
+      <div class="field"><label>Anything you want us to know?</label>
+        <textarea></textarea>
+      </div>
+    </div>
+
+    <div class="done" id="done" style="display:none">
+      <div class="ring">&#10003;</div>
+      <h1>Your interest is in.</h1>
+      <p class="lede" style="margin-top:8px">Thank you for taking the first step. You will hear from the facilitator within two business days to set up a short intake call. Watch for an email from the training inbox.</p>
+    </div>
+
+    <div class="actions" id="actions">
+      <button type="button" class="btn ghost" id="back" disabled>Back</button>
+      <button type="button" class="btn primary" id="next">Continue</button>
+    </div>
+  </form>
+</main>
+
+<footer class="site">
+  PRIDE Pre-Service Training, Baltimore &middot; Your details are used only to arrange your intake call. Copyright 2026.
+</footer>
+
+<script>
+  var step=1,TOTAL=3;
+  var fill=document.getElementById('fill'),back=document.getElementById('back'),next=document.getElementById('next');
+  function show(){
+    document.querySelectorAll('.step').forEach(function(s){
+      s.classList.toggle('active', +s.getAttribute('data-step')===step);
+    });
+    fill.style.width=(step/TOTAL*100)+'%';
+    back.disabled=(step===1);
+    next.textContent=(step===TOTAL)?'Submit interest':'Continue';
+  }
+  // chips
+  document.getElementById('chips').addEventListener('click',function(e){
+    if(!e.target.classList.contains('chip'))return;
+    this.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+    e.target.classList.add('on');
+  });
+  function validate(){
+    var ok=true;
+    var cur=document.querySelector('.step[data-step="'+step+'"]');
+    cur.querySelectorAll('[data-req]').forEach(function(inp){
+      var f=inp.closest('.field');f.classList.remove('bad');
+      var v=inp.value.trim();
+      if(!v){f.classList.add('bad');ok=false;return;}
+      if(inp.hasAttribute('data-email') && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){f.classList.add('bad');ok=false;}
+    });
+    return ok;
+  }
+  back.onclick=function(){if(step>1){step--;show();}};
+  next.onclick=function(){
+    if(!validate())return;
+    if(step<TOTAL){step++;show();return;}
+    // submit
+    document.querySelectorAll('.step').forEach(function(s){s.style.display='none';});
+    document.getElementById('actions').style.display='none';
+    fill.style.width='100%';
+    document.getElementById('done').style.display='block';
+  };
+  show();
+</script>
+</body>
+</html>

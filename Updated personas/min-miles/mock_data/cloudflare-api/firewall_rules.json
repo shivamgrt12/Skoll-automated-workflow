@@ -1,0 +1,202 @@
+[
+  {
+    "id": "fw0001aaaa",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Block known bad bots",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2024-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0002bbbb",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Challenge high threat score",
+    "action": "challenge",
+    "expression": "(cf.threat_score gt 30)",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2024-01-02T10:00:00.000Z"
+  },
+  {
+    "id": "fw0003cccc",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Allow finca office IP range",
+    "action": "allow",
+    "expression": "(ip.src in {198.51.100.0/24})",
+    "paused": "true",
+    "priority": "3",
+    "created_on": "2024-01-05T10:00:00.000Z"
+  },
+  {
+    "id": "fw0004dddd",
+    "zone_id": "zone2eeee4444ffff5555gggg6666hhhh",
+    "description": "Rate limit asset hotlinking",
+    "action": "js_challenge",
+    "expression": "(http.referer ne \"fincamiles-cdn.es\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2024-01-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0005eeee",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Block traffic from anonymizers",
+    "action": "block",
+    "expression": "(ip.geoip.is_in_european_union eq false and cf.threat_score gt 50)",
+    "paused": "false",
+    "priority": "4",
+    "created_on": "2024-01-12T10:00:00.000Z"
+  },
+  {
+    "id": "fw0006ffff",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Challenge checkout abuse",
+    "action": "managed_challenge",
+    "expression": "(http.request.uri.path contains \"/checkout\" and cf.bot_management.score lt 30)",
+    "paused": "false",
+    "priority": "5",
+    "created_on": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "fw0007gggg",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Block SQLi attempts on storefront",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"union select\")",
+    "paused": "false",
+    "priority": "6",
+    "created_on": "2024-01-18T10:00:00.000Z"
+  },
+  {
+    "id": "fw0008hhhh",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Allow Stripe webhook IPs",
+    "action": "allow",
+    "expression": "(ip.src in {3.18.12.63 3.130.192.231})",
+    "paused": "false",
+    "priority": "7",
+    "created_on": "2024-01-20T10:00:00.000Z"
+  },
+  {
+    "id": "fw0009iiii",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Allow Mailgun webhook IPs",
+    "action": "allow",
+    "expression": "(ip.src in {69.72.43.0/24})",
+    "paused": "false",
+    "priority": "8",
+    "created_on": "2024-01-22T10:00:00.000Z"
+  },
+  {
+    "id": "fw0010jjjj",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Challenge login brute force",
+    "action": "js_challenge",
+    "expression": "(http.request.uri.path eq \"/wp-login.php\")",
+    "paused": "false",
+    "priority": "9",
+    "created_on": "2024-01-25T10:00:00.000Z"
+  },
+  {
+    "id": "fw0011kkkk",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Block XML-RPC",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"xmlrpc.php\")",
+    "paused": "false",
+    "priority": "10",
+    "created_on": "2024-01-28T10:00:00.000Z"
+  },
+  {
+    "id": "fw0012llll",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Rate limit reservas form",
+    "action": "managed_challenge",
+    "expression": "(http.request.uri.path contains \"/reservas\" and cf.threat_score gt 10)",
+    "paused": "false",
+    "priority": "11",
+    "created_on": "2024-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0013mmmm",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Allow office IP Baena",
+    "action": "allow",
+    "expression": "(ip.src in {198.51.100.55})",
+    "paused": "false",
+    "priority": "12",
+    "created_on": "2024-02-03T10:00:00.000Z"
+  },
+  {
+    "id": "fw0014nnnn",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Block scraping of tasting page",
+    "action": "managed_challenge",
+    "expression": "(http.request.uri.path contains \"/cata\" and cf.client.bot)",
+    "paused": "false",
+    "priority": "13",
+    "created_on": "2024-02-05T10:00:00.000Z"
+  },
+  {
+    "id": "fw0015oooo",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Geoblock high-risk countries",
+    "action": "block",
+    "expression": "(ip.geoip.country in {\"KP\" \"RU\"})",
+    "paused": "true",
+    "priority": "14",
+    "created_on": "2024-02-08T10:00:00.000Z"
+  },
+  {
+    "id": "fw0016pppp",
+    "zone_id": "zone1aaaa1111bbbb2222cccc3333dddd",
+    "description": "Skip cache for admin",
+    "action": "allow",
+    "expression": "(http.request.uri.path contains \"/wp-admin\" and ip.src in {198.51.100.0/24})",
+    "paused": "false",
+    "priority": "15",
+    "created_on": "2024-02-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0017qqqq",
+    "zone_id": "zone2eeee4444ffff5555gggg6666hhhh",
+    "description": "Block direct image hotlink",
+    "action": "block",
+    "expression": "(http.referer ne \"fincamiles.es\" and http.request.uri.path contains \"/img/\")",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2024-01-12T10:00:00.000Z"
+  },
+  {
+    "id": "fw0018rrrr",
+    "zone_id": "zone2eeee4444ffff5555gggg6666hhhh",
+    "description": "Challenge unknown bots on CDN",
+    "action": "managed_challenge",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"Search Engine\")",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2024-01-14T10:00:00.000Z"
+  },
+  {
+    "id": "fw0019ssss",
+    "zone_id": "zone2eeee4444ffff5555gggg6666hhhh",
+    "description": "Allow agroturismo subdomain",
+    "action": "allow",
+    "expression": "(http.host eq \"agroturismo.fincamiles-cdn.es\")",
+    "paused": "false",
+    "priority": "4",
+    "created_on": "2024-01-16T10:00:00.000Z"
+  },
+  {
+    "id": "fw0020tttt",
+    "zone_id": "zone2eeee4444ffff5555gggg6666hhhh",
+    "description": "Block large POST uploads",
+    "action": "block",
+    "expression": "(http.request.method eq \"POST\" and http.request.body.size gt 10485760)",
+    "paused": "false",
+    "priority": "5",
+    "created_on": "2024-01-18T10:00:00.000Z"
+  }
+]

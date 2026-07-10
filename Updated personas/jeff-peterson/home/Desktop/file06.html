@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeff Peterson Photography</title>
+<style>
+  :root{
+    --ink:#10161d; --bg:#0c1118; --panel:#141c26; --line:#26323f;
+    --mist:#e9eef3; --sub:#9fb0c0; --gold:#e0a44a; --sky:#5aa9d6; --white:#f6f9fc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--mist);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);
+    background:rgba(12,17,24,.82);border-bottom:1px solid var(--line)}
+  nav{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:800;letter-spacing:.5px;font-size:18px}
+  .brand span{color:var(--gold)}
+  .links{display:flex;gap:26px;font-size:14px;color:var(--sub)}
+  .links a{transition:color .2s}
+  .links a:hover{color:var(--white)}
+  .menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--mist);
+    padding:8px 12px;border-radius:8px;cursor:pointer}
+  .hero{position:relative;min-height:78vh;display:flex;align-items:center;
+    background:linear-gradient(160deg,#0c1118 0%,#16222f 45%,#2a3f4f 100%);overflow:hidden}
+  .hero .ridge{position:absolute;inset:0;opacity:.5}
+  .hero-inner{position:relative;max-width:1200px;margin:0 auto;padding:60px 24px}
+  .eyebrow{color:var(--gold);font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase}
+  h1{font-size:clamp(36px,6vw,72px);line-height:1.04;margin:14px 0 18px;font-weight:800}
+  .hero p{max-width:560px;color:var(--sub);font-size:18px}
+  .cta{display:inline-flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .btn{padding:13px 24px;border-radius:30px;font-weight:700;font-size:14px;cursor:pointer;border:none;
+    transition:transform .15s ease, box-shadow .2s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-gold{background:var(--gold);color:#1c1206;box-shadow:0 8px 24px rgba(224,164,74,.3)}
+  .btn-ghost{background:transparent;color:var(--white);border:1px solid var(--line)}
+  section{max-width:1200px;margin:0 auto;padding:80px 24px}
+  .sec-head{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:30px}
+  h2{font-size:clamp(26px,3.5vw,40px);font-weight:800}
+  .sec-head p{color:var(--sub);max-width:420px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+  .chip{padding:9px 18px;border-radius:30px;border:1px solid var(--line);background:var(--panel);
+    color:var(--sub);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+  .chip:hover{color:var(--white)}
+  .chip.active{background:var(--gold);color:#1c1206;border-color:var(--gold)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--panel);
+    opacity:0;transform:translateY(24px);transition:opacity .6s, transform .6s, box-shadow .25s}
+  .card.show{opacity:1;transform:none}
+  .card:hover{box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .thumb{height:220px;position:relative;display:flex;align-items:flex-end;padding:14px}
+  .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.5))}
+  .thumb span{position:relative;z-index:2;font-size:12px;font-weight:700;background:rgba(0,0,0,.45);
+    padding:4px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase}
+  .meta{padding:16px 18px}
+  .meta h3{font-size:16px;margin-bottom:4px}
+  .meta small{color:var(--sub)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:10px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center}
+  .stat b{display:block;font-size:34px;color:var(--gold);font-weight:800}
+  .stat small{color:var(--sub)}
+  .about{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+  .about .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px}
+  .kit li{list-style:none;padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-size:14px}
+  .kit li:last-child{border:none}
+  .kit span{color:var(--sub)}
+  form{display:grid;gap:14px;max-width:560px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  label{font-size:13px;color:var(--sub);font-weight:600}
+  input,textarea,select{background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;color:var(--mist);font-size:14px;font-family:inherit}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+  .note{font-size:13px;padding:12px 14px;border-radius:10px;display:none}
+  .note.ok{display:block;background:rgba(90,169,214,.12);border:1px solid var(--sky);color:#cfe7f5}
+  footer{border-top:1px solid var(--line);background:#0a0e14;margin-top:40px}
+  .foot{max-width:1200px;margin:0 auto;padding:40px 24px;display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:20px;color:var(--sub);font-size:13px}
+  .foot b{color:var(--white)}
+  .foot a:hover{color:var(--gold)}
+  @media(max-width:860px){
+    .links{display:none}.menu-btn{display:block}.grid{grid-template-columns:1fr 1fr}
+    .about{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="brand">JEFF PETERSON<span>.</span> PHOTO</div>
+    <div class="links" id="links">
+      <a href="#work">Work</a><a href="#prints">Prints</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">Menu</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <svg class="ridge" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,600 0,360 220,180 360,300 520,120 700,320 860,200 1040,360 1200,240 1200,600" fill="#0d161f"/>
+    <polygon points="0,600 0,440 260,300 460,400 640,260 820,420 1010,320 1200,430 1200,600" fill="#16242f"/>
+    <circle cx="940" cy="130" r="46" fill="#e0a44a" opacity="0.85"/>
+  </svg>
+  <div class="hero-inner">
+    <div class="eyebrow">Landscape and mountain photography</div>
+    <h1>Light on the<br>Teton Range.</h1>
+    <p>Cold mornings, long approaches, and the patient wait for the range to turn gold. Work made on
+       patrol days and dawn tours around Jackson, Wyoming.</p>
+    <div class="cta">
+      <button class="btn btn-gold" onclick="document.getElementById('work').scrollIntoView()">View the gallery</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView()">Order a print</button>
+    </div>
+  </div>
+</div>
+
+<section id="work">
+  <div class="sec-head">
+    <div><h2>Selected work</h2></div>
+    <p>Frames from the range and the river, shot on a small mirrorless body carried on every backcountry trip.</p>
+  </div>
+  <div class="filters" id="filters">
+    <button class="chip active" data-f="all">All</button>
+    <button class="chip" data-f="alpine">Alpine</button>
+    <button class="chip" data-f="river">River and valley</button>
+    <button class="chip" data-f="snow">Snow and tours</button>
+  </div>
+  <div class="grid" id="gallery"></div>
+</section>
+
+<section id="prints" style="padding-top:0">
+  <div class="sec-head"><h2>By the numbers</h2><p>A small, steady practice that pays for film trips and gear.</p></div>
+  <div class="stats">
+    <div class="stat"><b>8k</b><small>followers on the photo account</small></div>
+    <div class="stat"><b>7</b><small>print sizes offered</small></div>
+    <div class="stat"><b>24-70</b><small>the lens on nearly every frame</small></div>
+    <div class="stat"><b>5am</b><small>most frames made before the shift</small></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="sec-head"><h2>About</h2></div>
+  <div class="about">
+    <div>
+      <p>I am a ski patroller and avalanche forecaster in Jackson, Wyoming, and I photograph the range I
+         work in. Most of these frames happen on the margins of a patrol day, a dawn tour up Mount Glory,
+         or a quiet float on the Snake River with my brother.</p>
+      <p style="margin-top:14px;color:var(--sub)">I carry a light kit so the camera never keeps me off the
+         skin track. Prints are made to order in a handful of sizes. If you want something you do not see
+         here, ask, I likely have a frame from that morning.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-bottom:14px">The kit</h3>
+      <ul class="kit">
+        <li>Body <span>Compact full frame mirrorless</span></li>
+        <li>Lens <span>24 to 70 f 2.8 zoom</span></li>
+        <li>Carry <span>Avalanche pack, top pocket</span></li>
+        <li>Edit <span>Minimal, true to the morning</span></li>
+        <li>Backup <span>Cloud drive plus a local copy</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="padding-top:0">
+  <div class="sec-head"><h2>Order a print</h2><p>Tell me the frame and the size. I will reply with paper options and a price.</p></div>
+  <form id="printForm" novalidate>
+    <div class="field"><label for="nm">Your name</label><input id="nm" type="text" autocomplete="name"></div>
+    <div class="field"><label for="em">Email</label><input id="em" type="email" autocomplete="email"></div>
+    <div class="field"><label for="fr">Which frame</label>
+      <select id="fr"><option>Grand Teton first light</option><option>Snake River fog</option>
+      <option>Alpenglow on the Tetons</option><option>Mount Glory skin track</option>
+      <option>Powder in the meadow</option></select></div>
+    <div class="field"><label for="sz">Print size</label>
+      <select id="sz"><option>8 by 10</option><option>12 by 18</option><option>16 by 24</option><option>24 by 36</option></select></div>
+    <div class="field"><label for="msg">Notes</label><textarea id="msg" rows="3"></textarea></div>
+    <button class="btn btn-gold" type="submit" style="justify-self:start">Send request</button>
+    <div class="note" id="formNote">Thanks, your print request is noted. I will reply by email within a few days.</div>
+  </form>
+</section>
+
+<footer>
+  <div class="foot">
+    <div><b>Jeff Peterson Photography</b><br>Landscape and mountain work, Jackson, Wyoming</div>
+    <div>Reach me<br><a href="mailto:jeff.peterson@Greenridertech.in">jeff.peterson@Greenridertech.in</a></div>
+    <div>On the trail<br><a href="#work">Gallery</a> &middot; <a href="#contact">Prints</a></div>
+    <div style="align-self:end">Made in the Tetons. All frames are the artist's own.</div>
+  </div>
+</footer>
+
+<script>
+  var photos=[
+    {t:"Grand Teton first light",c:"alpine",g:"linear-gradient(160deg,#e0a44a,#7a4a2a 60%,#1a2430)",tag:"Alpine"},
+    {t:"Snake River fog",c:"river",g:"linear-gradient(160deg,#9fb6c4,#4a6675 55%,#1d2a30)",tag:"River"},
+    {t:"Mount Glory skin track",c:"snow",g:"linear-gradient(160deg,#cfe0ee,#6f8aa3 60%,#2a3a4a)",tag:"Snow"},
+    {t:"Powder in the meadow",c:"river",g:"linear-gradient(160deg,#cdd9c6,#7e8f6e 55%,#2f3a2a)",tag:"Valley"},
+    {t:"Alpenglow on the Tetons",c:"alpine",g:"linear-gradient(160deg,#f0b27a,#b5485a 55%,#2a2030)",tag:"Alpine"},
+    {t:"Cody Bowl wind plume",c:"snow",g:"linear-gradient(160deg,#dfeaf2,#8aa0b4 60%,#27323f)",tag:"Snow"},
+    {t:"Birthday tour summit",c:"snow",g:"linear-gradient(160deg,#bcd2e6,#5e7d99 55%,#222f3c)",tag:"Snow"},
+    {t:"Snake River, golden hour",c:"river",g:"linear-gradient(160deg,#e6c07a,#8a6a3a 55%,#23303a)",tag:"River"},
+    {t:"Grand from the valley",c:"alpine",g:"linear-gradient(160deg,#a7bdd0,#4e6a82 55%,#1e2a36)",tag:"Alpine"}
+  ];
+  var gallery=document.getElementById('gallery');
+  function render(filter){
+    gallery.innerHTML='';
+    photos.filter(function(p){return filter==='all'||p.c===filter}).forEach(function(p,i){
+      var div=document.createElement('div');div.className='card';
+      div.innerHTML='<div class="thumb" style="background:'+p.g+'"><span>'+p.tag+'</span></div>'+
+        '<div class="meta"><h3>'+p.t+'</h3><small>Teton Range, Wyoming</small></div>';
+      gallery.appendChild(div);
+      setTimeout(function(){div.classList.add('show')}, 60*i);
+    });
+  }
+  render('all');
+  document.getElementById('filters').addEventListener('click',function(e){
+    if(!e.target.classList.contains('chip'))return;
+    document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active')});
+    e.target.classList.add('active');
+    render(e.target.getAttribute('data-f'));
+  });
+  document.getElementById('menuBtn').addEventListener('click',function(){
+    var l=document.getElementById('links');
+    l.style.display=(l.style.display==='flex')?'none':'flex';
+    l.style.flexDirection='column';l.style.position='absolute';l.style.right='24px';l.style.top='62px';
+    l.style.background='#141c26';l.style.padding='16px 22px';l.style.borderRadius='12px';l.style.border='1px solid #26323f';
+  });
+  document.getElementById('printForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var nm=document.getElementById('nm'),em=document.getElementById('em');
+    if(!nm.value.trim()){nm.focus();nm.style.borderColor='#c0392b';return;}
+    if(!/.+@.+\..+/.test(em.value)){em.focus();em.style.borderColor='#c0392b';return;}
+    document.getElementById('formNote').classList.add('ok');
+    this.reset();
+  });
+  // reveal-on-scroll for sections
+  var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting)x.target.style.opacity=1})});
+  document.querySelectorAll('section').forEach(function(s){s.style.transition='opacity .8s';io.observe(s)});
+</script>
+</body>
+</html>

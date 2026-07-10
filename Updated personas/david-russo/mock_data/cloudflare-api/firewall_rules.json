@@ -1,0 +1,202 @@
+[
+  {
+    "id": "fw001001",
+    "zone_id": "Z001LydXN7shIA9oUEU",
+    "description": "Block known bad bots",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "created_on": "2022-03-06T09:00:00.000Z",
+    "priority": "1"
+  },
+  {
+    "id": "fw001002",
+    "zone_id": "Z001LydXN7shIA9oUEU",
+    "description": "Rate limit POST requests",
+    "action": "challenge",
+    "expression": "(http.request.method eq \"POST\" and rate(60) > 30)",
+    "paused": "false",
+    "created_on": "2023-01-20T09:00:00.000Z",
+    "priority": "2"
+  },
+  {
+    "id": "fw002001",
+    "zone_id": "Z002bK5Iv7rMK12XBJr",
+    "description": "Block SQL injection attempts",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"union select\" or http.request.uri.query contains \"1=1\")",
+    "paused": "false",
+    "created_on": "2023-01-20T09:00:00.000Z",
+    "priority": "3"
+  },
+  {
+    "id": "fw002002",
+    "zone_id": "Z002bK5Iv7rMK12XBJr",
+    "description": "Challenge non-US visitors to BEU admin",
+    "action": "js_challenge",
+    "expression": "(ip.geoip.country ne \"US\" and http.request.uri.path contains \"/admin\")",
+    "paused": "false",
+    "created_on": "2023-02-01T09:00:00.000Z",
+    "priority": "4"
+  },
+  {
+    "id": "fw002003",
+    "zone_id": "Z002bK5Iv7rMK12XBJr",
+    "description": "Block credential stuffing on login",
+    "action": "block",
+    "expression": "(http.request.uri.path eq \"/login\" and rate(60) > 10)",
+    "paused": "false",
+    "created_on": "2024-03-01T09:00:00.000Z",
+    "priority": "5"
+  },
+  {
+    "id": "fw003001",
+    "zone_id": "Z003tkf1jP2NuWpwXFE",
+    "description": "Block bad bots on history club site",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "created_on": "2024-03-06T09:00:00.000Z",
+    "priority": "6"
+  },
+  {
+    "id": "fw004001",
+    "zone_id": "Z004apushprimary",
+    "description": "Allow educator IP ranges only for download area",
+    "action": "allow",
+    "expression": "(ip.src in {141.101.0.0/16 104.16.0.0/12} and http.request.uri.path contains \"/downloads\")",
+    "paused": "false",
+    "created_on": "2023-03-02T09:00:00.000Z",
+    "priority": "7"
+  },
+  {
+    "id": "fw016001",
+    "zone_id": "Z016beucontract2026",
+    "description": "Rate limit petition form submissions",
+    "action": "challenge",
+    "expression": "(http.request.uri.path eq \"/sign\" and rate(60) > 15)",
+    "paused": "false",
+    "created_on": "2025-10-05T09:00:00.000Z",
+    "priority": "8"
+  },
+  {
+    "id": "fw020001",
+    "zone_id": "Z020russoedresources",
+    "description": "Block known scraper user agents on store",
+    "action": "block",
+    "expression": "(http.user_agent contains \"scrapy\" or http.user_agent contains \"python-requests\")",
+    "paused": "false",
+    "created_on": "2022-10-05T09:00:00.000Z",
+    "priority": "9"
+  },
+  {
+    "id": "fw013001",
+    "zone_id": "Z013beusolidarity",
+    "description": "Block high-volume POST to contact form",
+    "action": "challenge",
+    "expression": "(http.request.uri.path eq \"/contact\" and rate(60) > 20)",
+    "paused": "false",
+    "created_on": "2023-03-05T09:00:00.000Z",
+    "priority": "10"
+  },
+  {
+    "id": "fw001003",
+    "zone_id": "Z001LydXN7shIA9oUEU",
+    "description": "Block bad referrers",
+    "action": "block",
+    "expression": "(http.referer contains \"spamlink\" or http.referer contains \"seo-promo\")",
+    "paused": "false",
+    "created_on": "2023-03-01T09:00:00.000Z",
+    "priority": "11"
+  },
+  {
+    "id": "fw009001",
+    "zone_id": "Z009bostoneducators",
+    "description": "Rate limit comment form",
+    "action": "challenge",
+    "expression": "(http.request.uri.path eq \"/comment\" and rate(60) > 10)",
+    "paused": "false",
+    "created_on": "2023-12-05T09:00:00.000Z",
+    "priority": "12"
+  },
+  {
+    "id": "fw011001",
+    "zone_id": "Z011gettysburgproject",
+    "description": "Block XSS attempts in query string",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"<script>\" or http.request.uri.query contains \"javascript:\")",
+    "paused": "false",
+    "created_on": "2025-01-15T09:00:00.000Z",
+    "priority": "13"
+  },
+  {
+    "id": "fw012001",
+    "zone_id": "Z012reconstructionunit",
+    "description": "Rate limit download endpoint",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/pdf\" and rate(300) > 50)",
+    "paused": "false",
+    "created_on": "2025-10-20T09:00:00.000Z",
+    "priority": "14"
+  },
+  {
+    "id": "fw015001",
+    "zone_id": "Z015teachhistoryboston",
+    "description": "Block known vulnerability scanners",
+    "action": "block",
+    "expression": "(http.user_agent contains \"nikto\" or http.user_agent contains \"sqlmap\")",
+    "paused": "false",
+    "created_on": "2024-02-19T09:00:00.000Z",
+    "priority": "15"
+  },
+  {
+    "id": "fw017001",
+    "zone_id": "Z017apushdbq",
+    "description": "Enforce HTTPS redirect rule",
+    "action": "redirect",
+    "expression": "(http.request.uri.scheme eq \"http\")",
+    "paused": "false",
+    "created_on": "2024-01-01T09:00:00.000Z",
+    "priority": "16"
+  },
+  {
+    "id": "fw019001",
+    "zone_id": "Z019laborhistoryprimary",
+    "description": "Rate limit primary source download API",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/api/download\" and rate(60) > 20)",
+    "paused": "false",
+    "created_on": "2025-03-01T09:00:00.000Z",
+    "priority": "17"
+  },
+  {
+    "id": "fw002004",
+    "zone_id": "Z002bK5Iv7rMK12XBJr",
+    "description": "Allow BPS IP ranges for member portal",
+    "action": "allow",
+    "expression": "(ip.src in {24.147.0.0/16 71.232.0.0/16} and http.request.uri.path contains \"/members\")",
+    "paused": "false",
+    "created_on": "2022-10-30T09:00:00.000Z",
+    "priority": "18"
+  },
+  {
+    "id": "fw001004",
+    "zone_id": "Z001LydXN7shIA9oUEU",
+    "description": "Cache static assets aggressively",
+    "action": "allow",
+    "expression": "(http.request.uri.path contains \".jpg\" or http.request.uri.path contains \".css\" or http.request.uri.path contains \".js\")",
+    "paused": "true",
+    "created_on": "2022-11-01T09:00:00.000Z",
+    "priority": "19"
+  },
+  {
+    "id": "fw013002",
+    "zone_id": "Z013beusolidarity",
+    "description": "JS challenge on admin login",
+    "action": "js_challenge",
+    "expression": "(http.request.uri.path eq \"/wp-login.php\")",
+    "paused": "false",
+    "created_on": "2022-09-30T09:00:00.000Z",
+    "priority": "20"
+  }
+]

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cohort Intake Dashboard</title>
+<style>
+  :root{
+    --bg:#0e1424; --panel:#172033; --panel2:#1d2840; --line:#2a3753;
+    --txt:#e7ecf7; --mut:#8e9bb8; --c1:#4cc2b4; --c2:#f3a847; --c3:#7c8cff; --c4:#e96b8a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  .app{display:grid;grid-template-columns:228px 1fr;min-height:100vh}
+
+  aside{background:#0b1020;border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;margin-bottom:30px}
+  .logo .dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--c1),var(--c3));display:grid;place-items:center;color:#08111f;font-weight:800}
+  aside nav a{display:flex;gap:10px;align-items:center;padding:11px 12px;border-radius:9px;color:var(--mut);
+    font-size:.94rem;margin-bottom:4px;cursor:pointer;transition:background .2s,color .2s}
+  aside nav a.active,aside nav a:hover{background:var(--panel2);color:#fff}
+  aside .foot{position:absolute;bottom:22px;left:18px;right:18px;font-size:.78rem;color:#56627e}
+
+  main{padding:26px 30px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+  .top h1{font-size:1.5rem;font-weight:700}
+  .top p{color:var(--mut);font-size:.9rem}
+  .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{background:none;border:0;color:var(--mut);padding:9px 16px;cursor:pointer;font-size:.88rem;font-family:inherit;transition:.2s}
+  .seg button.on{background:var(--c3);color:#0b1020;font-weight:700}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card .k{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spacing:.6px}
+  .card .v{font-size:2rem;font-weight:800;margin:6px 0 2px}
+  .card .d{font-size:.82rem}
+  .up{color:var(--c1)} .down{color:var(--c4)}
+
+  .row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel h3{font-size:1rem;margin-bottom:2px}
+  .panel .cap{color:var(--mut);font-size:.82rem;margin-bottom:18px}
+
+  /* bar chart */
+  .bars{display:flex;align-items:flex-end;gap:14px;height:210px;padding-top:8px}
+  .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%}
+  .bar .col{width:100%;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--c3),#46539e);
+    height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .bar .lab{color:var(--mut);font-size:.78rem}
+  .bar .val{font-size:.78rem;font-weight:700}
+
+  /* funnel */
+  .funnel{display:flex;flex-direction:column;gap:10px}
+  .stage{background:var(--panel2);border-radius:9px;padding:10px 14px;position:relative;overflow:hidden}
+  .stage .fill{position:absolute;inset:0;background:linear-gradient(90deg,rgba(76,194,180,.32),rgba(76,194,180,.08));width:0;transition:width 1.1s ease}
+  .stage .txt{position:relative;display:flex;justify-content:space-between;font-size:.9rem}
+  .stage .n{font-weight:700}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:22px}
+  .legend li{list-style:none;display:flex;align-items:center;gap:8px;font-size:.86rem;margin-bottom:8px;color:var(--mut)}
+  .legend .sw{width:12px;height:12px;border-radius:3px}
+
+  footer{margin-top:8px;color:#56627e;font-size:.8rem;border-top:1px solid var(--line);padding-top:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    aside{position:static;height:auto;display:flex;align-items:center;justify-content:space-between}
+    aside nav{display:flex;gap:4px} aside .foot{display:none} .logo{margin-bottom:0}
+    .cards{grid-template-columns:repeat(2,1fr)} .row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo"><span class="dot">F</span> Cohort Insights</div>
+    <nav id="nav">
+      <a class="active" data-view="overview">Overview</a>
+      <a data-view="intake">Intake funnel</a>
+      <a data-view="resource">Resource library</a>
+      <a data-view="graduates">Graduates</a>
+    </nav>
+    <div class="foot">Maintained by R. Mitchell<br>Reviewed monthly with the budget</div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1 id="pageTitle">Cohort Program Overview</h1>
+        <p id="pageSub">Refreshed Oct 2, 2026.</p>
+      </div>
+      <div class="seg" id="seg" style="display:none">
+        <button class="on" data-k="fall">Fall 2026</button>
+        <button data-k="spring">Spring 2026</button>
+      </div>
+    </div>
+
+    <div class="cards" id="cards"></div>
+
+    <div class="row">
+      <div class="panel">
+        <h3 id="t1">Inquiries by week</h3>
+        <p class="cap" id="c1">Form opens that reached the first question</p>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="panel">
+        <h3 id="t2">Intake funnel</h3>
+        <p class="cap" id="c2">From landing visit to confirmed seat</p>
+        <div class="funnel" id="funnel"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <h3 id="t3">Where inquiries come from</h3>
+        <p class="cap" id="c3">Referral channel for this cohort</p>
+        <div class="donut-wrap">
+          <svg width="170" height="170" viewBox="0 0 42 42" id="donut">
+            <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22304c" stroke-width="6"></circle>
+          </svg>
+          <ul class="legend" id="legend"></ul>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 id="t4">Form drop-off</h3>
+        <p class="cap" id="c4">Question where prospective parents stall</p>
+        <div class="bars" id="drop"></div>
+      </div>
+    </div>
+
+    <footer>
+      <span>Cohort Insights, internal review only. No identifying applicant data stored here.</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // ----- intake data, varies by cohort -----
+  var INTAKE={
+    fall:{
+      title:"Prospective Foster Parent Intake",
+      sub:"Landing page and intake form performance. Refreshed Oct 2, 2026.",
+      toggle:true,
+      cards:[["Landing visits","1,284","up","+22% vs spring"],
+             ["Form starts","318","up","+14% vs spring"],
+             ["Completed intakes","41","up","+6 vs spring"],
+             ["Confirmed seats","16","up","cohort full"]],
+      bars:{title:"Inquiries by week",cap:"Form opens that reached the first question",
+            data:[["Wk1",54],["Wk2",71],["Wk3",63],["Wk4",88],["Wk5",42]]},
+      funnel:{title:"Intake funnel",cap:"From landing visit to confirmed seat",
+              data:[["Visited landing page",1284],["Started intake form",318],["Finished the form",112],["Completed intake call",41],["Confirmed a seat",16]]},
+      donut:{title:"Where inquiries come from",cap:"Referral channel for this cohort",
+             data:[["Church and community",46,"var(--c1)"],["Referral from a graduate",27,"var(--c3)"],["Search and social",18,"var(--c2)"],["Agency referral",9,"var(--c4)"]]},
+      drop:{title:"Form drop-off",cap:"Question where prospective parents stall",
+            data:[["Q2 Home",12],["Q4 Schedule",34],["Q6 Background",21],["Q8 Motivation",9]]}
+    },
+    spring:{
+      title:"Prospective Foster Parent Intake",
+      sub:"Landing page and intake form performance. Spring cohort, closed Feb 27, 2026.",
+      toggle:true,
+      cards:[["Landing visits","1,052","up","prior cohort"],
+             ["Form starts","279","up","prior cohort"],
+             ["Completed intakes","35","up","prior cohort"],
+             ["Confirmed seats","16","up","graduated 14"]],
+      bars:{title:"Inquiries by week",cap:"Form opens that reached the first question",
+            data:[["Wk1",48],["Wk2",60],["Wk3",55],["Wk4",69],["Wk5",47]]},
+      funnel:{title:"Intake funnel",cap:"From landing visit to confirmed seat",
+              data:[["Visited landing page",1052],["Started intake form",279],["Finished the form",98],["Completed intake call",35],["Confirmed a seat",16]]},
+      donut:{title:"Where inquiries come from",cap:"Referral channel for this cohort",
+             data:[["Church and community",41,"var(--c1)"],["Referral from a graduate",24,"var(--c3)"],["Search and social",22,"var(--c2)"],["Agency referral",13,"var(--c4)"]]},
+      drop:{title:"Form drop-off",cap:"Question where prospective parents stall",
+            data:[["Q2 Home",15],["Q4 Schedule",29],["Q6 Background",24],["Q8 Motivation",11]]}
+    }
+  };
+
+  // ----- static views -----
+  var VIEWS={
+    overview:{
+      title:"Cohort Program Overview",
+      sub:"Intake, library, and graduates at a glance. Refreshed Oct 2, 2026.",
+      toggle:false,
+      cards:[["Confirmed seats","16","up","fall cohort full"],
+             ["Graduates last cohort","14","up","of 16 enrolled"],
+             ["Library downloads","612","up","this quarter"],
+             ["Active placements","7","up","+2 vs last year"]],
+      bars:{title:"Inquiries by week",cap:"Prospective parents reaching the form",
+            data:[["Wk1",54],["Wk2",71],["Wk3",63],["Wk4",88],["Wk5",42]]},
+      funnel:{title:"Intake funnel",cap:"From landing visit to confirmed seat",
+              data:[["Visited landing page",1284],["Started intake form",318],["Finished the form",112],["Completed intake call",41],["Confirmed a seat",16]]},
+      donut:{title:"Program engagement mix",cap:"Where attention is going this quarter",
+             data:[["Intake inquiries",38,"var(--c1)"],["Library users",31,"var(--c3)"],["Returning graduates",19,"var(--c2)"],["Event sign-ups",12,"var(--c4)"]]},
+      drop:{title:"Resource downloads by week",cap:"Handouts and case studies pulled",
+            data:[["Wk1",132],["Wk2",168],["Wk3",151],["Wk4",161]]}
+    },
+    resource:{
+      title:"Resource Library",
+      sub:"Handouts and case studies used by graduates. Refreshed Oct 2, 2026.",
+      toggle:false,
+      cards:[["Resources published","42","up","case studies plus handouts"],
+             ["Downloads","612","up","this quarter"],
+             ["Average rating","4.6","up","graduate feedback"],
+             ["Searches","1,420","up","this quarter"]],
+      bars:{title:"Most downloaded handouts",cap:"Top pulls this quarter",
+            data:[["Trauma visit",88],["First night",72],["Birth family",64],["Grief, loss",59],["Self-care",41]]},
+      funnel:{title:"Search to download",cap:"How a search becomes a saved resource",
+              data:[["Ran a search",1420],["Opened a result",980],["Previewed",760],["Downloaded",612]]},
+      donut:{title:"Resource type mix",cap:"What the library holds",
+             data:[["Case studies",44,"var(--c1)"],["Handouts",33,"var(--c3)"],["Discussion prompts",14,"var(--c2)"],["Reflections",9,"var(--c4)"]]},
+      drop:{title:"Searches with no result",cap:"Gaps to fill in the library",
+            data:[["Wk1",9],["Wk2",6],["Wk3",7],["Wk4",4]]}
+    },
+    graduates:{
+      title:"Graduate Outcomes",
+      sub:"Where past cohort graduates are now. Refreshed Oct 2, 2026.",
+      toggle:false,
+      cards:[["Graduates this year","28","up","across two cohorts"],
+             ["Certified rate","88%","up","of those enrolled"],
+             ["Active placements","7","up","this year"],
+             ["Kinship caregivers","6","up","a growing share"]],
+      bars:{title:"Graduates by cohort",cap:"Completed all ten sessions",
+            data:[["Sp 2025",12],["Fa 2025",13],["Sp 2026",14],["Fa 2026",14]]},
+      funnel:{title:"From enrolled to placement",cap:"The path after sign-up",
+              data:[["Enrolled",16],["Completed training",14],["Approved",11],["Took a placement",7]]},
+      donut:{title:"Where graduates are now",cap:"Status across this year",
+             data:[["Approved, awaiting",9,"var(--c1)"],["Active placement",7,"var(--c3)"],["Kinship track",6,"var(--c2)"],["Completing home study",6,"var(--c4)"]]},
+      drop:{title:"Time to approval",cap:"Months from graduation to approval",
+            data:[["Under 1",4],["1 to 2",7],["2 to 3",5],["3 plus",3]]}
+    }
+  };
+
+  var view='overview', cohort='fall';
+  function data(){ return view==='intake' ? INTAKE[cohort] : VIEWS[view]; }
+
+  function bars(id,arr,top,bot){
+    var max=Math.max.apply(null,arr.map(function(w){return w[1];}));
+    document.getElementById(id).innerHTML=arr.map(function(w){
+      return '<div class="bar"><span class="val">'+w[1]+'</span>'+
+             '<div class="col" style="background:linear-gradient(180deg,'+top+','+bot+')" data-h="'+Math.round(w[1]/max*100)+'"></div>'+
+             '<span class="lab">'+w[0]+'</span></div>';
+    }).join('');
+  }
+  function funnel(arr){
+    var max=Math.max.apply(null,arr.map(function(f){return f[1];}));
+    document.getElementById('funnel').innerHTML=arr.map(function(f){
+      return '<div class="stage"><div class="fill" data-w="'+Math.round(f[1]/max*100)+'"></div>'+
+             '<div class="txt"><span>'+f[0]+'</span><span class="n">'+f[1].toLocaleString()+'</span></div></div>';
+    }).join('');
+  }
+  function donut(arr){
+    var total=arr.reduce(function(s,x){return s+x[1];},0),off=0;
+    var svg=document.getElementById('donut');
+    svg.querySelectorAll('.seg').forEach(function(e){e.remove();});
+    arr.forEach(function(x){
+      var pct=x[1]/total*100;
+      var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('class','seg');c.setAttribute('cx','21');c.setAttribute('cy','21');
+      c.setAttribute('r','15.915');c.setAttribute('fill','none');
+      c.setAttribute('stroke',x[2]);c.setAttribute('stroke-width','6');
+      c.setAttribute('stroke-dasharray','0 100');c.setAttribute('stroke-dashoffset',25-off);
+      c.style.transition='stroke-dasharray 1s ease';
+      svg.appendChild(c);
+      (function(cc,p){setTimeout(function(){cc.setAttribute('stroke-dasharray',p+' '+(100-p));},60);})(c,pct);
+      off+=pct;
+    });
+    document.getElementById('legend').innerHTML=arr.map(function(x){
+      return '<li><span class="sw" style="background:'+x[2]+'"></span>'+x[0]+' ('+x[1]+'%)</li>';
+    }).join('');
+  }
+
+  function paint(){
+    var d=data();
+    document.getElementById('pageTitle').textContent=d.title;
+    document.getElementById('pageSub').textContent=d.sub;
+    document.getElementById('seg').style.display=d.toggle?'flex':'none';
+    document.getElementById('cards').innerHTML=d.cards.map(function(c){
+      return '<div class="card"><div class="k">'+c[0]+'</div><div class="v">'+c[1]+'</div><div class="d '+c[2]+'">'+c[3]+'</div></div>';
+    }).join('');
+    document.getElementById('t1').textContent=d.bars.title; document.getElementById('c1').textContent=d.bars.cap;
+    document.getElementById('t2').textContent=d.funnel.title; document.getElementById('c2').textContent=d.funnel.cap;
+    document.getElementById('t3').textContent=d.donut.title; document.getElementById('c3').textContent=d.donut.cap;
+    document.getElementById('t4').textContent=d.drop.title; document.getElementById('c4').textContent=d.drop.cap;
+    bars('bars',d.bars.data,'var(--c3)','#46539e');
+    funnel(d.funnel.data);
+    donut(d.donut.data);
+    bars('drop',d.drop.data,'var(--c2)','#b5772a');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      document.querySelectorAll('.col').forEach(function(c){c.style.height=c.getAttribute('data-h')+'%';});
+      document.querySelectorAll('.fill').forEach(function(f){f.style.width=f.getAttribute('data-w')+'%';});
+    });});
+  }
+
+  // sidebar nav switches the view
+  document.getElementById('nav').addEventListener('click',function(e){
+    var a=e.target.closest('a'); if(!a)return;
+    this.querySelectorAll('a').forEach(function(x){x.classList.remove('active');});
+    a.classList.add('active');
+    view=a.getAttribute('data-view');
+    paint();
+  });
+  // cohort toggle, shown on the intake view only
+  var seg=document.getElementById('seg');
+  seg.addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    seg.querySelectorAll('button').forEach(function(b){b.classList.remove('on');});
+    e.target.classList.add('on');
+    cohort=e.target.getAttribute('data-k');
+    paint();
+  });
+
+  paint();
+</script>
+</body>
+</html>

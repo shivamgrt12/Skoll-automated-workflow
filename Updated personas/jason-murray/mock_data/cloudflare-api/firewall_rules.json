@@ -1,0 +1,212 @@
+[
+  {
+    "id": "fw0001aaaa",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Block known bad bots",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-03-24T05:30:44.000Z"
+  },
+  {
+    "id": "fw0002bbbb",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Allow homelab IP",
+    "action": "allow",
+    "expression": "(ip.src in {73.158.204.91})",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2025-03-24T05:33:13.000Z"
+  },
+  {
+    "id": "fw0003cccc",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Rate limit login and API auth endpoints",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/api/auth\" and cf.threat_score gt 10)",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2025-10-10T18:21:22.000Z"
+  },
+  {
+    "id": "fw0004dddd",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Challenge high threat score",
+    "action": "managed_challenge",
+    "expression": "(cf.threat_score gt 30)",
+    "paused": "false",
+    "priority": "4",
+    "created_on": "2025-03-24T05:35:43.000Z"
+  },
+  {
+    "id": "fw0005eeee",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Block admin path outside homelab",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"/admin\" and not ip.src in {73.158.204.91})",
+    "paused": "false",
+    "priority": "5",
+    "created_on": "2025-11-30T13:30:24.000Z"
+  },
+  {
+    "id": "fw0006ffff",
+    "zone_id": "8dc212f6fd5ab4c04d5e62db377da5d9",
+    "description": "Allow homelab IP only on app dashboard",
+    "action": "allow",
+    "expression": "(http.host eq \"app.glanceboard.app\" and ip.src in {73.158.204.91})",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-11-25T06:36:19.000Z"
+  },
+  {
+    "id": "fw0007gggg",
+    "zone_id": "8dc212f6fd5ab4c04d5e62db377da5d9",
+    "description": "Block all other traffic to private dashboard",
+    "action": "block",
+    "expression": "(http.host eq \"app.glanceboard.app\" and not ip.src in {73.158.204.91})",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2025-11-25T06:36:49.000Z"
+  },
+  {
+    "id": "fw0008hhhh",
+    "zone_id": "9528de38cfecaf9f8685d9e1d40cc5c8",
+    "description": "Block known bad bots on blog",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-10-05T17:41:15.000Z"
+  },
+  {
+    "id": "fw0009iiii",
+    "zone_id": "9528de38cfecaf9f8685d9e1d40cc5c8",
+    "description": "Challenge comment spam on wp paths",
+    "action": "managed_challenge",
+    "expression": "(http.request.uri.path contains \"/wp-comments-post.php\")",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2025-10-28T19:10:01.000Z"
+  },
+  {
+    "id": "fw0010jjjj",
+    "zone_id": "9528de38cfecaf9f8685d9e1d40cc5c8",
+    "description": "Block traffic from high-risk countries to wp-login",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"/wp-login.php\" and ip.geoip.country in {\"CN\" \"RU\" \"KP\"})",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2025-10-29T02:38:47.000Z"
+  },
+  {
+    "id": "fw0011kkkk",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Skip security for verified GitHub webhook",
+    "action": "skip",
+    "expression": "(http.request.uri.path eq \"/api/webhooks/github\" and ip.src in {140.82.112.0/20})",
+    "paused": "false",
+    "priority": "6",
+    "created_on": "2025-11-01T05:41:25.000Z"
+  },
+  {
+    "id": "fw0012llll",
+    "zone_id": "da3a231b60449562c1808efd92fc6dfd",
+    "description": "Challenge requests with empty user agent",
+    "action": "managed_challenge",
+    "expression": "(http.user_agent eq \"\")",
+    "paused": "false",
+    "priority": "7",
+    "created_on": "2025-11-05T03:11:00.000Z"
+  },
+  {
+    "id": "fw0013mmmm",
+    "zone_id": "755362e3745ca142b2d1776ba19e76e1",
+    "description": "Block direct hits to release artifact path without referer",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/releases/download\" and http.referer eq \"\")",
+    "paused": "true",
+    "priority": "1",
+    "created_on": "2025-10-18T19:19:33.000Z"
+  },
+  {
+    "id": "fw0014nnnn",
+    "zone_id": "6d2a3ee3e0adc7c48cbee5f3646462aa",
+    "description": "Allow only homelab and VPS into Argo tunnel ingress",
+    "action": "allow",
+    "expression": "(ip.src in {73.158.204.91 159.203.84.122})",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-10-07T03:35:40.000Z"
+  },
+  {
+    "id": "fw0015oooo",
+    "zone_id": "6d2a3ee3e0adc7c48cbee5f3646462aa",
+    "description": "Block everything else reaching homelab ingress",
+    "action": "block",
+    "expression": "(not ip.src in {73.158.204.91 159.203.84.122})",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2025-10-07T03:36:40.000Z"
+  },
+  {
+    "id": "fw0016pppp",
+    "zone_id": "55b117f6518bb6acac6a281423c85b9e",
+    "description": "Challenge requests exceeding API rate on staging",
+    "action": "managed_challenge",
+    "expression": "(http.host eq \"glanceboard.dev\" and cf.threat_score gt 14)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-11-26T01:18:14.000Z"
+  },
+  {
+    "id": "fw0017qqqq",
+    "zone_id": "9420d22de5396ac48a9d618f987af9d8",
+    "description": "Block known scanner user agents",
+    "action": "block",
+    "expression": "(http.user_agent contains \"sqlmap\" or http.user_agent contains \"nikto\" or http.user_agent contains \"nmap\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-03-29T18:08:52.000Z"
+  },
+  {
+    "id": "fw0018rrrr",
+    "zone_id": "79246f550ead9135c7f877bc907174ee",
+    "description": "Allow uptime probes from monitoring providers",
+    "action": "allow",
+    "expression": "(http.user_agent contains \"UptimeRobot\" or http.user_agent contains \"Datadog\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-12-02T00:24:39.000Z"
+  },
+  {
+    "id": "fw0019ssss",
+    "zone_id": "29ac9ea34b80a8963b7c9418eeee56b0",
+    "description": "Challenge automated form submissions on contact page",
+    "action": "managed_challenge",
+    "expression": "(http.request.method eq \"POST\" and http.request.uri.path eq \"/contact\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-10-01T06:58:50.000Z"
+  },
+  {
+    "id": "fw0020tttt",
+    "zone_id": "b62146523adfb03f04b618ea75f7ea3d",
+    "description": "Block hotlinking of blog hero images",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"/images/\" and not http.referer contains \"ridgelinesystems.com\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-03-24T05:30:44.000Z"
+  },
+  {
+    "id": "fw0021uuuu",
+    "zone_id": "a67332350324699473888f7022377b1a",
+    "description": "Challenge high threat score on public status page",
+    "action": "managed_challenge",
+    "expression": "(cf.threat_score gt 25)",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-12-14T00:37:09.000Z"
+  }
+]
