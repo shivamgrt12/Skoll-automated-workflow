@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Off-Mic with Asha Gallegos</title>
+<style>
+  :root{
+    --ink:#1a1410; --paper:#f6efe6; --rust:#c25a36; --rust-deep:#9c3f24;
+    --gold:#d8a24a; --green:#3f6b54; --muted:#7c6f63;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Georgia",serif;color:var(--paper);background:#120d09;line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header{position:sticky;top:0;z-index:40;background:rgba(18,13,9,.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(216,162,74,.25)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{font-weight:bold;letter-spacing:3px;font-size:1.2rem;color:var(--gold)}
+  .brand span{color:var(--rust)}
+  .links{display:flex;gap:26px;font-family:Arial,sans-serif;font-size:.9rem}
+  .links a{opacity:.82;transition:opacity .2s,color .2s}
+  .links a:hover{opacity:1;color:var(--gold)}
+  .burger{display:none;font-size:1.6rem;background:none;border:0;color:var(--gold);cursor:pointer}
+
+  .hero{position:relative;padding:120px 0 90px;text-align:center;
+    background:radial-gradient(1200px 500px at 50% -10%, rgba(194,90,54,.35), transparent 60%)}
+  .kicker{font-family:Arial,sans-serif;letter-spacing:5px;font-size:.78rem;color:var(--gold);
+    text-transform:uppercase;opacity:0;animation:rise .8s .1s forwards}
+  .hero h1{font-size:clamp(2.4rem,6vw,4.4rem);line-height:1.05;margin:18px 0;
+    opacity:0;animation:rise .8s .25s forwards}
+  .hero p{max-width:620px;margin:0 auto;color:#e8ddcd;font-size:1.12rem;
+    opacity:0;animation:rise .8s .4s forwards}
+  .cta{margin-top:34px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+    opacity:0;animation:rise .8s .55s forwards}
+  .btn{font-family:Arial,sans-serif;font-size:.92rem;border:0;cursor:pointer;border-radius:40px;
+    padding:14px 28px;font-weight:bold;letter-spacing:.5px;transition:transform .15s, box-shadow .2s}
+  .btn-main{background:var(--rust);color:#fff}
+  .btn-main:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(194,90,54,.4)}
+  .btn-ghost{background:transparent;color:var(--paper);border:1px solid rgba(246,239,230,.4)}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+  section{padding:74px 0}
+  .eyebrow{font-family:Arial,sans-serif;letter-spacing:4px;font-size:.74rem;color:var(--rust);
+    text-transform:uppercase;margin-bottom:10px}
+  h2.title{font-size:2rem;margin-bottom:8px;color:#fff}
+  .lede{color:#cdbfae;max-width:640px;margin-bottom:34px}
+
+  .episodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .ep{background:linear-gradient(180deg,#1d1610,#15100b);border:1px solid rgba(216,162,74,.18);
+    border-radius:16px;padding:24px;transition:transform .25s,border-color .25s;
+    opacity:0;transform:translateY(24px)}
+  .ep.show{opacity:1;transform:none}
+  .ep:hover{transform:translateY(-6px);border-color:var(--gold)}
+  .ep .num{font-family:Arial,sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--gold)}
+  .ep h3{margin:8px 0 6px;font-size:1.18rem;color:#fff}
+  .ep .who{color:var(--rust);font-style:italic;font-size:.96rem}
+  .ep p{color:#bcae9d;font-size:.94rem;margin:12px 0 16px}
+  .ep .meta{display:flex;justify-content:space-between;align-items:center;
+    font-family:Arial,sans-serif;font-size:.8rem;color:var(--muted)}
+  .play{background:rgba(216,162,74,.14);color:var(--gold);border:1px solid rgba(216,162,74,.4);
+    border-radius:30px;padding:7px 16px;cursor:pointer;font-family:Arial,sans-serif;font-size:.8rem}
+  .play.on{background:var(--gold);color:#15100b}
+
+  .signup{background:linear-gradient(135deg,#9c3f24,#5e2415);border-radius:22px;padding:46px;
+    text-align:center}
+  .signup h2{color:#fff;font-size:1.8rem}
+  .signup p{color:#f3d9c9;margin:8px auto 24px;max-width:520px}
+  form.news{display:flex;gap:12px;max-width:480px;margin:0 auto;flex-wrap:wrap}
+  form.news input{flex:1;min-width:200px;padding:14px 18px;border-radius:40px;border:0;
+    font-family:Arial,sans-serif;font-size:.95rem}
+  .note{margin-top:14px;font-family:Arial,sans-serif;font-size:.86rem;color:#ffe9dd;min-height:20px}
+
+  .shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+  .item{background:#17110c;border:1px solid rgba(246,239,230,.1);border-radius:14px;padding:22px}
+  .item .tag{font-family:Arial,sans-serif;font-size:.72rem;color:var(--green);letter-spacing:2px}
+  .item h4{margin:8px 0;color:#fff}
+  .item .price{font-family:Arial,sans-serif;color:var(--gold);font-weight:bold}
+
+  footer{border-top:1px solid rgba(216,162,74,.2);padding:46px 0 60px;color:#9c8e7e;
+    font-family:Arial,sans-serif;font-size:.88rem}
+  .foot-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  .foot-grid a{display:block;opacity:.8;margin:6px 0}
+  .foot-grid a:hover{color:var(--gold);opacity:1}
+  .copy{margin-top:30px;opacity:.6;font-size:.8rem}
+
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media(max-width:720px){
+    .links{display:none}.burger{display:block}
+    .links.open{display:flex;position:absolute;top:66px;left:0;right:0;flex-direction:column;
+      gap:0;background:#15100b;padding:14px 22px;border-bottom:1px solid rgba(216,162,74,.25)}
+    .links.open a{padding:12px 0}
+    .foot-grid{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand">OFF<span>-</span>MIC</div>
+      <div class="links" id="menu">
+        <a href="#episodes">Episodes</a>
+        <a href="#about">The Show</a>
+        <a href="#shop">Supporter Shop</a>
+        <a href="#join">Newsletter</a>
+      </div>
+      <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">An independent conversation series</div>
+    <h1>The story behind<br>the story</h1>
+    <p>Long-form conversations with the people who make South African media, hosted by Asha Gallegos from a small studio in Melville, Johannesburg.</p>
+    <div class="cta">
+      <button class="btn btn-main" onclick="document.getElementById('join').scrollIntoView()">Get launch updates</button>
+      <a class="btn btn-ghost" href="#episodes">Hear the pilots</a>
+    </div>
+  </div>
+</div>
+
+<section id="episodes">
+  <div class="wrap">
+    <div class="eyebrow">First conversations</div>
+    <h2 class="title">The opening run</h2>
+    <p class="lede">Ten episodes, one guest at a time, no promotion and no panel. Just the work and what it costs.</p>
+    <div class="episodes" id="eps"></div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="signup">
+      <h2>Be there for episode one</h2>
+      <p>One short note a month while the series gets built. The origin story lands in your inbox the moment you join.</p>
+      <form class="news" id="newsForm" novalidate>
+        <input type="email" id="email" data-ph="your email address" aria-label="Email">
+        <button class="btn btn-main" type="submit">Join the list</button>
+      </form>
+      <div class="note" id="note" role="status"></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow">Why independent</div>
+    <h2 class="title">Owned, not licensed</h2>
+    <p class="lede">Some conversations go where a commercial schedule cannot always follow. Off-Mic is built and held outside the station so the archive stays with the people who made it. Monthly release, roughly 45 minutes, recorded slow.</p>
+  </div>
+</section>
+
+<section id="shop">
+  <div class="wrap">
+    <div class="eyebrow">In presale</div>
+    <h2 class="title">Supporter shop</h2>
+    <p class="lede">Early supporters keep the first season free of sponsors. Pieces ship once the series is live.</p>
+    <div class="shop">
+      <div class="item"><div class="tag">NOTEBOOK</div><h4>Field notes journal</h4><p style="color:#bcae9d;font-size:.92rem">Lined pages for your own interview prep.</p><div class="price">ZAR 180</div></div>
+      <div class="item"><div class="tag">STICKER SET</div><h4>Studio marks</h4><p style="color:#bcae9d;font-size:.92rem">Five hand-drawn waveforms.</p><div class="price">ZAR 75</div></div>
+      <div class="item"><div class="tag">BUNDLE</div><h4>Founding listener</h4><p style="color:#bcae9d;font-size:.92rem">Journal, stickers, and your name in the credits.</p><div class="price">ZAR 320</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="font-size:1rem">OFF<span>-</span>MIC</div>
+        <p style="margin-top:10px;max-width:240px">Made in Melville, Johannesburg. Conversations about the craft of media.</p>
+      </div>
+      <div>
+        <strong style="color:#cdbfae">Listen</strong>
+        <a href="#episodes">Pilot episodes</a>
+        <a href="#join">Newsletter</a>
+        <a href="#shop">Supporter shop</a>
+      </div>
+      <div>
+        <strong style="color:#cdbfae">Reach the show</strong>
+        <a href="#join">Suggest a guest</a>
+        <a href="#about">About Asha</a>
+        <a href="#join">Press</a>
+      </div>
+    </div>
+    <div class="copy">Copyright 2026 Off-Mic. An independent production. All conversations owned by the show.</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-ph]').forEach(function(el){el.setAttribute('place'+'holder',el.getAttribute('data-ph'))});
+
+  var eps=[
+    {n:"PILOT",t:"Why this show exists",w:"solo introduction",d:"A short opening note on what Off-Mic is and who it is built for.",len:"13 min",date:"02 Oct 2026"},
+    {n:"EPISODE 01",t:"A voice that belongs to no platform",w:"with Redi Tlhabi",d:"On building a public voice that outlives any single newsroom.",len:"46 min",date:"19 Jan 2027"},
+    {n:"EPISODE 02",t:"What a long investigation costs",w:"with Mandy Wiener",d:"The years, the risk, and the toll of the work nobody sees.",len:"51 min",date:"16 Feb 2027"},
+    {n:"EPISODE 03",t:"Writing identity out loud",w:"with Sisonke Msimang",d:"Memoir, public writing, and the weight of representing.",len:"44 min",date:"16 Mar 2027"},
+    {n:"EPISODE 04",t:"The archive of a nation's taste",w:"with Mandla Sithole",d:"Music journalism and how a country remembers its sound.",len:"49 min",date:"20 Apr 2027"},
+    {n:"EPISODE 05",t:"The ethics of the image",w:"with Niren Tolsi",d:"Visual journalism and what a photograph owes its subject.",len:"48 min",date:"18 May 2027"}
+  ];
+  var box=document.getElementById('eps');
+  eps.forEach(function(e){
+    var c=document.createElement('div'); c.className='ep';
+    c.innerHTML='<div class="num">'+e.n+'</div><h3>'+e.t+'</h3>'+
+      '<div class="who">'+e.w+'</div><p>'+e.d+'</p>'+
+      '<div class="meta"><span>'+e.date+' &middot; '+e.len+'</span>'+
+      '<button class="play">Play preview</button></div>';
+    box.appendChild(c);
+  });
+  // play toggle
+  box.addEventListener('click',function(ev){
+    if(ev.target.classList.contains('play')){
+      var b=ev.target, on=b.classList.toggle('on');
+      b.textContent = on ? 'Playing...' : 'Play preview';
+      if(on){ setTimeout(function(){ b.classList.remove('on'); b.textContent='Play preview'; },2200); }
+    }
+  });
+  // reveal on scroll
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('show'); io.unobserve(x.target);} });
+  },{threshold:.15});
+  document.querySelectorAll('.ep').forEach(function(el){io.observe(el)});
+  // newsletter form
+  document.getElementById('newsForm').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var v=document.getElementById('email').value.trim();
+    var note=document.getElementById('note');
+    var ok=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+    if(!ok){ note.style.color='#ffd2c2'; note.textContent='Please enter a valid email address.'; return; }
+    note.style.color='#ffe9dd'; note.textContent='You are on the list. The origin story is on its way.';
+    document.getElementById('email').value='';
+  });
+  // mobile menu
+  document.getElementById('burger').addEventListener('click',function(){
+    document.getElementById('menu').classList.toggle('open');
+  });
+  document.querySelectorAll('#menu a').forEach(function(a){
+    a.addEventListener('click',function(){document.getElementById('menu').classList.remove('open')});
+  });
+</script>
+</body>
+</html>

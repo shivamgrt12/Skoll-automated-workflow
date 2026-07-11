@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voices of the City - Engagement Dashboard</title>
+<style>
+  :root{--bg:#0d1b1e;--panel:#12262b;--line:#1f3b42;--teal:#2dd4bf;--teal2:#14b8a6;
+    --amber:#f6c453;--text:#e7f3f1;--muted:#8fb0ab}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+  header{background:linear-gradient(120deg,#0f2329,#0b181b);border-bottom:1px solid var(--line);
+    padding:22px 0;position:sticky;top:0;z-index:10}
+  .htop{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--teal2));
+    display:grid;place-items:center;font-weight:bold;color:#06201d}
+  h1{font-size:1.22rem;letter-spacing:.4px}
+  .sub{color:var(--muted);font-size:.82rem}
+  .tabs{display:flex;gap:8px}
+  .tab{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 18px;
+    border-radius:30px;cursor:pointer;font-size:.85rem;transition:all .2s}
+  .tab.active{background:var(--teal);color:#06201d;border-color:var(--teal);font-weight:bold}
+
+  main{padding:30px 0 70px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:26px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card .label{color:var(--muted);font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
+  .card .big{font-size:2.3rem;font-weight:700;margin-top:6px}
+  .card .big .small{font-size:1rem;color:var(--muted)}
+  .delta{font-size:.82rem;margin-top:4px}
+  .up{color:var(--teal)} .flat{color:var(--amber)}
+
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .panel h2{font-size:1.05rem;margin-bottom:4px}
+  .panel .hint{color:var(--muted);font-size:.82rem;margin-bottom:18px}
+
+  .chart{display:flex;align-items:flex-end;gap:14px;height:240px;padding-top:10px}
+  .bargroup{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+  .stack{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:3px}
+  .bar{width:100%;border-radius:5px 5px 0 0;height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .b1{background:linear-gradient(180deg,var(--teal),var(--teal2))}
+  .b2{background:#3b7d8c}
+  .b3{background:var(--amber)}
+  .blabel{color:var(--muted);font-size:.72rem}
+
+  .legend{display:flex;gap:18px;margin-top:16px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  .rank{list-style:none}
+  .rank li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .rank li:last-child{border:0}
+  .rk{width:26px;height:26px;border-radius:50%;background:#06201d;color:var(--teal);
+    display:grid;place-items:center;font-size:.8rem;font-weight:bold;border:1px solid var(--teal)}
+  .rname{flex:1}
+  .rname small{display:block;color:var(--muted);font-size:.76rem}
+  .score{font-weight:bold;color:var(--amber)}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.82rem}
+  .ffx{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap htop">
+    <div class="logo">
+      <div class="dot">V</div>
+      <div><h1>Voices of the City</h1><div class="sub">Listener engagement, The Asha Show, Rhythm FM 94.7</div></div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-s="s3">Season 3</button>
+      <button class="tab" data-s="s2">Season 2</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Engagement by episode</h2>
+      <div class="hint">Call-ins, listener messages, and social mentions per Tuesday profile.</div>
+      <div class="chart" id="chart"></div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--teal)"></i>Call-ins</span>
+        <span><i class="sw" style="background:#3b7d8c"></i>Listener messages</span>
+        <span><i class="sw" style="background:var(--amber)"></i>Social mentions</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Most engaged stories</h2>
+      <div class="hint">Ranked by host rating and total response.</div>
+      <ul class="rank" id="rank"></ul>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap ffx">
+    <div>Voices of the City &middot; community feature, Tuesdays 07:15</div>
+    <div>Compiled by the morning show team &middot; updated 26 Feb 2026</div>
+  </div>
+</footer>
+
+<script>
+  var DATA={
+    s2:{label:"Season 2",
+      eps:[
+        {e:"E3",g:"Dorah Sithole",c:34,m:54,s:67,r:5},
+        {e:"E6",g:"Prof Ayanda Mkhize",c:41,m:72,s:88,r:5},
+        {e:"E7",g:"Tommy Mokoena",c:24,m:43,s:51,r:4},
+        {e:"E9",g:"Dr Sipho Hlatshwayo",c:38,m:61,s:74,r:5},
+        {e:"E10",g:"Lindiwe Dube",c:20,m:33,s:38,r:4}
+      ]},
+    s3:{label:"Season 3",
+      eps:[
+        {e:"E1",g:"Lebo Dlamini",c:29,m:48,s:58,r:4},
+        {e:"E2",g:"Violet Ramahlodi",c:26,m:42,s:47,r:4},
+        {e:"E3",g:"Pastor Elias Tau",c:33,m:55,s:61,r:5},
+        {e:"E4",g:"Nomcebo Shabalala",c:31,m:51,s:62,r:4},
+        {e:"E5",g:"Kgopotso Sethole",c:47,m:88,s:88,r:5},
+        {e:"E6",g:"Graca Ferreira",c:28,m:46,s:54,r:4}
+      ]}
+  };
+  var maxTotal=160;
+  function render(key){
+    var d=DATA[key], eps=d.eps;
+    var totalCall=eps.reduce(function(a,b){return a+b.c},0);
+    var totalMsg=eps.reduce(function(a,b){return a+b.m},0);
+    var avgRating=(eps.reduce(function(a,b){return a+b.r},0)/eps.length).toFixed(1);
+    var avgCall=Math.round(totalCall/eps.length);
+    document.getElementById('kpis').innerHTML=
+      kpi('Episodes aired',eps.length,'up',d.label)+
+      kpi('Total call-ins',totalCall,'up','avg '+avgCall+' per show')+
+      kpi('Listener messages',totalMsg,'up','across the season')+
+      kpi('Average host rating',avgRating+'<span class="small">/5</span>','flat','quality score');
+    // chart
+    var ch=document.getElementById('chart'); ch.innerHTML='';
+    eps.forEach(function(x){
+      var g=document.createElement('div'); g.className='bargroup';
+      g.innerHTML='<div class="stack">'+
+        '<div class="bar b3" data-h="'+(x.s)+'"></div>'+
+        '<div class="bar b2" data-h="'+(x.m)+'"></div>'+
+        '<div class="bar b1" data-h="'+(x.c)+'"></div>'+
+        '</div><div class="blabel">'+x.e+'</div>';
+      ch.appendChild(g);
+    });
+    requestAnimationFrame(function(){
+      ch.querySelectorAll('.bar').forEach(function(b){
+        b.style.height=( (+b.dataset.h)/maxTotal*100 )+'%';
+      });
+    });
+    // rank
+    var sorted=eps.slice().sort(function(a,b){return (b.c+b.m+b.s+b.r*10)-(a.c+a.m+a.s+a.r*10)});
+    var rk=document.getElementById('rank'); rk.innerHTML='';
+    sorted.slice(0,5).forEach(function(x,i){
+      var li=document.createElement('li');
+      li.innerHTML='<div class="rk">'+(i+1)+'</div>'+
+        '<div class="rname">'+x.g+'<small>'+x.e+' &middot; rating '+x.r+'/5</small></div>'+
+        '<div class="score">'+(x.c+x.m+x.s)+'</div>';
+      rk.appendChild(li);
+    });
+  }
+  function kpi(l,v,cls,sub){
+    return '<div class="card"><div class="label">'+l+'</div>'+
+      '<div class="big">'+v+'</div><div class="delta '+cls+'">'+sub+'</div></div>';
+  }
+  document.getElementById('tabs').addEventListener('click',function(e){
+    if(!e.target.classList.contains('tab'))return;
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+    e.target.classList.add('active');
+    render(e.target.dataset.s);
+  });
+  render('s3');
+</script>
+</body>
+</html>
