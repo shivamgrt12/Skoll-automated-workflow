@@ -4,38 +4,37 @@
 Standard gate contract (see SKILL.md): a ``.py`` gate is invoked as
 ``python <gate> <bundle_dir> <harness_dir>`` and returns exit 0 on pass.
 
-The real validator (``_mock_data_qc_vendor.py``, a large harness-grade tool
-maintained upstream) instead expects ``--env-dir`` (canonical environment/),
-``--tasks-dir`` (parent of the task folder) and ``--task`` (task folder name).
-This thin wrapper adapts the standard two-positional convention onto those
-flags without forking the vendor tool: the bundle's own directory IS the task
-folder (it contains ``mock_data/<svc>-api/``), so tasks-dir = bundle_dir.parent
-and task = bundle_dir.name; env-dir = harness_dir.
+The validator (``_mock_overlay_validator/validate.py``) audits every overlay
+seed under ``<bundle_dir>/mock_data/<svc>-api/`` against a bundled canonical
+example snapshot in ``_mock_overlay_validator/examples/<svc>-api/`` (one
+reference file per registered table/document, matched by filename stem). It is
+stdlib-only and self-contained, so it does NOT read the live ``environment/``
+harness dir at run time -- the example snapshot already encodes the schema the
+harness loader expects. That makes ``<harness_dir>`` (argv[2]) unused here; we
+accept it only to satisfy the two-positional gate convention.
+
+The validator auto-classifies the path it is handed. The bundle's own dir IS
+the task folder (it contains ``mock_data/<svc>-api/``), so we pass the bundle
+dir directly and let ``validate.py`` walk its ``mock_data/`` child. Its exit
+code already matches the gate contract: 0 = clean (warnings allowed), 1 = one
+or more schema errors, 2 = bad usage.
 """
 
 import subprocess
 import sys
 from pathlib import Path
 
-VENDOR = Path(__file__).with_name("_mock_data_qc_vendor.py")
+VALIDATOR = Path(__file__).with_name("_mock_overlay_validator") / "validate.py"
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) < 2:
-        print("usage: 30_mock_data_qc.py <bundle_dir> <harness_dir>", file=sys.stderr)
+    if len(argv) < 1:
+        print("usage: 30_mock_data_qc.py <bundle_dir> [harness_dir]", file=sys.stderr)
         return 2
     bundle_dir = Path(argv[0]).expanduser().resolve()
-    harness_dir = Path(argv[1]).expanduser().resolve()
-    cmd = [
-        sys.executable,
-        str(VENDOR),
-        "--env-dir",
-        str(harness_dir),
-        "--tasks-dir",
-        str(bundle_dir.parent),
-        "--task",
-        bundle_dir.name,
-    ]
+    # argv[1] (harness_dir) is intentionally ignored: the validator ships its
+    # own canonical example snapshot and never consults the live environment.
+    cmd = [sys.executable, str(VALIDATOR), str(bundle_dir)]
     return subprocess.run(cmd, text=True).returncode
 
 

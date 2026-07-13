@@ -279,17 +279,22 @@ suite, copy the files into `references/qc/` following two rules:
      ignore `argv[2]`.
    - `.md` gate: a model-audit meta-prompt; the model's output must end with a line `QC_RESULT: pass` or `QC_RESULT: fail`.
 
-If a gate is a heavier tool with its own flag-based CLI (like the bundled
-`_mock_data_qc_vendor.py`), add a thin wrapper file that maps the two-positional
-convention onto that tool's flags — see `30_mock_data_qc.py` for the pattern.
-Any file whose name does **not** start with two digits (e.g. a leading `_`) is
-skipped by discovery, so keep vendor tools and helpers underscore-prefixed.
+If a gate is a heavier tool with its own flag-based CLI or a bundled example
+snapshot (like the vendored `_mock_overlay_validator/`), add a thin wrapper file
+that adapts the two-positional convention onto that tool — see
+`30_mock_data_qc.py` for the pattern. Any file whose name does **not** start
+with two digits (e.g. a leading `_`) is skipped by discovery, so keep vendor
+tools and helpers underscore-prefixed (directories included).
 
 Current final-bundle gates: `10_rubric_qc.md`, `20_test_outputs_qc.md`,
-`30_mock_data_qc.py` (warn), `50_truth_qc.md`,
-`60_check_ai_images.py`. The last scans `<bundle>/data` for AI-generated / stock
-images and **requires Pillow** (`pip install Pillow`); with Pillow absent it
-errors (exit 2) rather than silently passing, so install it on every runner.
+`30_mock_data_qc.py`, `35_mock_boot_check.py`, `40_mock_data_placeholders.py`
+(warn), `50_truth_qc.md`, `60_check_ai_images.py`. `30_mock_data_qc.py` audits
+each `mock_data/<svc>-api/` overlay against the vendored canonical example
+snapshot in `_mock_overlay_validator/examples/` (stdlib-only, self-contained, so
+it ignores the `<harness_dir>` argument). `60_check_ai_images.py` scans
+`<bundle>/data` for AI-generated / stock images and **requires Pillow**
+(`pip install Pillow`); with Pillow absent it errors (exit 2) rather than
+silently passing, so install it on every runner.
 
 Optionally set severity in `references/qc/manifest.yaml`:
 
