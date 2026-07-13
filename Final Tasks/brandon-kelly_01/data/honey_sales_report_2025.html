@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honey Sales Report, 2025 Season</title>
+<style>
+  :root{
+    --cream:#fbf4e6;--cream2:#f5ead2;--paper:#ffffff;--ink:#3a3326;--muted:#8a7c5f;
+    --amber:#e0a526;--amber-d:#c4881a;--green:#3c7a3a;--green-l:#5aa64f;--brown:#7a5a2e;--line:#e6dcc2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+
+  .report-head{background:linear-gradient(120deg,#5b3f1e,#7a5a2e 60%,#9a7434);color:var(--cream);padding:54px 0 46px;position:relative;overflow:hidden}
+  .report-head:after{content:"\10047";position:absolute;right:-10px;bottom:-30px;font-size:200px;opacity:.08}
+  .report-head .eyebrow{letter-spacing:3px;text-transform:uppercase;font-size:.78rem;color:var(--amber);font-weight:700}
+  .report-head h1{font-family:Georgia,serif;font-size:2.6rem;margin:8px 0 10px}
+  .report-head p{color:#e9dcc0;max-width:560px}
+  .report-head .by{margin-top:18px;font-size:.88rem;color:#d4c4a0}
+
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:-34px;position:relative;z-index:5;margin-bottom:40px}
+  .sum{background:var(--paper);border-radius:13px;padding:22px;box-shadow:0 8px 24px rgba(90,60,20,.12);border-bottom:4px solid var(--amber)}
+  .sum:nth-child(2){border-color:var(--green)}
+  .sum:nth-child(3){border-color:var(--amber-d)}
+  .sum:nth-child(4){border-color:var(--brown)}
+  .sum .v{font-size:2rem;font-weight:800;color:var(--ink)}
+  .sum .l{font-size:.84rem;color:var(--muted)}
+  .sum .d{font-size:.78rem;margin-top:6px;font-weight:600}
+  .up{color:var(--green)} .flat{color:var(--muted)}
+
+  .card{background:var(--paper);border-radius:14px;padding:26px;box-shadow:0 4px 18px rgba(90,60,20,.08);margin-bottom:26px}
+  .card h2{font-family:Georgia,serif;font-size:1.4rem;color:var(--brown);margin-bottom:3px}
+  .card .sub{color:var(--muted);font-size:.86rem;margin-bottom:18px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .controls button{background:var(--cream2);border:1px solid var(--line);color:var(--muted);padding:8px 15px;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit;transition:.16s;display:flex;align-items:center;gap:7px}
+  .controls button .dot{width:10px;height:10px;border-radius:50%}
+  .controls button.off{opacity:.45;text-decoration:line-through}
+  .controls button:hover{border-color:var(--amber)}
+
+  .chart-wrap{position:relative;width:100%;overflow-x:auto}
+  svg{display:block;max-width:100%}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:.85rem}
+  .legend span{display:flex;align-items:center;gap:7px;color:var(--ink)}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .channel-row{display:flex;align-items:center;gap:14px;margin:14px 0}
+  .channel-row .nm{width:150px;font-size:.9rem;flex:none}
+  .channel-row .track{flex:1;background:var(--cream2);border-radius:7px;height:26px;overflow:hidden}
+  .channel-row .fill{height:100%;border-radius:7px;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-weight:700;font-size:.8rem}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{background:var(--cream2);color:var(--brown);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px}
+  tfoot td{font-weight:800;color:var(--brown);border-top:2px solid var(--amber);background:var(--cream)}
+  tbody tr:hover{background:var(--cream)}
+
+  .insight{background:var(--cream2);border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:16px 20px;margin-top:18px;font-size:.92rem;color:var(--ink)}
+  .insight b{color:var(--brown)}
+
+  footer{text-align:center;color:var(--muted);font-size:.84rem;padding:30px 0 44px}
+
+  @media(max-width:820px){
+    .summary{grid-template-columns:repeat(2,1fr)}
+    .two{grid-template-columns:1fr}
+    .report-head h1{font-size:1.9rem}
+  }
+</style>
+</head>
+<body>
+<div class="report-head">
+  <div class="wrap">
+    <div class="eyebrow">Apiary annual report</div>
+    <h1>Honey Sales, 2025 Season</h1>
+    <p>Twelve colonies in Fox Chase, two extractions, and a full run of Saturdays at the market. The numbers behind a good year.</p>
+    <div class="by">Prepared by Brandon Kelly &nbsp;|&nbsp; Southeastern Pennsylvania Beekeepers Guild, member SEPBG-0461 &nbsp;|&nbsp; Compiled February 2026</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="summary">
+    <div class="sum"><div class="v">$7,156</div><div class="l">Total revenue</div><div class="d up">&#9650; up from 2024</div></div>
+    <div class="sum"><div class="v">602 lb</div><div class="l">Honey harvested</div><div class="d up">&#9650; strong summer flow</div></div>
+    <div class="sum"><div class="v">$4,816</div><div class="l">Market sales</div><div class="d flat">67% of revenue</div></div>
+    <div class="sum"><div class="v">14</div><div class="l">Market Saturdays</div><div class="d flat">April to October</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Revenue through the season</h2>
+    <div class="sub">Monthly sales by channel, April to October 2025. Toggle a series to compare.</div>
+    <div class="controls" id="seriesCtrl">
+      <button data-s="market" class="on"><span class="dot" style="background:#e0a526"></span>Farmers market</button>
+      <button data-s="store" class="on"><span class="dot" style="background:#3c7a3a"></span>General store</button>
+      <button data-s="coop" class="on"><span class="dot" style="background:#7a5a2e"></span>Co-op</button>
+    </div>
+    <div class="chart-wrap">
+      <svg id="lineChart" viewBox="0 0 760 320" width="760" height="320" role="img"></svg>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>By channel</h2>
+      <div class="sub">Share of the 7,156 dollar season</div>
+      <div id="channels"></div>
+    </div>
+    <div class="card">
+      <h2>Spring against summer</h2>
+      <div class="sub">Pounds harvested per extraction</div>
+      <div class="chart-wrap">
+        <svg id="seasonChart" viewBox="0 0 360 280" width="360" height="280"></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>The full ledger</h2>
+    <div class="sub">Monthly revenue reconciled to the market sales book</div>
+    <table>
+      <thead><tr><th>Month</th><th>Market</th><th>General store</th><th>Co-op</th><th>Total</th></tr></thead>
+      <tbody id="ledgerBody"></tbody>
+      <tfoot><tr><td>Season</td><td>$4,816</td><td>$1,360</td><td>$980</td><td>$7,156</td></tr></tfoot>
+    </table>
+    <div class="insight"><b>Read of the year:</b> The market carries the season at sixty seven cents on the dollar, and August is the peak with a thousand dollars on the table across two strong Saturdays. The wholesale accounts at the general store and the co-op smooth the slow weeks in July and late October. Hold the market table for 2026 and lean on H07 for the splits that keep the yield climbing.</div>
+  </div>
+</div>
+
+<footer>Fox Chase Apiary, Philadelphia &nbsp;|&nbsp; 2025 season summary &nbsp;|&nbsp; Figures reconcile to the market ledger and the wholesale invoices.</footer>
+
+<script>
+  var months=["Apr","May","Jun","Jul","Aug","Sep","Oct"];
+  var data={
+    market:[559,855,739,505,1000,567,591],
+    store:[160,200,200,160,240,200,200],
+    coop:[0,180,160,140,200,160,140]
+  };
+  var colors={market:"#e0a526",store:"#3c7a3a",coop:"#7a5a2e"};
+  var active={market:true,store:true,coop:true};
+  var ns="http://www.w3.org/2000/svg";
+
+  function el(tag,attrs){var e=document.createElementNS(ns,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  function drawLine(){
+    var svg=document.getElementById("lineChart");svg.innerHTML="";
+    var W=760,H=320,pl=54,pr=20,pt=20,pb=44;
+    var maxV=1000;
+    var plotW=W-pl-pr,plotH=H-pt-pb;
+    // gridlines + y labels
+    for(var i=0;i<=5;i++){
+      var y=pt+plotH-(i/5)*plotH;
+      svg.appendChild(el("line",{x1:pl,y1:y,x2:W-pr,y2:y,stroke:"#ece2c8","stroke-width":1}));
+      var tl=el("text",{x:pl-10,y:y+4,"text-anchor":"end","font-size":11,fill:"#8a7c5f"});tl.textContent="$"+(i*200);svg.appendChild(tl);
+    }
+    // x labels
+    months.forEach(function(mo,idx){
+      var x=pl+(idx/(months.length-1))*plotW;
+      var tl=el("text",{x:x,y:H-18,"text-anchor":"middle","font-size":11,fill:"#8a7c5f"});tl.textContent=mo;svg.appendChild(tl);
+    });
+    function xy(idx,val){return [pl+(idx/(months.length-1))*plotW, pt+plotH-(val/maxV)*plotH];}
+    ["market","store","coop"].forEach(function(s){
+      if(!active[s])return;
+      var pts=data[s].map(function(v,i){return xy(i,v);});
+      // area
+      var dArea="M"+pts[0][0]+","+(pt+plotH)+" ";
+      pts.forEach(function(p){dArea+="L"+p[0]+","+p[1]+" ";});
+      dArea+="L"+pts[pts.length-1][0]+","+(pt+plotH)+" Z";
+      var area=el("path",{d:dArea,fill:colors[s],opacity:0.10});svg.appendChild(area);
+      // line
+      var dLine="M"+pts.map(function(p){return p[0]+","+p[1];}).join(" L");
+      var path=el("path",{d:dLine,fill:"none",stroke:colors[s],"stroke-width":3,"stroke-linecap":"round","stroke-linejoin":"round"});
+      svg.appendChild(path);
+      var len=path.getTotalLength();
+      path.setAttribute("stroke-dasharray",len);path.setAttribute("stroke-dashoffset",len);
+      path.style.transition="stroke-dashoffset 1s ease";
+      setTimeout(function(){path.setAttribute("stroke-dashoffset",0);},40);
+      // dots
+      pts.forEach(function(p){svg.appendChild(el("circle",{cx:p[0],cy:p[1],r:4,fill:"#fff",stroke:colors[s],"stroke-width":2}));});
+    });
+  }
+
+  document.getElementById("seriesCtrl").addEventListener("click",function(e){
+    var btn=e.target.closest("button");if(!btn)return;
+    var s=btn.dataset.s;active[s]=!active[s];
+    btn.classList.toggle("off",!active[s]);btn.classList.toggle("on",active[s]);
+    drawLine();
+  });
+
+  // channels
+  var ch=[{l:"Farmers market",v:4816,c:"#e0a526"},{l:"General store",v:1360,c:"#3c7a3a"},{l:"Co-op",v:980,c:"#7a5a2e"}];
+  var cw=document.getElementById("channels");var maxC=4816;
+  ch.forEach(function(c){
+    var pct=Math.round(c.v/7156*100);
+    var row=document.createElement("div");row.className="channel-row";
+    row.innerHTML='<div class="nm">'+c.l+'</div><div class="track"><div class="fill" style="background:'+c.c+'"></div></div>';
+    cw.appendChild(row);
+    var fill=row.querySelector(".fill");fill.textContent=pct+"%";
+    setTimeout(function(){fill.style.width=(c.v/maxC*100)+"%";},150);
+  });
+
+  // season chart (grouped bars spring vs summer)
+  function drawSeason(){
+    var svg=document.getElementById("seasonChart");svg.innerHTML="";
+    var spring=252,summer=350,max=400;
+    var W=360,H=280,pb=40,pt=20;var plotH=H-pb-pt;
+    var pairs=[{l:"Spring",v:spring,c:"#5aa64f"},{l:"Summer",v:summer,c:"#e0a526"}];
+    pairs.forEach(function(p,i){
+      var bw=90,x=70+i*150;
+      var h=p.v/max*plotH;var y=pt+plotH-h;
+      var bar=el("rect",{x:x,y:pt+plotH,width:bw,height:0,rx:6,fill:p.c});
+      svg.appendChild(bar);
+      bar.style.transition="height .9s ease, y .9s ease";
+      setTimeout(function(){bar.setAttribute("y",y);bar.setAttribute("height",h);},80);
+      var val=el("text",{x:x+bw/2,y:y-8,"text-anchor":"middle","font-size":15,"font-weight":700,fill:"#3a3326"});val.textContent=p.v+" lb";
+      setTimeout(function(){svg.appendChild(val);},700);
+      var lab=el("text",{x:x+bw/2,y:H-14,"text-anchor":"middle","font-size":13,fill:"#8a7c5f"});lab.textContent=p.l;svg.appendChild(lab);
+    });
+    svg.appendChild(el("line",{x1:40,y1:pt+plotH,x2:W-10,y2:pt+plotH,stroke:"#e6dcc2","stroke-width":2}));
+  }
+
+  // ledger
+  var ledger=[["April",559,160,0],["May",855,200,180],["June",739,200,160],["July",505,160,140],["August",1000,240,200],["September",567,200,160],["October",591,200,140]];
+  var lb=document.getElementById("ledgerBody");
+  ledger.forEach(function(r){
+    var tot=r[1]+r[2]+r[3];
+    lb.innerHTML+="<tr><td>"+r[0]+"</td><td>$"+r[1].toLocaleString()+"</td><td>$"+r[2]+"</td><td>$"+r[3]+"</td><td>$"+tot.toLocaleString()+"</td></tr>";
+  });
+
+  // animate on view
+  var seen={};
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){
+      if(e.target.id==="lineChart"&&!seen.line){seen.line=1;drawLine();}
+      if(e.target.id==="seasonChart"&&!seen.season){seen.season=1;drawSeason();}
+    }
+  });},{threshold:.3});
+  io.observe(document.getElementById("lineChart"));
+  io.observe(document.getElementById("seasonChart"));
+</script>
+</body>
+</html>
