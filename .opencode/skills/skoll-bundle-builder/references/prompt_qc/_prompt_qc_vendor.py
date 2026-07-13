@@ -24,6 +24,14 @@ Checklist items covered here (section.letter + number from the master list):
     #20  colons in a turn body           FAIL   (allowed only in TURN header)
     #21  temporal lexicon                FAIL   (clock stamps, e.g. 9am/09:30;
          today/tomorrow/weekday names are NOT flagged)
+    #21b explicit calendar year          FAIL   (four-digit 1900-2099, e.g. 2026,
+         and written-out years like "twenty twenty-six" / "two thousand
+         twenty-five"; the model must infer the year from its own context)
+    #21c numeric calendar date           FAIL   (ISO 2026-03-14, slash/dot forms
+         03/14/2026, 14.03.26)
+    #21d month-name date                 FAIL   (a month next to a day or year,
+         e.g. "March 14", "14 March", "Jan 2026"; a lone month with no number
+         like "in March" is allowed)
   D. Required form
     #23  empty artifact / no turn body   FAIL   (a body-less prompt is invalid)
     #23  one unbroken paragraph per turn WARN   (no blank line inside a body)
@@ -109,6 +117,46 @@ CLOCK_TIME_RE = re.compile(
     re.IGNORECASE,
 )
 
+# #21b explicit four-digit calendar year 1900-2099 as a standalone token. A hard
+# year anchors the prompt to one point in time; the model must infer the current
+# year from its own context, so any literal year is a FAIL.
+YEAR_RE = re.compile(r"\b(?:19|20)\d{2}\b")
+
+# #21c numeric calendar dates: ISO (2026-03-14) and slash/dot forms
+# (03/14/2026, 14.03.26). Three digit groups separated by / . or - .
+NUM_DATE_RE = re.compile(
+    r"\b\d{4}-\d{1,2}-\d{1,2}\b"
+    r"|\b\d{1,2}[/.]\d{1,2}[/.]\d{2,4}\b",
+)
+
+# #21d month-name dates: a month name sitting next to a day or year number
+# ("March 14", "14 March", "Jan 2026", "Sept. 3"). A lone month with no adjacent
+# number ("in March", "every March") is natural prose and is NOT flagged.
+_MONTH_ALT = (
+    r"jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+    r"jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|"
+    r"nov(?:ember)?|dec(?:ember)?"
+)
+MONTH_DATE_RE = re.compile(
+    r"\b(?:%s)\b\.?\s+\d{1,4}\b"
+    r"|\b\d{1,2}(?:st|nd|rd|th)?\s+(?:%s)\b" % (_MONTH_ALT, _MONTH_ALT),
+    re.IGNORECASE,
+)
+
+# #21b written-out years: "twenty twenty-six", "two thousand twenty-five". The
+# trailing year word is required, so "two thousand dollars" or a bare "twenty"
+# does not match. Note "twenty twenty" (the year 2020) also matches, which is
+# the intended reading in a business-dictation prompt.
+_YEAR_ONES = (
+    r"one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+    r"thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+)
+WRITTEN_YEAR_RE = re.compile(
+    r"\btwenty[\s-]twenty(?:[\s-](?:%s))?\b"
+    r"|\btwo\s+thousand\s+(?:and\s+)?(?:twenty[\s-]|thirty[\s-])?(?:%s)\b"
+    % (_YEAR_ONES, _YEAR_ONES),
+    re.IGNORECASE,
+)
 
 
 # #15 dictated file names: a token that ends in a real file extension.
@@ -380,6 +428,38 @@ def check_forbidden_content(turn: Turn, findings: List[Finding]) -> None:
             "FAIL", "C#21 temporal", label,
             f"clock time stamp {body[m.start():m.end()]!r} near "
             f"...{_ctx(body, m.start())}...",
+        ))
+
+    # #21b explicit calendar year (digit and written-out forms).
+    for m in YEAR_RE.finditer(body):
+        findings.append(Finding(
+            "FAIL", "C#21b year", label,
+            f"explicit year {body[m.start():m.end()]!r} near "
+            f"...{_ctx(body, m.start())}...; let the model infer the year from "
+            f"its own context",
+        ))
+    for m in WRITTEN_YEAR_RE.finditer(body):
+        findings.append(Finding(
+            "FAIL", "C#21b year", label,
+            f"written-out year {body[m.start():m.end()]!r} near "
+            f"...{_ctx(body, m.start())}...; let the model infer the year from "
+            f"its own context",
+        ))
+
+    # #21c numeric calendar date.
+    for m in NUM_DATE_RE.finditer(body):
+        findings.append(Finding(
+            "FAIL", "C#21c date", label,
+            f"explicit date {body[m.start():m.end()]!r} near "
+            f"...{_ctx(body, m.start())}...; name the timing in relative terms",
+        ))
+
+    # #21d month-name date.
+    for m in MONTH_DATE_RE.finditer(body):
+        findings.append(Finding(
+            "FAIL", "C#21d date", label,
+            f"explicit date {body[m.start():m.end()]!r} near "
+            f"...{_ctx(body, m.start())}...; name the timing in relative terms",
         ))
 
     # #15 dictated file names.

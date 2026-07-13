@@ -64,6 +64,7 @@ Score these:
 - **C11a (item 11) No restated context.** The prompt does not restate anything the agent could read for itself from its own files, inbox, calendar, or records. It states the intent, not a recap of data the agent already holds.
 - **C11b (item 11) No do-it-yourself instructions.** The prompt does not tell the agent to do work it should decide on its own (no dictated approach it could infer). It names WHAT is wanted, never narrates HOW to look or where to look.
 - **C11c (item 15) No file paths.** No explicit file path anywhere (the script hard-fails obvious ones, you catch the subtle ones the regex missed). The persona never dictates where a file lives.
+- **C11d (item 21) No explicit date or year.** No literal year, numeric date, or month-name date anywhere (the script hard-fails the common forms, you catch the subtle ones the regex missed, such as an unusual written-out year). The model must infer which year and date are meant from its own context. Relative timing (today, tomorrow, next Tuesday, this quarter) and a lone month or weekday name with no number are allowed.
 
 ### A. Domain and Framing
 - **A1 (item 1) Single domain.** Sits in exactly one domain (Enterprise / Personal / Professional-Prosumer), not a blur of several.
