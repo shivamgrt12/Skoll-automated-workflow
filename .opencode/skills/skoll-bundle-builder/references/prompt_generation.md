@@ -244,8 +244,12 @@ Write one heavy turn that carries the whole job, as one single unbroken paragrap
 800 to 1000 word band, never below 800 words. Lead with the outcome the person wants. Gesture at
 the breadth of work compactly rather than enumerating every stream as its own clause or line.
 Call out the deliverables they expect saved, as outcomes a person wants and never as file
-names or field lists. State the judgment expectations, such as newest source wins and name
-what you trusted and what you set aside. Do not break the body into sections. Keep it flowing
+names or field lists. Convey that the person wants the discrepancies run down and defended,
+but never state the resolution rule itself: do not say newest source wins, do not name which
+source should be trusted or set aside, and do not say where the authoritative value is likely
+to live. Finding the winning source and the rule for choosing it is the test, so the prompt
+carries only the worry ("some of these figures are stale and I have lost confidence they still
+line up") and never the method. Do not break the body into sections. Keep it flowing
 as one paragraph. The depth of the job is what creates the hours. Point at one job
 whose data load is wide — many records, many conflicting sources, several systems the same
 event genuinely lives across — never at many jobs. Reach the word band by deepening the world
@@ -448,13 +452,36 @@ after the prompt and the design notes are complete.
 Use only the two reference files from Section 0 input 4 as your shape bar. Read the opening
 turn in each and notice the shared discipline. It opens on the outcome the person wants. It
 points at many surfaces in their own voice. It names the deliverables they expect saved. It
-states a judgment call such as newest source wins and name what you trusted and what you set
-aside. It never tells the agent which system to open and never hands over a plan.
+conveys that discrepancies must be resolved and defended without ever stating the rule for
+resolving them. It never tells the agent which system to open, never hands over a plan, and
+never says which source wins or where the right number lives.
 
 Read them for breadth and voice, not for length. The shorter, single block opener is the
 better model for the tightness you want. Aim for a prompt that points at as many surfaces as
 the wider example does while staying as compact as the tighter one. If your draft is longer
 than the tighter reference, you are probably restating things the agent already has, so cut.
+
+### Worked contrast, approach leak versus clean worry
+
+Study these paired sentences. The leaky version states the resolution rule and pre-decides
+where the answer lives, which turns the reasoning test into a checklist. The clean version
+carries only the worry and the stakes, leaving the agent to discover the rule and the source.
+
+- Leaky, never write this: "Where they differ, tell me which source is newer, what the
+  authoritative value should be, and the provenance, because for a couple of these I expect
+  the newer number to be sitting in the analysis outputs or a recompute rather than in the
+  tracker itself." This names the winning rule (newest wins), names the losing source (the
+  tracker), and points at where the answer hides (the analysis outputs). It is the answer key.
+- Clean, write this instead: "Some of these figures are stale from earlier drafting rounds and
+  I have lost confidence they still line up with everything we have verified since, so I need
+  the discrepancies run down and every final number defensible before I commit to it." This
+  states the same worry and the same stakes without leaking the rule, the winning source, or
+  where the authoritative value lives.
+
+The same discipline governs deliverables. Never enumerate them as a list ("save three files,
+first a reconciliation brief, second a task summary, third a pipeline check"). Weave each
+wanted outcome into the running prose as something the person cares about, in the same breath
+as the work that produces it, and let the agent decide the structure.
 
 Do not copy their content, their scenarios, their numbers, or their phrasing. Both are
 skilled operators running a busy launch week, which is one valid shape, not a template you

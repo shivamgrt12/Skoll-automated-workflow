@@ -190,10 +190,15 @@ with adjusted flags or an edited meta.
 
 The review gates map to the crucial prompt questions: no redundant context,
 difficulty/subagent pressure, heavy-turn word count (800–1000 target, 1050 hard
-ceiling, **blocking**), no solution leak, and persona alignment. Two vendor gates
-run alongside them: `60_prompt_qc_vendor.py` (deterministic forbidden-content /
-form / word-band checks) and `70_prompt_qc_review.md` (model-audit reading
-comprehension). All gates block by default.
+ceiling, **blocking**), no solution leak, and persona alignment. Two deterministic
+`.py` backstops enforce what the judgment gates can rationalise away:
+`15_no_deliverable_list.py` (rejects enumerated `first/second/third` output lists)
+and `18_no_reconciliation_rule.py` (rejects stating the resolution rule — e.g.
+"newest source wins" — or naming which source loses / where the authoritative
+value lives). Two vendor gates run alongside them: `60_prompt_qc_vendor.py`
+(deterministic forbidden-content / form / word-band checks) and
+`70_prompt_qc_review.md` (model-audit reading comprehension). All gates block by
+default.
 
 ## Adding or changing prompt review gates
 
