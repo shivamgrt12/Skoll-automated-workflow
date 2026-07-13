@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Willow Creek CNM Dashboard - Brian Santos</title>
+  <style>
+    :root {
+      --teal: #2a7d7b;
+      --teal-light: #4a9d9b;
+      --teal-dark: #1a5c5a;
+      --teal-faint: #e8f4f4;
+      --slate: #3c4858;
+      --slate-light: #6b7b8d;
+      --background: #f4f6f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --green: #38a169;
+      --green-light: #e6f4ed;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --red: #c53030;
+      --red-light: #fff5f5;
+      --purple: #6b46c1;
+      --purple-light: #f3f0ff;
+      --text: #1a202c;
+      --text-muted: #718096;
+      --radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Arial', 'Helvetica Neue', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ---- SIDEBAR ---- */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background-color: var(--teal-dark);
+      color: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-brand {
+      padding: 1.4rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-brand h1 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-brand p {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      margin-top: 0.2rem;
+    }
+
+    .sidebar-user {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .user-info span {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .user-info small {
+      font-size: 0.68rem;
+      opacity: 0.6;
+    }
+
+    .sidebar-nav { padding: 1rem 0; flex: 1; }
+
+    .nav-section-label {
+      padding: 0.5rem 1.5rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.5;
+      margin-top: 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.65rem 1.5rem;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: background-color 0.15s;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .nav-item:hover { background-color: rgba(255,255,255,0.07); color: white; }
+
+    .nav-item.active {
+      background-color: rgba(255,255,255,0.12);
+      border-left-color: rgba(255,255,255,0.6);
+      color: white;
+    }
+
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-footer p {
+      font-size: 0.7rem;
+      opacity: 0.45;
+      line-height: 1.5;
+    }
+
+    /* ---- MAIN ---- */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-left h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .topbar-left p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background-color: var(--green-light);
+      color: var(--green);
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1);   }
+      50%       { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    .topbar-btn {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      transition: background-color 0.15s;
+    }
+
+    .topbar-btn:hover { background-color: var(--background); }
+
+    /* ---- CONTENT ---- */
+    .content { padding: 2rem; flex: 1; }
+
+    /* ---- STAT CARDS ---- */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.3rem 1.4rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .icon-teal { background-color: var(--teal-faint); }
+    .icon-green { background-color: var(--green-light); }
+    .icon-amber { background-color: var(--amber-light); }
+    .icon-purple { background-color: var(--purple-light); }
+
+    .stat-info { flex: 1; }
+
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-change {
+      font-size: 0.72rem;
+      margin-top: 0.3rem;
+    }
+
+    .stat-change.up { color: var(--green); }
+    .stat-change.neutral { color: var(--text-muted); }
+    .stat-change.warn { color: var(--amber); }
+
+    /* ---- GRID PANELS ---- */
+    .panels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .panel-header p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .panel-action {
+      font-size: 0.75rem;
+      color: var(--teal);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-weight: 600;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      transition: background-color 0.15s;
+    }
+
+    .panel-action:hover { background-color: var(--teal-faint); }
+
+    .panel-body { padding: 1.2rem 1.4rem; }
+
+    /* ---- CEU PROGRESS ---- */
+    .ceu-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+
+    .ceu-label { font-size: 0.78rem; color: var(--text-muted); }
+
+    .ceu-count {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--teal-dark);
+      line-height: 1;
+    }
+
+    .ceu-count span { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+
+    .progress-track {
+      height: 12px;
+      background-color: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--teal), var(--teal-light));
+      transition: width 1.2s ease;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--teal);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--teal);
+    }
+
+    .ceu-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .ceu-milestone { color: var(--amber); font-weight: 600; }
+
+    .ceu-list { margin-top: 1.2rem; }
+
+    .ceu-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .ceu-row:last-child { border-bottom: none; }
+
+    .ceu-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    .check-done { background: var(--green-light); color: var(--green); }
+    .check-upcoming { background: var(--amber-light); color: var(--amber); }
+
+    .ceu-row-text { flex: 1; }
+    .ceu-row-text strong { display: block; }
+    .ceu-row-text small { color: var(--text-muted); }
+    .ceu-hours { font-weight: 600; color: var(--teal-dark); }
+
+    /* ---- CLIENT DUE TRACKER ---- */
+    .client-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .client-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--background);
+      transition: background-color 0.15s;
+    }
+
+    .client-row:hover { background-color: var(--teal-faint); }
+
+    .client-initials {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--teal-faint);
+      color: var(--teal-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .client-info { flex: 1; }
+
+    .client-info strong { font-size: 0.85rem; display: block; }
+    .client-info small { font-size: 0.72rem; color: var(--text-muted); }
+
+    .due-chip {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+    }
+
+    .due-nov { background: var(--amber-light); color: var(--amber); }
+    .due-dec { background: var(--teal-faint); color: var(--teal-dark); }
+    .due-jan { background: var(--purple-light); color: var(--purple); }
+
+    .client-weeks {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      width: 50px;
+      text-align: right;
+    }
+
+    /* ---- ON-CALL SCHEDULE ---- */
+    .oncall-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .oncall-header-cell {
+      text-align: center;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding-bottom: 0.4rem;
+    }
+
+    .oncall-cell {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s;
+      position: relative;
+    }
+
+    .oncall-cell:hover { transform: scale(1.1); }
+
+    .cell-off { background: var(--background); color: var(--text-muted); }
+    .cell-clinic { background: var(--teal-faint); color: var(--teal-dark); }
+    .cell-oncall { background: var(--amber-light); color: var(--amber); }
+    .cell-birth { background: #fff0f0; color: var(--red); }
+    .cell-today { ring: 2px; outline: 2px solid var(--teal); outline-offset: 1px; }
+    .cell-past { opacity: 0.45; }
+
+    .oncall-legend {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* ---- WIDE PANELS ---- */
+    .panel-full {
+      grid-column: 1 / -1;
+    }
+
+    /* ---- ACTIVITY LOG ---- */
+    .activity-list { display: flex; flex-direction: column; }
+
+    .activity-row {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .activity-row:last-child { border-bottom: none; }
+
+    .activity-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .act-shift { background: var(--teal-faint); }
+    .act-ceu   { background: var(--purple-light); }
+    .act-admin { background: var(--amber-light); }
+    .act-collab { background: var(--green-light); }
+
+    .activity-text { flex: 1; }
+    .activity-text strong { font-size: 0.84rem; display: block; }
+    .activity-text span  { font-size: 0.72rem; color: var(--text-muted); }
+
+    .activity-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ---- MONTHLY CHART ---- */
+    .chart-area {
+      height: 160px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 0.5rem 0;
+    }
+
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .bar-wrap {
+      width: 100%;
+      height: 130px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .bar {
+      width: 45%;
+      border-radius: 4px 4px 0 0;
+      transition: height 1s ease;
+    }
+
+    .bar-births { background-color: var(--teal); }
+    .bar-visits { background-color: var(--teal-faint); border: 1.5px solid var(--teal-light); }
+
+    .bar-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .chart-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .chart-legend-color {
+      width: 12px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .panels-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Willow Creek Midwifery</h1>
+      <p>CNM Practice Dashboard</p>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">BS</div>
+      <div class="user-info">
+        <span>Brian Santos, CNM</span>
+        <small>Active - On clinic schedule</small>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Clinical</div>
+      <a class="nav-item active" href="#">
+        <span class="nav-icon">📊</span> Overview
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">👩</span> Active Clients
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">📅</span> On-Call Schedule
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">📋</span> Clinic Notes
+      </a>
+      <div class="nav-section-label">Professional</div>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">🎓</span> CEU Tracker
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">📝</span> Candidate Review
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">🤝</span> Referrals
+      </a>
+      <div class="nav-section-label">Practice</div>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">👥</span> Team</a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">⚙️</span> Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <p>Willow Creek Midwifery<br>Asheville, NC<br>Practice Director: Helen Marsh</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2>Practice Overview</h2>
+        <p>Showing current caseload, CEU progress, and schedule for October 2026</p>
+      </div>
+      <div class="topbar-right">
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          Clinic Day
+        </div>
+        <button class="topbar-btn">Export</button>
+        <button class="topbar-btn">Sync Calendar</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STAT CARDS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon icon-teal">👩</div>
+          <div class="stat-info">
+            <div class="stat-label">Active Clients</div>
+            <div class="stat-value">8</div>
+            <div class="stat-change neutral">Across 3 due months</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-amber">📅</div>
+          <div class="stat-info">
+            <div class="stat-label">On-Call Days This Month</div>
+            <div class="stat-value">10</div>
+            <div class="stat-change neutral">Includes 2 weekends</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-green">🎓</div>
+          <div class="stat-info">
+            <div class="stat-label">CEU Hours Completed</div>
+            <div class="stat-value">8</div>
+            <div class="stat-change warn">12 hrs remain by Dec 2026</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-purple">🏥</div>
+          <div class="stat-info">
+            <div class="stat-label">Births YTD (2026)</div>
+            <div class="stat-value">34</div>
+            <div class="stat-change up">On pace with 2025</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANELS ROW 1 -->
+      <div class="panels-grid">
+
+        <!-- CEU PROGRESS -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>CEU Progress</h3>
+              <p>Deadline: December 31, 2026 - Renewal requirement: 20 hours</p>
+            </div>
+            <button class="panel-action">Add hours</button>
+          </div>
+          <div class="panel-body">
+            <div class="ceu-header">
+              <span class="ceu-label">Hours completed</span>
+              <div class="ceu-count">8 <span>/ 20 hrs</span></div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="ceuBar" style="width: 40%"></div>
+            </div>
+            <div class="ceu-meta">
+              <span>40% complete</span>
+              <span class="ceu-milestone">12 hours remaining</span>
+            </div>
+
+            <div class="ceu-list">
+              <div class="ceu-row">
+                <div class="ceu-check check-done">✓</div>
+                <div class="ceu-row-text">
+                  <strong>Intrapartum Fetal Surveillance Update</strong>
+                  <small>Jan 18, 2026 - ACNM Webinar</small>
+                </div>
+                <span class="ceu-hours">3 hrs</span>
+              </div>
+              <div class="ceu-row">
+                <div class="ceu-check check-done">✓</div>
+                <div class="ceu-row-text">
+                  <strong>Postpartum Care in Underserved Communities</strong>
+                  <small>Feb 4, 2026 - Carolinas Birth Network</small>
+                </div>
+                <span class="ceu-hours">2 hrs</span>
+              </div>
+              <div class="ceu-row">
+                <div class="ceu-check check-done">✓</div>
+                <div class="ceu-row-text">
+                  <strong>Group B Strep Protocol Review</strong>
+                  <small>Feb 22, 2026 - Practice internal</small>
+                </div>
+                <span class="ceu-hours">1.5 hrs</span>
+              </div>
+              <div class="ceu-row">
+                <div class="ceu-check check-done">✓</div>
+                <div class="ceu-row-text">
+                  <strong>Neonatal Resuscitation Recertification</strong>
+                  <small>Oct 3, 2026 - Ridgeview Medical Center</small>
+                </div>
+                <span class="ceu-hours">1.5 hrs</span>
+              </div>
+              <div class="ceu-row">
+                <div class="ceu-check check-upcoming">→</div>
+                <div class="ceu-row-text">
+                  <strong>Evidence-Based Approaches to Postpartum Hemorrhage</strong>
+                  <small>Dec 5, 2026 - Webinar, 10 AM - 1 PM</small>
+                </div>
+                <span class="ceu-hours">3 hrs</span>
+              </div>
+              <div class="ceu-row">
+                <div class="ceu-check check-upcoming">→</div>
+                <div class="ceu-row-text">
+                  <strong>Carolinas Birth Network Spring CEU Gathering</strong>
+                  <small>Mar 6, 2027 - Greenville, SC (day trip with Dani)</small>
+                </div>
+                <span class="ceu-hours">6 hrs*</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLIENT DUE TRACKER -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Active Client Due Windows</h3>
+              <p>8 active clients across 3 due months</p>
+            </div>
+            <button class="panel-action">Full list</button>
+          </div>
+          <div class="panel-body">
+            <div class="client-list">
+              <div class="client-row">
+                <div class="client-initials">MA</div>
+                <div class="client-info">
+                  <strong>Client M.A.</strong>
+                  <small>Second pregnancy - routine prenatal</small>
+                </div>
+                <span class="due-chip due-nov">Nov 2026</span>
+                <span class="client-weeks">36 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">TR</div>
+                <div class="client-info">
+                  <strong>Client T.R.</strong>
+                  <small>First pregnancy - birth center plan confirmed</small>
+                </div>
+                <span class="due-chip due-nov">Nov 2026</span>
+                <span class="client-weeks">35 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">JL</div>
+                <div class="client-info">
+                  <strong>Client J.L.</strong>
+                  <small>Third pregnancy - VBAC candidate</small>
+                </div>
+                <span class="due-chip due-dec">Dec 2026</span>
+                <span class="client-weeks">31 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">SP</div>
+                <div class="client-info">
+                  <strong>Client S.P.</strong>
+                  <small>Second pregnancy - gestational diabetes managed</small>
+                </div>
+                <span class="due-chip due-dec">Dec 2026</span>
+                <span class="client-weeks">30 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">BK</div>
+                <div class="client-info">
+                  <strong>Client B.K.</strong>
+                  <small>First pregnancy - transferred care from OOA</small>
+                </div>
+                <span class="due-chip due-dec">Dec 2026</span>
+                <span class="client-weeks">28 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">CW</div>
+                <div class="client-info">
+                  <strong>Client C.W.</strong>
+                  <small>First pregnancy - early, routine schedule</small>
+                </div>
+                <span class="due-chip due-jan">Jan 2027</span>
+                <span class="client-weeks">24 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">DE</div>
+                <div class="client-info">
+                  <strong>Client D.E.</strong>
+                  <small>Second pregnancy - advance care planning review</small>
+                </div>
+                <span class="due-chip due-jan">Jan 2027</span>
+                <span class="client-weeks">22 wks</span>
+              </div>
+              <div class="client-row">
+                <div class="client-initials">RF</div>
+                <div class="client-info">
+                  <strong>Client R.F.</strong>
+                  <small>First pregnancy - recently joined</small>
+                </div>
+                <span class="due-chip due-jan">Jan 2027</span>
+                <span class="client-weeks">20 wks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PANELS ROW 2 -->
+      <div class="panels-grid">
+
+        <!-- ON-CALL CALENDAR -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>October 2026 Schedule</h3>
+              <p>Clinic days, on-call blocks, and days off</p>
+            </div>
+            <button class="panel-action">Full calendar</button>
+          </div>
+          <div class="panel-body">
+            <div class="oncall-grid" id="calendarGrid"></div>
+            <div class="oncall-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--teal-faint); border: 1.5px solid var(--teal-light)"></div>
+                Clinic
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--amber-light)"></div>
+                On-Call
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#fff0f0"></div>
+                Birth / Active
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--background); border: 1px solid var(--border)"></div>
+                Day Off
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MONTHLY BIRTHS CHART -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Births and Visits - 2026</h3>
+              <p>Monthly breakdown through October</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="chart-area" id="chartArea"></div>
+            <div class="chart-legend">
+              <div class="chart-legend-item">
+                <div class="chart-legend-color" style="background:var(--teal)"></div>
+                Births attended
+              </div>
+              <div class="chart-legend-item">
+                <div class="chart-legend-color" style="background:var(--teal-faint); border: 1.5px solid var(--teal-light)"></div>
+                Prenatal visits
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="panel" style="margin-bottom: 2rem;">
+        <div class="panel-header">
+          <div>
+            <h3>Recent Activity</h3>
+            <p>Shifts, CEU entries, and admin notes</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="activity-list">
+            <div class="activity-row">
+              <div class="activity-icon-wrap act-shift">🌙</div>
+              <div class="activity-text">
+                <strong>On-call shift completed - overnight</strong>
+                <span>Patient transferred to Ridgeview at 0340. Consulted with Dr. Ransom. Closed shift Oct 14.</span>
+              </div>
+              <span class="activity-time">Oct 14, 2026</span>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon-wrap act-ceu">🎓</div>
+              <div class="activity-text">
+                <strong>CEU logged: Neonatal Resuscitation Recertification</strong>
+                <span>1.5 hours credited. Certificate uploaded to BambooHR. Total: 8/20 hrs.</span>
+              </div>
+              <span class="activity-time">Oct 3, 2026</span>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon-wrap act-admin">📋</div>
+              <div class="activity-text">
+                <strong>Candidate review completed for Practice Hire #5</strong>
+                <span>Reviewed two applications per Helen's request. Notes submitted via Greenhouse.</span>
+              </div>
+              <span class="activity-time">Oct 1, 2026</span>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon-wrap act-shift">🏥</div>
+              <div class="activity-text">
+                <strong>Birth attended - uncomplicated vertex presentation</strong>
+                <span>Birth center delivery. Postpartum checks through 4 hours. Family discharged Oct 1.</span>
+              </div>
+              <span class="activity-time">Sep 30, 2026</span>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon-wrap act-collab">🤝</div>
+              <div class="activity-text">
+                <strong>Referral consult with Dr. Paula Ransom</strong>
+                <span>Client S.P. gestational diabetes management review. Care coordination confirmed.</span>
+              </div>
+              <span class="activity-time">Sep 28, 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+  // Build October 2026 calendar
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const grid = document.getElementById('calendarGrid');
+  days.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'oncall-header-cell';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  // October 2026 starts on Thursday (index 4)
+  const startPad = 4;
+  // Schedule for October 2026
+  const schedule = {
+    1: 'off', 2: 'off', 3: 'oncall', 4: 'oncall', 5: 'clinic', 6: 'clinic', 7: 'clinic',
+    8: 'off', 9: 'off', 10: 'oncall', 11: 'birth', 12: 'off', 13: 'clinic', 14: 'clinic',
+    15: 'clinic', 16: 'off', 17: 'oncall', 18: 'oncall', 19: 'clinic', 20: 'clinic', 21: 'clinic',
+    22: 'off', 23: 'off', 24: 'oncall', 25: 'oncall', 26: 'clinic', 27: 'clinic', 28: 'clinic',
+    29: 'off', 30: 'off', 31: 'oncall'
+  };
+
+  for (let i = 0; i < startPad; i++) {
+    const empty = document.createElement('div');
+    grid.appendChild(empty);
+  }
+
+  for (let day = 1; day <= 31; day++) {
+    const cell = document.createElement('div');
+    cell.className = 'oncall-cell';
+    const type = schedule[day] || 'off';
+    cell.classList.add(type === 'clinic' ? 'cell-clinic' : type === 'oncall' ? 'cell-oncall' : type === 'birth' ? 'cell-birth' : 'cell-off');
+    if (day < 15) cell.classList.add('cell-past');
+    cell.textContent = day;
+    cell.title = `Oct ${day}: ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    grid.appendChild(cell);
+  }
+
+  // Births/visits chart
+  const data = [
+    { month: 'Jan', births: 3, visits: 18 },
+    { month: 'Feb', births: 4, visits: 22 },
+    { month: 'Oct', births: 3, visits: 20 },
+    { month: 'Nov', births: 2, visits: 16 },
+    { month: 'Dec', births: 5, visits: 24 },
+  ];
+
+  const maxVisits = 28;
+  const chartArea = document.getElementById('chartArea');
+  data.forEach(d => {
+    const bg = document.createElement('div');
+    bg.className = 'bar-group';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'bar-wrap';
+
+    const barB = document.createElement('div');
+    barB.className = 'bar bar-births';
+    barB.style.height = '0px';
+    barB.title = `Births: ${d.births}`;
+    setTimeout(() => { barB.style.height = (d.births / 7 * 120) + 'px'; }, 200);
+
+    const barV = document.createElement('div');
+    barV.className = 'bar bar-visits';
+    barV.style.height = '0px';
+    barV.title = `Prenatal visits: ${d.visits}`;
+    setTimeout(() => { barV.style.height = (d.visits / maxVisits * 120) + 'px'; }, 200);
+
+    wrap.appendChild(barB);
+    wrap.appendChild(barV);
+
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = d.month;
+
+    bg.appendChild(wrap);
+    bg.appendChild(label);
+    chartArea.appendChild(bg);
+  });
+
+  // Note: only showing months with data outside deadzone (Jan, Feb, Oct, Nov, Dec 2026)
+</script>
+</body>
+</html>
