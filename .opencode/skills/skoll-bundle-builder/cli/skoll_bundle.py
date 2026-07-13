@@ -93,7 +93,7 @@ MANIFEST_VERSION = "1.0"
 
 # Passed as --model to override any retired model id pinned by the installed
 # agent config (a stale pin makes the provider reject the call). Env-overridable.
-STAGE_MODEL = os.environ.get("SKOLL_BUNDLE_MODEL", "anthropic/claude-opus-4-5")
+STAGE_MODEL = os.environ.get("SKOLL_BUNDLE_MODEL", "anthropic/claude-opus-4-8")
 
 
 class StageError(Exception):
