@@ -538,10 +538,18 @@ def _prompt_self_repair_sweep(input_dir: Path, work: Path) -> None:
     )
 
 
+_VERDICT_FALLBACK = (("verdict: fail", "fail"), ("verdict: review", "warn"), ("verdict: pass", "pass"))
+
+
 def _parse_qc_verdict(raw: str) -> str:
     low = raw.lower()
     for verdict in ("fail", "warn", "pass"):
         if f"qc_result: {verdict}" in low:
+            return verdict
+    # 70_prompt_qc_review.md ends in `VERDICT: PASS|REVIEW|FAIL`, not QC_RESULT;
+    # map its native vocabulary so this gate is not silently discarded as a default fail.
+    for needle, verdict in _VERDICT_FALLBACK:
+        if needle in low:
             return verdict
     return "fail"
 
@@ -588,6 +596,38 @@ def _run_mechanical_stage_gate(gate: Path, work: Path) -> tuple[bool, str]:
     return result.returncode == 0, (result.stdout or "") + (result.stderr or "")
 
 
+_DEFAULT_FIX_DIRECTIVE = (
+    "Preserve all correctness constraints; only make the minimum changes needed "
+    "to clear the reported failure(s)."
+)
+_WORD_COUNT_UNDER_DIRECTIVE = (
+    "The heavy turn is below the 800-word floor. Expand it back into the 800-1000 "
+    "word band by adding more world: more surfaces, more stakes, more named "
+    "outcomes, more stated scale. Do NOT pad with restated context the agent can "
+    "read in its own files, and do NOT add step-by-step instructions or narrate "
+    "how to do the work. Preserve all correctness constraints."
+)
+_WORD_COUNT_OVER_DIRECTIVE = (
+    "The heavy turn is above the word ceiling. Tighten it back into the 800-1000 "
+    "word band by cutting restated context, hand-over of the plan, and any "
+    "how-to narration first; never cut required world or stakes below 800 words. "
+    "Preserve all correctness constraints."
+)
+
+
+def _gate_fix_directive(gate: Path, failure_output: str) -> str:
+    if "word_count" not in gate.stem:
+        return _DEFAULT_FIX_DIRECTIVE
+    # word_count gate prints '... heavy turn = <N> words ...'; branch the fix on
+    # whether the turn is too short (expand with world) or too long (trim leaks).
+    match = re.search(r"heavy turn\s*=\s*(\d+)\s*words", failure_output)
+    if match and int(match.group(1)) < 800:
+        return _WORD_COUNT_UNDER_DIRECTIVE
+    if match and int(match.group(1)) > 800:
+        return _WORD_COUNT_OVER_DIRECTIVE
+    return _DEFAULT_FIX_DIRECTIVE
+
+
 def _mechanical_gate_fix(
     gate: Path,
     context_dirs: list[Path],
@@ -600,13 +640,13 @@ def _mechanical_gate_fix(
     # attempt of the .py gate can pass. Without this hook the sweep's retry
     # budget is useless for .py gates (they are deterministic on unchanged input).
     artifact_list = ", ".join(f"{work / name}" for name in artifacts)
+    directive = _gate_fix_directive(gate, failure_output)
     synth_path = work / f"_gate_fix_{gate.stem}.md"
     synth_path.write_text(
         f"# Mechanical QC Gate Failure \u2014 {gate.name}\n\n"
         "The following mechanical check ran on the artifact(s) under review and "
         "reported a failure. Revise the artifact(s) so the check will pass on the "
-        "next run. Preserve all correctness constraints; only make the minimum "
-        "changes needed to clear the reported failure(s).\n\n"
+        f"next run. {directive}\n\n"
         "## Gate output\n\n"
         f"```\n{failure_output.strip()}\n```\n"
     )
@@ -636,13 +676,16 @@ def _stage_gate_autofix(
     work: Path,
     artifacts: tuple[str, ...],
     input_dir: Path | None = None,
-) -> tuple[str, str]:
+) -> tuple[str, str, bool]:
     """Run one model-audit gate in fix mode: the model may revise the artifact(s).
 
-    Returns (verdict, raw_model_output). The model re-emits any file it changed
-    wrapped in ===FILE: name=== markers; those are written back into the work
-    dir so the next gate (and the final check) sees the improved artifact. When
-    input_dir is given, enriched mock_data files are written back under guardrails.
+    Returns (self_verdict, raw_model_output, wrote_artifact). The self_verdict is
+    the fixer's own report and must not be trusted alone when it edited a file;
+    the caller re-verifies via _stage_gate_check in that case. The model re-emits
+    any changed file wrapped in ===FILE: name=== markers; those are written back
+    into the work dir so the next gate (and the final check) sees the improved
+    artifact. When input_dir is given, enriched mock_data files are written back
+    under guardrails.
     """
     artifact_list = ", ".join(f"{work / name}" for name in artifacts)
     mock_clause = (
@@ -678,7 +721,7 @@ def _stage_gate_autofix(
         (work / name).write_text(files[name])
     if wrote:
         print(f"[{gate.parent.name} FIXED] {gate.name} (revised {', '.join(sorted(wrote))})")
-    return _parse_qc_verdict(out), out
+    return _parse_qc_verdict(out), out, bool(wrote)
 
 
 def _stage_gate_check(gate: Path, context_dirs: list[Path], work: Path, artifacts: tuple[str, ...]) -> str:
@@ -732,9 +775,15 @@ def _stage_qc_sweep(
                 verdict = "pass" if passed else "fail"
                 detail = gate_output
             else:
-                verdict, detail = _stage_gate_autofix(
+                self_verdict, detail, wrote = _stage_gate_autofix(
                     gate, context_dirs, work, artifacts, enrich_input_dir
                 )
+                if wrote:
+                    # The fixer edited the artifact; never trust its self-report.
+                    # Re-run the gate in check-only mode for an independent verdict.
+                    verdict = _stage_gate_check(gate, context_dirs, work, artifacts)
+                else:
+                    verdict = self_verdict
             if verdict in ("pass", "warn"):
                 break
             if attempt < QC_STAGE_MAX_FIX_ITERS:

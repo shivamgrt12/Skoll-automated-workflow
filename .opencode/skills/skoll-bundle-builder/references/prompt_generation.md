@@ -224,8 +224,8 @@ unbroken paragraph of running prose with no blank line inside it. This is a hard
 preference. If your draft has a blank line anywhere inside a turn body, you have failed and
 must join it back into one paragraph.
 
-Length band. A heavy single prompt and a heavy opening turn target roughly eight hundred to
-one thousand words. Light follow up turns stay short, two to five sentences each. The length
+Length band. A heavy single prompt and a heavy opening turn land in the 800 to 1000 word
+band and never fall below 800 words. Light follow up turns stay short, two to five sentences each. The length
 band is not a license to pad. The only legitimate sources of the added length are more live
 surfaces named in passing, more real world stakes and texture that the agent cannot infer on
 its own, more named outcomes the person wants, and the stated scale of the population the
@@ -233,14 +233,15 @@ work runs over. Difficulty lives in the world and the hidden conflicts, not in t
 count, so every added word must buy more world and never more instruction. A reader who
 already holds every file does not need you to restate what is in those files. If a sentence
 is only there to summarize something the agent can open and read on its own, or to hand over
-the plan, the filenames, or the field schemas, cut it no matter how short the draft becomes.
-At one thousand words the no redundant context rule gets harder to hold, not easier, so guard
+the plan, the filenames, or the field schemas, cut it and replace the space with more world,
+never with restated context. Tighten within the 800 to 1000 band; never output below 800 words.
+At 1000 words the no redundant context rule gets harder to hold, not easier, so guard
 it more closely as the prompt grows.
 
 ### 4.1 If the operator chose a single prompt
 
 Write one heavy turn that carries the whole job, as one single unbroken paragraph in the
-eight hundred to one thousand word band. Lead with the outcome the person wants. Gesture at
+800 to 1000 word band, never below 800 words. Lead with the outcome the person wants. Gesture at
 the breadth of work compactly rather than enumerating every stream as its own clause or line.
 Call out the deliverables they expect saved, as outcomes a person wants and never as file
 names or field lists. State the judgment expectations, such as newest source wins and name
@@ -280,12 +281,14 @@ Produce one heavy opening turn exactly as above, then two or three light follow 
   Carry intent and goal only. This is the rule that most prompts fail. Read your draft and
   delete every clause that explains how rather than what, and every clause that recites a
   fact the agent could find by opening its own files.
-- Length earned honestly. A heavy single prompt or heavy opening turn sits in the eight
-  hundred to one thousand word band. Every word in that band must buy more world, more
-  surfaces, more stakes, more named outcomes, or stated scale. Not one added word may recite
-  a fact the agent can read in its own files, hand over the plan, or dictate file names or
-  field schemas. If a sentence does not carry a requirement or widen the world, cut it even
-  if that drops you below the band.
+- Length earned honestly. A heavy single prompt or heavy opening turn sits in the 800 to
+  1000 word band, and never drops below 800 words. Every word in that band must buy more
+  world, more surfaces, more stakes, more named outcomes, or stated scale. Not one added word
+  may recite a fact the agent can read in its own files, hand over the plan, or dictate file
+  names or field schemas. If a sentence does not carry a requirement or widen the world, cut
+  it; then win the length back by deepening the world (more surfaces, stakes, scale), never by
+  restating context or narrating how. Being short is not a virtue here: a prompt under 800
+  words has failed the band and must be expanded with more world, not more instruction.
 - One single paragraph per turn body. No blank line inside any turn body. If there is a
   blank line inside the body, it is a failure. Join it into one paragraph before output.
 - No em dashes anywhere.
@@ -336,10 +339,12 @@ state pass or fail with a one line reason. If anything fails, fix it and rerun t
    no recital of facts the agent could read in its own files.
 10. Voice matches the persona.
 11. Fresh and original, nothing lifted from the two reference files or any other task.
-12. Length earned honestly. A heavy single prompt or opening turn sits in the eight hundred
-    to one thousand word band, and read together with item 9 every added word buys more world
-    and never restates a fact the agent can read, hands over the plan, or dictates file names
-    or schemas. No sentence survives that does not carry a requirement or widen the world.
+12. Length earned honestly. A heavy single prompt or opening turn sits in the 800 to 1000
+    word band and never below 800 words, and read together with item 9 every added word buys
+    more world and never restates a fact the agent can read, hands over the plan, or dictates
+    file names or schemas. No sentence survives that does not carry a requirement or widen the
+    world. If the draft comes in under 800 words, expand it with more world, more surfaces,
+    more stakes, more stated scale, never with restated context and never with instructions.
 13. One single paragraph per turn body. Read each body. If it contains any blank line, fail
     and join it into one paragraph.
 14. Every turn header is exactly `--- TURN N ---` with no day, no time, no agent label, and
