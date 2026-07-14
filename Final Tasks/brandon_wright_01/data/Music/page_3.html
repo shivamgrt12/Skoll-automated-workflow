@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training Dashboard</title>
+<style>
+  :root{ --navy:#122a42; --steel:#2e5a7e; --ice:#5b8fb9; --accent:#c87b2e; --ink:#1c232b; --line:#e2e8ee; --bg:#eef1f5; --card:#ffffff; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  header.top{ position:sticky; top:0; z-index:20; background:var(--navy); color:#fff; padding:16px 28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 10px rgba(0,0,0,.12); }
+  header.top .brand .kick{ letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:#9fb4c6; }
+  header.top .brand h1{ margin:2px 0 0; font-size:21px; }
+  header.top .meta{ font-size:12px; color:#9fb4c6; text-align:right; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:24px 22px 30px; }
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+  .kpi{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; opacity:0; transform:translateY(12px); animation:rise .6s ease forwards; }
+  .kpi:nth-child(2){ animation-delay:.08s } .kpi:nth-child(3){ animation-delay:.16s } .kpi:nth-child(4){ animation-delay:.24s }
+  @keyframes rise{ to{ opacity:1; transform:none; } }
+  .kpi .t{ font-size:12px; color:var(--steel); text-transform:uppercase; letter-spacing:.05em; }
+  .kpi .v{ font-size:26px; font-weight:700; } .kpi .s{ font-size:12px; color:#6a727b; }
+  .panel{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:20px; }
+  .panel .head{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+  .panel h2{ margin:0; font-size:18px; }
+  .toggle{ display:inline-flex; background:#e7edf3; border-radius:9px; padding:3px; }
+  .toggle button{ border:0; background:transparent; color:var(--steel); font-size:13px; font-weight:600; padding:7px 13px; border-radius:7px; cursor:pointer; transition:all .15s; }
+  .toggle button.active{ background:var(--navy); color:#fff; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  .toggle button:hover:not(.active){ background:#d8e2ec; }
+  .chart{ display:flex; align-items:flex-end; gap:10px; height:230px; padding:14px 4px 0; border-bottom:2px solid var(--line); }
+  .col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .bar{ width:74%; border-radius:7px 7px 0 0; height:0; transition:height .7s cubic-bezier(.2,.7,.3,1); position:relative; cursor:pointer; }
+  .bar:hover{ filter:brightness(1.08); } .bar .tip{ position:absolute; top:-26px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; font-size:11px; padding:2px 7px; border-radius:5px; opacity:0; white-space:nowrap; transition:opacity .15s; pointer-events:none; }
+  .bar:hover .tip{ opacity:1; }
+  .xlabel{ font-size:10.5px; color:#6a727b; margin-top:7px; }
+  .legend{ font-size:12.5px; color:#5a626b; margin-top:12px; }
+  .swatch{ display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:middle; margin:0 4px 0 12px; }
+  .two{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td{ text-align:left; padding:8px 9px; border-bottom:1px solid var(--line); }
+  th{ background:#eef2f6; color:var(--steel); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  tbody tr{ transition:background .15s; cursor:default; } tbody tr:hover{ background:#f1f6fb; }
+  td.n{ text-align:right; font-variant-numeric:tabular-nums; }
+  .tabs{ display:flex; gap:6px; margin-bottom:12px; } .tabs button{ border:1px solid var(--line); background:#fff; color:var(--steel); font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:20px; cursor:pointer; transition:all .15s; }
+  .tabs button.active{ background:var(--steel); color:#fff; border-color:var(--steel); }
+  .tabpane{ display:none; } .tabpane.active{ display:block; animation:fade .3s ease; } @keyframes fade{ from{opacity:0} to{opacity:1} }
+  .note{ font-size:13px; color:#5a626b; line-height:1.55; }
+  footer{ background:var(--navy); color:#9fb4c6; font-size:12.5px; padding:18px 28px; text-align:center; }
+  footer strong{ color:#cfddea; }
+  @media(max-width:760px){ .kpis{grid-template-columns:repeat(2,1fr);} .two{grid-template-columns:1fr;} header.top .meta{display:none;} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="kick">Personal training log</div><h1>Training Dashboard</h1></div>
+  <div class="meta">Synced from Garmin Forerunner 265<br>Window: October 19 to November 2, 2026</div>
+</header>
+<div class="wrap">
+
+  <div class="kpis">
+    <div class="kpi"><div class="t">Week of Oct 26</div><div class="v"><span data-count="6.5" data-suffix=" hr">0</span></div><div class="s">Taper holds quality, drops volume</div></div>
+    <div class="kpi"><div class="t">VO2 max</div><div class="v"><span data-count="58" data-suffix="">0</span></div><div class="s">mL/kg/min, lab measured</div></div>
+    <div class="kpi"><div class="t">Resting HR</div><div class="v"><span data-count="48" data-suffix="">0</span></div><div class="s">bpm, morning average</div></div>
+    <div class="kpi"><div class="t">Longest session</div><div class="v"><span data-count="34" data-suffix=" km">0</span></div><div class="s">Oct 24 mixed, ski plus run</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="head">
+      <h2>Session Trends</h2>
+      <div class="toggle" id="metricToggle">
+        <button data-metric="hrs" class="active">Hours</button>
+        <button data-metric="km">Distance</button>
+        <button data-metric="hr">Avg HR</button>
+      </div>
+    </div>
+    <div class="chart" id="chart"></div>
+    <div class="legend"><span class="swatch" style="background:#2e5a7e"></span>Ski <span class="swatch" style="background:#5b8fb9"></span>Run <span class="swatch" style="background:#c87b2e"></span>Long or mixed</div>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <h2 style="margin:0 0 12px">Session Log</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Session</th><th class="n">km</th><th class="n">HR</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0 0 12px">Wax and Conditions</h2>
+      <div class="tabs" id="waxTabs">
+        <button class="active" data-pane="glide">Glide</button>
+        <button data-pane="grip">Grip</button>
+        <button data-pane="notes">Bench notes</button>
+      </div>
+      <div class="tabpane active" id="glide">
+        <table><thead><tr><th>Snow temp</th><th>Glide</th><th>Use</th></tr></thead><tbody>
+          <tr><td>28 to 32 F</td><td>Performance Yellow</td><td>Wet, transformed snow</td></tr>
+          <tr><td>14 to 23 F</td><td>Performance Red</td><td>All-around new snow</td></tr>
+          <tr><td>Below 14 F</td><td>Performance Blue</td><td>Cold, dry snow</td></tr>
+        </tbody></table>
+      </div>
+      <div class="tabpane" id="grip">
+        <table><thead><tr><th>Snow temp</th><th>Grip</th><th>Note</th></tr></thead><tbody>
+          <tr><td>30 to 34 F</td><td>Klister Universal</td><td>Slush, kitchen prep only</td></tr>
+          <tr><td>14 to 25 F</td><td>Grip Blue</td><td>Workhorse for most race mornings</td></tr>
+          <tr><td>Below 14 F</td><td>Grip Green</td><td>Cold, sharp crystals</td></tr>
+        </tbody></table>
+      </div>
+      <div class="tabpane" id="notes">
+        <p class="note">Blue grip is the right call for most Wirth and Birchwood mornings, so start there. Iron glide on the balcony Friday night, then scrape and brush cold Saturday before loading. For the December qualifier near Duluth, pack green grip since lake snow runs colder.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>Training log kept by <strong>Brandon Wright</strong>, Coach Lars Bergstrom plan. Building toward the November 14 Wirth Park opener.</footer>
+
+<script>
+  var sessions=[
+    {d:'10/19',s:'Roller ski intervals',type:'ski',km:18,hr:158,hrs:1.5},
+    {d:'10/21',s:'Easy run',type:'run',km:11,hr:138,hrs:1.0},
+    {d:'10/23',s:'Roller ski endurance',type:'ski',km:22,hr:142,hrs:1.75},
+    {d:'10/24',s:'Long session, ski plus run',type:'long',km:34,hr:145,hrs:2.5},
+    {d:'10/26',s:'Strength and run',type:'run',km:9,hr:136,hrs:1.0},
+    {d:'10/28',s:'Threshold intervals',type:'ski',km:19,hr:162,hrs:1.5},
+    {d:'10/30',s:'Recovery ski, first snow',type:'ski',km:15,hr:132,hrs:1.25},
+    {d:'10/31',s:'Long ski at Wirth',type:'long',km:30,hr:144,hrs:2.75},
+    {d:'11/02',s:'Skate intervals, opener prep',type:'ski',km:20,hr:160,hrs:1.5}
+  ];
+  var colorOf={ski:'#2e5a7e',run:'#5b8fb9',long:'#c87b2e'};
+  var unit={hrs:' hr',km:' km',hr:' bpm'};
+  var chart=document.getElementById('chart');
+  sessions.forEach(function(x){
+    var col=document.createElement('div'); col.className='col';
+    var bar=document.createElement('div'); bar.className='bar'; bar.style.background=colorOf[x.type];
+    var tip=document.createElement('span'); tip.className='tip'; bar.appendChild(tip);
+    var lab=document.createElement('div'); lab.className='xlabel'; lab.textContent=x.d;
+    col.appendChild(bar); col.appendChild(lab); chart.appendChild(col);
+    x._bar=bar; x._tip=tip;
+  });
+  function draw(metric){
+    var max=Math.max.apply(null,sessions.map(function(x){return x[metric];}));
+    sessions.forEach(function(x){
+      x._bar.style.height=(x[metric]/max*200)+'px';
+      x._tip.textContent=x[metric]+unit[metric];
+    });
+  }
+  var mt=document.getElementById('metricToggle');
+  mt.addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    mt.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active'); draw(e.target.dataset.metric);
+  });
+  var body=document.getElementById('logBody');
+  sessions.forEach(function(x){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+x.d+'</td><td>'+x.s+'</td><td class="n">'+x.km+'</td><td class="n">'+x.hr+'</td>';
+    body.appendChild(tr);
+  });
+  var waxTabs=document.getElementById('waxTabs');
+  waxTabs.addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    waxTabs.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');
+    document.querySelectorAll('.tabpane').forEach(function(p){p.classList.remove('active');});
+    document.getElementById(e.target.dataset.pane).classList.add('active');
+  });
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var end=parseFloat(el.dataset.count), suf=el.dataset.suffix||'', dec=(end%1!==0)?1:0, t0=null;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/900,1); el.textContent=(end*p).toFixed(dec)+suf; if(p<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  });
+  draw('hrs');
+</script>
+</body>
+</html>

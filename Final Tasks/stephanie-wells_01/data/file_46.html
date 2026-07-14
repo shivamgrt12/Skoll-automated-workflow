@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climbing Training Dashboard - Stephanie Wells</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #4a7c59;
+      --green-dark: #355940;
+      --green-light: #d4e8da;
+      --sandstone: #c17f4e;
+      --sandstone-light: #f0deca;
+      --bg: #ffffff;
+      --bg-soft: #f7f4f0;
+      --text: #2c2c2c;
+      --text-muted: #666;
+      --border: #e0d9d0;
+      --shadow: 0 2px 12px rgba(74,124,89,0.10);
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-soft);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ANIMATIONS */
+    @keyframes slideInDown {
+      from { transform: translateY(-24px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,124,89,0.25); }
+      50%       { box-shadow: 0 0 0 8px rgba(74,124,89,0); }
+    }
+    @keyframes barGrow {
+      from { width: 0; }
+      to   { width: var(--w); }
+    }
+
+    /* HEADER */
+    header {
+      background: var(--green);
+      color: #fff;
+      animation: slideInDown 0.5s ease both;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-height: 68px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .logo i { color: var(--sandstone-light); font-size: 1.4rem; }
+
+    nav { display: flex; gap: 4px; flex-wrap: wrap; }
+    nav a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+    }
+    nav a:hover, nav a.active {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+
+    /* PAGE LAYOUT */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+
+    /* PAGE TITLE */
+    .page-title {
+      animation: fadeInUp 0.5s ease 0.1s both;
+      margin-bottom: 28px;
+    }
+    .page-title h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    .page-title p {
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    /* STATS CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.5s ease 0.2s both;
+    }
+    .stat-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(74,124,89,0.15);
+    }
+    .stat-icon {
+      width: 42px; height: 42px;
+      border-radius: 8px;
+      background: var(--green-light);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--green);
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+    .stat-card.accent .stat-icon { background: var(--sandstone-light); color: var(--sandstone); }
+    .stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); font-weight: 600; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
+    .stat-card.accent .stat-value { color: var(--sandstone); }
+    .stat-sub { font-size: 0.82rem; color: var(--text-muted); }
+    .badge-proj {
+      display: inline-block;
+      background: var(--sandstone);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.4px;
+      animation: pulseGreen 2.2s infinite;
+    }
+
+    /* SECTION HEADERS */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title i { color: var(--sandstone); }
+
+    /* CHARTS ROW */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 22px;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.5s ease 0.3s both;
+    }
+    .chart-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .chart-wrap { position: relative; height: 240px; }
+
+    /* TABS */
+    .tabs-wrapper { animation: fadeInUp 0.5s ease 0.4s both; margin-bottom: 32px; }
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); background: var(--green-light); }
+    .tab-btn:hover:not(.active) { color: var(--green-dark); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: var(--bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .data-table thead { background: var(--green); color: #fff; }
+    .data-table th { padding: 13px 16px; text-align: left; font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: var(--bg-soft); }
+    .place-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .place-1 { background: #fff8dc; color: #b8860b; }
+    .place-2 { background: #f0f0f0; color: #555; }
+    .place-3 { background: #fdf0e6; color: #c17f4e; }
+    .upcoming-badge { background: #d4e8da; color: var(--green-dark); padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+    /* TRAINING LOG */
+    .log-list { display: flex; flex-direction: column; gap: 14px; }
+    .log-entry {
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+    }
+    .log-entry:hover { transform: translateX(4px); }
+    .log-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .log-date { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .log-type { font-size: 0.78rem; background: var(--green-light); color: var(--green-dark); padding: 2px 9px; border-radius: 12px; font-weight: 600; }
+    .log-title { font-weight: 700; color: var(--green-dark); font-size: 1rem; margin-bottom: 5px; }
+    .log-notes { font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; }
+    .log-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .tag { font-size: 0.74rem; background: var(--sandstone-light); color: var(--sandstone); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+
+    /* GOALS */
+    .goals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .goal-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .goal-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .goal-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+    .progress-bar-wrap { background: var(--border); border-radius: 6px; height: 8px; overflow: hidden; }
+    .progress-bar {
+      height: 100%;
+      background: var(--green);
+      border-radius: 6px;
+      --w: 60%;
+      width: 0;
+      animation: barGrow 1.2s ease 0.6s forwards;
+    }
+    .progress-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 5px; text-align: right; }
+
+    /* COLLAPSIBLE */
+    .collapsible-section { margin-bottom: 14px; }
+    .collapse-btn {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      box-shadow: var(--shadow);
+      transition: background 0.2s;
+    }
+    .collapse-btn:hover { background: var(--green-light); }
+    .collapse-content {
+      display: none;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 16px 18px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .collapse-content.open { display: block; }
+    .collapse-icon { transition: transform 0.25s; }
+    .collapse-btn.open .collapse-icon { transform: rotate(180deg); }
+
+    /* SHOULDER NOTICE */
+    .notice {
+      background: #fff8ec;
+      border-left: 4px solid var(--sandstone);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #7a5a30;
+      margin-bottom: 18px;
+    }
+    .notice i { margin-right: 6px; }
+
+    /* FOOTER */
+    footer {
+      background: var(--green-dark);
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      padding: 22px 24px;
+      font-size: 0.88rem;
+      margin-top: 20px;
+    }
+    footer .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 8px; flex-wrap: wrap; }
+    footer a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: #fff; }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .header-inner { padding: 14px 16px; }
+      main { padding: 20px 14px 40px; }
+      .stat-value { font-size: 1.6rem; }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <i class="fa-solid fa-mountain"></i>
+      Stephanie Wells
+    </div>
+    <nav>
+      <a href="#dashboard" class="active" onclick="showSection('dashboard',this)">Dashboard</a>
+      <a href="#training-log" onclick="showSection('training-log',this)">Training Log</a>
+      <a href="#competitions" onclick="showSection('competitions',this)">Competitions</a>
+      <a href="#goals" onclick="showSection('goals',this)">Goals</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- DASHBOARD SECTION -->
+  <div id="section-dashboard">
+    <div class="page-title">
+      <h1><i class="fa-solid fa-mountain" style="color:var(--sandstone);margin-right:8px;"></i>Climbing Training Dashboard</h1>
+      <p>Personal performance tracker - updated November 2026</p>
+    </div>
+
+    <div class="notice">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      Left shoulder impingement - modified training protocol in effect. Avoiding overhead lockoffs and campus board work until cleared by physiotherapist.
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-icon"><i class="fa-solid fa-ranking-star"></i></div>
+        <div class="stat-label">Current Project</div>
+        <div class="stat-value">V7</div>
+        <div class="stat-sub">Projecting &nbsp;<span class="badge-proj">Active</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-label">Sessions This Month</div>
+        <div class="stat-value">14</div>
+        <div class="stat-sub">Nov 2026 - target 16</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-label">Hours Trained</div>
+        <div class="stat-value">51</div>
+        <div class="stat-sub">Nov 2026 - 3.6 hrs/session avg</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+        <div class="stat-label">Regional Rank</div>
+        <div class="stat-value">2nd</div>
+        <div class="stat-sub">Women's V6 Circuit, Fall 2026</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="section-title"><i class="fa-solid fa-chart-bar"></i>Monthly Training Sessions</div>
+        <div class="chart-wrap"><canvas id="sessionsChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title"><i class="fa-solid fa-chart-line"></i>Grade Progression</div>
+        <div class="chart-wrap"><canvas id="gradeChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABS: Training Detail -->
+    <div class="tabs-wrapper">
+      <div class="section-title"><i class="fa-solid fa-dumbbell"></i>Training Detail</div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('volume',this)">Volume</button>
+        <button class="tab-btn" onclick="switchTab('technique',this)">Technique Focus</button>
+        <button class="tab-btn" onclick="switchTab('conditioning',this)">Conditioning</button>
+      </div>
+      <div id="tab-volume" class="tab-panel active">
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:12px;">4 sessions per week. Two gym sessions focus on projecting and limit bouldering, one session on technique drills and movement quality, one session on outdoor climbing when weather allows.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <div style="font-weight:700;color:var(--green-dark);margin-bottom:4px;"><i class="fa-solid fa-fire" style="color:var(--sandstone);margin-right:5px;"></i>Limit Bouldering</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">2x per week, 90 min. Working V6-V7 range. Current project: overhang compression line.</div>
+          </div>
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <div style="font-weight:700;color:var(--green-dark);margin-bottom:4px;"><i class="fa-solid fa-rotate" style="color:var(--sandstone);margin-right:5px;"></i>Volume Circuits</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">1x per week, 2 hrs. High-volume V3-V5 circuits. Maintains base fitness and movement quality.</div>
+          </div>
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <div style="font-weight:700;color:var(--green-dark);margin-bottom:4px;"><i class="fa-solid fa-leaf" style="color:var(--sandstone);margin-right:5px;"></i>Outdoor - Castle Rock</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">1x per week when possible. Real rock movement differs from plastic. Oct trip: linked two V5 problems and made progress on the slab project.</div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-technique" class="tab-panel">
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:12px;">Current technique focus areas identified with my coach after the Fall 2026 competition cycle:</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;"><i class="fa-solid fa-check-circle" style="color:var(--green);margin-top:3px;"></i><span><strong>Hip positioning on overhangs</strong> - working on keeping hips close to wall during transitions. Flag and drop-knee drills 3 sets per session.</span></li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;"><i class="fa-solid fa-circle-dot" style="color:var(--sandstone);margin-top:3px;"></i><span><strong>Footwork precision</strong> - silent feet drills on slabs. Placing feet quietly forces more deliberate placement and weight transfer.</span></li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;"><i class="fa-solid fa-circle-dot" style="color:var(--sandstone);margin-top:3px;"></i><span><strong>Reading sequences</strong> - 5-minute visualization before attempting any new problem. Reduces tries-to-send and builds mental map.</span></li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;"><i class="fa-solid fa-circle" style="color:var(--border);margin-top:3px;"></i><span><strong>Dynamic movement</strong> - on hold due to shoulder. Will resume in December 2026 pending physiotherapy clearance.</span></li>
+        </ul>
+      </div>
+      <div id="tab-conditioning" class="tab-panel">
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:12px;">Supplemental conditioning integrated with trail running at Lands End (2-3x/week, 4-6 miles) and targeted shoulder rehab protocol:</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);font-size:0.88rem;">
+            <strong style="color:var(--green-dark);">Shoulder Rehab (daily, 15 min)</strong>
+            <p style="margin-top:5px;color:var(--text-muted);">External rotation exercises with resistance bands, prone Y-T-W raises, serratus activation. Prescribed by physiotherapist, not skipping even on rest days.</p>
+          </div>
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);font-size:0.88rem;">
+            <strong style="color:var(--green-dark);">Core Work (3x/week, 20 min)</strong>
+            <p style="margin-top:5px;color:var(--text-muted);">Dead bugs, hollow-body holds, front levers (negatives only). Shoulder-friendly modifications in place.</p>
+          </div>
+          <div style="background:var(--bg-soft);border-radius:8px;padding:14px;border:1px solid var(--border);font-size:0.88rem;">
+            <strong style="color:var(--green-dark);">Finger Tendon (post-session, 10 min)</strong>
+            <p style="margin-top:5px;color:var(--text-muted);">Reverse wrist curls, rice bucket, putty exercises. Injury prevention priority before any strength gains.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAINING LOG SECTION -->
+  <div id="section-training-log" style="display:none;">
+    <div class="page-title">
+      <h1><i class="fa-solid fa-book-open" style="color:var(--sandstone);margin-right:8px;"></i>Training Log</h1>
+      <p>Recent sessions and notes</p>
+    </div>
+    <div class="log-list">
+      <div class="log-entry">
+        <div class="log-header">
+          <span class="log-date">November 18, 2026</span>
+          <span class="log-type">Gym - Limit Bouldering</span>
+        </div>
+        <div class="log-title">V7 Project Attempts - Compression Overhang</div>
+        <div class="log-notes">Felt strong today despite the shoulder. Made it to the crux sequence five times. Getting the body position dialed on the first two moves. The shift from the undercling to the pinch still shutting me down. Matt came and spotted - helped me see I'm dropping my right hip too early. Will try keeping hips more square on next session. Tried a new V6 on the cave wall to cool down, sent it second try.</div>
+        <div class="log-tags"><span class="tag">V7 proj</span><span class="tag">2 hrs</span><span class="tag">Shoulder ok</span><span class="tag">High effort</span></div>
+      </div>
+      <div class="log-entry">
+        <div class="log-header">
+          <span class="log-date">November 14, 2026</span>
+          <span class="log-type">Gym - Volume Circuit</span>
+        </div>
+        <div class="log-title">Volume Day - V3-V5 Circuit, 50 Problems</div>
+        <div class="log-notes">Recovery-focused volume session. Completed 50 problems in the V3-V5 range over 2 hours. Focused purely on silent feet and hip engagement. Shoulder felt fine with nothing above shoulder height. Energy levels solid despite a long sprint at work this week. ADHD meds timing worked well - took early so focused and present for the whole session.</div>
+        <div class="log-tags"><span class="tag">Volume</span><span class="tag">2 hrs</span><span class="tag">50 problems</span><span class="tag">Technique</span></div>
+      </div>
+      <div class="log-entry">
+        <div class="log-header">
+          <span class="log-date">October 10-11, 2026</span>
+          <span class="log-type">Outdoor - Castle Rock</span>
+        </div>
+        <div class="log-title">Castle Rock Weekend Trip - Slab and Overhang</div>
+        <div class="log-notes">Weekend trip to Castle Rock with the gym crew. Saturday: warm-up on the easier friction slabs, then spent three hours working the thin crimpy V5 on the northeast face. Sent it on the sixth attempt. Sunday: moved to the overhang sector. Real-rock compression movement is so different from gym plastic. Worked a V6 line, got to the final jug, fell off the top-out twice. Will return. Weather was perfect both days, 58F and low humidity. Zero shoulder issues on the friction-heavy slab stuff.</div>
+        <div class="log-tags"><span class="tag">Outdoor</span><span class="tag">Castle Rock</span><span class="tag">V5 send</span><span class="tag">V6 proj</span><span class="tag">Weekend</span></div>
+      </div>
+      <div class="log-entry">
+        <div class="log-header">
+          <span class="log-date">October 26, 2026</span>
+          <span class="log-type">Gym - Technique</span>
+        </div>
+        <div class="log-title">Post-Competition Session - Movement Quality Focus</div>
+        <div class="log-notes">Two days after the Fall 2026 comp. Feeling good about the result but using this session to debrief through movement. Focused on the problem styles that cost me points. The dyno in round two - I knew the move but hesitated. Will practice dynamic movement more deliberately once shoulder is cleared. Otherwise the footwork on the technical slab was strong, which is a real improvement from Winter 2025. Did 40 min of deliberate slab drills to reinforce.</div>
+        <div class="log-tags"><span class="tag">Technique</span><span class="tag">Post-comp</span><span class="tag">Slab drills</span><span class="tag">Debrief</span></div>
+      </div>
+      <div class="log-entry">
+        <div class="log-header">
+          <span class="log-date">February 20, 2026</span>
+          <span class="log-type">Gym - Limit Bouldering</span>
+        </div>
+        <div class="log-title">First V7 Attempt - Setters Special</div>
+        <div class="log-notes">Coach suggested I finally try the V7 that's been set for two months. Got off the ground on the first attempt, which felt like progress. The grade jump is real - V6 moves are readable, V7 moves require a different level of body tension and precision. Shoulder started talking around the 90-min mark, ended the session there. This is the project for 2026.</div>
+        <div class="log-tags"><span class="tag">First V7</span><span class="tag">Milestone</span><span class="tag">Shoulder caution</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPETITIONS SECTION -->
+  <div id="section-competitions" style="display:none;">
+    <div class="page-title">
+      <h1><i class="fa-solid fa-trophy" style="color:var(--sandstone);margin-right:8px;"></i>Competition Results</h1>
+      <p>Regional bouldering circuit - Women's open category</p>
+    </div>
+    <div style="margin-bottom:24px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Competition</th>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Place</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fall 2025 Bouldering Championship</strong></td>
+            <td>October 2025</td>
+            <td>Women's V6</td>
+            <td><span class="place-badge place-3">3rd</span></td>
+            <td>Consistent on all four qualifiers. Missed the final podium problem. Strong comp debut.</td>
+          </tr>
+          <tr>
+            <td><strong>Winter 2025 Regional Open</strong></td>
+            <td>December 2025</td>
+            <td>Women's V6</td>
+            <td><span class="place-badge place-2">2nd</span></td>
+            <td>Big improvement from fall. Lost 1st on a countback - same tops, fewer zones. Footwork on slab round was excellent.</td>
+          </tr>
+          <tr>
+            <td><strong>Fall 2026 Bouldering Championship</strong></td>
+            <td>October 24, 2026</td>
+            <td>Women's V6-V7</td>
+            <td><span class="place-badge place-2">2nd</span></td>
+            <td>Moved up to V6-V7 bracket. Placed 2nd - best result yet. Lost the dyno in round two, otherwise executed the game plan.</td>
+          </tr>
+          <tr>
+            <td><strong>Winter 2026 Regional Open</strong></td>
+            <td>December 2026</td>
+            <td>Women's V7</td>
+            <td><span class="upcoming-badge"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i>Upcoming</span></td>
+            <td>Targeting V7 category if shoulder cleared. Pre-registration complete. Goal: top 3.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-chart-pie"></i>Competition Insights</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">
+      <div class="collapsible-section">
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-magnifying-glass" style="color:var(--green);margin-right:8px;"></i>Strengths</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Slab movement and friction footwork are standout strengths. Balance and reading routes during the isolation period have improved significantly. Endurance through long competition days (6-8 hours) is solid thanks to Lands End trail running base fitness.
+        </div>
+      </div>
+      <div class="collapsible-section">
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--sandstone);margin-right:8px;"></i>Growth Areas</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Dynamic movement and dynos remain inconsistent under competition pressure. Overhead lockoffs limited by the shoulder impingement. Competition nerves in the final round still cause hesitation on moves I have dialed in training.
+        </div>
+      </div>
+      <div class="collapsible-section">
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-bullseye" style="color:var(--green);margin-right:8px;"></i>2027 Plan</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Post-wedding reset in November 2026, then structured training block from December 2026 through spring 2027. Target: compete in the V7 category consistently, and qualify for the state-level invitational. Coach has laid out a 12-week periodization plan.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOALS SECTION -->
+  <div id="section-goals" style="display:none;">
+    <div class="page-title">
+      <h1><i class="fa-solid fa-bullseye" style="color:var(--sandstone);margin-right:8px;"></i>Goals</h1>
+      <p>Short and long-term climbing objectives</p>
+    </div>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-mountain" style="color:var(--green);margin-right:6px;"></i>Send V7 Project</h4>
+        <p>The compression overhang at the gym. Two crux moves identified, both partially linked. ETA: December 2026 - January 2027.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:72%;"></div></div>
+        <div class="progress-label">72% - crux sequence progress</div>
+      </div>
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-heart-pulse" style="color:var(--sandstone);margin-right:6px;"></i>Shoulder Recovery</h4>
+        <p>Full clearance from physiotherapist for dynamic overhead movement. Rehab protocol daily, two more check-ins scheduled.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:60%;background:var(--sandstone);"></div></div>
+        <div class="progress-label">60% - on track for December 2026</div>
+      </div>
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-trophy" style="color:var(--green);margin-right:6px;"></i>Winter 2026 Regional - Top 3</h4>
+        <p>Competing in the V7 category for the first time. Result depends on shoulder clearance. Top 3 is realistic if healthy.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:40%;"></div></div>
+        <div class="progress-label">40% - training toward goal</div>
+      </div>
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-map-location-dot" style="color:var(--sandstone);margin-right:6px;"></i>Outdoor V6 Send at Castle Rock</h4>
+        <p>The overhang problem from the October trip. Need to return two or three more times. Real-rock grade is harder than gym equivalent.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:55%;background:var(--sandstone);"></div></div>
+        <div class="progress-label">55% - made top sequence on last visit</div>
+      </div>
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-person-running" style="color:var(--green);margin-right:6px;"></i>Lands End Trail - 8 Mile Loop</h4>
+        <p>Extending the regular 4-6 mile run to the full 8-mile connector loop. Base for climbing endurance and mental reset from work.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:80%;"></div></div>
+        <div class="progress-label">80% - ran 6.5 miles last week</div>
+      </div>
+      <div class="goal-card">
+        <h4><i class="fa-solid fa-dumbbell" style="color:var(--sandstone);margin-right:6px;"></i>Consistent 4x/Week Training</h4>
+        <p>Maintain 4 sessions per week through the wedding period and honeymoon. October was 15 sessions, November on track for 14-16.</p>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="--w:88%;background:var(--sandstone);"></div></div>
+        <div class="progress-label">88% - strong consistency this cycle</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-links">
+    <a href="#"><i class="fa-solid fa-mountain" style="margin-right:4px;"></i>Training Dashboard</a>
+    <a href="#">Training Log</a>
+    <a href="#">Competitions</a>
+    <a href="#">Goals</a>
+  </div>
+  <div>Stephanie Wells &nbsp;|&nbsp; Training Dashboard &nbsp;|&nbsp; Updated November 2026</div>
+</footer>
+
+<script>
+  // NAV SECTION SWITCHING
+  function showSection(name, el) {
+    document.querySelectorAll('main > div[id^="section-"]').forEach(s => s.style.display = 'none');
+    document.getElementById('section-' + name).style.display = 'block';
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  // TABS
+  function switchTab(name, btn) {
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // COLLAPSIBLE
+  function toggleCollapse(btn) {
+    const content = btn.nextElementSibling;
+    const isOpen = content.classList.contains('open');
+    content.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  // CHART - Monthly Sessions Bar
+  (function() {
+    const ctx = document.getElementById('sessionsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Oct 26','Nov 26','Dec 26'],
+        datasets: [{
+          label: 'Sessions',
+          data: [14, 16, 15, 17, 16, 15, 14, 13],
+          backgroundColor: [
+            'rgba(74,124,89,0.7)','rgba(74,124,89,0.7)','rgba(74,124,89,0.7)',
+            'rgba(74,124,89,0.7)','rgba(74,124,89,0.7)',
+            'rgba(193,127,78,0.8)','rgba(193,127,78,0.8)','rgba(193,127,78,0.5)'
+          ],
+          borderColor: ['#4a7c59','#4a7c59','#4a7c59','#4a7c59','#4a7c59','#c17f4e','#c17f4e','#c17f4e'],
+          borderWidth: 1.5,
+          borderRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' sessions' }}},
+        scales: {
+          y: { beginAtZero: true, max: 20, ticks: { stepSize: 4 }, grid: { color: 'rgba(0,0,0,0.06)' }},
+          x: { grid: { display: false }}
+        }
+      }
+    });
+  })();
+
+  // CHART - Grade Progression Line
+  (function() {
+    const ctx = document.getElementById('gradeChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan 2025','Apr 2025','Jul 2025','Oct 2025','Jan 2026','Feb 2026','Oct 2026','Nov 2026'],
+        datasets: [{
+          label: 'Highest Send',
+          data: [4, 4.5, 5, 5.5, 6, 6.5, 6.8, 6.9],
+          borderColor: '#4a7c59',
+          backgroundColor: 'rgba(74,124,89,0.10)',
+          pointBackgroundColor: '#4a7c59',
+          pointRadius: 5, pointHoverRadius: 7,
+          tension: 0.35, fill: true, borderWidth: 2.5,
+        },{
+          label: 'Project Grade',
+          data: [null, null, null, null, null, 7, 7, 7],
+          borderColor: '#c17f4e',
+          backgroundColor: 'transparent',
+          pointBackgroundColor: '#c17f4e',
+          pointRadius: 5, pointHoverRadius: 7,
+          tension: 0.3, borderDash: [6,3], borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14, font: { size: 11 }}},
+          tooltip: { callbacks: { label: c => ' V' + c.raw }}
+        },
+        scales: {
+          y: { min: 4, max: 7.5, ticks: { callback: v => 'V' + v, stepSize: 0.5 }, grid: { color: 'rgba(0,0,0,0.06)' }},
+          x: { grid: { display: false }, ticks: { font: { size: 10 }}}
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

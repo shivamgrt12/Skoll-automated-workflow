@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLE Seminar Registration, Custody File Organization</title>
+<style>
+  :root{--teal:#16707A;--deep:#0f4f57;--amber:#E08A2E;--bg:#f0f5f5;--card:#fff;--ink:#1f2d2f;--mut:#5d7174}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{background:var(--teal);color:#fff;padding:20px 28px;display:flex;justify-content:space-between;
+    align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.16);position:sticky;top:0;z-index:30}
+  header .b{font-weight:bold;font-size:1.15rem}
+  header .b small{display:block;font-weight:normal;opacity:.8;font-size:.78rem}
+  .seats{background:rgba(255,255,255,.14);padding:8px 16px;border-radius:24px;font-size:.85rem}
+  .seats b{color:#ffe2bd}
+  .banner{background:linear-gradient(120deg,var(--deep),var(--teal));color:#fff;text-align:center;padding:54px 24px}
+  .banner h1{font-size:2.2rem;max-width:680px;margin:0 auto 8px}
+  .banner p{opacity:.92}
+  main{max-width:900px;margin:0 auto;padding:34px 24px 64px;display:grid;grid-template-columns:1fr 1.3fr;gap:24px}
+  .info{background:var(--card);border-radius:14px;padding:26px;box-shadow:0 4px 14px rgba(22,112,122,.1);height:fit-content}
+  .info h2{color:var(--teal);font-size:1.1rem;margin-bottom:14px}
+  .info .item{margin-bottom:16px}
+  .info .item span{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)}
+  .info .item b{font-size:.98rem}
+  .agenda{margin-top:6px;font-size:.88rem}
+  .agenda li{margin:7px 0;padding-left:14px;border-left:3px solid var(--amber);list-style:none}
+  form{background:var(--card);border-radius:14px;padding:30px;box-shadow:0 4px 14px rgba(22,112,122,.1)}
+  form h2{color:var(--teal);font-size:1.2rem;margin-bottom:18px}
+  .field{margin-bottom:18px;display:flex;flex-direction:column}
+  label{font-size:.82rem;font-weight:bold;color:var(--mut);margin-bottom:6px}
+  input,select{padding:11px 12px;border:1px solid #cfdedf;border-radius:8px;font-size:.95rem;font-family:inherit;background:#fbfdfd}
+  input:focus,select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(22,112,122,.18)}
+  .err{color:#b23b3b;font-size:.76rem;margin-top:5px;display:none}
+  .check{display:flex;align-items:center;gap:9px;font-size:.9rem;color:var(--ink)}
+  .check input{width:auto}
+  .submit{width:100%;background:var(--amber);color:#3a2400;border:none;border-radius:10px;
+    padding:14px;font-size:1rem;font-weight:bold;cursor:pointer;transition:transform .18s,box-shadow .18s,background .2s}
+  .submit:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(224,138,46,.35);background:#d57e22}
+  .submit:disabled{background:#bdbdbd;cursor:not-allowed;transform:none;box-shadow:none}
+  .done{display:none;text-align:center;padding:20px;background:#e4f4ee;border-radius:10px;color:#15633f;
+    animation:pop .4s ease}
+  @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+  footer{background:var(--deep);color:#d9eced;text-align:center;padding:38px 24px;font-size:.85rem}
+  footer b{color:#ffe2bd}
+  @media(max-width:760px){main{grid-template-columns:1fr}header .seats{display:none}.banner h1{font-size:1.7rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="b">Charlotte Paralegal Association<small>Fall CLE Seminar</small></div>
+  <div class="seats">Seats remaining: <b id="seatCount">28</b></div>
+</header>
+
+<div class="banner">
+  <h1>Custody File Organization, A Working System</h1>
+  <p>A thirty-minute workshop led by Jane Sparks, Senior Paralegal, in the 1:30 afternoon slot.</p>
+</div>
+
+<main>
+  <aside class="info">
+    <h2>Seminar Details</h2>
+    <div class="item"><span>Date</span><b>Saturday, October 24, 2026</b></div>
+    <div class="item"><span>Venue</span><b>Mecklenburg Bar Center, Charlotte</b></div>
+    <div class="item"><span>Workshop slot</span><b>1:30 in the afternoon</b></div>
+    <div class="item"><span>Day agenda</span>
+      <ul class="agenda">
+        <li>9:00 Welcome and scope</li>
+        <li>9:30 Building the matter folder</li>
+        <li>10:30 Tracking North Carolina deadlines</li>
+        <li>11:30 Exhibits, affidavits, chronologies</li>
+        <li>1:00 Adoption documentation crossover</li>
+        <li>2:00 Senior paralegal panel</li>
+      </ul>
+    </div>
+  </aside>
+
+  <form id="regForm" novalidate>
+    <h2>Reserve Your Seat</h2>
+    <div class="field"><label for="fname">Full name</label>
+      <input type="text" id="fname" autocomplete="name"><span class="err" id="fnameErr">Please enter your name.</span></div>
+    <div class="field"><label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email"><span class="err" id="emailErr">Please enter a valid email.</span></div>
+    <div class="field"><label for="role">Your role</label>
+      <select id="role"><option value="">Select one</option><option>Paralegal</option><option>Attorney</option><option>Paralegal student</option><option>Other legal staff</option></select>
+      <span class="err" id="roleErr">Please select your role.</span></div>
+    <div class="field"><label for="session">Session of most interest</label>
+      <select id="session"><option>Building the matter folder</option><option>Tracking North Carolina deadlines</option><option>Exhibits, affidavits, chronologies</option><option>Adoption documentation crossover</option></select></div>
+    <div class="field"><label class="check"><input type="checkbox" id="cle"> I need a CLE attendance certificate</label></div>
+    <button type="submit" class="submit" id="submitBtn">Register</button>
+    <div class="done" id="done"><b>You are registered.</b><br>A confirmation will follow by email. Your seat is held.</div>
+  </form>
+</main>
+
+<footer>
+  Hosted by the <b>Charlotte Paralegal Association</b>. Questions go to the seminar planning team.
+  Workshop materials prepared by Jane Sparks, Senior Paralegal, Hartwell and Greer Family Law.
+</footer>
+
+<script>
+  var seats=28,seatEl=document.getElementById('seatCount'),f=document.getElementById('regForm');
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();var ok=true;
+    function check(id,bad){var e=document.getElementById(id+'Err');
+      if(bad){e.style.display='block';ok=false;}else{e.style.display='none';}}
+    check('fname',document.getElementById('fname').value.trim()==='');
+    check('email',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(document.getElementById('email').value));
+    check('role',document.getElementById('role').value==='');
+    if(ok && seats>0){
+      seats--;animateSeat();
+      document.getElementById('done').style.display='block';
+      document.getElementById('submitBtn').disabled=true;
+      document.getElementById('submitBtn').textContent='Registered';
+    }
+  });
+  function animateSeat(){
+    var start=+seatEl.textContent,t0=null;
+    function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/500,1);
+      seatEl.textContent=Math.round(start+(seats-start)*p);
+      if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  }
+</script>
+</body>
+</html>

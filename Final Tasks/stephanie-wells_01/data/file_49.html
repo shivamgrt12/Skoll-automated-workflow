@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stephanie &amp; Matt - Wedding Planning</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5f0e8;
+      --cream-dark: #ede5d5;
+      --rose: #c9a69a;
+      --rose-dark: #a87f74;
+      --rose-light: #f2e4e0;
+      --sage: #8aab85;
+      --sage-dark: #5f7d5b;
+      --sage-light: #d8ead6;
+      --text: #3a2e2a;
+      --text-muted: #7a6e68;
+      --border: #e0d5c8;
+      --shadow: 0 2px 14px rgba(138,107,85,0.10);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Georgia', 'Cambria', serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    @keyframes countPulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.04); }
+    }
+
+    /* HEADER */
+    header {
+      background: var(--sage-dark);
+      color: #fff;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 62px;
+    }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo i { color: var(--rose-light); }
+    nav { display: flex; gap: 4px; flex-wrap: wrap; }
+    nav a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 6px 13px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+    nav a:hover, nav a.active {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--sage-dark) 0%, var(--rose-dark) 100%);
+      color: #fff;
+      text-align: center;
+      padding: 72px 24px 80px;
+      animation: fadeIn 0.7s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 30px,
+        rgba(255,255,255,0.03) 30px,
+        rgba(255,255,255,0.03) 60px
+      );
+    }
+    .hero-monogram {
+      font-size: 3.8rem;
+      margin-bottom: 10px;
+      animation: floatUp 3.5s ease-in-out infinite;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .hero .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+    .hero .venue {
+      font-size: 0.95rem;
+      opacity: 0.75;
+      font-style: italic;
+      margin-bottom: 32px;
+    }
+
+    /* COUNTDOWN */
+    .countdown-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .countdown-unit {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 10px;
+      padding: 14px 18px;
+      min-width: 80px;
+      text-align: center;
+      animation: countPulse 2s ease-in-out infinite;
+      backdrop-filter: blur(4px);
+    }
+    .countdown-unit:nth-child(2) { animation-delay: 0.3s; }
+    .countdown-unit:nth-child(3) { animation-delay: 0.6s; }
+    .countdown-unit:nth-child(4) { animation-delay: 0.9s; }
+    .countdown-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      display: block;
+      line-height: 1;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .countdown-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: 0.8;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .past-message {
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 18px 28px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    /* MAIN */
+    main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 56px; }
+
+    /* SECTION WRAPPER */
+    .section-block {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 28px 28px;
+      margin-bottom: 28px;
+      animation: fadeIn 0.5s ease both;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--sage-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--cream);
+      padding-bottom: 12px;
+    }
+    .section-title i { color: var(--rose); }
+
+    /* VENDOR TABLE */
+    .vendor-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .vendor-table thead { background: var(--cream-dark); }
+    .vendor-table th {
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .vendor-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--cream);
+      vertical-align: middle;
+    }
+    .vendor-table tbody tr:last-child td { border-bottom: none; }
+    .vendor-table tbody tr:hover { background: var(--cream); }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .status-confirmed { background: var(--sage-light); color: var(--sage-dark); }
+    .status-ordered   { background: #fef9e7; color: #b8860b; }
+    .status-pending   { background: var(--rose-light); color: var(--rose-dark); }
+    .vendor-detail { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--sage), var(--rose));
+      border-radius: 2px;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+      padding: 18px 20px;
+      background: var(--cream);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .timeline-item:hover {
+      transform: translateX(4px);
+      box-shadow: var(--shadow);
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -26px; top: 20px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--sage);
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px var(--sage);
+    }
+    .timeline-item.special::before { background: var(--rose); box-shadow: 0 0 0 2px var(--rose); }
+    .timeline-month {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--sage-dark);
+      margin-bottom: 4px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .timeline-item.special .timeline-month { color: var(--rose-dark); }
+    .timeline-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .timeline-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* BUDGET */
+    .budget-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .budget-layout { grid-template-columns: 1fr; } }
+    .chart-wrap { position: relative; height: 300px; }
+    .budget-list { display: flex; flex-direction: column; gap: 10px; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .budget-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 14px;
+      border-radius: 8px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+    .budget-row:hover { background: var(--cream-dark); }
+    .budget-row .cat { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .budget-amt { font-weight: 700; color: var(--text); }
+    .budget-total {
+      display: flex; justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--sage-dark);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* DAY-OF TIMELINE */
+    .day-timeline { display: flex; flex-direction: column; gap: 0; }
+    .day-slot {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--cream);
+    }
+    .day-slot:last-child { border-bottom: none; }
+    .day-time {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rose-dark);
+      min-width: 65px;
+      padding-top: 1px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .day-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--rose-light);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--rose-dark);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .day-slot.key .day-icon { background: var(--sage-light); color: var(--sage-dark); }
+    .day-event { font-weight: 700; color: var(--text); font-size: 0.92rem; }
+    .day-detail { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* COLLAPSIBLE */
+    .collapse-btn {
+      width: 100%; background: var(--cream); border: 1px solid var(--border);
+      border-radius: 8px; padding: 13px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-size: 0.92rem; font-weight: 700;
+      color: var(--sage-dark); margin-bottom: 4px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background 0.2s;
+    }
+    .collapse-btn:hover { background: var(--cream-dark); }
+    .collapse-content {
+      display: none; padding: 14px 16px;
+      background: #fff; border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 8px 8px;
+      font-size: 0.87rem; color: var(--text-muted); line-height: 1.7;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin-bottom: 10px;
+    }
+    .collapse-content.open { display: block; }
+    .collapse-icon { transition: transform 0.25s; }
+    .collapse-btn.open .collapse-icon { transform: rotate(180deg); }
+
+    /* GUEST NOTES */
+    .guest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .guest-card {
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      transition: transform 0.2s;
+    }
+    .guest-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .guest-card h4 { font-size: 0.9rem; font-weight: 700; color: var(--sage-dark); margin-bottom: 5px; }
+    .guest-card p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; }
+    .guest-count { font-size: 1.6rem; font-weight: 800; color: var(--rose-dark); display: block; }
+
+    /* TABS */
+    .tab-nav {
+      display: flex; gap: 4px; border-bottom: 2px solid var(--border);
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 8px 16px; font-size: 0.87rem; font-weight: 700;
+      color: var(--text-muted); border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: color 0.2s, border-color 0.2s;
+      border-radius: 6px 6px 0 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .tab-btn.active { color: var(--sage-dark); border-bottom-color: var(--sage-dark); background: var(--sage-light); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* FOOTER */
+    footer {
+      background: var(--sage-dark);
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      padding: 24px;
+      font-size: 0.88rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    footer .hearts { font-size: 1.1rem; margin-bottom: 6px; color: var(--rose-light); }
+    footer a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: #fff; }
+    footer .footer-links { display: flex; justify-content: center; gap: 18px; margin-bottom: 8px; flex-wrap: wrap; }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      main { padding: 20px 14px 40px; }
+      .section-block { padding: 20px 16px; }
+      .countdown-unit { min-width: 64px; padding: 10px 12px; }
+      .countdown-num { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <i class="fa-solid fa-heart"></i>
+      Stephanie &amp; Matt
+    </div>
+    <nav>
+      <a href="#" class="active" onclick="showTab('overview',this)">Overview</a>
+      <a href="#" onclick="showTab('vendors',this)">Vendors</a>
+      <a href="#" onclick="showTab('timeline',this)">Timeline</a>
+      <a href="#" onclick="showTab('budget',this)">Budget</a>
+      <a href="#" onclick="showTab('guests',this)">Guests</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-monogram">&#x1F33F;</div>
+  <h1>Stephanie &amp; Matt</h1>
+  <p class="subtitle">October 17, 2026</p>
+  <p class="venue"><i class="fa-solid fa-location-dot" style="margin-right:5px;"></i>Redwood Glen Estate, Woodside, CA</p>
+  <div class="countdown-wrap" id="countdown-wrap">
+    <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-label">Days</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-label">Hours</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-label">Minutes</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-label">Seconds</span></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- OVERVIEW TAB -->
+  <div id="tab-overview" class="tab-panel active">
+
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-circle-info"></i>Quick Overview</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;font-family:'Segoe UI',system-ui,sans-serif;">
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Ceremony Date</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">October 17, 2026</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">Saturday, 4:00 PM</div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Venue</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">Redwood Glen Estate</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">Woodside, CA</div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Guest Count</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">80 Guests</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">Intimate celebration</div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Total Budget</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">$45,000</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">All vendors confirmed</div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Coordinator</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">Full Service</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">Deposit paid Jan 2026</div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);font-weight:700;margin-bottom:4px;">Honeymoon</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark);">Mendocino Coast</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">Nov 2026, 8 days</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-calendar-days"></i>Day-Of Schedule - October 17, 2026</div>
+      <div class="day-timeline">
+        <div class="day-slot">
+          <div class="day-time">10:00 AM</div>
+          <div class="day-icon"><i class="fa-solid fa-sun"></i></div>
+          <div>
+            <div class="day-event">Venue Access Opens</div>
+            <div class="day-detail">Coordinator and vendors begin setup. Florist arrives first to begin installations.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">11:30 AM</div>
+          <div class="day-icon"><i class="fa-solid fa-camera"></i></div>
+          <div>
+            <div class="day-event">Photography Begins - Getting Ready</div>
+            <div class="day-detail">Bride and bridesmaids getting ready at venue suite. Groom and groomsmen prep in the west cottage.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">2:30 PM</div>
+          <div class="day-icon"><i class="fa-solid fa-camera-retro"></i></div>
+          <div>
+            <div class="day-event">First Look and Couple Portraits</div>
+            <div class="day-detail">Private first-look moment in the redwood grove, followed by portraits in the estate gardens.</div>
+          </div>
+        </div>
+        <div class="day-slot key">
+          <div class="day-time">4:00 PM</div>
+          <div class="day-icon" style="background:var(--sage-light);color:var(--sage-dark);"><i class="fa-solid fa-heart"></i></div>
+          <div>
+            <div class="day-event">Ceremony Begins</div>
+            <div class="day-detail">Outdoor ceremony in the redwood grove. String quartet plays during processional and recessional. Estimated 25 minutes.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">4:30 PM</div>
+          <div class="day-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+          <div>
+            <div class="day-event">Cocktail Hour</div>
+            <div class="day-detail">String quartet continues on the terrace. Passed appetizers, full bar. Couple finishes portraits during this time.</div>
+          </div>
+        </div>
+        <div class="day-slot key">
+          <div class="day-time">5:30 PM</div>
+          <div class="day-icon" style="background:var(--sage-light);color:var(--sage-dark);"><i class="fa-solid fa-utensils"></i></div>
+          <div>
+            <div class="day-event">Reception - Dinner Service Begins</div>
+            <div class="day-detail">Fully vegetarian dinner service for 80 guests. Three-course plated menu. Toasts from Kyle (best man), maid of honor, and parents.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">7:00 PM</div>
+          <div class="day-icon"><i class="fa-solid fa-cake-candles"></i></div>
+          <div>
+            <div class="day-event">Cake Cutting and First Dance</div>
+            <div class="day-detail">Cake cutting followed by first dance, then father-daughter dance with Robert Wells. Special moment given his Parkinson's diagnosis - keeping it simple and meaningful.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">7:30 PM</div>
+          <div class="day-icon"><i class="fa-solid fa-music"></i></div>
+          <div>
+            <div class="day-event">Open Dancing</div>
+            <div class="day-detail">String quartet transitions to reception playlist. Dance floor opens for all guests.</div>
+          </div>
+        </div>
+        <div class="day-slot">
+          <div class="day-time">10:00 PM</div>
+          <div class="day-icon"><i class="fa-solid fa-moon"></i></div>
+          <div>
+            <div class="day-event">Send-Off and Reception Closes</div>
+            <div class="day-detail">Sparkler send-off for Stephanie and Matt. Coordinator handles vendor departure and venue cleanup.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VENDORS TAB -->
+  <div id="tab-vendors" class="tab-panel">
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-list-check"></i>Vendor Status</div>
+      <div style="overflow-x:auto;">
+        <table class="vendor-table">
+          <thead>
+            <tr>
+              <th>Vendor</th>
+              <th>Details</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Venue</strong><br><span class="vendor-detail">Redwood Glen Estate, Woodside</span></td>
+              <td>Full-day rental, ceremony and reception space, bridal suite</td>
+              <td>$9,500</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Catering</strong><br><span class="vendor-detail">Full-service caterer</span></td>
+              <td>Vegetarian 3-course dinner, 80 guests, cocktail hour passed apps, full bar service</td>
+              <td>$8,400</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Photography</strong><br><span class="vendor-detail">Engagement + wedding day</span></td>
+              <td>10 hours coverage, two photographers, online gallery delivery within 8 weeks</td>
+              <td>$3,200</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Florals</strong><br><span class="vendor-detail">Bouquets, ceremony, tables</span></td>
+              <td>Bridal bouquet, bridesmaid bouquets, ceremony arch, 10 table centerpieces, boutonniere</td>
+              <td>$2,800</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>String Quartet</strong><br><span class="vendor-detail">Classical and reception</span></td>
+              <td>5 hours: cocktail hour and dinner service. Custom setlist includes ceremony processional selections.</td>
+              <td>$2,200</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Wedding Cake</strong><br><span class="vendor-detail">Custom 3-tier design</span></td>
+              <td>3-tier, sage and cream palette, fresh edible flowers on tiers, serves 80 with extra sheet cake</td>
+              <td>$1,200</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><strong>Attire</strong><br><span class="vendor-detail">Dress and groomswear</span></td>
+              <td>Wedding dress (final fitting Oct 5, 2026), Matt's suit, bridesmaid dresses x3</td>
+              <td>$2,400</td>
+              <td><span class="status-badge status-ordered"><i class="fa-solid fa-clock"></i>Ordered</span></td>
+            </tr>
+            <tr>
+              <td><strong>Coordinator</strong><br><span class="vendor-detail">Full service planning</span></td>
+              <td>Vendor management, day-of logistics, rehearsal coordination, timeline and run-of-show</td>
+              <td>$5,000</td>
+              <td><span class="status-badge status-confirmed"><i class="fa-solid fa-check"></i>Confirmed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-circle-question"></i>Vendor Notes</div>
+      <div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-leaf" style="color:var(--sage);margin-right:8px;"></i>Catering - Vegetarian Menu Details</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Full vegetarian menu for all 80 guests. Menu tasting completed in February 2026. First course: heirloom tomato and burrata salad with basil oil. Second course: wild mushroom risotto with aged parmesan and truffle. Dessert: dark chocolate lava cake with vanilla bean cream. Cocktail hour: bruschetta trio, stuffed mushroom caps, fig and goat cheese crostini, vegetable crudites. Bar includes signature cocktail "The Redwood Fizz" - elderflower, cucumber, prosecco.
+        </div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-music" style="color:var(--rose);margin-right:8px;"></i>String Quartet - Setlist Notes</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Processional: Pachelbel Canon in D, traditional arrangement. Ceremony: Debussy Clair de Lune during unity candle. Recessional: upbeat classical arrangement (Vivaldi Spring). Cocktail hour: mix of Baroque and light classical. Dinner service: soft contemporary instrumental repertoire. Do not play the father-daughter song - that is handled by the venue sound system with a specific recording selected by Robert and Stephanie.
+        </div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-camera" style="color:var(--sage);margin-right:8px;"></i>Photography - Shot List Priorities</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Priority shots: Robert Wells walking Stephanie down the aisle (must-have), Stephanie and father during father-daughter dance, family portraits with Robert and Linda Wells and Kyle, Matt's expression during first look. Second photographer to cover groom's side simultaneously during getting-ready. Redwood grove portraits at golden hour around 3:30 PM. No posed family portraits to exceed 20 minutes total.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE TAB -->
+  <div id="tab-timeline" class="tab-panel">
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-road"></i>Planning Milestones</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-month">January 2026</div>
+          <div class="timeline-title">Venue and Coordinator Deposits Paid</div>
+          <div class="timeline-desc">Signed venue contract with Redwood Glen Estate and paid 50% deposit. Engaged full-service wedding coordinator and paid retainer. Set overall budget at $45,000. Began building vendor shortlists.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-month">January 2026</div>
+          <div class="timeline-title">Catering and Photographer Booked</div>
+          <div class="timeline-desc">Finalized caterer after two tastings - selected the vegetarian-specialist team for the full-service dinner. Photographer booked and engagement session scheduled.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-month">February 2026</div>
+          <div class="timeline-title">Invitations Designed and Sent</div>
+          <div class="timeline-desc">Designed sage-and-cream letterpress invitations with Redwood Glen Estate illustration. 90 invitations sent to 85 households. RSVP deadline set for 6 weeks out from wedding date.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-month">February 2026</div>
+          <div class="timeline-title">Florals and String Quartet Contracted</div>
+          <div class="timeline-desc">Florals consultation with coordinator, confirmed earthy greenery and soft white palette. Quartet booked - met with them and approved setlist framework. Cake consultation completed.</div>
+        </div>
+        <div class="timeline-item special">
+          <div class="timeline-month">October 12, 2026</div>
+          <div class="timeline-title">Final Venue Walkthrough</div>
+          <div class="timeline-desc">Final walkthrough at Redwood Glen Estate with coordinator, catering team, and floral team. Confirmed table layout, ceremony placement, lighting plan, and parking logistics. All confirmed on track.</div>
+        </div>
+        <div class="timeline-item special">
+          <div class="timeline-month">October 16, 2026</div>
+          <div class="timeline-title">Rehearsal and Rehearsal Dinner</div>
+          <div class="timeline-desc">Late-afternoon rehearsal at the venue with wedding party. Rehearsal dinner at a private dining room in Woodside for 25 close family members. Robert Wells toast planned.</div>
+        </div>
+        <div class="timeline-item special">
+          <div class="timeline-month">October 17, 2026</div>
+          <div class="timeline-title">Wedding Day</div>
+          <div class="timeline-desc">Ceremony 4:00 PM at the redwood grove, reception to follow. Stephanie walks down the aisle with her father Robert. 80 guests. Vegetarian dinner, string quartet, dancing until 10 PM.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-month">November 2026</div>
+          <div class="timeline-title">Honeymoon - Mendocino Coast</div>
+          <div class="timeline-desc">Eight days on the Mendocino Coast, California. Cottage booked, coastal hikes planned. Stephanie taking trail running shoes. Low-key, no phones during the first three days. Post-wedding physical and mental reset before returning to SF.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET TAB -->
+  <div id="tab-budget" class="tab-panel">
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-chart-pie"></i>Budget Breakdown - $45,000 Total</div>
+      <div class="budget-layout">
+        <div class="chart-wrap"><canvas id="budgetChart"></canvas></div>
+        <div>
+          <div class="budget-list">
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#8aab85;"></div>Venue</div><div class="budget-amt">$9,500</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#c9a69a;"></div>Catering</div><div class="budget-amt">$8,400</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#5f7d5b;"></div>Coordinator</div><div class="budget-amt">$5,000</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#a87f74;"></div>Photography</div><div class="budget-amt">$3,200</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#d4b8a0;"></div>Attire</div><div class="budget-amt">$2,400</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#b8cbb5;"></div>Florals</div><div class="budget-amt">$2,800</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#e8c8c0;"></div>Music</div><div class="budget-amt">$2,200</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#f0e0d0;"></div>Cake</div><div class="budget-amt">$1,200</div></div>
+            <div class="budget-row"><div class="cat"><div class="dot" style="background:#c8d8c5;"></div>Other</div><div class="budget-amt">$10,300</div></div>
+            <div class="budget-total"><span>Total Budget</span><span>$45,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i>Budget Notes</div>
+      <p style="font-size:0.9rem;color:var(--text-muted);font-family:'Segoe UI',system-ui,sans-serif;margin-bottom:14px;">"Other" ($10,300) covers invitations and stationery ($600), rehearsal dinner ($1,800), transportation and shuttles for guests ($900), hair and makeup for Stephanie and bridesmaids ($1,200), favors ($400), honeymoon travel and accommodation ($4,000), and a contingency buffer ($1,400). All major vendors have been confirmed and deposits paid. Combined household income with Matt at $340k made this budget comfortable without financing.</p>
+      <div style="background:var(--sage-light);border-radius:8px;padding:14px;font-size:0.88rem;color:var(--sage-dark);font-family:'Segoe UI',system-ui,sans-serif;">
+        <strong><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i>Financial status:</strong> All vendor deposits paid. Final payments due October 10, 2026. Coordinator managing final payment schedule and holding all vendor contracts.
+      </div>
+    </div>
+  </div>
+
+  <!-- GUESTS TAB -->
+  <div id="tab-guests" class="tab-panel">
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-users"></i>Guest Overview</div>
+      <div class="guest-grid">
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-envelope" style="color:var(--rose);margin-right:6px;"></i>Invitations Sent</h4>
+          <span class="guest-count">90</span>
+          <p>Sent February 2026 to 85 households. Six household RSVPs cover multiple guests.</p>
+        </div>
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-check" style="color:var(--sage);margin-right:6px;"></i>Confirmed Attending</h4>
+          <span class="guest-count" style="color:var(--sage-dark);">80</span>
+          <p>Final headcount confirmed for catering and seating. Eight declined, two non-responses.</p>
+        </div>
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-leaf" style="color:var(--sage);margin-right:6px;"></i>Dietary Notes</h4>
+          <span class="guest-count" style="color:var(--sage-dark);">80</span>
+          <p>All 80 guests receive vegetarian menu. No additional special dietary accommodations flagged. Four guests noted as gluten-sensitive - caterer confirmed GF option available.</p>
+        </div>
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-van-shuttle" style="color:var(--rose);margin-right:6px;"></i>Transportation</h4>
+          <span class="guest-count">32</span>
+          <p>Guests using shuttle service from Palo Alto and Redwood City. Two shuttle runs in, two runs out.</p>
+        </div>
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-hotel" style="color:var(--sage);margin-right:6px;"></i>Hotel Block</h4>
+          <span class="guest-count" style="color:var(--sage-dark);">14</span>
+          <p>Rooms reserved at hotel room block in Woodside. Block held through October 10, 2026.</p>
+        </div>
+        <div class="guest-card">
+          <h4><i class="fa-solid fa-family" style="color:var(--rose);margin-right:6px;"></i>Family Notes</h4>
+          <span class="guest-count">6</span>
+          <p>Wells family: Robert, Linda, Kyle attending. Collins family: Matt's parents and two siblings. Robert requires accessible seating near aisle for ceremony.</p>
+        </div>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-title"><i class="fa-solid fa-seat"></i>Seating and Accessibility</div>
+      <p style="font-size:0.9rem;color:var(--text-muted);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.7;">Robert Wells (Stage 2 Parkinson's) is seated in the front row on the aisle, with easy access to and from his seat. Coordinator confirmed with the venue that the ceremony path from parking to the grove is fully paved and accessible. A chair with armrests is reserved for the father-daughter dance moment so Robert can stand and hold Stephanie's hands without needing to move across the floor. Linda Wells will be seated next to Robert throughout. The seating plan has been shared with the coordinator and catering team so all service is handled discreetly without Robert needing to get up.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="hearts">&#x1F498; &#x1F33F; &#x1F498;</div>
+  <div class="footer-links">
+    <a href="#" onclick="showTab('overview',this)">Overview</a>
+    <a href="#" onclick="showTab('vendors',this)">Vendors</a>
+    <a href="#" onclick="showTab('timeline',this)">Timeline</a>
+    <a href="#" onclick="showTab('budget',this)">Budget</a>
+    <a href="#" onclick="showTab('guests',this)">Guests</a>
+  </div>
+  <div>Stephanie &amp; Matt &nbsp;|&nbsp; October 17, 2026 &nbsp;|&nbsp; Redwood Glen Estate, Woodside CA</div>
+</footer>
+
+<script>
+  // COUNTDOWN
+  function updateCountdown() {
+    var target = new Date('2026-10-17T16:00:00');
+    var now = new Date();
+    var diff = target - now;
+    if (diff <= 0) {
+      document.getElementById('countdown-wrap').innerHTML = '<div class="past-message">&#x1F49A; Stephanie &amp; Matt - Married! October 17, 2026 &#x1F49A;</div>';
+      return;
+    }
+    var days  = Math.floor(diff / (1000*60*60*24));
+    var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    var mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
+    var secs  = Math.floor((diff % (1000*60)) / 1000);
+    document.getElementById('cd-days').textContent  = String(days);
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // TABS
+  function showTab(name, el) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    if (el) el.classList.add('active');
+    return false;
+  }
+
+  // COLLAPSIBLE
+  function toggleCollapse(btn) {
+    var content = btn.nextElementSibling;
+    var isOpen = content.classList.contains('open');
+    content.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  // BUDGET CHART
+  (function() {
+    var ctx = document.getElementById('budgetChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Venue','Catering','Coordinator','Photography','Attire','Florals','Music','Cake','Other'],
+        datasets: [{
+          data: [9500, 8400, 5000, 3200, 2400, 2800, 2200, 1200, 10300],
+          backgroundColor: ['#8aab85','#c9a69a','#5f7d5b','#a87f74','#d4b8a0','#b8cbb5','#e8c8c0','#f0e0d0','#c8d8c5'],
+          borderColor: '#fff', borderWidth: 2, hoverOffset: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 }}},
+          tooltip: {
+            callbacks: {
+              label: function(c) {
+                return ' ' + c.label + ': $' + c.raw.toLocaleString() + ' (' + Math.round(c.raw/45000*100) + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

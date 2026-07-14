@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wells Household Budget Dashboard</title>
+<style>
+  :root{ --bg:#06342e; --bg2:#0c4a40; --teal:#1fc7a8; --mint:#9ff3df; --card:#0f5247; --ink:#e8fff8; --muted:#9fd6c9; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:'Segoe UI',Tahoma,Arial,sans-serif; background:radial-gradient(circle at 20% 0%,var(--bg2),var(--bg)); color:var(--ink); min-height:100vh; }
+  header.site{ padding:30px 24px; border-bottom:1px solid rgba(31,199,168,.35); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; }
+  header.site h1{ font-size:1.6rem; letter-spacing:.5px; }
+  header.site .sub{ color:var(--muted); font-size:.86rem; margin-top:4px; }
+  .toggle{ display:flex; background:rgba(0,0,0,.25); border:1px solid var(--teal); border-radius:30px; overflow:hidden; }
+  .toggle button{ font-family:inherit; cursor:pointer; border:0; background:transparent; color:var(--mint); padding:9px 20px; font-size:.9rem; transition:background .25s ease,color .25s ease; }
+  .toggle button.active{ background:var(--teal); color:#04221d; font-weight:bold; }
+  .wrap{ max-width:1040px; margin:0 auto; padding:26px 18px; }
+  .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-bottom:26px; }
+  .stat{ background:var(--card); border:1px solid rgba(31,199,168,.25); border-radius:12px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.25); transition:transform .2s ease; }
+  .stat:hover{ transform:translateY(-4px); }
+  .stat .label{ color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:1px; }
+  .stat .value{ font-size:1.7rem; font-weight:700; color:var(--mint); margin-top:6px; }
+  .stat .value.pulse{ animation:pop .4s ease; }
+  @keyframes pop{ 0%{ transform:scale(.85); opacity:.4;} 100%{ transform:scale(1); opacity:1;} }
+  .panel{ background:var(--card); border:1px solid rgba(31,199,168,.22); border-radius:14px; padding:22px; margin-bottom:24px; }
+  .panel h2{ font-size:1.15rem; margin-bottom:16px; color:var(--mint); }
+  .bar-row{ display:grid; grid-template-columns:160px 1fr 92px; align-items:center; gap:12px; margin-bottom:10px; }
+  .bar-row .name{ font-size:.85rem; color:var(--ink); }
+  .track{ background:rgba(255,255,255,.07); border-radius:7px; height:18px; overflow:hidden; }
+  .fill{ height:100%; background:linear-gradient(90deg,var(--teal),var(--mint)); border-radius:7px; width:0; transition:width .8s cubic-bezier(.2,.8,.2,1); }
+  .bar-row .num{ text-align:right; font-size:.85rem; color:var(--muted); }
+  .calc label{ display:block; font-size:.85rem; color:var(--muted); margin-bottom:8px; }
+  .calc input[type=range]{ width:100%; accent-color:var(--teal); }
+  .calc .out{ margin-top:14px; font-size:1rem; }
+  .calc .out b{ color:var(--mint); font-size:1.3rem; }
+  footer.site{ border-top:1px solid rgba(31,199,168,.35); padding:24px; color:var(--muted); font-size:.82rem; text-align:center; }
+  footer.site a{ color:var(--teal); text-decoration:none; }
+  @media (max-width:560px){ .bar-row{ grid-template-columns:110px 1fr 70px; } header.site h1{ font-size:1.3rem; } }
+</style>
+</head>
+<body>
+<header class="site">
+  <div>
+    <h1>Wells Household Budget</h1>
+    <div class="sub">Danny and Priya Menon-Wells, 73 Claremont Avenue, Montclair, NJ</div>
+  </div>
+  <div class="toggle">
+    <button id="bMonthly" class="active">Monthly</button>
+    <button id="bAnnual">Annual</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="label">Take-home in</div><div class="value" id="sIn">$17,800</div></div>
+    <div class="stat"><div class="label">Planned out</div><div class="value" id="sOut">$10,717</div></div>
+    <div class="stat"><div class="label">Surplus</div><div class="value" id="sNet">$7,083</div></div>
+    <div class="stat"><div class="label">Savings rate</div><div class="value" id="sRate">39.8%</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Where it goes</h2>
+    <div id="bars"></div>
+  </div>
+
+  <div class="panel calc">
+    <h2>IVF fund projection</h2>
+    <p style="color:var(--muted);font-size:.86rem;margin-bottom:14px;">Current IVF fund balance is $18,000 in the separate Ally savings account. Target set to $25,000 to cover a full cycle. Drag to set the monthly amount routed from surplus.</p>
+    <label for="contrib">Monthly contribution: <span id="cVal">$1,000</span></label>
+    <input type="range" id="contrib" min="250" max="3500" step="50" value="1000">
+    <div class="out">At this pace the fund reaches its $25,000 target in <b id="months">7</b> months.</div>
+  </div>
+</div>
+
+<footer class="site">
+  <p>Danny P. Wells, Senior Associate Attorney | Montclair, New Jersey | Private household planning</p>
+  <p>Contact <a href="mailto:danny.wells@greenridertech.co">danny.wells@greenridertech.co</a> | (973) 555-0177 | Copyright 2026 Danny and Priya Wells</p>
+</footer>
+
+<script>
+  var cats = [
+    ['Mortgage (escrow)',3200],['Savings and investing',3500],['Groceries',720],
+    ['Fertility cycle',450],['Personal spending',400],['Dining out',380],
+    ['Health insurance',380],['Utilities',340],['Gas and transit',280],
+    ['Car insurance',240],['Phone',120],['Subscriptions',92],['Migraine care',95],['Auto loan',520]
+  ];
+  var income = 17800, spend = 10717;
+  var mode = 'monthly';
+  var maxVal = Math.max.apply(null, cats.map(function(c){ return c[1]; }));
+
+  function fmt(n){ return '$' + Math.round(n).toLocaleString('en-US'); }
+
+  function drawBars(){
+    var mult = mode === 'annual' ? 12 : 1;
+    var maxM = maxVal * mult;
+    var html = '';
+    cats.forEach(function(c){
+      var v = c[1] * mult;
+      var pct = (v / maxM * 100).toFixed(1);
+      html += '<div class="bar-row"><div class="name">' + c[0] + '</div>' +
+              '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div>' +
+              '<div class="num">' + fmt(v) + '</div></div>';
+    });
+    document.getElementById('bars').innerHTML = html;
+  }
+
+  function setStat(id, val){
+    var el = document.getElementById(id);
+    el.textContent = val;
+    el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  }
+
+  function refreshStats(){
+    var mult = mode === 'annual' ? 12 : 1;
+    setStat('sIn', fmt(income * mult));
+    setStat('sOut', fmt(spend * mult));
+    setStat('sNet', fmt((income - spend) * mult));
+    document.getElementById('sRate').textContent = ((income - spend) / income * 100).toFixed(1) + '%';
+  }
+
+  function setMode(m){
+    mode = m;
+    document.getElementById('bMonthly').classList.toggle('active', m === 'monthly');
+    document.getElementById('bAnnual').classList.toggle('active', m === 'annual');
+    drawBars(); refreshStats();
+  }
+  document.getElementById('bMonthly').addEventListener('click', function(){ setMode('monthly'); });
+  document.getElementById('bAnnual').addEventListener('click', function(){ setMode('annual'); });
+
+  var slider = document.getElementById('contrib');
+  function recalc(){
+    var c = parseInt(slider.value, 10);
+    document.getElementById('cVal').textContent = fmt(c);
+    var need = 25000 - 18000;
+    var m = Math.ceil(need / c);
+    document.getElementById('months').textContent = m;
+  }
+  slider.addEventListener('input', recalc);
+
+  drawBars(); refreshStats(); recalc();
+</script>
+</body>
+</html>

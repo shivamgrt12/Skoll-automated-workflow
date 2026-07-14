@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migraine Log Analysis</title>
+<style>
+  :root{ --char:#241c17; --char2:#322820; --amber:#e08a2b; --amber2:#f2b85c; --cream:#f7efe3; --ink:#2c241d; --muted:#7d6f60; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:'Trebuchet MS',Verdana,sans-serif; background:var(--cream); color:var(--ink); line-height:1.55; }
+  header.site{ background:linear-gradient(120deg,var(--char),var(--char2)); color:var(--cream); padding:38px 24px; border-bottom:5px solid var(--amber); }
+  .wrap{ max-width:960px; margin:0 auto; padding:0 18px; }
+  header.site h1{ font-size:1.9rem; }
+  header.site .tag{ color:var(--amber2); letter-spacing:2px; text-transform:uppercase; font-size:.82rem; margin-top:6px; }
+  header.site .meta{ margin-top:12px; font-size:.86rem; opacity:.85; }
+  section{ margin:34px 0; }
+  h2{ color:var(--char); border-bottom:2px solid var(--amber); padding-bottom:6px; margin-bottom:16px; font-size:1.35rem; }
+  .kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+  .kpi{ background:#fff; border:1px solid #e7dcc9; border-left:5px solid var(--amber); padding:16px; border-radius:4px; }
+  .kpi .n{ font-size:1.8rem; font-weight:bold; color:var(--amber); }
+  .kpi .l{ font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .chart-card{ background:#fff; border:1px solid #e7dcc9; border-radius:6px; padding:20px; }
+  svg .bar{ transition:opacity .3s ease; }
+  svg .bar:hover{ opacity:.7; }
+  .legend{ font-size:.8rem; fill:var(--muted); }
+  .filters{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .filters button{ font-family:inherit; cursor:pointer; border:1px solid var(--amber); background:#fff; color:var(--char); padding:7px 14px; border-radius:20px; font-size:.84rem; transition:all .2s ease; }
+  .filters button.active,.filters button:hover{ background:var(--amber); color:#fff; }
+  table{ width:100%; border-collapse:collapse; background:#fff; border:1px solid #e7dcc9; }
+  th,td{ text-align:left; padding:10px 12px; border-bottom:1px solid #efe6d6; font-size:.88rem; }
+  th{ background:var(--char); color:var(--cream); font-weight:normal; letter-spacing:.5px; }
+  tr.hide{ display:none; }
+  tr.flash{ animation:flash .7s ease; }
+  @keyframes flash{ 0%{ background:#fbe6c4;} 100%{ background:#fff;} }
+  footer.site{ background:var(--char); color:#cdbfae; margin-top:40px; padding:28px 24px; border-top:5px solid var(--amber); font-size:.84rem; }
+  footer.site a{ color:var(--amber2); text-decoration:none; }
+  @media (max-width:560px){ header.site h1{ font-size:1.5rem; } th:nth-child(4),td:nth-child(4){ display:none; } }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <h1>Migraine Log Analysis</h1>
+    <div class="tag">Personal headache diary review</div>
+    <div class="meta">Danny Patrick Wells | MRN GSN-100482 | Garden State Neurology, Montclair | Reviewing 2025 through February 2026</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>Interval summary</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="n">2.4</div><div class="l">Avg days per month</div></div>
+      <div class="kpi"><div class="n">29</div><div class="l">Headache days logged</div></div>
+      <div class="kpi"><div class="n">5</div><div class="l">Episodes with aura</div></div>
+      <div class="kpi"><div class="n">8</div><div class="l">Highest severity</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Headache days by month</h2>
+    <div class="chart-card"><svg id="monthChart" viewBox="0 0 720 260" role="img" aria-label="Headache days by month"></svg></div>
+  </section>
+
+  <section>
+    <h2>Trigger frequency</h2>
+    <div class="chart-card"><svg id="trigChart" viewBox="0 0 720 240" role="img" aria-label="Trigger frequency"></svg></div>
+  </section>
+
+  <section>
+    <h2>Recent episodes</h2>
+    <div class="filters" id="filters"></div>
+    <table>
+      <thead><tr><th>Date</th><th>Severity</th><th>Aura</th><th>Primary trigger</th><th>Medication</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>Danny Patrick Wells | Montclair, New Jersey | Private health log, shared only with care team via portal</p>
+    <p>Contact <a href="mailto:danny.wells@greenridertech.co">danny.wells@greenridertech.co</a> | (973) 555-0177 | Copyright 2026 Danny P. Wells</p>
+  </div>
+</footer>
+
+<script>
+  var months = [
+    ['2025 Q3',7],['2025 Q4',8],['Jan 2026',3],['Feb 2026',2]
+  ];
+  var monthDetail = [['Jul',2],['Aug',3],['Sep',2],['Oct',3],['Nov',3],['Dec',2],['Jan',3],['Feb',2]];
+  var triggers = [
+    ['Sleep disruption',9],['Weather pressure',6],['Stress',5],
+    ['Dehydration',4],['Red wine',3],['Aged cheese',2]
+  ];
+  var episodes = [
+    ['2026-01-04',7,'Yes','Sleep disruption','Sumatriptan 50mg'],
+    ['2026-01-11',5,'No','Dehydration','Sumatriptan 50mg'],
+    ['2026-01-19',8,'Yes','Red wine','Sumatriptan 50mg, rest'],
+    ['2026-01-27',4,'No','Weather pressure','Sumatriptan 50mg'],
+    ['2026-02-03',6,'No','Stress','Sumatriptan 50mg'],
+    ['2026-02-16',5,'Yes','Sleep disruption','Sumatriptan 50mg']
+  ];
+
+  function bars(svgId, data, color, maxOver){
+    var svg = document.getElementById(svgId);
+    var W=720,H= svgId==='trigChart'?240:260, pad=40, gap=14;
+    var max = maxOver || Math.max.apply(null, data.map(function(d){return d[1];}));
+    var n = data.length;
+    var bw = (W - pad*2 - gap*(n-1)) / n;
+    var html = '';
+    for(var i=0;i<n;i++){
+      var v=data[i][1];
+      var h=(v/max)*(H-70);
+      var x=pad + i*(bw+gap);
+      var y=H-30-h;
+      html += '<rect class="bar" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="4" fill="'+color+'"></rect>';
+      html += '<text class="legend" x="'+(x+bw/2).toFixed(1)+'" y="'+(y-7).toFixed(1)+'" text-anchor="middle">'+v+'</text>';
+      html += '<text class="legend" x="'+(x+bw/2).toFixed(1)+'" y="'+(H-12)+'" text-anchor="middle">'+data[i][0]+'</text>';
+    }
+    svg.innerHTML = html;
+  }
+
+  bars('monthChart', monthDetail, '#e08a2b');
+  bars('trigChart', triggers, '#a85d1c');
+
+  var rowsEl = document.getElementById('rows');
+  function renderRows(filter){
+    var html='';
+    episodes.forEach(function(e){
+      var hide = filter && filter!=='All' && e[3]!==filter;
+      html += '<tr class="'+(hide?'hide':'flash')+'"><td>'+e[0]+'</td><td>'+e[1]+'/10</td><td>'+e[2]+'</td><td>'+e[3]+'</td><td>'+e[4]+'</td></tr>';
+    });
+    rowsEl.innerHTML = html;
+  }
+  renderRows('All');
+
+  var filterNames = ['All'].concat(triggers.map(function(t){return t[0];}));
+  var fEl = document.getElementById('filters');
+  filterNames.forEach(function(name,i){
+    var b=document.createElement('button');
+    b.textContent=name; if(i===0) b.className='active';
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#filters button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      renderRows(name);
+    });
+    fEl.appendChild(b);
+  });
+</script>
+</body>
+</html>

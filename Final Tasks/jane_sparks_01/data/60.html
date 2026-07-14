@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matter Tracker, Family Law Paralegal Dashboard</title>
+<style>
+  :root{--navy:#1F3A5F;--steel:#3d6098;--gold:#C9A227;--bg:#eef2f7;--card:#fff;--ink:#22303f;--mut:#6a7a8c}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--navy);color:#fff;padding:18px 28px;display:flex;align-items:center;
+    justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+  header .t{font-size:1.2rem;font-weight:bold}
+  header .t small{display:block;font-weight:normal;font-size:.78rem;opacity:.75;margin-top:2px}
+  header .stamp{font-size:.82rem;opacity:.85;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:20px}
+  main{max-width:1120px;margin:0 auto;padding:26px 24px 60px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+  .kpi{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 4px 14px rgba(31,58,95,.08);
+    border-left:5px solid var(--gold)}
+  .kpi .v{font-size:2.2rem;font-weight:bold;color:var(--navy)}
+  .kpi .l{font-size:.84rem;color:var(--mut);margin-top:3px}
+  .panels{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:26px}
+  .panel{background:var(--card);border-radius:14px;padding:24px;box-shadow:0 4px 14px rgba(31,58,95,.08)}
+  .panel h2{font-size:1.05rem;color:var(--navy);margin-bottom:18px}
+  .bar-row{display:flex;align-items:center;gap:12px;margin:12px 0}
+  .bar-row .lab{width:130px;font-size:.86rem;color:var(--mut)}
+  .track{flex:1;background:#e7edf4;border-radius:8px;height:26px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--steel),var(--navy));
+    transition:width 1.3s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;justify-content:flex-end;
+    color:#fff;font-size:.78rem;padding-right:8px}
+  .donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:center}
+  .donut{width:170px;height:170px;border-radius:50%;background:conic-gradient(var(--bg) 0 0);transition:background 1s}
+  .donut .hole{position:relative;top:35px;left:35px;width:100px;height:100px;background:var(--card);
+    border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donut .hole b{font-size:1.6rem;color:var(--navy)}
+  .donut .hole span{font-size:.72rem;color:var(--mut)}
+  .legend{font-size:.86rem}
+  .legend div{display:flex;align-items:center;gap:8px;margin:7px 0}
+  .dot{width:13px;height:13px;border-radius:3px}
+  .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .fbtn{cursor:pointer;border:1px solid var(--steel);background:#fff;color:var(--steel);
+    padding:7px 16px;border-radius:20px;font-size:.84rem;transition:all .2s}
+  .fbtn:hover{background:#eaf0f8}
+  .fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6edf4}
+  th{color:var(--navy);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+  tbody tr{transition:background .15s}
+  tbody tr:hover{background:#f3f7fc}
+  .pill{font-size:.74rem;padding:3px 10px;border-radius:14px;font-weight:bold}
+  .High{background:#fbe3e6;color:#a3303f}.Medium{background:#fff2d6;color:#8a6510}
+  footer{text-align:center;color:var(--mut);font-size:.82rem;padding:26px}
+  @media(max-width:860px){.cards{grid-template-columns:1fr 1fr}.panels{grid-template-columns:1fr}}
+  @media(max-width:520px){.cards{grid-template-columns:1fr}header .t small{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="t">Matter Tracker<small>Senior Paralegal working view, Hartwell and Greer</small></div>
+  <div class="stamp">Quarter view, October to December 2026</div>
+</header>
+
+<main>
+  <div class="cards">
+    <div class="kpi"><div class="v" data-c="6">0</div><div class="l">open matters</div></div>
+    <div class="kpi"><div class="v" data-c="4">0</div><div class="l">deadlines this October</div></div>
+    <div class="kpi"><div class="v" data-c="2">0</div><div class="l">filing deadlines on the 15th</div></div>
+    <div class="kpi"><div class="v" data-c="3">0</div><div class="l">owned by Jane</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Matters by Type</h2>
+      <div class="bar-row"><div class="lab">Custody</div><div class="track"><div class="fill" data-w="100" data-n="2"></div></div></div>
+      <div class="bar-row"><div class="lab">Child support</div><div class="track"><div class="fill" data-w="100" data-n="2"></div></div></div>
+      <div class="bar-row"><div class="lab">Divorce</div><div class="track"><div class="fill" data-w="50" data-n="1"></div></div></div>
+      <div class="bar-row"><div class="lab">Adoption</div><div class="track"><div class="fill" data-w="50" data-n="1"></div></div></div>
+    </div>
+    <div class="panel">
+      <h2>Ownership Split</h2>
+      <div class="donut-wrap">
+        <div class="donut" id="donut"><div class="hole"><b id="dpct">0</b><span>matters total</span></div></div>
+        <div class="legend">
+          <div><span class="dot" style="background:#1F3A5F"></span>Jane, 4 matters</div>
+          <div><span class="dot" style="background:#C9A227"></span>Kelsey, 2 matters</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Open Matters</h2>
+    <div class="toolbar" id="toolbar">
+      <button class="fbtn active" data-f="all">All</button>
+      <button class="fbtn" data-f="Jane">Jane</button>
+      <button class="fbtn" data-f="Kelsey">Kelsey</button>
+      <button class="fbtn" data-f="High">High priority</button>
+    </div>
+    <table>
+      <thead><tr><th>Matter</th><th>Type</th><th>Stage</th><th>Next deadline</th><th>Owner</th><th>Priority</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>Working tracker only. No live client detail is recorded here, matters stay in the firm case system.</footer>
+
+<script>
+  var matters=[
+    {id:"HG-2026-0412",type:"custody",stage:"discovery",date:"2026-10-09",owner:"Jane",pri:"High"},
+    {id:"HG-2026-0418",type:"child support modification",stage:"filing",date:"2026-10-15",owner:"Jane",pri:"High"},
+    {id:"HG-2026-0421",type:"divorce",stage:"mediation",date:"2026-10-20",owner:"Kelsey",pri:"Medium"},
+    {id:"HG-2026-0425",type:"adoption",stage:"documentation",date:"2026-11-02",owner:"Kelsey",pri:"Medium"},
+    {id:"HG-2026-0430",type:"custody",stage:"hearing prep",date:"2026-11-06",owner:"Jane",pri:"High"},
+    {id:"HG-2026-0433",type:"child support modification",stage:"filing",date:"2026-10-15",owner:"Jane",pri:"High"}
+  ];
+  var tbody=document.getElementById('tbody');
+  function draw(f){
+    tbody.innerHTML='';
+    matters.filter(function(m){return f==='all'||m.owner===f||m.pri===f;})
+      .forEach(function(m){
+        var tr=document.createElement('tr');
+        tr.innerHTML='<td><strong>'+m.id+'</strong></td><td>'+m.type+'</td><td>'+m.stage+
+          '</td><td>'+m.date+'</td><td>'+m.owner+'</td><td><span class="pill '+m.pri+'">'+m.pri+'</span></td>';
+        tbody.appendChild(tr);
+      });
+  }
+  draw('all');
+  document.getElementById('toolbar').addEventListener('click',function(e){
+    if(!e.target.classList.contains('fbtn'))return;
+    document.querySelectorAll('.fbtn').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');draw(e.target.dataset.f);
+  });
+
+  function countUp(el,target,suffix){
+    var t0=null;function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1100,1);
+      el.textContent=Math.floor(target*p)+(suffix||'');if(p<1)requestAnimationFrame(step);else el.textContent=target+(suffix||'');}
+    requestAnimationFrame(step);
+  }
+  window.addEventListener('load',function(){
+    document.querySelectorAll('[data-c]').forEach(function(el){countUp(el,+el.dataset.c);});
+    setTimeout(function(){
+      document.querySelectorAll('.fill').forEach(function(f){f.style.width=f.dataset.w+'%';f.textContent=f.dataset.n;});
+      document.getElementById('donut').style.background=
+        'conic-gradient(#1F3A5F 0 66.6%, #C9A227 66.6% 100%)';
+      countUp(document.getElementById('dpct'),6);
+    },200);
+  });
+</script>
+</body>
+</html>

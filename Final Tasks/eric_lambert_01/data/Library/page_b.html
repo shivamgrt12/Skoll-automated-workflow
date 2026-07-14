@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budget Tracker</title>
+<style>
+  :root{
+    --bg:#f5f7fb;--card:#ffffff;--ink:#1f2733;--muted:#6b7785;--line:#e6eaf0;
+    --green:#10b981;--red:#ef4444;--blue:#3b82f6;--amber:#f59e0b;--violet:#8b5cf6;--teal:#14b8a6;
+    --shadow:0 10px 30px rgba(31,39,51,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+  aside{background:#0f172a;color:#cbd5e1;padding:22px 18px;position:sticky;top:0;height:100vh}
+  .logo{font-weight:800;font-size:1.1rem;color:#fff;margin-bottom:4px}
+  .logo b{color:var(--teal)}
+  .sub{font-size:.72rem;color:#7c8aa0;margin-bottom:26px}
+  .nav a{display:flex;gap:10px;align-items:center;color:#a9b6c8;text-decoration:none;padding:10px 12px;border-radius:10px;font-size:.9rem;margin-bottom:4px;transition:.2s}
+  .nav a.active,.nav a:hover{background:#1e293b;color:#fff}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+
+  main{padding:26px 30px}
+  .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px}
+  h1{font-size:1.4rem}
+  .muted{color:var(--muted);font-size:.86rem}
+  .months{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 22px}
+  .months button{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;
+    padding:7px 16px;font-size:.85rem;cursor:pointer;transition:.18s;font-family:inherit}
+  .months button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .months button:hover{transform:translateY(-1px)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+  .kpi .lab{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .kpi .val{font-size:1.5rem;font-weight:800;margin-top:8px}
+  .kpi .delta{font-size:.78rem;margin-top:6px}
+  .up{color:var(--green)} .down{color:var(--red)}
+
+  .row2{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;margin-top:20px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .panel h3{font-size:1rem;margin-bottom:2px}
+  .panel .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+
+  .donutwrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .legend{display:flex;flex-direction:column;gap:9px;font-size:.85rem}
+  .legend div{display:flex;align-items:center;gap:8px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .legend .amt{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .pill{font-size:.72rem;padding:2px 9px;border-radius:999px}
+  .pill.in{background:#dcfce7;color:#15803d}.pill.out{background:#fee2e2;color:#b91c1c}
+
+  footer{grid-column:1/-1;border-top:1px solid var(--line);background:var(--card);
+    padding:16px 30px;color:var(--muted);font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .fade{animation:fade .45s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr}
+    aside{position:static;height:auto;display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
+    .sub,.nav{display:none}
+    .kpis{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo">budget<b>.</b>track</div>
+    <div class="sub">personal alpha build</div>
+    <nav class="nav">
+      <a class="active"><span class="dot"></span> Overview</a>
+      <a><span class="dot" style="background:#475569"></span> Transactions</a>
+      <a><span class="dot" style="background:#475569"></span> Categories</a>
+      <a><span class="dot" style="background:#475569"></span> Goals</a>
+      <a><span class="dot" style="background:#475569"></span> Settings</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1>Overview</h1>
+        <div class="muted">Eric's money, watched closely so the tight months stay calm.</div>
+      </div>
+      <div class="muted" id="stamp">School year view</div>
+    </div>
+
+    <div class="months" id="months">
+      <button data-m="oct">Oct</button>
+      <button data-m="nov">Nov</button>
+      <button data-m="dec">Dec</button>
+      <button data-m="jan" class="active">Jan</button>
+      <button data-m="feb">Feb</button>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="lab">Net take-home</div><div class="val" id="k-income">$0</div><div class="delta up">after tax and FICA</div></div>
+      <div class="kpi"><div class="lab">Total spent</div><div class="val" id="k-spent">$0</div><div class="delta" id="k-spent-d">fixed plus variable</div></div>
+      <div class="kpi"><div class="lab">Left over</div><div class="val" id="k-net">$0</div><div class="delta up" id="k-net-d">toward savings</div></div>
+      <div class="kpi"><div class="lab">Savings balance</div><div class="val" id="k-save">$0</div><div class="delta up">slow and steady</div></div>
+    </div>
+
+    <div class="row2">
+      <div class="panel">
+        <div class="h"><div><h3>Where it went</h3><div class="muted" id="cat-sub">this month by category</div></div></div>
+        <div class="donutwrap">
+          <svg id="donut" viewBox="0 0 180 180" width="180" height="180" aria-label="Spending by category"></svg>
+          <div class="legend" id="legend"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="h"><div><h3>Net left over</h3><div class="muted">last five months</div></div></div>
+        <svg id="trend" viewBox="0 0 360 200" width="100%" height="auto" aria-label="Monthly net trend"></svg>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <div class="h"><div><h3>Recent activity</h3><div class="muted" id="tx-sub">sample of this month</div></div></div>
+      <table>
+        <thead><tr><th>Item</th><th>Category</th><th>Type</th><th class="num">Amount</th></tr></thead>
+        <tbody id="txbody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div>budget.track  -  a learning project, not financial advice.</div>
+    <div>Made by Eric Lambert  -  Python and a little web</div>
+  </footer>
+</div>
+
+<script>
+  var DB={
+    oct:{income:1280,spent:1031,save:1100,cats:[['Rent',575,'#3b82f6'],['Groceries',196,'#10b981'],['Dining and coffee',88,'#f59e0b'],['Utilities',65,'#8b5cf6'],['Personal',57,'#14b8a6'],['Other',50,'#94a3b8']],
+      tx:[['Rent auto-pay','Rent','out',575],['Weekly groceries','Groceries','out',46],['Tutoring deposit','Income','in',84],['Coffee, campus','Dining','out',5]]},
+    nov:{income:1280,spent:1058,save:1170,cats:[['Rent',575,'#3b82f6'],['Groceries',204,'#10b981'],['Dining and coffee',79,'#f59e0b'],['Utilities',64,'#8b5cf6'],['Personal',86,'#14b8a6'],['Other',50,'#94a3b8']],
+      tx:[['Rent auto-pay','Rent','out',575],['Thrift jacket','Personal','out',31],['Help desk pay','Income','in',560],['Thai dinner','Dining','out',38]]},
+    dec:{income:1280,spent:1042,save:1240,cats:[['Rent',575,'#3b82f6'],['Groceries',182,'#10b981'],['Dining and coffee',74,'#f59e0b'],['Utilities',68,'#8b5cf6'],['Personal',93,'#14b8a6'],['Other',50,'#94a3b8']],
+      tx:[['Rent auto-pay','Rent','out',575],['Holiday gift, Diego','Personal','out',35],['Help desk pay','Income','in',560],['Groceries','Groceries','out',47]]},
+    jan:{income:1280,spent:1037,save:1400,cats:[['Rent',575,'#3b82f6'],['Groceries',200,'#10b981'],['Dining and coffee',85,'#f59e0b'],['Utilities',67,'#8b5cf6'],['Personal',60,'#14b8a6'],['Other',50,'#94a3b8']],
+      tx:[['Rent auto-pay','Rent','out',575],['Back-to-school groceries','Groceries','out',52],['Tutoring deposit','Income','in',98],['Oat milk and coffee','Dining','out',9]]},
+    feb:{income:1280,spent:1078,save:1601,cats:[['Rent',575,'#3b82f6'],['Groceries',200,'#10b981'],['Dining and coffee',90,'#f59e0b'],['Utilities',64,'#8b5cf6'],['Personal',74,'#14b8a6'],['Other',75,'#94a3b8']],
+      tx:[['Rent auto-pay','Rent','out',575],['Denim jacket, thrift','Personal','out',14],['Help desk pay','Income','in',560],['Loperamide, pharmacy','Other','out',12]]}
+  };
+  var fmt=function(n){return '$'+Math.round(n).toLocaleString();};
+
+  function countUp(el,to){
+    var from=0,start=null,dur=700;
+    function step(ts){ if(!start)start=ts; var p=Math.min((ts-start)/dur,1);
+      el.textContent=fmt(from+(to-from)*(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2)); if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  }
+
+  function donut(cats){
+    var svg=document.getElementById('donut');svg.innerHTML='';
+    var ns='http://www.w3.org/2000/svg',cx=90,cy=90,r=64,sw=26;
+    var total=cats.reduce(function(a,c){return a+c[1];},0),off=0;
+    cats.forEach(function(c){
+      var frac=c[1]/total,len=frac*2*Math.PI*r;
+      var circle=document.createElementNS(ns,'circle');
+      circle.setAttribute('cx',cx);circle.setAttribute('cy',cy);circle.setAttribute('r',r);
+      circle.setAttribute('fill','none');circle.setAttribute('stroke',c[2]);circle.setAttribute('stroke-width',sw);
+      circle.setAttribute('stroke-dasharray',len+' '+(2*Math.PI*r));
+      circle.setAttribute('stroke-dashoffset',-off);
+      circle.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+      circle.style.opacity=0;circle.style.transition='opacity .5s';
+      svg.appendChild(circle);setTimeout(function(){circle.style.opacity=1;},60);
+      off+=len;
+    });
+    var t=document.createElementNS(ns,'text');t.setAttribute('x',cx);t.setAttribute('y',cy-2);
+    t.setAttribute('text-anchor','middle');t.setAttribute('font-size','15');t.setAttribute('font-weight','800');
+    t.setAttribute('fill','#1f2733');t.textContent=fmt(total);svg.appendChild(t);
+    var s=document.createElementNS(ns,'text');s.setAttribute('x',cx);s.setAttribute('y',cy+15);
+    s.setAttribute('text-anchor','middle');s.setAttribute('font-size','9');s.setAttribute('fill','#6b7785');s.textContent='spent';svg.appendChild(s);
+    var lg=document.getElementById('legend');lg.innerHTML='';
+    cats.forEach(function(c){var d=document.createElement('div');
+      d.innerHTML='<i style="background:'+c[2]+'"></i>'+c[0]+'<span class="amt">'+fmt(c[1])+'</span>';lg.appendChild(d);});
+  }
+
+  function trend(active){
+    var svg=document.getElementById('trend');svg.innerHTML='';
+    var ns='http://www.w3.org/2000/svg',W=360,H=200,pad=28;
+    var keys=['oct','nov','dec','jan','feb'];
+    var vals=keys.map(function(k){return DB[k].income-DB[k].spent;});
+    var max=Math.max.apply(null,vals),min=Math.min.apply(null,vals),span=(max-min)||1;
+    var bw=(W-pad*2)/keys.length;
+    keys.forEach(function(k,i){
+      var v=DB[k].income-DB[k].spent;
+      var h=(H-pad*2)*((v-min)/span)*.8+18;var x=pad+i*bw+bw*0.2;var y=H-pad-h;
+      var rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',x);rect.setAttribute('width',bw*0.6);rect.setAttribute('rx',6);
+      rect.setAttribute('y',y);rect.setAttribute('height',h);
+      rect.setAttribute('fill',k===active?'#10b981':'#cfe9df');
+      rect.style.opacity=0;rect.style.transition='opacity .6s ease';
+      svg.appendChild(rect);
+      (function(rect,i){requestAnimationFrame(function(){setTimeout(function(){rect.style.opacity=1;},60+i*60);});})(rect,i);
+      var lab=document.createElementNS(ns,'text');lab.setAttribute('x',x+bw*0.3);lab.setAttribute('y',H-pad+15);
+      lab.setAttribute('text-anchor','middle');lab.setAttribute('font-size','11');lab.setAttribute('fill','#6b7785');
+      lab.textContent=k.charAt(0).toUpperCase()+k.slice(1);svg.appendChild(lab);
+      var vt=document.createElementNS(ns,'text');vt.setAttribute('x',x+bw*0.3);vt.setAttribute('y',y-6);
+      vt.setAttribute('text-anchor','middle');vt.setAttribute('font-size','10');vt.setAttribute('fill','#1f2733');
+      vt.textContent='$'+v;svg.appendChild(vt);
+    });
+  }
+
+  function txTable(tx){
+    var b=document.getElementById('txbody');b.innerHTML='';
+    tx.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td><span class="pill '+(r[2]==='in'?'in':'out')+'">'+(r[2]==='in'?'in':'out')+'</span></td><td class="num">'+(r[2]==='in'?'+':'-')+'$'+r[3]+'</td>';
+      b.appendChild(tr);
+    });
+  }
+
+  function render(m){
+    var d=DB[m];
+    countUp(document.getElementById('k-income'),d.income);
+    countUp(document.getElementById('k-spent'),d.spent);
+    countUp(document.getElementById('k-net'),d.income-d.spent);
+    countUp(document.getElementById('k-save'),d.save);
+    document.getElementById('k-net-d').textContent=(d.income-d.spent)+' set aside';
+    donut(d.cats);trend(m);txTable(d.tx);
+    var main=document.querySelector('main');main.classList.remove('fade');void main.offsetWidth;main.classList.add('fade');
+  }
+
+  document.getElementById('months').addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    this.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');
+    render(e.target.dataset.m);
+  });
+  render('jan');
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "policy_name": "Aetna Reimbursement Handling Policy - Wells Household",
+  "version": "2026.Q2",
+  "validation_rules": [
+    {
+      "rule": "FertilityClaims",
+      "requirement": "Claims filed under Aetna claim ID ANJ-*",
+      "action": "Track in this ledger under Insurance Reimbursements Receivable until paid",
+      "notes": "Partial coverage ~40% per Aetna case handler confirmation (Freshdesk 70010)"
+    },
+    {
+      "rule": "PharmacyClaims",
+      "requirement": "Montclair Pharmacy receipts with Rx numbers",
+      "action": "Track under ANJ-PHM-* claim IDs",
+      "notes": "Consolidated pharmacy claims (MPH-CYC-*) allowed once per year"
+    },
+    {
+      "rule": "PortalStatusFlips",
+      "requirement": "Any Freshdesk ticket flipping PENDING to PAID or vice versa",
+      "action": "Update both this ledger and the Airtable IVF cost tracker",
+      "notes": "Do not rely on the tracker alone; portal is authoritative when it disagrees"
+    },
+    {
+      "rule": "LateCharges",
+      "requirement": "Clinic charges landing after cycle close",
+      "action": "File a separate reimbursement claim; do NOT roll into a closed cycle invoice",
+      "notes": "See NNJFC-C2-INV2-LATE handling as canonical example"
+    },
+    {
+      "rule": "ThresholdConfirm",
+      "requirement": "Any medical charge >= $300 not yet posted",
+      "action": "Pause for Danny confirmation before scheduling payment",
+      "notes": "Household spend threshold per AGENTS.md"
+    }
+  ],
+  "context": "Household medical-expense ledger reimbursement rules. This is a joint household ledger for Danny and Priya Wells only."
+}

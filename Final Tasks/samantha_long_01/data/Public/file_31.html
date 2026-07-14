@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Samantha Thomas Long">
+<title>Household Ledger, Edgewood</title>
+<style>
+  :root{
+    --bg:#f3f4ef; --panel:#ffffff; --ink:#22281f; --soft:#5d6655;
+    --line:#dfe2d6; --green:#6b8e4e; --gold:#c98a3b; --rust:#9c5a3b;
+    --head:#2f4734; --accent:#4a7aa3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5}
+  a{color:var(--head);text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:20;background:var(--head);color:#fff;
+    display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1.1rem;
+    padding:.7rem 1.2rem;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+  header.nav strong{font-size:1.05rem;margin-right:.6rem}
+  header.nav a{color:#e9efe1;font-size:.92rem;padding:.2rem 0;border-bottom:2px solid transparent}
+  header.nav a:hover{border-bottom-color:var(--gold)}
+  section{max-width:980px;margin:0 auto;padding:2.4rem 1.2rem;border-bottom:1px solid var(--line)}
+  .hero{background:linear-gradient(180deg,#e9ede1,#f3f4ef)}
+  h1{font-size:2rem;margin:.2rem 0 .4rem}
+  h2{font-size:1.4rem;color:var(--head);margin:.2rem 0 1rem}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:.78rem;color:var(--green);font-weight:700}
+  .lead{color:var(--soft);max-width:62ch}
+  .grid{display:grid;gap:1rem}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem}
+  .card .big{font-size:1.7rem;font-weight:700;color:var(--head)}
+  .card .lbl{font-size:.82rem;color:var(--soft);text-transform:uppercase;letter-spacing:.05em}
+  .charts{grid-template-columns:1fr 1fr}
+  @media(max-width:760px){.charts{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.2rem}
+  .panel h3{margin:.1rem 0 .8rem;font-size:1.05rem;color:var(--head)}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{text-align:left;padding:.45rem .5rem;border-bottom:1px solid var(--line)}
+  th{color:var(--soft);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.total td{font-weight:700;border-top:2px solid var(--head);border-bottom:none}
+  .btn{display:inline-block;background:var(--head);color:#fff;border:none;border-radius:8px;
+    padding:.6rem 1rem;font-size:.92rem;cursor:pointer}
+  .btn:hover{background:#3c5a45}
+  .note{font-size:.85rem;color:var(--soft)}
+  .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.84rem;color:var(--soft);margin-top:.6rem}
+  .swatch{display:inline-block;width:.8rem;height:.8rem;border-radius:2px;vertical-align:-1px;margin-right:.3rem}
+  footer{max-width:980px;margin:0 auto;padding:2rem 1.2rem;color:var(--soft);font-size:.86rem}
+  .barlabel{font-size:11px;fill:var(--soft)}
+</style>
+</head>
+<body>
+<header class="nav">
+  <strong>Household Ledger</strong>
+  <a href="#overview">Overview</a>
+  <a href="#flow">Cash Flow</a>
+  <a href="#spend">Where It Goes</a>
+  <a href="#savings">Savings</a>
+  <a href="#notes">Notes</a>
+</header>
+
+<section class="hero" id="overview">
+  <div class="kicker">Edgewood, Cranston, Rhode Island</div>
+  <h1>A Retired Carrier's Monthly Ledger</h1>
+  <p class="lead">A plain account of one household run on a pension, Social Security, and discipline.
+  Figures are monthly unless noted. Income holds steady; the only moving line is the alimony that ends after December 2026.
+  <button class="btn" style="margin-top:1rem" onclick="document.getElementById('flow').scrollIntoView({behavior:'smooth'})">See the cash flow</button>
+  </p>
+  <div class="grid cards" style="margin-top:1.6rem">
+    <div class="card"><div class="lbl">Monthly income</div><div class="big">$4,700</div></div>
+    <div class="card"><div class="lbl">Monthly expenses</div><div class="big">$3,270</div></div>
+    <div class="card"><div class="lbl">Monthly margin</div><div class="big">$1,430</div></div>
+    <div class="card"><div class="lbl">Total savings</div><div class="big">$89,000</div></div>
+  </div>
+</section>
+
+<section id="flow">
+  <div class="kicker">Income against outgo</div>
+  <h2>Cash Flow, Now and After Alimony</h2>
+  <p class="lead">Pension of $2,900 and Social Security of $1,800 make the $4,700 income.
+  Fixed expenses total $3,270, which already includes the $600 alimony. When that payment ends after December 2026,
+  expenses fall to $2,670 and the margin rises from $1,430 to $2,030.</p>
+  <div class="grid charts" style="margin-top:1.2rem">
+    <div class="panel">
+      <h3>Grouped bars, this year vs 2027</h3>
+      <!-- Bar chart: income / expenses / margin, two periods -->
+      <svg viewBox="0 0 360 230" width="100%" role="img" aria-label="Grouped bar chart of income, expenses, and margin">
+        <line x1="40" y1="190" x2="350" y2="190" stroke="#cfd4c6"/>
+        <!-- y gridlines at 0,1500,3000,4500 -> scale: 4700 -> 160px tall plot (y 30..190) -->
+        <g font-size="9" fill="#8a937e">
+          <text x="6" y="193">0</text>
+          <text x="6" y="143">1500</text>
+          <text x="6" y="96">3000</text>
+          <text x="6" y="49">4500</text>
+        </g>
+        <line x1="40" y1="139" x2="350" y2="139" stroke="#eceee5"/>
+        <line x1="40" y1="92" x2="350" y2="92" stroke="#eceee5"/>
+        <line x1="40" y1="45" x2="350" y2="45" stroke="#eceee5"/>
+        <!-- Group A: now. income 4700 ->160h, expenses 3270 ->111h, margin 1430 ->49h -->
+        <rect x="60"  y="30"  width="26" height="160" fill="#6b8e4e"/>
+        <rect x="90"  y="79"  width="26" height="111" fill="#9c5a3b"/>
+        <rect x="120" y="141" width="26" height="49"  fill="#c98a3b"/>
+        <!-- Group B: 2027. income 4700 ->160, expenses 2670 ->91, margin 2030 ->69 -->
+        <rect x="210" y="30"  width="26" height="160" fill="#6b8e4e"/>
+        <rect x="240" y="99"  width="26" height="91"  fill="#9c5a3b"/>
+        <rect x="270" y="121" width="26" height="69"  fill="#c98a3b"/>
+        <g class="barlabel" text-anchor="middle">
+          <text x="103" y="206">This year</text>
+          <text x="253" y="206">From 2027</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:#6b8e4e"></span>Income</span>
+        <span><span class="swatch" style="background:#9c5a3b"></span>Expenses</span>
+        <span><span class="swatch" style="background:#c98a3b"></span>Margin</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>The margin line, month by month</h3>
+      <!-- Line chart: margin stable 1430 then steps to 2030 from Jan 2027 -->
+      <svg viewBox="0 0 360 230" width="100%" role="img" aria-label="Line chart of monthly margin">
+        <line x1="40" y1="190" x2="350" y2="190" stroke="#cfd4c6"/>
+        <g font-size="9" fill="#8a937e">
+          <text x="2" y="193">1000</text>
+          <text x="8" y="120">1500</text>
+          <text x="8" y="47">2000</text>
+        </g>
+        <line x1="40" y1="117" x2="350" y2="117" stroke="#eceee5"/>
+        <line x1="40" y1="44"  x2="350" y2="44"  stroke="#eceee5"/>
+        <!-- six points: Oct,Nov,Dec (1430) then Jan,Feb,Mar 2027 (2030) -->
+        <!-- map value v: y = 190 - (v-1000)/1000*146 ; 1430->127.2 ; 2030->39.6 -->
+        <polyline fill="none" stroke="#4a7aa3" stroke-width="2.5"
+          points="55,127 110,127 165,127 220,40 275,40 330,40"/>
+        <g fill="#4a7aa3">
+          <circle cx="55" cy="127" r="3"/><circle cx="110" cy="127" r="3"/>
+          <circle cx="165" cy="127" r="3"/><circle cx="220" cy="40" r="3"/>
+          <circle cx="275" cy="40" r="3"/><circle cx="330" cy="40" r="3"/>
+        </g>
+        <g font-size="9" fill="#8a937e" text-anchor="middle">
+          <text x="55" y="205">Oct</text><text x="110" y="205">Nov</text>
+          <text x="165" y="205">Dec</text><text x="220" y="205">Jan</text>
+          <text x="275" y="205">Feb</text><text x="330" y="205">'27</text>
+        </g>
+      </svg>
+      <p class="note">The step from $1,430 to $2,030 lands the first month after the final alimony payment clears.</p>
+    </div>
+  </div>
+</section>
+
+<section id="spend">
+  <div class="kicker">The 3,270 in detail</div>
+  <h2>Where the Money Goes</h2>
+  <div class="grid charts">
+    <div class="panel">
+      <h3>Share of fixed expenses</h3>
+      <!-- Donut: rent 1250, meds+medicare 380, groceries 320, alimony 600, transport 190, other 530 -->
+      <!-- total 3270. circumference for r=60 = 376.99 -->
+      <svg viewBox="0 0 220 220" width="100%" role="img" aria-label="Donut chart of expense shares">
+        <g transform="translate(110,110)">
+          <circle r="60" fill="none" stroke="#eceee5" stroke-width="34"/>
+          <!-- rent 1250/3270=38.2% -> dash 144.1 -->
+          <circle r="60" fill="none" stroke="#2f4734" stroke-width="34"
+            stroke-dasharray="144.1 232.9" transform="rotate(-90)"/>
+          <!-- alimony 600/3270=18.3% -> 69.2 ; offset -144.1 -->
+          <circle r="60" fill="none" stroke="#9c5a3b" stroke-width="34"
+            stroke-dasharray="69.2 307.8" stroke-dashoffset="-144.1" transform="rotate(-90)"/>
+          <!-- meds 380/3270=11.6% -> 43.8 ; offset -213.3 -->
+          <circle r="60" fill="none" stroke="#4a7aa3" stroke-width="34"
+            stroke-dasharray="43.8 333.2" stroke-dashoffset="-213.3" transform="rotate(-90)"/>
+          <!-- groceries 320/3270=9.8% -> 36.9 ; offset -257.1 -->
+          <circle r="60" fill="none" stroke="#6b8e4e" stroke-width="34"
+            stroke-dasharray="36.9 340.1" stroke-dashoffset="-257.1" transform="rotate(-90)"/>
+          <!-- transport 190/3270=5.8% -> 21.9 ; offset -294.0 -->
+          <circle r="60" fill="none" stroke="#c98a3b" stroke-width="34"
+            stroke-dasharray="21.9 355.1" stroke-dashoffset="-294.0" transform="rotate(-90)"/>
+          <!-- other 530/3270=16.2% -> 61.1 ; offset -315.9 -->
+          <circle r="60" fill="none" stroke="#9aa78c" stroke-width="34"
+            stroke-dasharray="61.1 315.9" stroke-dashoffset="-315.9" transform="rotate(-90)"/>
+          <text x="0" y="-2" text-anchor="middle" font-size="16" font-weight="700" fill="#2f4734">$3,270</text>
+          <text x="0" y="14" text-anchor="middle" font-size="9" fill="#5d6655">per month</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2f4734"></span>Rent</span>
+        <span><span class="swatch" style="background:#9c5a3b"></span>Alimony</span>
+        <span><span class="swatch" style="background:#4a7aa3"></span>Medicare and meds</span>
+        <span><span class="swatch" style="background:#6b8e4e"></span>Groceries</span>
+        <span><span class="swatch" style="background:#c98a3b"></span>Car and gas</span>
+        <span><span class="swatch" style="background:#9aa78c"></span>Other</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Line items</h3>
+      <table>
+        <thead><tr><th>Category</th><th class="num">Monthly</th></tr></thead>
+        <tbody>
+          <tr><td>Rent</td><td class="num">$1,250</td></tr>
+          <tr><td>Alimony (ends after Dec 2026)</td><td class="num">$600</td></tr>
+          <tr><td>Medicare supplement and prescriptions</td><td class="num">$380</td></tr>
+          <tr><td>Groceries</td><td class="num">$320</td></tr>
+          <tr><td>Utilities</td><td class="num">$175</td></tr>
+          <tr><td>Car insurance and gas</td><td class="num">$190</td></tr>
+          <tr><td>Dining out</td><td class="num">$80</td></tr>
+          <tr><td>Home maintenance</td><td class="num">$75</td></tr>
+          <tr><td>Phone</td><td class="num">$55</td></tr>
+          <tr><td>Subscriptions</td><td class="num">$45</td></tr>
+          <tr><td>Personal and miscellaneous</td><td class="num">$100</td></tr>
+          <tr class="total"><td>Total</td><td class="num">$3,270</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="savings">
+  <div class="kicker">The cushion</div>
+  <h2>Savings and Standing</h2>
+  <div class="grid cards">
+    <div class="card"><div class="lbl">Credit union savings</div><div class="big">$31,000</div><div class="note">at the credit union, in person or by phone</div></div>
+    <div class="card"><div class="lbl">Retirement savings plan</div><div class="big">$58,000</div><div class="note">federal thrift account</div></div>
+    <div class="card"><div class="lbl">Debt</div><div class="big">None</div><div class="note">sedan owned outright</div></div>
+    <div class="card"><div class="lbl">Credit standing</div><div class="big">~790</div><div class="note">card paid in full monthly</div></div>
+  </div>
+  <p class="lead" style="margin-top:1.2rem">The $1,430 monthly margin feeds savings, the grandchildren, and garden supplies.
+  After December 2026 that margin becomes $2,030, and the extra $600 a month moves quietly from an outgoing line to a saving one.</p>
+</section>
+
+<section id="notes">
+  <div class="kicker">A standing reminder</div>
+  <h2>Notes and Boundaries</h2>
+  <div class="panel">
+    <p class="note">Financial detail stays private. Any transaction over $150 gets a second look before it happens.
+    The credit union is reached in person or by phone only. This ledger is a working summary kept for one household and is not advice.</p>
+    <form id="ack" onsubmit="return ackSubmit(event)">
+      <label class="note" for="who">Mark this ledger reviewed by:</label><br>
+      <input id="who" name="who" aria-label="initials" style="margin:.4rem .5rem .4rem 0;padding:.5rem;border:1px solid var(--line);border-radius:6px">
+      <button class="btn" type="submit">Mark reviewed</button>
+      <span id="ackmsg" class="note" style="margin-left:.6rem"></span>
+    </form>
+  </div>
+</section>
+
+<footer>
+  Kept by Samantha Thomas Long, 53 Narragansett Boulevard, Apt 2F, Cranston, RI 02905.
+  Reach: 401-555-0177, samantha.long@mailcove.net. Figures monthly, US dollars, reviewed at the first of each month.
+</footer>
+
+<script>
+  function ackSubmit(e){
+    e.preventDefault();
+    var who=document.getElementById('who').value.trim();
+    var msg=document.getElementById('ackmsg');
+    if(!who){ msg.textContent="Add initials first."; return false; }
+    var d=new Date();
+    msg.textContent="Reviewed by "+who+" on "+d.toLocaleDateString();
+    return false;
+  }
+</script>
+</body>
+</html>

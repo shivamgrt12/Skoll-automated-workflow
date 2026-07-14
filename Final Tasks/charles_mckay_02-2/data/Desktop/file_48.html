@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Station KWYCODY0142 Console</title>
+<style>
+  :root{
+    --ink:#15212b; --paper:#f4f1e9; --panel:#ffffff; --line:#d8d2c4;
+    --sky:#2f6f8f; --sky2:#5a99b5; --warm:#c2703d; --cold:#3d6fa0;
+    --grass:#5d7a4a; --muted:#6b7480;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5}
+  header.top{background:linear-gradient(135deg,#1d3a4a,#2f6f8f);color:#f4f1e9;padding:22px 28px;
+    box-shadow:0 2px 10px rgba(0,0,0,.18)}
+  header.top .row{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;
+    align-items:center;flex-wrap:wrap;gap:12px}
+  header.top h1{font-size:1.4rem;letter-spacing:.5px}
+  header.top .sub{font-size:.85rem;opacity:.9;margin-top:4px}
+  .pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;
+    padding:6px 14px;font-size:.8rem}
+  nav.tabs{max-width:1100px;margin:18px auto 0;padding:0 20px;display:flex;gap:8px;flex-wrap:wrap}
+  nav.tabs button{background:var(--panel);border:1px solid var(--line);border-radius:8px 8px 0 0;
+    padding:9px 16px;font-size:.88rem;cursor:pointer;color:var(--muted);transition:all .2s}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.active{color:var(--sky);border-bottom-color:var(--panel);font-weight:600;
+    box-shadow:0 -2px 6px rgba(0,0,0,.05)}
+  main{max-width:1100px;margin:0 auto;padding:0 20px 40px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+    opacity:0;transform:translateY(12px);animation:rise .5s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}
+  .card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .card .label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .card .val{font-size:2rem;font-weight:700;margin-top:6px}
+  .card .val span{font-size:1rem;font-weight:400;color:var(--muted)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;margin:18px 0}
+  .panel h2{font-size:1.05rem;color:var(--sky);margin-bottom:4px}
+  .panel p.note{font-size:.85rem;color:var(--muted);margin-bottom:14px}
+  .view{display:none}.view.show{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:18px;font-size:.82rem;margin-top:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .gauge{text-align:center}
+  .gauge .name{font-weight:600;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#eef2f0;color:var(--muted);text-transform:uppercase;font-size:.72rem;letter-spacing:.5px}
+  tr:hover td{background:#fbfaf6}
+  footer.bot{background:#1d3a4a;color:#cfd9df;font-size:.8rem;padding:20px 28px;margin-top:30px}
+  footer.bot .row{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:10px}
+  .toggle-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .toggle-row button{background:#eef2f0;border:1px solid var(--line);border-radius:6px;padding:6px 12px;
+    font-size:.8rem;cursor:pointer}
+  .toggle-row button.on{background:var(--sky);color:#fff;border-color:var(--sky)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="row">
+    <div>
+      <h1>Backyard Weather Console</h1>
+      <div class="sub">Station KWYCODY0142 &middot; McKay Ranch, Cody, Wyoming &middot; elevation 5,100 ft</div>
+    </div>
+    <div class="pill">Last log: February 28, 2026, 6:00 AM</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-view="temps">Temperature</button>
+  <button data-view="precip">Precipitation</button>
+  <button data-view="pressure">Pressure and Wind</button>
+  <button data-view="snowpack">Snowpack</button>
+</nav>
+
+<main>
+  <div class="cards">
+    <div class="card"><div class="label">High, Feb 28</div><div class="val">45<span>&deg;F</span></div></div>
+    <div class="card"><div class="label">Barometer</div><div class="val">30.14<span> in</span></div></div>
+    <div class="card"><div class="label">Wind</div><div class="val">9<span> mph W</span></div></div>
+    <div class="card"><div class="label">Month precip</div><div class="val">1.01<span> in</span></div></div>
+  </div>
+
+  <section class="view show" id="temps">
+    <div class="panel">
+      <h2>Daily High and Low, February 15 to 28</h2>
+      <p class="note">Readings logged by hand each morning at the office console and uploaded to the wider network.</p>
+      <div class="toggle-row">
+        <button class="on" data-series="high">High</button>
+        <button class="on" data-series="low">Low</button>
+      </div>
+      <svg id="tempChart" viewBox="0 0 720 300" role="img" aria-label="Temperature line chart"></svg>
+      <div class="legend">
+        <span><i style="background:#c2703d"></i>Daily high &deg;F</span>
+        <span><i style="background:#3d6fa0"></i>Daily low &deg;F</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="precip">
+    <div class="panel">
+      <h2>Liquid Precipitation by Day</h2>
+      <p class="note">A dry, breezy stretch broken by two snow bands. Month total 1.01 inches liquid, 12.6 inches of snow.</p>
+      <svg id="precipChart" viewBox="0 0 720 300" role="img" aria-label="Precipitation bar chart"></svg>
+    </div>
+  </section>
+
+  <section class="view" id="pressure">
+    <div class="panel">
+      <h2>Barometric Pressure Trend</h2>
+      <p class="note">Pressure swings track each front through the basin. The dips line up with the snow days.</p>
+      <svg id="presChart" viewBox="0 0 720 280" role="img" aria-label="Barometer line chart"></svg>
+    </div>
+    <div class="panel">
+      <h2>Recent Logbook</h2>
+      <table>
+        <thead><tr><th>Date</th><th>High</th><th>Low</th><th>Baro</th><th>Wind</th><th>Sky</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="snowpack">
+    <div class="panel">
+      <h2>Mountain Snowpack, Percent of Median</h2>
+      <p class="note">Telemetry from two high sites that feed the creeks. Near to a little above median bodes well for spring flow.</p>
+      <div class="gauges">
+        <div class="gauge"><div class="name">Blackwater, 9,100 ft</div>
+          <svg viewBox="0 0 160 100" class="g" data-pct="99"></svg></div>
+        <div class="gauge"><div class="name">Evening Star, 9,300 ft</div>
+          <svg viewBox="0 0 160 100" class="g" data-pct="106"></svg></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="bot">
+  <div class="row">
+    <div>Maintained by Charles McKay &middot; contributor station KWYCODY0142</div>
+    <div>Cody, Wyoming &middot; America/Denver &middot; data held for personal record only</div>
+  </div>
+</footer>
+
+<script>
+  var obs = [
+    {d:"02-15",hi:46,lo:18,baro:30.18,wind:"8 SW",sky:"clear",pr:0},
+    {d:"02-16",hi:34,lo:16,baro:29.74,wind:"17 NW",sky:"snow, heaviest of week",pr:0.21},
+    {d:"02-17",hi:31,lo:12,baro:29.95,wind:"12 N",sky:"tapering, cold",pr:0.03},
+    {d:"02-18",hi:39,lo:14,baro:30.22,wind:"6 W",sky:"calm and bright",pr:0},
+    {d:"02-19",hi:43,lo:20,baro:30.10,wind:"9 SW",sky:"high pressure",pr:0},
+    {d:"02-20",hi:37,lo:17,baro:29.88,wind:"13 NW",sky:"brief snow shower",pr:0.07},
+    {d:"02-21",hi:41,lo:15,baro:30.05,wind:"15 W",sky:"breezy, dry",pr:0},
+    {d:"02-22",hi:41,lo:19,baro:30.12,wind:"9 SW",sky:"clear, wind laid down",pr:0},
+    {d:"02-23",hi:37,lo:22,baro:29.88,wind:"14 NW",sky:"front through, snow late",pr:0.14},
+    {d:"02-24",hi:33,lo:15,baro:30.21,wind:"7 W",sky:"clear, board meeting night",pr:0},
+    {d:"02-25",hi:44,lo:20,baro:30.05,wind:"11 SW",sky:"mild, fence window",pr:0},
+    {d:"02-26",hi:38,lo:16,baro:29.92,wind:"10 NW",sky:"light flurries",pr:0.05},
+    {d:"02-27",hi:47,lo:21,baro:30.08,wind:"12 SW",sky:"fast melt",pr:0},
+    {d:"02-28",hi:45,lo:19,baro:30.14,wind:"9 W",sky:"clear, month end",pr:0}
+  ];
+  var SVGNS="http://www.w3.org/2000/svg";
+  function el(n,a){var e=document.createElementNS(SVGNS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  var series={high:true,low:true};
+
+  function drawTemps(){
+    var s=document.getElementById("tempChart");s.innerHTML="";
+    var W=720,H=300,m={l:40,r:20,t:20,b:40};
+    var min=0,max=55,n=obs.length;
+    var x=function(i){return m.l+i*((W-m.l-m.r)/(n-1));};
+    var y=function(v){return H-m.b-(v-min)/(max-min)*(H-m.t-m.b);};
+    for(var g=0;g<=5;g++){var gv=g*11;
+      s.appendChild(el("line",{x1:m.l,y1:y(gv),x2:W-m.r,y2:y(gv),stroke:"#e7e2d6"}));
+      s.appendChild(el("text",{x:m.l-8,y:y(gv)+4,"text-anchor":"end","font-size":"10",fill:"#6b7480"})).textContent=gv;
+    }
+    obs.forEach(function(o,i){
+      s.appendChild(el("text",{x:x(i),y:H-m.b+16,"text-anchor":"middle","font-size":"9",fill:"#6b7480"})).textContent=o.d;
+    });
+    function line(key,color){
+      var pts=obs.map(function(o,i){return x(i)+","+y(o[key]);}).join(" ");
+      var pl=el("polyline",{points:pts,fill:"none",stroke:color,"stroke-width":2.5,
+        "stroke-linejoin":"round","stroke-linecap":"round"});
+      var len=720;pl.setAttribute("stroke-dasharray",len);pl.setAttribute("stroke-dashoffset",len);
+      s.appendChild(pl);
+      pl.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:900,fill:"forwards",easing:"ease-out"});
+      obs.forEach(function(o,i){
+        var c=el("circle",{cx:x(i),cy:y(o[key]),r:3.5,fill:color});
+        var t=el("title");t.textContent=o.d+": "+o[key]+" F";c.appendChild(t);s.appendChild(c);
+      });
+    }
+    if(series.high)line("hi","#c2703d");
+    if(series.low)line("lo","#3d6fa0");
+  }
+  function drawPrecip(){
+    var s=document.getElementById("precipChart");s.innerHTML="";
+    var W=720,H=300,m={l:40,r:20,t:20,b:40},n=obs.length,max=0.25;
+    var bw=(W-m.l-m.r)/n*0.6;
+    var x=function(i){return m.l+i*((W-m.l-m.r)/n)+((W-m.l-m.r)/n-bw)/2;};
+    var y=function(v){return H-m.b-(v/max)*(H-m.t-m.b);};
+    for(var g=0;g<=5;g++){var gv=(g*0.05);
+      s.appendChild(el("line",{x1:m.l,y1:y(gv),x2:W-m.r,y2:y(gv),stroke:"#e7e2d6"}));
+      s.appendChild(el("text",{x:m.l-8,y:y(gv)+4,"text-anchor":"end","font-size":"10",fill:"#6b7480"})).textContent=gv.toFixed(2);
+    }
+    obs.forEach(function(o,i){
+      var h=(H-m.b)-y(o.pr);
+      var r=el("rect",{x:x(i),y:H-m.b,width:bw,height:0,rx:2,fill:o.pr>0.1?"#2f6f8f":"#5a99b5"});
+      var t=el("title");t.textContent=o.d+": "+o.pr.toFixed(2)+" in";r.appendChild(t);s.appendChild(r);
+      r.animate([{height:0,y:H-m.b},{height:h,y:y(o.pr)}],{duration:700,delay:i*40,fill:"forwards",easing:"ease-out"});
+      s.appendChild(el("text",{x:x(i)+bw/2,y:H-m.b+16,"text-anchor":"middle","font-size":"9",fill:"#6b7480"})).textContent=o.d;
+    });
+  }
+  function drawPres(){
+    var s=document.getElementById("presChart");s.innerHTML="";
+    var W=720,H=280,m={l:48,r:20,t:20,b:40},n=obs.length,min=29.6,max=30.4;
+    var x=function(i){return m.l+i*((W-m.l-m.r)/(n-1));};
+    var y=function(v){return H-m.b-(v-min)/(max-min)*(H-m.t-m.b);};
+    for(var g=0;g<=4;g++){var gv=min+g*0.2;
+      s.appendChild(el("line",{x1:m.l,y1:y(gv),x2:W-m.r,y2:y(gv),stroke:"#e7e2d6"}));
+      s.appendChild(el("text",{x:m.l-8,y:y(gv)+4,"text-anchor":"end","font-size":"10",fill:"#6b7480"})).textContent=gv.toFixed(1);
+    }
+    var pts=obs.map(function(o,i){return x(i)+","+y(o.baro);}).join(" ");
+    var area=el("polygon",{points:m.l+","+(H-m.b)+" "+pts+" "+(W-m.r)+","+(H-m.b),
+      fill:"rgba(47,111,143,.12)"});s.appendChild(area);
+    var pl=el("polyline",{points:pts,fill:"none",stroke:"#2f6f8f","stroke-width":2.5,"stroke-linejoin":"round"});
+    s.appendChild(pl);
+    var len=760;pl.setAttribute("stroke-dasharray",len);pl.setAttribute("stroke-dashoffset",len);
+    pl.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:1000,fill:"forwards",easing:"ease-out"});
+    obs.forEach(function(o,i){
+      var c=el("circle",{cx:x(i),cy:y(o.baro),r:3,fill:"#1d3a4a"});
+      var t=el("title");t.textContent=o.d+": "+o.baro.toFixed(2)+" in";c.appendChild(t);s.appendChild(c);
+      s.appendChild(el("text",{x:x(i),y:H-m.b+16,"text-anchor":"middle","font-size":"9",fill:"#6b7480"})).textContent=o.d;
+    });
+  }
+  function drawGauges(){
+    document.querySelectorAll("svg.g").forEach(function(s){
+      s.innerHTML="";var pct=+s.getAttribute("data-pct");
+      var cx=80,cy=90,r=64;
+      function arc(a0,a1){var p0=pol(a0),p1=pol(a1);
+        var large=(a1-a0)>180?1:0;
+        return "M "+p0.x+" "+p0.y+" A "+r+" "+r+" 0 "+large+" 1 "+p1.x+" "+p1.y;}
+      function pol(a){var rad=(a-180)*Math.PI/180;return{x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};}
+      s.appendChild(el("path",{d:arc(0,180),fill:"none",stroke:"#e7e2d6","stroke-width":12,"stroke-linecap":"round"}));
+      var frac=Math.min(pct,130)/130;
+      var col=pct>=100?"#5d7a4a":(pct>=90?"#2f6f8f":"#c2703d");
+      var p=el("path",{d:arc(0,180*frac),fill:"none",stroke:col,"stroke-width":12,"stroke-linecap":"round"});
+      var L=r*Math.PI;p.setAttribute("stroke-dasharray",L);p.setAttribute("stroke-dashoffset",L);
+      s.appendChild(p);
+      p.animate([{strokeDashoffset:L},{strokeDashoffset:L*(1-frac)}],{duration:1100,fill:"forwards",easing:"ease-out"});
+      s.appendChild(el("text",{x:cx,y:cy-6,"text-anchor":"middle","font-size":"22","font-weight":"700",fill:"#15212b"})).textContent=pct+"%";
+      s.appendChild(el("text",{x:cx,y:cy+12,"text-anchor":"middle","font-size":"10",fill:"#6b7480"})).textContent="of median";
+    });
+  }
+  function fillLog(){
+    var b=document.getElementById("logBody");b.innerHTML="";
+    obs.slice().reverse().forEach(function(o){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>2026-"+o.d+"</td><td>"+o.hi+"</td><td>"+o.lo+"</td><td>"+o.baro.toFixed(2)+
+        "</td><td>"+o.wind+"</td><td>"+o.sky+"</td>";
+      b.appendChild(tr);
+    });
+  }
+  document.querySelectorAll("nav.tabs button").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      document.querySelectorAll("nav.tabs button").forEach(function(b){b.classList.remove("active");});
+      btn.classList.add("active");
+      document.querySelectorAll(".view").forEach(function(v){v.classList.remove("show");});
+      var v=document.getElementById(btn.dataset.view);v.classList.add("show");
+      if(btn.dataset.view==="precip")drawPrecip();
+      if(btn.dataset.view==="pressure"){drawPres();fillLog();}
+      if(btn.dataset.view==="snowpack")drawGauges();
+      if(btn.dataset.view==="temps")drawTemps();
+    });
+  });
+  document.querySelectorAll(".toggle-row button").forEach(function(b){
+    b.addEventListener("click",function(){
+      var k=b.dataset.series;series[k==="high"?"high":"low"]=!series[k==="high"?"high":"low"];
+      b.classList.toggle("on");drawTemps();
+    });
+  });
+  drawTemps();
+</script>
+</body>
+</html>

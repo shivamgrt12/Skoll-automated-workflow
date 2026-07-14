@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wilson Ceramics - Handmade Pottery Studio, Charleston WV</title>
+<style>
+  :root {
+    --clay:   #8B6347;
+    --sand:   #C9A882;
+    --stone:  #7A7065;
+    --linen:  #EDE0CC;
+    --cream:  #F7F1E8;
+    --charcoal: #2C2C2C;
+    --warm-white: #FDFAF5;
+    --text:   #3A3430;
+    --muted:  #786D65;
+    --accent: #6B4C3A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; color: var(--text); background: var(--warm-white); }
+  a { color: inherit; text-decoration: none; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--charcoal);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem; height: 64px;
+  }
+  .nav-brand {
+    font-family: 'Georgia', serif; font-size: 1.25rem;
+    color: var(--linen); letter-spacing: 0.08em;
+  }
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a {
+    color: #B8A898; font-size: 0.82rem; letter-spacing: 0.12em;
+    text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--sand); }
+
+  /* HERO */
+  .hero {
+    height: 92vh; min-height: 580px;
+    background: linear-gradient(160deg, #2C2220 0%, #4A3830 40%, #3A3028 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 40px,
+      rgba(139,99,71,0.04) 40px, rgba(139,99,71,0.04) 80px
+    );
+  }
+  .hero-content {
+    position: relative; text-align: center; padding: 2rem;
+    max-width: 720px;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--sand); margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(2.8rem, 6vw, 4.8rem); color: var(--linen);
+    line-height: 1.1; margin-bottom: 1.5rem;
+    font-weight: normal;
+  }
+  .hero-title em { color: var(--sand); font-style: normal; }
+  .hero-sub {
+    font-size: 1.05rem; color: #9A8878; line-height: 1.7;
+    margin-bottom: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 0.85rem 2.2rem;
+    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    border: none; cursor: pointer; transition: all 0.25s;
+    font-family: 'Georgia', serif;
+  }
+  .btn-primary {
+    background: var(--clay); color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-outline {
+    background: transparent; color: var(--sand);
+    border: 1px solid var(--sand);
+  }
+  .btn-outline:hover { background: var(--sand); color: var(--charcoal); }
+
+  /* SECTION STRUCTURE */
+  section { padding: 6rem 3rem; }
+  .section-label {
+    font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--stone); margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: normal; margin-bottom: 1.25rem; line-height: 1.2;
+  }
+  .section-lead {
+    font-size: 1.02rem; color: var(--muted); line-height: 1.75; max-width: 560px;
+  }
+  .divider {
+    width: 48px; height: 2px; background: var(--clay); margin: 2rem 0;
+  }
+  .container { max-width: 1160px; margin: 0 auto; }
+
+  /* ABOUT */
+  .about { background: var(--cream); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .about-image-placeholder {
+    background: linear-gradient(145deg, #8B6347, #5E3F28);
+    height: 440px; display: flex; align-items: center; justify-content: center;
+  }
+  .about-image-placeholder svg { opacity: 0.35; }
+  .about-text p { font-size: 1rem; line-height: 1.8; color: var(--text); margin-bottom: 1.2rem; }
+
+  /* PROCESS */
+  .process { background: var(--charcoal); }
+  .process .section-label { color: var(--stone); }
+  .process .section-title { color: var(--linen); }
+  .process-steps {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2.5rem; margin-top: 3.5rem;
+  }
+  .step {
+    border-top: 2px solid var(--clay); padding-top: 1.5rem;
+  }
+  .step-number { font-size: 2.5rem; color: var(--clay); font-style: italic; margin-bottom: 0.75rem; }
+  .step-title { color: var(--linen); font-size: 1.05rem; margin-bottom: 0.6rem; }
+  .step-desc { color: #786D65; font-size: 0.92rem; line-height: 1.65; }
+
+  /* GALLERY */
+  .gallery { background: var(--warm-white); }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .gallery-item {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--sand), var(--clay));
+    position: relative; overflow: hidden; cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .gallery-item:nth-child(2) { background: linear-gradient(135deg, #7A7065, #4A4040); }
+  .gallery-item:nth-child(3) { background: linear-gradient(135deg, #9EB084, #5A7045); }
+  .gallery-item:nth-child(4) { background: linear-gradient(135deg, #B87060, #7A3A2A); }
+  .gallery-item:nth-child(5) { background: linear-gradient(135deg, #C9A882, #8B6347); aspect-ratio: 1/2; }
+  .gallery-item:nth-child(6) { background: linear-gradient(135deg, #6B8A9E, #3A5A6E); }
+  .gallery-item:hover { transform: scale(1.025); }
+  .gallery-item-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(30,20,15,0.75); color: var(--linen);
+    padding: 0.75rem 1rem; font-size: 0.8rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .gallery-item:hover .gallery-item-label { opacity: 1; }
+  svg.piece-icon { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.15; }
+
+  /* CLASSES */
+  .classes { background: var(--linen); }
+  .classes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .class-card {
+    background: var(--warm-white); padding: 2.5rem 2rem; border-left: 3px solid var(--clay);
+    transition: box-shadow 0.25s;
+  }
+  .class-card:hover { box-shadow: 0 8px 32px rgba(60,40,20,0.12); }
+  .class-time { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--clay); margin-bottom: 0.5rem; }
+  .class-name { font-size: 1.15rem; margin-bottom: 0.75rem; }
+  .class-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.25rem; }
+  .class-detail { display: flex; gap: 2rem; font-size: 0.82rem; color: var(--stone); }
+  .class-detail strong { display: block; font-size: 1.05rem; color: var(--text); }
+
+  /* COMMISSION */
+  .commission { background: var(--warm-white); }
+  .commission-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+  }
+  .commission-steps { list-style: none; padding: 0; }
+  .commission-steps li {
+    display: flex; gap: 1.25rem; align-items: flex-start;
+    padding: 1.1rem 0; border-bottom: 1px solid var(--linen);
+  }
+  .commission-steps li:last-child { border-bottom: none; }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--clay); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; flex-shrink: 0; margin-top: 2px;
+  }
+  .step-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .step-info p { font-size: 0.87rem; color: var(--muted); line-height: 1.55; }
+  .commission-right { background: var(--cream); padding: 2.5rem; }
+  .commission-right h3 { font-size: 1.3rem; margin-bottom: 1.25rem; }
+  .form-row { margin-bottom: 1.1rem; }
+  .form-row label { display: block; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-bottom: 0.35rem; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #C9BDB0;
+    background: var(--warm-white); font-family: 'Georgia', serif; font-size: 0.92rem;
+    color: var(--text); outline: none; transition: border-color 0.2s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    border-color: var(--clay);
+  }
+  .form-row textarea { height: 100px; resize: vertical; }
+
+  /* TESTIMONIALS */
+  .testimonials { background: var(--cream); }
+  .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .testi-card { background: var(--warm-white); padding: 2rem; position: relative; }
+  .testi-card::before {
+    content: '"'; position: absolute; top: 0.75rem; left: 1.25rem;
+    font-size: 4rem; color: var(--clay); opacity: 0.2; line-height: 1;
+    font-family: Georgia, serif;
+  }
+  .testi-text { font-size: 0.95rem; line-height: 1.75; color: var(--text); margin-bottom: 1.2rem; font-style: italic; }
+  .testi-author { font-size: 0.8rem; color: var(--stone); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* FAQ */
+  .faq { background: var(--warm-white); }
+  .faq-list { max-width: 720px; margin-top: 3rem; }
+  .faq-item { border-bottom: 1px solid var(--linen); }
+  .faq-question {
+    padding: 1.25rem 0; display: flex; justify-content: space-between;
+    align-items: center; cursor: pointer;
+    font-size: 0.98rem; color: var(--text);
+  }
+  .faq-toggle { color: var(--clay); font-size: 1.3rem; transition: transform 0.25s; }
+  .faq-answer {
+    display: none; padding-bottom: 1.25rem;
+    font-size: 0.92rem; line-height: 1.75; color: var(--muted);
+  }
+  .faq-item.open .faq-answer { display: block; }
+  .faq-item.open .faq-toggle { transform: rotate(45deg); }
+
+  /* CONTACT */
+  .contact { background: var(--charcoal); }
+  .contact .section-label { color: var(--stone); }
+  .contact .section-title { color: var(--linen); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-top: 3rem; }
+  .contact-info p { color: #9A8878; font-size: 0.95rem; line-height: 1.8; margin-bottom: 0.5rem; }
+  .contact-info strong { color: var(--linen); }
+  .contact-block { margin-bottom: 2rem; }
+  .contact-block h4 { color: var(--sand); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 0.6rem; }
+
+  /* FOOTER */
+  footer {
+    background: #1A1512; padding: 2.5rem 3rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+  }
+  .footer-brand { color: var(--sand); font-size: 1rem; letter-spacing: 0.06em; }
+  .footer-copy { color: var(--stone); font-size: 0.8rem; }
+  .footer-nav { display: flex; gap: 1.5rem; }
+  .footer-nav a { color: #786D65; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  .footer-nav a:hover { color: var(--sand); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid, .commission-inner, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Wilson Ceramics</span>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#classes">Classes</a>
+    <a href="#commission">Commission</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Handmade in Charleston, West Virginia</p>
+    <h1 class="hero-title">Pottery rooted in <em>place</em> and made to last</h1>
+    <p class="hero-sub">Wheel-thrown and hand-built stoneware fired to cone 6. Functional ware for everyday life, commissions for meaningful occasions.</p>
+    <div class="hero-cta">
+      <a href="#gallery" class="btn btn-primary">View Gallery</a>
+      <a href="#classes" class="btn btn-outline">Take a Class</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image-placeholder">
+        <svg viewBox="0 0 200 200" width="160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="100" cy="140" rx="60" ry="20" stroke="#EDE0CC" stroke-width="2"/>
+          <path d="M60 140 C55 80 75 40 100 30 C125 40 145 80 140 140" stroke="#EDE0CC" stroke-width="2" fill="none"/>
+          <path d="M72 110 C70 90 80 65 100 55 C120 65 130 90 128 110" stroke="#EDE0CC" stroke-width="1.5" fill="none"/>
+          <line x1="100" y1="30" x2="100" y2="170" stroke="#EDE0CC" stroke-width="1" stroke-dasharray="4 6"/>
+        </svg>
+      </div>
+      <div class="about-text">
+        <p class="section-label">The Studio</p>
+        <h2 class="section-title">Made on Capitol Street</h2>
+        <div class="divider"></div>
+        <p>Wilson Ceramics is a one-person studio on Capitol Street in Charleston, West Virginia. Every piece is wheel-thrown or hand-built by James Wilson, fired to cone 6 in an electric kiln, and glazed with formulas developed and tested in the studio over years of practice.</p>
+        <p>The work is functional: mugs that hold coffee the way a mug should, bowls that sit right in the hands, plates that age well with use. The glazes are earth tones and satin mattes - warm amber, linen, stone grey, sage - that come from the same Appalachian landscape James has worked in since moving to Charleston after graduate school.</p>
+        <p>James holds an MFA in Studio Art and teaches ceramics at the University of Charleston in the spring and fall. The studio is open for community classes four sessions a week. Commissions are accepted for sets and one-of-a-kind pieces by inquiry.</p>
+        <a href="#commission" class="btn btn-primary" style="margin-top:1.25rem;">Inquire About a Commission</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="container">
+    <p class="section-label">How It Gets Made</p>
+    <h2 class="section-title" style="color:var(--linen)">From clay to your table</h2>
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-number">01</div>
+        <h3 class="step-title">Wedging and centering</h3>
+        <p class="step-desc">Stoneware clay is hand-wedged to remove air and align the grain before throwing. Centering is the first and hardest part of every pot.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">02</div>
+        <h3 class="step-title">Throwing or hand-building</h3>
+        <p class="step-desc">Mugs, bowls, and vases are thrown on one of two Brent pottery wheels. Slab and coil methods are used for larger forms and hand-built work.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">03</div>
+        <h3 class="step-title">Drying and trimming</h3>
+        <p class="step-desc">Pieces dry slowly to leather-hard, then are returned to the wheel for foot trimming. Handles are pulled and attached by hand.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">04</div>
+        <h3 class="step-title">Bisque firing</h3>
+        <p class="step-desc">Bone-dry pieces load into the Skutt electric kiln for a bisque fire to cone 06 - hard enough to glaze, porous enough to accept it.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">05</div>
+        <h3 class="step-title">Glazing</h3>
+        <p class="step-desc">Glazes are mixed in the studio from raw materials - silica, feldspar, kaolin, and oxides. Each batch is tested on tiles before use.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">06</div>
+        <h3 class="step-title">Glaze firing</h3>
+        <p class="step-desc">Final firing to cone 6, around 2232 degrees. The kiln runs overnight. The smart controller monitors remotely so the firing is never left unwatched.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="container">
+    <p class="section-label">Recent Work</p>
+    <h2 class="section-title">From the studio</h2>
+    <div class="divider"></div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <svg class="piece-icon" viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="70" rx="30" ry="10" stroke="white" stroke-width="1.5"/><path d="M30 70 C28 45 35 25 50 18 C65 25 72 45 70 70" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        <div class="gallery-item-label">Satin matte mugs</div>
+      </div>
+      <div class="gallery-item">
+        <svg class="piece-icon" viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="75" rx="38" ry="12" stroke="white" stroke-width="1.5"/><path d="M20 70 C18 50 28 30 50 25 C72 30 82 50 80 70" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        <div class="gallery-item-label">Celadon bowls</div>
+      </div>
+      <div class="gallery-item">
+        <svg class="piece-icon" viewBox="0 0 100 100" fill="none"><rect x="25" y="30" width="50" height="50" rx="3" stroke="white" stroke-width="1.5" fill="none"/><rect x="30" y="35" width="40" height="40" rx="2" stroke="white" stroke-width="0.8" fill="none" stroke-dasharray="3 3"/></svg>
+        <div class="gallery-item-label">Linen dinner plates</div>
+      </div>
+      <div class="gallery-item">
+        <svg class="piece-icon" viewBox="0 0 100 100" fill="none"><path d="M35 80 C30 60 28 40 35 20 C38 15 62 15 65 20 C72 40 70 60 65 80 Z" stroke="white" stroke-width="1.5" fill="none"/><ellipse cx="50" cy="80" rx="15" ry="5" stroke="white" stroke-width="1.5"/></svg>
+        <div class="gallery-item-label">Sage vases</div>
+      </div>
+      <div class="gallery-item" style="grid-row: span 2;">
+        <svg class="piece-icon" viewBox="0 0 100 200" fill="none"><ellipse cx="50" cy="180" rx="30" ry="10" stroke="white" stroke-width="1.5"/><path d="M30 175 C25 130 30 60 50 20 C70 60 75 130 70 175" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        <div class="gallery-item-label">Ochre field vase - tall</div>
+      </div>
+      <div class="gallery-item">
+        <svg class="piece-icon" viewBox="0 0 100 100" fill="none"><path d="M25 75 Q25 40 50 35 Q75 40 75 75 L70 82 Q50 88 30 82 Z" stroke="white" stroke-width="1.5" fill="none"/><line x1="35" y1="35" x2="28" y2="22" stroke="white" stroke-width="1.5"/><line x1="65" y1="35" x2="72" y2="22" stroke="white" stroke-width="1.5"/></svg>
+        <div class="gallery-item-label">Oil bottles</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSES -->
+<section class="classes" id="classes">
+  <div class="container">
+    <p class="section-label">Community Classes</p>
+    <h2 class="section-title">Learn to throw at Wilson Ceramics</h2>
+    <p class="section-lead">Six-week sessions for all skill levels. Small groups of six to eight students. Registration opens at the start of each season.</p>
+    <div class="divider"></div>
+    <div class="classes-grid">
+      <div class="class-card">
+        <p class="class-time">Monday evenings</p>
+        <h3 class="class-name">Wheel Throwing - All Levels</h3>
+        <p class="class-desc">Core wheel techniques from centering through pulling and trimming. Beginners welcome. Students who have taken the class before continue at their own pace with individual feedback.</p>
+        <div class="class-detail">
+          <div><span>Time</span><strong>6:00 - 8:00 PM</strong></div>
+          <div><span>Fee</span><strong>$120 / 6 weeks</strong></div>
+          <div><span>Size</span><strong>6 - 8 students</strong></div>
+        </div>
+      </div>
+      <div class="class-card">
+        <p class="class-time">Tuesday evenings</p>
+        <h3 class="class-name">Wheel Throwing - All Levels</h3>
+        <p class="class-desc">Same curriculum as Monday. Tuesday section tends to attract returning students, so the pace can run slightly faster, but new students are always welcome.</p>
+        <div class="class-detail">
+          <div><span>Time</span><strong>6:00 - 8:00 PM</strong></div>
+          <div><span>Fee</span><strong>$120 / 6 weeks</strong></div>
+          <div><span>Size</span><strong>6 - 8 students</strong></div>
+        </div>
+      </div>
+      <div class="class-card">
+        <p class="class-time">Thursday evenings</p>
+        <h3 class="class-name">Hand-Building and Surface</h3>
+        <p class="class-desc">Slab work, coil building, pinch methods, and surface decoration - carving, slip trailing, texturing. No wheel required. Good complement to the wheel sections.</p>
+        <div class="class-detail">
+          <div><span>Time</span><strong>6:00 - 8:00 PM</strong></div>
+          <div><span>Fee</span><strong>$120 / 6 weeks</strong></div>
+          <div><span>Size</span><strong>6 - 8 students</strong></div>
+        </div>
+      </div>
+      <div class="class-card">
+        <p class="class-time">Saturday mornings</p>
+        <h3 class="class-name">Weekend Wheel and Glaze</h3>
+        <p class="class-desc">Two hours on Saturday morning. Wheel throwing in the first hour, glaze mixing and application in the second. Good for students who want to understand the full process.</p>
+        <div class="class-detail">
+          <div><span>Time</span><strong>10:00 AM - noon</strong></div>
+          <div><span>Fee</span><strong>$120 / 6 weeks</strong></div>
+          <div><span>Size</span><strong>6 - 8 students</strong></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:2.5rem; font-size:0.9rem; color:var(--stone);">Registration opens at wilsonceramics.com for each new session. Waitlists are common - sign up early. Clay and tools included in the fee.</p>
+  </div>
+</section>
+
+<!-- COMMISSION -->
+<section class="commission" id="commission">
+  <div class="container">
+    <div class="commission-inner">
+      <div>
+        <p class="section-label">Custom Work</p>
+        <h2 class="section-title">Commission a piece</h2>
+        <div class="divider"></div>
+        <p class="section-lead" style="margin-bottom:2rem;">Commissions are accepted for dinnerware sets, single statement pieces, and gift orders. Allow 6 to 10 weeks from contract to delivery.</p>
+        <ul class="commission-steps">
+          <li>
+            <div class="step-dot">1</div>
+            <div class="step-info">
+              <h4>Inquiry</h4>
+              <p>Send a message with your idea, a quantity estimate, and a general timeline. A quote follows within a week.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-dot">2</div>
+            <div class="step-info">
+              <h4>Glaze consult</h4>
+              <p>A tile sample of the proposed glaze or glazes is fired and reviewed before work begins.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-dot">3</div>
+            <div class="step-info">
+              <h4>Contract and deposit</h4>
+              <p>A simple contract is signed digitally. A 50 percent deposit is collected before clay is touched.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-dot">4</div>
+            <div class="step-info">
+              <h4>Production and firing</h4>
+              <p>Pieces are thrown, dried, bisqued, glazed, and glaze-fired. Progress photos are shared at key stages.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-dot">5</div>
+            <div class="step-info">
+              <h4>Delivery or studio pickup</h4>
+              <p>Completed work is available for pickup at the studio or can be shipped. Balance is due before release.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="commission-right">
+        <h3>Start an inquiry</h3>
+        <div class="form-row">
+          <label>Your name</label>
+          <input type="text" placeholder="Full name">
+        </div>
+        <div class="form-row">
+          <label>Email address</label>
+          <input type="email" placeholder="your@email.com">
+        </div>
+        <div class="form-row">
+          <label>What are you looking for?</label>
+          <select>
+            <option value="">Select a category</option>
+            <option>Dinnerware set (4 or more pieces)</option>
+            <option>Mug set</option>
+            <option>Single statement piece</option>
+            <option>Vases</option>
+            <option>Planters</option>
+            <option>Gift order</option>
+            <option>Other - describe below</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Approximate quantity</label>
+          <input type="text" placeholder="e.g., 12 pieces for a set of 4">
+        </div>
+        <div class="form-row">
+          <label>Timeline or occasion</label>
+          <input type="text" placeholder="e.g., gift for November, no rush">
+        </div>
+        <div class="form-row">
+          <label>Tell me more</label>
+          <textarea placeholder="Glaze preference, size, intended use, any reference images you can share later..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%;">Send Inquiry</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <p class="section-label">From Past Students and Clients</p>
+    <h2 class="section-title">What people say</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <p class="testi-text">James taught me how to center clay in two sessions when I had been struggling with it for months on my own. Patient, specific feedback every time. The Thursday hand-building class is my favorite night of the week.</p>
+        <p class="testi-author">Community class student, 3rd session</p>
+      </div>
+      <div class="testi-card">
+        <p class="testi-text">We commissioned a 12-piece dinnerware set as a wedding anniversary gift to ourselves. James matched the glaze to a tile chip we brought in. Every single plate is different but they read as a set. They have held up to daily use beautifully.</p>
+        <p class="testi-author">Commission client, Huntington WV</p>
+      </div>
+      <div class="testi-card">
+        <p class="testi-text">The mugs sell out every time at our gift shop. James's work has a quality that photographs well and feels even better in person. Customers come back asking for them by the look, not just the function.</p>
+        <p class="testi-author">Retail partner, Capitol Market</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <p class="section-label">Common Questions</p>
+    <h2 class="section-title">Before you reach out</h2>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Is your work dishwasher and microwave safe?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">Yes. All Wilson Ceramics functional ware is fired to cone 6 in an electric kiln, which produces a fully vitrified, food-safe, dishwasher-safe, and microwave-safe result. The exception is any piece with a metallic luster glaze - those are hand-wash only and labeled as such.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          How long does a commission take?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">Standard commissions run 6 to 10 weeks from signed contract to delivery. This includes a glaze sample review before production begins, two kiln firings, and drying time between stages. Holiday gift commissions placed after October 1 may not be deliverable before December.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Do I need prior experience to take a class?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">No. All four class sessions welcome complete beginners. The Monday and Tuesday wheel sections are the most popular entry point. If you have some experience and want to know whether you would fit in a given group, reach out before registering - that is an easy conversation.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Do you ship?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">Yes. Etsy orders ship via UPS with insurance and protective packaging. Commission pieces are individually wrapped and boxed. Shipping on large commission sets is quoted separately and added to the final invoice.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Can I visit the studio?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">Studio visits are available by appointment for commission consultations and prospective commission clients. The studio is not a walk-in retail space, but the display area in the studio is available to view during scheduled visits. Book through the Calendly link on the contact page.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Where can I buy your work outside of Etsy?
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">Wilson Ceramics work is stocked seasonally at Tamarack Marketplace in Beckley, the Capitol Market Gift Shop in Charleston, and the Mountain Stage Gift Shop in Charleston. Availability varies by season. The most reliable selection is on Etsy, with the studio website reflecting current inventory.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="container">
+    <p class="section-label">Get in Touch</p>
+    <h2 class="section-title">Find the studio</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-block">
+          <h4>Address</h4>
+          <p><strong>Wilson Ceramics</strong></p>
+          <p>208 Capitol Street</p>
+          <p>Charleston, WV 25301</p>
+        </div>
+        <div class="contact-block">
+          <h4>Classes and inquiries</h4>
+          <p><strong>james.wilson.chas@gmail.com</strong></p>
+          <p>Responses within 48 hours on weekdays.</p>
+        </div>
+        <div class="contact-block">
+          <h4>Studio hours</h4>
+          <p>Open Monday through Saturday, 8 AM to 5 PM</p>
+          <p>Evening classes Monday, Tuesday, Thursday 6 to 8 PM</p>
+          <p>Saturday class 10 AM to noon</p>
+          <p style="margin-top:0.4rem; color:#786D65; font-size:0.85rem;">Studio is a working space, not a walk-in retail shop. Visit by appointment.</p>
+        </div>
+        <div class="contact-block">
+          <h4>Follow the work</h4>
+          <p>Instagram: <strong>@wilson.ceramics</strong></p>
+        </div>
+      </div>
+      <div>
+        <div style="background:#2C2C2C; border:1px solid #3A3430; height:380px; display:flex; align-items:center; justify-content:center;">
+          <div style="text-align:center; color:#786D65;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:1rem; display:block; margin-left:auto; margin-right:auto;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <p style="font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase;">208 Capitol Street, Charleston WV</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-brand">Wilson Ceramics</span>
+  <nav class="footer-nav">
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#classes">Classes</a>
+    <a href="#commission">Commission</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <span class="footer-copy">208 Capitol Street, Charleston WV 25301</span>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-question').forEach(q => {
+  q.addEventListener('click', function() {
+    const item = this.parentElement;
+    document.querySelectorAll('.faq-item').forEach(i => { if (i !== item) i.classList.remove('open'); });
+    item.classList.toggle('open');
+  });
+});
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+// Nav active state on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', function() {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? '#C9A882' : '';
+  });
+});
+</script>
+</body>
+</html>

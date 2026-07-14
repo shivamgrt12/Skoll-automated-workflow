@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wilson Ceramics - Studio Analytics Dashboard</title>
+<style>
+  :root {
+    --bg:     #1A1714;
+    --surface: #242018;
+    --card:   #2C2820;
+    --border: #3A342C;
+    --clay:   #A07050;
+    --sand:   #C9A882;
+    --linen:  #EDE0CC;
+    --stone:  #8A7D70;
+    --green:  #6B8E5A;
+    --blue:   #5A7A8E;
+    --red:    #9E4A40;
+    --text:   #E0D8CE;
+    --muted:  #9A8878;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left h1 { font-size: 1.05rem; font-weight: 500; color: var(--linen); }
+  .header-left p { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .header-right { display: flex; gap: 0.75rem; align-items: center; }
+  .period-btn {
+    padding: 0.35rem 0.85rem; font-size: 0.72rem; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .period-btn.active, .period-btn:hover { background: var(--clay); color: #fff; border-color: var(--clay); }
+
+  /* LAYOUT */
+  main { padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 1.25rem; }
+  .card-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .card-value { font-size: 1.9rem; font-weight: 300; color: var(--linen); line-height: 1; }
+  .card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+  .card-delta { font-size: 0.78rem; margin-top: 0.3rem; }
+  .delta-up { color: var(--green); }
+  .delta-down { color: var(--red); }
+  .card-title { font-size: 0.82rem; font-weight: 500; color: var(--sand); margin-bottom: 1rem; letter-spacing: 0.04em; }
+
+  /* CHARTS via SVG */
+  .chart-wrap { margin-top: 0.75rem; }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 140px; padding: 0 4px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar { width: 100%; border-radius: 2px 2px 0 0; transition: opacity 0.2s; cursor: pointer; min-width: 24px; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 0.62rem; color: var(--muted); text-align: center; white-space: nowrap; }
+  .bar-val { font-size: 0.66rem; color: var(--sand); text-align: center; }
+
+  /* LINE CHART */
+  .line-chart-wrap { position: relative; height: 160px; }
+  .chart-svg { width: 100%; height: 100%; }
+
+  /* PIE */
+  .pie-wrap { display: flex; gap: 1.5rem; align-items: center; }
+  .pie-svg { width: 120px; height: 120px; flex-shrink: 0; }
+  .pie-legend { flex: 1; }
+  .pie-legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.78rem; color: var(--text); }
+  .pie-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .pie-pct { margin-left: auto; color: var(--muted); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  th { text-align: left; padding: 0.5rem 0.75rem; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400; }
+  td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(58,52,44,0.5); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(160,112,80,0.06); }
+  .badge { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 2px; font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .badge-sold { background: rgba(107,142,90,0.2); color: var(--green); }
+  .badge-active { background: rgba(90,122,142,0.2); color: var(--blue); }
+  .badge-mto { background: rgba(201,168,130,0.15); color: var(--sand); }
+  .badge-low { background: rgba(158,74,64,0.2); color: var(--red); }
+
+  /* PROGRESS BARS */
+  .progress-item { margin-bottom: 1rem; }
+  .progress-header { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.3rem; }
+  .progress-label { color: var(--text); }
+  .progress-val { color: var(--sand); }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; }
+
+  /* TIMELINE */
+  .timeline { padding: 0; }
+  .tl-item { display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(58,52,44,0.4); }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-date { font-size: 0.7rem; color: var(--muted); min-width: 80px; margin-top: 2px; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--clay); margin-top: 5px; flex-shrink: 0; }
+  .tl-content { font-size: 0.8rem; color: var(--text); line-height: 1.45; }
+  .tl-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Wilson Ceramics - Studio Dashboard</h1>
+    <p>208 Capitol Street, Charleston WV 25301 - James A. Wilson</p>
+  </div>
+  <div class="header-right">
+    <button class="period-btn">Oct 2025</button>
+    <button class="period-btn">Nov 2025</button>
+    <button class="period-btn">Dec 2025</button>
+    <button class="period-btn">Jan 2026</button>
+    <button class="period-btn active">Feb 2026</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI ROW -->
+  <div class="grid-4">
+    <div class="card">
+      <p class="card-label">Monthly Revenue</p>
+      <p class="card-value">$3,390</p>
+      <p class="card-sub">February 2026</p>
+      <p class="card-delta delta-up">+8.3% vs Jan 2026</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Class Income</p>
+      <p class="card-value">$1,800</p>
+      <p class="card-sub">4 sessions, avg 7.5 students</p>
+      <p class="card-delta" style="color:var(--muted)">Stable</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Commission Pipeline</p>
+      <p class="card-value">$1,320</p>
+      <p class="card-sub">2 active, $660 deposits held</p>
+      <p class="card-delta delta-up">New: Renata Okafor Feb 2026</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Etsy + Piece Sales</p>
+      <p class="card-value">$640</p>
+      <p class="card-sub">34 orders Oct-Feb</p>
+      <p class="card-delta delta-up">+14% vs same period</p>
+    </div>
+  </div>
+
+  <!-- REVENUE BREAKDOWN + EXPENSE CHART -->
+  <div class="grid-3">
+    <div class="card">
+      <p class="card-title">Monthly Revenue - Oct 2025 through Feb 2026</p>
+      <div class="bar-chart">
+        <div class="bar-col">
+          <span class="bar-val">$2,940</span>
+          <div class="bar" style="height:88px; background:var(--clay);"></div>
+          <span class="bar-label">Oct 25</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">$3,140</span>
+          <div class="bar" style="height:94px; background:var(--clay);"></div>
+          <span class="bar-label">Nov 25</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">$3,480</span>
+          <div class="bar" style="height:104px; background:var(--clay);"></div>
+          <span class="bar-label">Dec 25</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">$3,130</span>
+          <div class="bar" style="height:93px; background:var(--clay);"></div>
+          <span class="bar-label">Jan 26</span>
+        </div>
+        <div class="bar-col">
+          <span class="bar-val">$3,390</span>
+          <div class="bar" style="height:101px; background:var(--sand);"></div>
+          <span class="bar-label">Feb 26</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:1.5rem; margin-top:1rem; flex-wrap:wrap;">
+        <div><span style="font-size:0.68rem; color:var(--muted);">5-month avg</span><br><span style="font-size:0.9rem; color:var(--sand);">$3,216</span></div>
+        <div><span style="font-size:0.68rem; color:var(--muted);">Peak month</span><br><span style="font-size:0.9rem; color:var(--sand);">Dec 2025</span></div>
+        <div><span style="font-size:0.68rem; color:var(--muted);">Self-emp. set-aside 22%</span><br><span style="font-size:0.9rem; color:var(--sand);">-$746</span></div>
+        <div><span style="font-size:0.68rem; color:var(--muted);">Net take-home (Feb)</span><br><span style="font-size:0.9rem; color:var(--green);">$2,644</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Revenue Mix (Feb 2026)</p>
+      <div class="pie-wrap chart-wrap">
+        <svg class="pie-svg" viewBox="0 0 42 42">
+          <!-- Classes 53% -->
+          <circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#A07050" stroke-width="10.5" stroke-dasharray="33.3 66.7" stroke-dashoffset="25"/>
+          <!-- Adjunct 19% -->
+          <circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#5A7A8E" stroke-width="10.5" stroke-dasharray="12.0 88.0" stroke-dashoffset="-8.3"/>
+          <!-- Etsy/sales 19% -->
+          <circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#6B8E5A" stroke-width="10.5" stroke-dasharray="12.0 88.0" stroke-dashoffset="-20.3"/>
+          <!-- Commissions 9% -->
+          <circle r="15.9" cx="21" cy="21" fill="transparent" stroke="#C9A882" stroke-width="10.5" stroke-dasharray="5.7 94.3" stroke-dashoffset="-32.3"/>
+          <circle r="13" cx="21" cy="21" fill="#2C2820"/>
+          <text x="21" y="22.5" text-anchor="middle" fill="#EDE0CC" font-size="3.5">$3,390</text>
+        </svg>
+        <div class="pie-legend">
+          <div class="pie-legend-item"><span class="pie-dot" style="background:#A07050;"></span>Classes<span class="pie-pct">$1,800 / 53%</span></div>
+          <div class="pie-legend-item"><span class="pie-dot" style="background:#5A7A8E;"></span>Adjunct<span class="pie-pct">$640 / 19%</span></div>
+          <div class="pie-legend-item"><span class="pie-dot" style="background:#6B8E5A;"></span>Etsy + sales<span class="pie-pct">$640 / 19%</span></div>
+          <div class="pie-legend-item"><span class="pie-dot" style="background:#C9A882;"></span>Commissions<span class="pie-pct">$310 / 9%</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Monthly Expense Targets (Feb 2026)</p>
+      <div style="margin-top:0.5rem;">
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Rent (apt + studio)</span><span class="progress-val">$1,100</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#9E4A40;"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Health insurance (ACA)</span><span class="progress-val">$210</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%; background:#A07050;"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Groceries</span><span class="progress-val">$280</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:57%; background:#6B8E5A;"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Therapy copays (x4)</span><span class="progress-val">$160</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:46%; background:#5A7A8E;"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Clay + supplies amortized</span><span class="progress-val">$120</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:34%; background:#C9A882;"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header"><span class="progress-label">Medications + supplements</span><span class="progress-val">$60</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:17%; background:#8A7D70;"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border); padding-top:0.6rem; margin-top:0.4rem; display:flex; justify-content:space-between; font-size:0.8rem;">
+          <span style="color:var(--muted);">Total expenses</span><span style="color:var(--sand);">$2,582</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-top:0.3rem;">
+          <span style="color:var(--muted);">Net remaining</span><span style="color:var(--green);">+$62</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETSY + INVENTORY TABLE -->
+  <div class="grid-2">
+    <div class="card">
+      <p class="card-title">Etsy Inventory Status (February 2026)</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Glaze</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mug 12 oz</td><td>Satin matte amber</td><td>4</td><td>$48</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Mug 12 oz</td><td>Iron brown satin</td><td>3</td><td>$48</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Cereal bowl 24 oz</td><td>Celadon grey gloss</td><td>5</td><td>$52</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Bud vase small</td><td>Sage green matte</td><td>6</td><td>$38</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Dinner plate 10 in</td><td>Linen satin</td><td>0</td><td>$68</td><td><span class="badge badge-mto">Made to order</span></td></tr>
+          <tr><td>Soup mug 16 oz</td><td>White cloud matte</td><td>2</td><td>$54</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Oil bottle 8 oz</td><td>Rust red matte</td><td>3</td><td>$62</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Planter small 4 in</td><td>Charcoal matte</td><td>4</td><td>$44</td><td><span class="badge badge-active">Active</span></td></tr>
+          <tr><td>Tumbler 8 oz</td><td>Deep teal gloss</td><td>2</td><td>$42</td><td><span class="badge badge-low">Low stock</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Upcoming Events and Deadlines</p>
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-date">Oct 5, 2026</span>
+          <span class="tl-dot"></span>
+          <div class="tl-content">Fall adjunct ceramics begins - UC Charleston
+            <div class="tl-sub">First class 4 PM, ENG-225 studio. Syllabus due by first week.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Oct 17, 2026</span>
+          <span class="tl-dot"></span>
+          <div class="tl-content">Tamarack Marketplace fall artisan showcase, Beckley WV
+            <div class="tl-sub">Booth 10 AM - 4 PM. Vera helping with setup. Load-in 8:30 AM.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Oct 23, 2026</span>
+          <span class="tl-dot"></span>
+          <div class="tl-content">Charleston Public Library small-business workshop
+            <div class="tl-sub">Co-presenting "Selling Handmade Online" 6 - 8 PM.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Nov 7, 2026</span>
+          <span class="tl-dot" style="background:var(--blue);"></span>
+          <div class="tl-content">Fall community class session ends
+            <div class="tl-sub">Winter session registration opens via Typeform.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Dec 5, 2026</span>
+          <span class="tl-dot"></span>
+          <div class="tl-content">Capitol Market holiday craft fair - all day booth
+            <div class="tl-sub">9 AM - 4 PM. Nadia covering studio walk-in inquiries.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Dec 18, 2026</span>
+          <span class="tl-dot" style="background:var(--blue);"></span>
+          <div class="tl-content">Fall semester critiques wrap - grades due 5 PM
+            <div class="tl-sub">Grade entry in Google Classroom by 5 PM ET.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-date">Jan 14, 2027</span>
+          <span class="tl-dot" style="background:var(--green);"></span>
+          <div class="tl-content">Dr. Stokes GI follow-up - CAMC GI - 11 AM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVINGS + KILN -->
+  <div class="grid-2">
+    <div class="card">
+      <p class="card-title">Financial Snapshot (February 2026)</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+        <div style="background:var(--surface); padding:1rem; border-radius:3px;">
+          <p style="font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Emergency fund (City National)</p>
+          <p style="font-size:1.5rem; color:var(--green); margin-top:0.25rem;">$7,200</p>
+        </div>
+        <div style="background:var(--surface); padding:1rem; border-radius:3px;">
+          <p style="font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Student loan balance</p>
+          <p style="font-size:1.5rem; color:var(--red); margin-top:0.25rem;">$18,000</p>
+        </div>
+        <div style="background:var(--surface); padding:1rem; border-radius:3px;">
+          <p style="font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Alpaca Roth IRA</p>
+          <p style="font-size:1.5rem; color:var(--sand); margin-top:0.25rem;">$1,240</p>
+          <p style="font-size:0.7rem; color:var(--muted);">$50/mo auto-deposit</p>
+        </div>
+        <div style="background:var(--surface); padding:1rem; border-radius:3px;">
+          <p style="font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Crypto (Coinbase + Kraken)</p>
+          <p style="font-size:1.5rem; color:var(--blue); margin-top:0.25rem;">~$4,100</p>
+          <p style="font-size:0.7rem; color:var(--muted);">0.05 BTC + 1.2 ETH + ATOM stake</p>
+        </div>
+      </div>
+      <div style="background:var(--surface); padding:1rem; border-radius:3px;">
+        <p style="font-size:0.72rem; color:var(--muted); margin-bottom:0.5rem;">Self-employment tax set-aside (22%)</p>
+        <div class="progress-bar" style="height:8px;">
+          <div class="progress-fill" style="width:68%; background:var(--clay);"></div>
+        </div>
+        <p style="font-size:0.72rem; color:var(--muted); margin-top:0.4rem;">Q1 2026 estimated payment due - growing on track</p>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Kiln Firing Summary (Oct 2025 - Feb 2026)</p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1rem;">
+        <div style="text-align:center; background:var(--surface); padding:0.75rem; border-radius:3px;">
+          <p style="font-size:1.4rem; color:var(--sand);">17</p>
+          <p style="font-size:0.66rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;">Total firings</p>
+        </div>
+        <div style="text-align:center; background:var(--surface); padding:0.75rem; border-radius:3px;">
+          <p style="font-size:1.4rem; color:var(--green);">9</p>
+          <p style="font-size:0.66rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;">Bisque</p>
+        </div>
+        <div style="text-align:center; background:var(--surface); padding:0.75rem; border-radius:3px;">
+          <p style="font-size:1.4rem; color:var(--clay);">8</p>
+          <p style="font-size:0.66rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;">Glaze</p>
+        </div>
+      </div>
+      <p style="font-size:0.72rem; color:var(--muted); margin-bottom:0.75rem;">Piece yield per firing</p>
+      <div class="bar-chart" style="height:100px;">
+        <div class="bar-col"><div class="bar" style="height:72px; background:var(--blue);"></div><span class="bar-label">Oct</span></div>
+        <div class="bar-col"><div class="bar" style="height:82px; background:var(--blue);"></div><span class="bar-label">Nov</span></div>
+        <div class="bar-col"><div class="bar" style="height:88px; background:var(--blue);"></div><span class="bar-label">Dec</span></div>
+        <div class="bar-col"><div class="bar" style="height:60px; background:var(--blue);"></div><span class="bar-label">Jan</span></div>
+        <div class="bar-col"><div class="bar" style="height:50px; background:var(--sand);"></div><span class="bar-label">Feb</span></div>
+      </div>
+      <p style="font-size:0.7rem; color:var(--muted); margin-top:0.75rem;">Average pieces per firing: 27. One mixed result in Jan 2026 (copper lustre experiment). All other firings rated Good or Excellent.</p>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// Period button toggle
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

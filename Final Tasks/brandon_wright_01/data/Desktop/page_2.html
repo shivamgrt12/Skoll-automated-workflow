@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trip Planner</title>
+<style>
+  :root{ --pine:#1f3d34; --moss:#3f6b4f; --amber:#c87b2e; --ink:#20271f; --line:#e3e8e2; --bg:#f4f6f2; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  header.top{ position:sticky; top:0; z-index:20; background:var(--pine); color:#fff; box-shadow:0 2px 10px rgba(0,0,0,.14); }
+  header.top .bar{ padding:18px 28px 8px; }
+  header.top .kick{ letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:#a9c2b0; }
+  header.top h1{ margin:4px 0 4px; font-size:24px; }
+  header.top p{ margin:0 0 10px; color:#cfe0d3; font-size:13px; max-width:680px; }
+  nav{ display:flex; gap:4px; padding:0 22px; flex-wrap:wrap; }
+  nav button{ border:0; background:transparent; color:#a9c2b0; font-size:13.5px; font-weight:600; padding:11px 16px; cursor:pointer; border-bottom:3px solid transparent; transition:all .15s; }
+  nav button:hover{ color:#fff; } nav button.active{ color:#fff; border-bottom-color:var(--amber); }
+  .wrap{ max-width:1000px; margin:0 auto; padding:24px 22px 30px; }
+  .pane{ display:none; } .pane.active{ display:block; animation:fade .35s ease; } @keyframes fade{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+  section.block{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; margin-bottom:18px; }
+  section.block h2{ margin:0 0 6px; font-size:19px; color:var(--pine); }
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:12px; }
+  .stop{ border:1px solid var(--line); border-radius:12px; padding:14px 15px; background:#fbfcfa; cursor:pointer; transition:transform .15s, box-shadow .15s, border-color .15s; }
+  .stop:hover{ transform:translateY(-3px); box-shadow:0 8px 20px rgba(31,61,52,.10); border-color:#bcd3c2; }
+  .stop .city{ font-weight:700; font-size:16px; display:flex; justify-content:space-between; align-items:center; }
+  .stop .chev{ color:var(--moss); font-size:13px; transition:transform .2s; }
+  .stop.open .chev{ transform:rotate(90deg); }
+  .stop .days{ display:inline-block; background:#e8efe9; color:var(--moss); border-radius:20px; padding:2px 10px; font-size:12.5px; margin:7px 0; }
+  .stop .desc{ font-size:13px; color:#566; line-height:1.5; max-height:0; overflow:hidden; transition:max-height .3s ease, margin .3s ease; }
+  .stop.open .desc{ max-height:120px; margin-top:4px; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th,td{ text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+  th{ background:#eef2ec; color:var(--moss); font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; }
+  td.amt{ text-align:right; font-variant-numeric:tabular-nums; }
+  .barwrap{ margin:10px 0; } .barlabel{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:3px; color:#445; }
+  .track{ background:#eef2ec; border-radius:6px; height:16px; overflow:hidden; }
+  .fill{ height:16px; border-radius:6px; background:var(--moss); width:0; transition:width .9s cubic-bezier(.2,.7,.3,1); }
+  .total{ font-weight:700; }
+  .savings{ background:var(--pine); color:#fff; border-radius:14px; padding:20px 24px; }
+  .savings h2{ color:#fff; margin:0 0 4px; }
+  .savings .meter{ background:#33574a; border-radius:8px; height:24px; margin:14px 0 6px; overflow:hidden; }
+  .savings .meterfill{ background:var(--amber); height:24px; border-radius:8px; width:0; transition:width .6s ease; text-align:right; color:#23110a; font-size:12px; font-weight:700; line-height:24px; padding-right:8px; }
+  .savings .controls{ display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap; }
+  .savings input[type=range]{ flex:1; min-width:180px; accent-color:var(--amber); }
+  .savings .readout{ font-size:13.5px; color:#cfe0d3; }
+  .savings .readout b{ color:#fff; }
+  .note{ font-size:13.5px; color:#56605a; line-height:1.6; }
+  footer{ background:var(--pine); color:#a9c2b0; font-size:12.5px; padding:18px 28px; text-align:center; } footer strong{ color:#cfe0d3; }
+  @media(max-width:680px){ .savings .controls{flex-direction:column; align-items:stretch;} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="kick">Personal trip planner, nothing booked yet</div>
+    <h1>Norway and Sweden, After Graduation</h1>
+    <p>The trip I have wanted since I was a kid. Two weeks, maybe three if the budget holds. Decide once the NCLEX is passed and the first paycheck lands. Target is the summer after May 2027.</p>
+  </div>
+  <nav id="nav">
+    <button class="active" data-pane="route">Route</button>
+    <button data-pane="budget">Budget</button>
+    <button data-pane="notes">Notes</button>
+  </nav>
+</header>
+<div class="wrap">
+
+  <div class="pane active" id="route">
+    <section class="block">
+      <h2>Rough Route</h2>
+      <p class="note">Tap a stop to see why it is on the list.</p>
+      <div class="cards" id="stops">
+        <div class="stop"><div class="city">Oslo <span class="chev">&#9656;</span></div><span class="days">3 days</span><div class="desc">Holmenkollen ski museum and jump, the obvious pilgrimage.</div></div>
+        <div class="stop"><div class="city">Lillehammer <span class="chev">&#9656;</span></div><span class="days">2 days</span><div class="desc">The 1994 Olympic trails, ski history.</div></div>
+        <div class="stop"><div class="city">Bergen <span class="chev">&#9656;</span></div><span class="days">3 days</span><div class="desc">Fjords, and the train over the mountains that is supposed to be the highlight.</div></div>
+        <div class="stop"><div class="city">Stockholm <span class="chev">&#9656;</span></div><span class="days">3 days</span><div class="desc">Old town, the archipelago, the Lindgren side.</div></div>
+        <div class="stop"><div class="city">Dalarna region <span class="chev">&#9656;</span></div><span class="days">2 days</span><div class="desc">Where the family stories point, small towns.</div></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="pane" id="budget">
+    <section class="block">
+      <h2>Budget Sketch, USD</h2>
+      <div class="barwrap"><div class="barlabel"><span>Flights, round trip</span><span>1,100 to 1,300</span></div><div class="track"><div class="fill" data-w="33"></div></div></div>
+      <div class="barwrap"><div class="barlabel"><span>Rail passes</span><span>400</span></div><div class="track"><div class="fill" data-w="10"></div></div></div>
+      <div class="barwrap"><div class="barlabel"><span>Lodging, hostels and budget hotels, 13 nights</span><span>1,400</span></div><div class="track"><div class="fill" data-w="36"></div></div></div>
+      <div class="barwrap"><div class="barlabel"><span>Food and daily</span><span>900</span></div><div class="track"><div class="fill" data-w="23"></div></div></div>
+      <table style="margin-top:14px">
+        <thead><tr><th>Item</th><th style="text-align:right">Rough cost</th></tr></thead>
+        <tbody>
+          <tr><td>Flights, round trip</td><td class="amt">1,100 to 1,300</td></tr>
+          <tr><td>Rail passes</td><td class="amt">400</td></tr>
+          <tr><td>Lodging, 13 nights</td><td class="amt">1,400</td></tr>
+          <tr><td>Food and daily</td><td class="amt">900</td></tr>
+          <tr class="total"><td>Total estimate</td><td class="amt">3,800 to 4,000</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="savings">
+      <h2>Savings Goal</h2>
+      <p style="margin:0; color:#cfe0d3; font-size:14px">Start a separate savings line at North Star after graduation. Off-season airfare is cheaper.</p>
+      <div class="meter"><div class="meterfill" id="meterfill">0</div></div>
+      <div class="controls">
+        <span class="readout">Set aside per month: <b id="permo">150</b></span>
+        <input type="range" id="slider" min="100" max="400" step="25" value="150">
+        <span class="readout"><b id="months">27</b> months to reach 4,000</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="pane" id="notes">
+    <section class="block">
+      <h2>Why these two</h2>
+      <p class="note">Family roots run through the Wright and Lindgren lines, Norwegian and Swedish. I want to see where the food and the skiing actually come from. Late spring or early summer for long light and dry trails.</p>
+    </section>
+    <section class="block">
+      <h2>Before I book anything</h2>
+      <p class="note">Ask Grandma Ingrid which town in Dalarna the family came from. Off-season airfare only. Decide once the NCLEX is passed.</p>
+    </section>
+  </div>
+
+</div>
+<footer>Bookmark folder, written out by <strong>Brandon Wright</strong>. Nothing booked yet.</footer>
+
+<script>
+  var stops=document.getElementById('stops');
+  stops.addEventListener('click',function(e){
+    var card=e.target.closest('.stop'); if(card) card.classList.toggle('open');
+  });
+  function animateBudget(){ document.querySelectorAll('#budget .fill').forEach(function(b){ b.style.width=b.dataset.w+'%'; }); }
+  var GOAL=4000;
+  function updateSavings(){
+    var per=parseInt(document.getElementById('slider').value,10);
+    document.getElementById('permo').textContent=per;
+    var months=Math.ceil(GOAL/per);
+    document.getElementById('months').textContent=months;
+    var oneYear=Math.min(per*12/GOAL*100,100);
+    var mf=document.getElementById('meterfill');
+    mf.style.width=oneYear+'%'; mf.textContent=Math.round(oneYear)+' percent in year one';
+  }
+  document.getElementById('slider').addEventListener('input',updateSavings);
+  var nav=document.getElementById('nav');
+  nav.addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    nav.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');
+    var id=e.target.dataset.pane;
+    document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('active');});
+    document.getElementById(id).classList.add('active');
+    if(id==='budget'){ setTimeout(animateBudget,80); setTimeout(updateSavings,120); }
+  });
+</script>
+</body>
+</html>

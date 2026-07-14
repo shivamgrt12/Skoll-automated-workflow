@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tampa Bay Market Dashboard | Brittany Morales</title>
+<style>
+  :root {
+    --bg: #0f1923;
+    --surface: #1a2535;
+    --surface2: #243044;
+    --accent: #f59e0b;
+    --accent2: #38bdf8;
+    --green: #34d399;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    animation: slideInTop 0.5s ease;
+  }
+  @keyframes slideInTop { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+  .brand-name { font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
+  .brand-sub { font-size: 0.75rem; color: var(--muted); }
+  .topbar-right { display: flex; align-items: center; gap: 24px; }
+  .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; color: var(--green); font-weight: 600; }
+  .live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
+  .date-display { font-size: 0.8rem; color: var(--muted); }
+
+  /* LAYOUT */
+  .dashboard { padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+  .page-title { margin-bottom: 28px; animation: fadeIn 0.6s ease 0.2s both; }
+  .page-title h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  .page-title p { font-size: 0.85rem; color: var(--muted); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* KPI CARDS */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 22px 24px; transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+  .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .kpi-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; }
+  .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+  .kpi-change { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .kpi-sparkline { margin-top: 14px; height: 40px; position: relative; }
+  .sparkline-svg { width: 100%; height: 40px; }
+
+  /* GRID LAYOUT */
+  .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px;
+    animation: fadeIn 0.6s ease 0.4s both;
+  }
+  .card-title { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .card-badge { font-size: 0.65rem; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: var(--accent); padding: 2px 8px; border-radius: 10px; }
+
+  /* BAR CHART */
+  .bar-group { display: flex; flex-direction: column; gap: 14px; }
+  .bar-item { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 0.75rem; color: var(--muted); min-width: 100px; }
+  .bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; animation: growBar 1.2s ease forwards; transition: width 0s; }
+  @keyframes growBar { from { width: 0 !important; } }
+  .bar-gold { background: linear-gradient(90deg, var(--accent), #fbbf24); }
+  .bar-blue { background: linear-gradient(90deg, var(--accent2), #7dd3fc); }
+  .bar-green { background: linear-gradient(90deg, var(--green), #6ee7b7); }
+  .bar-val { font-size: 0.75rem; font-weight: 600; color: var(--text); min-width: 50px; text-align: right; }
+
+  /* DONUT CHART */
+  .donut-wrap { display: flex; align-items: center; gap: 24px; }
+  .donut-svg { width: 120px; height: 120px; flex-shrink: 0; }
+  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* PIPELINE TABLE */
+  .pipeline-table { width: 100%; border-collapse: collapse; }
+  .pipeline-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0 16px 12px; border-bottom: 1px solid var(--border); }
+  .pipeline-table td { padding: 14px 16px; font-size: 0.82rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .pipeline-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .pipeline-table tr:last-child td { border-bottom: none; }
+  .prob-bar { height: 4px; background: var(--surface2); border-radius: 2px; margin-top: 4px; }
+  .prob-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; }
+  .tag-offer { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .tag-active { background: rgba(56,189,248,0.15); color: var(--accent2); border: 1px solid rgba(56,189,248,0.3); }
+  .tag-buyer { background: rgba(245,158,11,0.15); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
+
+  /* SOCIAL CARD */
+  .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .social-item { background: var(--surface2); border-radius: 6px; padding: 16px; }
+  .social-platform { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; }
+  .social-followers { font-size: 1.8rem; font-weight: 700; }
+  .social-goal { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .progress-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 10px; }
+  .progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); animation: growBar 1.5s ease forwards; }
+
+  /* ACTIVITY */
+  .activity-list { display: flex; flex-direction: column; gap: 0; }
+  .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+  .act-close { background: rgba(52,211,153,0.15); color: var(--green); }
+  .act-open { background: rgba(56,189,248,0.15); color: var(--accent2); }
+  .act-lead { background: rgba(245,158,11,0.15); color: var(--accent); }
+  .act-stage { background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .activity-text { flex: 1; }
+  .activity-main { font-size: 0.82rem; color: var(--text); line-height: 1.4; }
+  .activity-time { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .dashboard { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div>
+      <div class="brand-name">Brittany Morales | Market Dashboard</div>
+      <div class="brand-sub">SunCoast Realty Group - South Tampa</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-badge"><div class="live-dot"></div> Live Data</div>
+    <div class="date-display">October 10, 2026</div>
+  </div>
+</div>
+
+<div class="dashboard">
+  <div class="page-title">
+    <h1>Sales Pipeline and Market Overview</h1>
+    <p>Track active listings, buyer pipeline, marketing performance, and neighborhood market data in one place.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">YTD Closed Volume</div>
+      <div class="kpi-value" style="color:var(--accent)">$1.83M</div>
+      <div class="kpi-change up">&#8593; 4 closings this year</div>
+      <div class="kpi-sparkline">
+        <svg class="sparkline-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+          <polyline points="0,38 15,32 30,28 45,20 60,18 75,14 90,10 100,8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <polyline points="0,38 15,32 30,28 45,20 60,18 75,14 90,10 100,8 100,40 0,40" fill="rgba(245,158,11,0.1)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active Pipeline Value</div>
+      <div class="kpi-value" style="color:var(--accent2)">$1.20M</div>
+      <div class="kpi-change up">&#8593; 3 active listings</div>
+      <div class="kpi-sparkline">
+        <svg class="sparkline-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+          <polyline points="0,35 20,28 40,30 60,18 80,14 100,10" fill="none" stroke="var(--accent2)" stroke-width="2"/>
+          <polyline points="0,35 20,28 40,30 60,18 80,14 100,10 100,40 0,40" fill="rgba(56,189,248,0.1)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Net Commission YTD</div>
+      <div class="kpi-value" style="color:var(--green)">$36,690</div>
+      <div class="kpi-change up">&#8593; 80/20 after desk fees</div>
+      <div class="kpi-sparkline">
+        <svg class="sparkline-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+          <polyline points="0,38 25,34 50,28 75,20 100,14" fill="none" stroke="var(--green)" stroke-width="2"/>
+          <polyline points="0,38 25,34 50,28 75,20 100,14 100,40 0,40" fill="rgba(52,211,153,0.1)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Instagram Followers</div>
+      <div class="kpi-value">4,500</div>
+      <div class="kpi-change up">&#8593; Goal: 10,000 by Dec 2026</div>
+      <div class="kpi-sparkline">
+        <svg class="sparkline-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+          <polyline points="0,36 20,32 40,28 60,22 80,18 100,14" fill="none" stroke="#a78bfa" stroke-width="2"/>
+          <polyline points="0,36 20,32 40,28 60,22 80,18 100,14 100,40 0,40" fill="rgba(167,139,250,0.1)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Active Deal Pipeline <span class="card-badge">6 deals</span></div>
+      <table class="pipeline-table">
+        <thead>
+          <tr>
+            <th>Property / Client</th>
+            <th>Side</th>
+            <th>Value</th>
+            <th>Close Est.</th>
+            <th>Probability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Channelside #814</strong><br><small style="color:var(--muted)">1120 E Kennedy Blvd</small></td>
+            <td><span class="tag tag-offer">Offer Rec.</span></td>
+            <td>$285,000</td>
+            <td>Oct 18</td>
+            <td><div>85%</div><div class="prob-bar"><div class="prob-fill" style="width:85%"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Westchase 4/3</strong><br><small style="color:var(--muted)">12508 Westchester Estates</small></td>
+            <td><span class="tag tag-active">Active</span></td>
+            <td>$525,000</td>
+            <td>Nov 15</td>
+            <td><div>55%</div><div class="prob-bar"><div class="prob-fill" style="width:55%"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Seminole Hts 3/2</strong><br><small style="color:var(--muted)">1014 E Frierson Ave</small></td>
+            <td><span class="tag tag-active">Active</span></td>
+            <td>$389,000</td>
+            <td>Oct 30</td>
+            <td><div>45%</div><div class="prob-bar"><div class="prob-fill" style="width:45%"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Nguyens</strong><br><small style="color:var(--muted)">4BR school district, $500K</small></td>
+            <td><span class="tag tag-buyer">Buyer</span></td>
+            <td>$500,000</td>
+            <td>Nov 10</td>
+            <td><div>60%</div><div class="prob-bar"><div class="prob-fill" style="width:60%"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Petersons</strong><br><small style="color:var(--muted)">First-time, $350K, South Tampa</small></td>
+            <td><span class="tag tag-buyer">Buyer</span></td>
+            <td>$350,000</td>
+            <td>Nov 20</td>
+            <td><div>40%</div><div class="prob-bar"><div class="prob-fill" style="width:40%"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Dr. Ramirez</strong><br><small style="color:var(--muted)">Waterfront, $450K, Miami reloc.</small></td>
+            <td><span class="tag tag-buyer">Buyer</span></td>
+            <td>$450,000</td>
+            <td>Dec 5</td>
+            <td><div>35%</div><div class="prob-bar"><div class="prob-fill" style="width:35%"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Recent Activity</div>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon act-open">&#8962;</div>
+          <div class="activity-text">
+            <div class="activity-main">Open house at Westchase 12508 - 5 signed-in leads, Nguyens attended</div>
+            <div class="activity-time">Oct 17, 2026</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon act-open">&#128247;</div>
+          <div class="activity-text">
+            <div class="activity-main">Pre-listing inspection at Westchase - sale ready condition confirmed</div>
+            <div class="activity-time">Oct 9, 2026</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon act-lead">&#9993;</div>
+          <div class="activity-text">
+            <div class="activity-main">Peterson follow-up letter sent - Seminole Heights comps attached</div>
+            <div class="activity-time">Oct 12, 2026</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon act-stage">&#127968;</div>
+          <div class="activity-text">
+            <div class="activity-main">Staging complete at Westchase with Carlos Menendez</div>
+            <div class="activity-time">Sep 28, 2026</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon act-close">&#10003;</div>
+          <div class="activity-text">
+            <div class="activity-main">Offer received on Channelside #814 at list price - under review</div>
+            <div class="activity-time">Oct 8, 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Neighborhood Median Prices <span class="card-badge">Oct 2026</span></div>
+      <div class="bar-group">
+        <div class="bar-item"><span class="bar-label">Hyde Park</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:100%"></div></div><span class="bar-val">$712K</span></div>
+        <div class="bar-item"><span class="bar-label">South Tampa</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:79%"></div></div><span class="bar-val">$565K</span></div>
+        <div class="bar-item"><span class="bar-label">Westchase</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:77%"></div></div><span class="bar-val">$548K</span></div>
+        <div class="bar-item"><span class="bar-label">Carrollwood</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:62%"></div></div><span class="bar-val">$438K</span></div>
+        <div class="bar-item"><span class="bar-label">Seminole Hts</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:55%"></div></div><span class="bar-val">$392K</span></div>
+        <div class="bar-item"><span class="bar-label">Channelside</span><div class="bar-track"><div class="bar-fill bar-gold" style="width:42%"></div></div><span class="bar-val">$298K</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">YoY Price Change</div>
+      <div class="bar-group">
+        <div class="bar-item"><span class="bar-label">Westchase</span><div class="bar-track"><div class="bar-fill bar-green" style="width:100%"></div></div><span class="bar-val" style="color:var(--green)">+5.0%</span></div>
+        <div class="bar-item"><span class="bar-label">Hyde Park</span><div class="bar-track"><div class="bar-fill bar-green" style="width:94%"></div></div><span class="bar-val" style="color:var(--green)">+4.7%</span></div>
+        <div class="bar-item"><span class="bar-label">South Tampa</span><div class="bar-track"><div class="bar-fill bar-green" style="width:82%"></div></div><span class="bar-val" style="color:var(--green)">+4.1%</span></div>
+        <div class="bar-item"><span class="bar-label">Seminole Hts</span><div class="bar-track"><div class="bar-fill bar-green" style="width:64%"></div></div><span class="bar-val" style="color:var(--green)">+3.2%</span></div>
+        <div class="bar-item"><span class="bar-label">Carrollwood</span><div class="bar-track"><div class="bar-fill bar-green" style="width:52%"></div></div><span class="bar-val" style="color:var(--green)">+2.6%</span></div>
+        <div class="bar-item"><span class="bar-label">Channelside</span><div class="bar-track"><div class="bar-fill bar-green" style="width:36%"></div></div><span class="bar-val" style="color:var(--green)">+1.8%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Social Media Growth</div>
+      <div class="social-grid">
+        <div class="social-item">
+          <div class="social-platform">Instagram</div>
+          <div class="social-followers" style="color:var(--accent)">4,500</div>
+          <div class="social-goal">Goal: 10,000 by Dec</div>
+          <div class="progress-track"><div class="progress-fill" style="width:45%"></div></div>
+        </div>
+        <div class="social-item">
+          <div class="social-platform">TikTok</div>
+          <div class="social-followers" style="color:var(--accent2)">1,200</div>
+          <div class="social-goal">Goal: 3,000 by Dec</div>
+          <div class="progress-track"><div class="progress-fill" style="width:40%"></div></div>
+        </div>
+        <div class="social-item">
+          <div class="social-platform">Newsletter</div>
+          <div class="social-followers">1,840</div>
+          <div class="social-goal">Open rate: 34%</div>
+          <div class="progress-track"><div class="progress-fill" style="width:85%"></div></div>
+        </div>
+        <div class="social-item">
+          <div class="social-platform">Leads / Month</div>
+          <div class="social-followers" style="color:var(--green)">7</div>
+          <div class="social-goal">Goal: 12 per month</div>
+          <div class="progress-track"><div class="progress-fill" style="width:58%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title">Annual Volume Progress <span class="card-badge">$1.83M of $5.0M goal</span></div>
+    <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:8px;">
+          <span>YTD Closed ($1,834,500)</span><span>Annual Goal ($5,000,000)</span>
+        </div>
+        <div style="height:20px;background:var(--surface2);border-radius:10px;overflow:hidden;">
+          <div style="height:100%;width:36.7%;background:linear-gradient(90deg,var(--accent),#fbbf24);border-radius:10px;animation:growBar 1.5s ease forwards;position:relative;">
+            <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:0.7rem;font-weight:700;color:var(--bg);">36.7%</span>
+          </div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:8px;">Remaining gap to goal: $3,165,500 - Q4 pipeline value $1.20M closes the year strong with additional referrals needed.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

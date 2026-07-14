@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stephanie Wells - Senior Product Manager Portfolio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a2e4a;
+      --navy-mid: #243d5e;
+      --navy-light: #2f5082;
+      --teal: #2a9d8f;
+      --teal-light: #d0f0ec;
+      --teal-dark: #1e7469;
+      --bg: #f8f9fa;
+      --bg-white: #ffffff;
+      --text: #1a2e4a;
+      --text-muted: #5a6a7e;
+      --border: #dde3ec;
+      --shadow: 0 2px 14px rgba(26,46,74,0.09);
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    /* ANIMATIONS */
+    @keyframes slideInDown {
+      from { transform: translateY(-28px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      from { transform: translateY(22px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes skillFill {
+      from { width: 0; }
+      to   { width: var(--skill-w); }
+    }
+    @keyframes pulseTeal {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(42,157,143,0.3); }
+      50%       { box-shadow: 0 0 0 8px rgba(42,157,143,0); }
+    }
+
+    /* HEADER */
+    header {
+      background: var(--navy);
+      position: sticky; top: 0; z-index: 100;
+      animation: slideInDown 0.5s ease both;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 64px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .logo i { color: var(--teal); font-size: 1.3rem; }
+    nav { display: flex; gap: 4px; flex-wrap: wrap; }
+    nav a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.87rem;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    nav a:hover, nav a.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, var(--teal-dark) 100%);
+      color: #fff;
+      padding: 72px 28px 64px;
+      animation: fadeInUp 0.6s ease 0.1s both;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 75% 50%, rgba(42,157,143,0.18) 0%, transparent 60%);
+    }
+    .hero-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+    .hero-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 16px;
+      border: 3px solid rgba(255,255,255,0.25);
+      animation: pulseTeal 3s ease-in-out infinite;
+    }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: 0.3px; margin-bottom: 6px; }
+    .hero .hero-title { font-size: 1.15rem; color: var(--teal-light); margin-bottom: 4px; font-weight: 600; }
+    .hero .hero-sub { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 24px; }
+    .hero-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9);
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .hero-tag i { color: var(--teal-light); }
+
+    /* MAIN */
+    main { max-width: 1200px; margin: 0 auto; padding: 36px 28px 56px; }
+
+    /* SECTIONS */
+    .page-section { margin-bottom: 36px; animation: fadeInUp 0.5s ease both; }
+    .page-section:nth-child(2) { animation-delay: 0.15s; }
+    .page-section:nth-child(3) { animation-delay: 0.25s; }
+    .page-section:nth-child(4) { animation-delay: 0.35s; }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--teal-light);
+    }
+    .section-title i { color: var(--teal); }
+
+    /* METRIC CARDS */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .metric-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+    .metric-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(26,46,74,0.14);
+    }
+    .metric-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--teal-dark);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    .metric-card.accent .metric-icon { background: #e8f0fb; color: var(--navy-light); }
+    .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+    .metric-value { font-size: 2rem; font-weight: 800; color: var(--navy); line-height: 1.1; }
+    .metric-card.accent .metric-value { color: var(--navy-light); }
+    .metric-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .metric-trend {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 0.78rem; font-weight: 700; padding: 2px 7px;
+      border-radius: 12px; margin-top: 6px;
+    }
+    .trend-up { background: #d0f0ec; color: var(--teal-dark); }
+
+    /* CHARTS ROW */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 22px;
+    }
+    .chart-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+    }
+    .chart-title { font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 7px; }
+    .chart-title i { color: var(--teal); }
+    .chart-wrap { position: relative; height: 240px; }
+
+    /* TABS */
+    .tab-nav {
+      display: flex; gap: 4px; border-bottom: 2px solid var(--border);
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 8px 16px; font-size: 0.88rem; font-weight: 700;
+      color: var(--text-muted); border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: color 0.2s, border-color 0.2s;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); background: var(--teal-light); }
+    .tab-btn:hover:not(.active) { color: var(--navy); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* PROJECT CARDS */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .project-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(26,46,74,0.14);
+    }
+    .project-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: #fff;
+      padding: 20px 20px 16px;
+    }
+    .project-badge {
+      display: inline-block;
+      background: rgba(42,157,143,0.3);
+      border: 1px solid rgba(42,157,143,0.5);
+      color: var(--teal-light);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .project-header h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .project-header .proj-subtitle { font-size: 0.85rem; opacity: 0.8; }
+    .project-body { padding: 18px 20px; }
+    .project-meta {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .project-meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    .project-meta-item i { color: var(--teal); }
+    .project-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 14px; }
+    .outcome-list { display: flex; flex-direction: column; gap: 6px; }
+    .outcome-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 0.85rem; color: var(--text);
+    }
+    .outcome-item i { color: var(--teal); margin-top: 2px; flex-shrink: 0; }
+
+    /* SKILLS */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .skill-item { background: var(--bg-white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; box-shadow: var(--shadow); }
+    .skill-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .skill-name { font-size: 0.88rem; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 7px; }
+    .skill-name i { color: var(--teal); }
+    .skill-pct { font-size: 0.8rem; font-weight: 700; color: var(--teal-dark); }
+    .skill-bar-bg { background: var(--bg); border-radius: 6px; height: 7px; overflow: hidden; border: 1px solid var(--border); }
+    .skill-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--navy-light));
+      border-radius: 6px;
+      --skill-w: 80%;
+      width: 0;
+      animation: skillFill 1.4s cubic-bezier(.25,.8,.25,1) 0.5s forwards;
+    }
+
+    /* MENTORING */
+    .mentoring-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .mentor-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .mentor-card:hover { transform: translateY(-3px); }
+    .mentor-icon {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto 12px;
+    }
+    .mentor-num { font-size: 2.2rem; font-weight: 800; color: var(--navy); display: block; line-height: 1; }
+    .mentor-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* COLLAPSIBLE */
+    .collapse-btn {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 13px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-size: 0.9rem; font-weight: 700;
+      color: var(--navy); margin-bottom: 6px;
+      transition: background 0.2s;
+    }
+    .collapse-btn:hover { background: var(--teal-light); }
+    .collapse-content {
+      display: none; padding: 14px 16px;
+      background: var(--bg-white); border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      font-size: 0.87rem; color: var(--text-muted); line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .collapse-content.open { display: block; }
+    .collapse-icon { transition: transform 0.25s; }
+    .collapse-btn.open .collapse-icon { transform: rotate(180deg); }
+
+    /* CONTACT SECTION */
+    .contact-wrap {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      color: #fff;
+    }
+    .contact-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 18px; }
+    .contact-item {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+    .contact-item:hover { background: rgba(255,255,255,0.14); }
+    .contact-item i { color: var(--teal-light); font-size: 1.1rem; flex-shrink: 0; }
+    .contact-item .c-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,0.55); font-weight: 700; display: block; }
+    .contact-item .c-val { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+    /* SPRINT TABLE */
+    .sprint-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .sprint-table thead { background: var(--navy); color: #fff; }
+    .sprint-table th { padding: 11px 14px; text-align: left; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sprint-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    .sprint-table tbody tr:last-child td { border-bottom: none; }
+    .sprint-table tbody tr:hover { background: var(--bg); }
+    .sprint-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 12px;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .s-shipped { background: var(--teal-light); color: var(--teal-dark); }
+    .s-inprog  { background: #fff3cd; color: #856404; }
+
+    /* FOOTER */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+      padding: 24px 24px;
+      font-size: 0.88rem;
+    }
+    footer .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 8px; flex-wrap: wrap; }
+    footer a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--teal-light); }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.9rem; }
+      main { padding: 20px 16px 40px; }
+      .charts-row { grid-template-columns: 1fr; }
+      .header-inner { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <i class="fa-solid fa-chart-line"></i>
+      Stephanie Wells
+    </div>
+    <nav>
+      <a href="#" class="active" onclick="switchSection('summary',this)">Summary</a>
+      <a href="#" onclick="switchSection('metrics',this)">Metrics</a>
+      <a href="#" onclick="switchSection('projects',this)">Projects</a>
+      <a href="#" onclick="switchSection('mentoring',this)">Mentoring</a>
+      <a href="#" onclick="switchSection('contact',this)">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-avatar"><i class="fa-solid fa-chart-line"></i></div>
+    <h1>Stephanie Wells</h1>
+    <div class="hero-title">Senior Product Manager</div>
+    <div class="hero-sub">Growth and Analytics - Mission District, San Francisco</div>
+    <div class="hero-tags">
+      <span class="hero-tag"><i class="fa-solid fa-building"></i>Project-Management SaaS</span>
+      <span class="hero-tag"><i class="fa-solid fa-chart-bar"></i>Analytics Dashboard</span>
+      <span class="hero-tag"><i class="fa-solid fa-users"></i>Growth Team</span>
+      <span class="hero-tag"><i class="fa-solid fa-graduation-cap"></i>PM Mentorship 2026</span>
+      <span class="hero-tag"><i class="fa-solid fa-map-marker-alt"></i>San Francisco, CA</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- SUMMARY SECTION -->
+  <div id="section-summary">
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-gauge-high"></i>Key Metrics - FY 2026</div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-rocket"></i></div>
+          <div class="metric-label">Northstar Project</div>
+          <div class="metric-value" style="font-size:1.15rem;line-height:1.3;margin-top:4px;">Analytics Dashboard</div>
+          <div class="metric-sub">Enterprise self-serve analytics, shipped Nov 2026</div>
+        </div>
+        <div class="metric-card accent">
+          <div class="metric-icon" style="background:#e8f0fb;color:var(--navy-light);"><i class="fa-solid fa-star"></i></div>
+          <div class="metric-label">Pilot NPS</div>
+          <div class="metric-value">9.3</div>
+          <div class="metric-sub">Nov 2026 pilot cohort, 24 enterprise accounts</div>
+          <div class="metric-trend trend-up"><i class="fa-solid fa-arrow-up"></i>+2.9 from Jan baseline</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-rotate"></i></div>
+          <div class="metric-label">30-Day Retention</div>
+          <div class="metric-value">41.2%</div>
+          <div class="metric-sub">Dashboard feature - pilot accounts</div>
+          <div class="metric-trend trend-up"><i class="fa-solid fa-arrow-up"></i>+14pp vs. Q1 baseline</div>
+        </div>
+        <div class="metric-card accent">
+          <div class="metric-icon" style="background:#e8f0fb;color:var(--navy-light);"><i class="fa-solid fa-ticket"></i></div>
+          <div class="metric-label">Support Tickets Reduced</div>
+          <div class="metric-value">34%</div>
+          <div class="metric-sub">Post-launch vs. prior reporting workflow</div>
+          <div class="metric-trend trend-up"><i class="fa-solid fa-arrow-down"></i>34% fewer tickets</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="metric-label">Features Shipped</div>
+          <div class="metric-value">8</div>
+          <div class="metric-sub">Across 3 sprints in 2026</div>
+        </div>
+        <div class="metric-card accent">
+          <div class="metric-icon" style="background:#e8f0fb;color:var(--navy-light);"><i class="fa-solid fa-people-group"></i></div>
+          <div class="metric-label">Mentoring Sessions</div>
+          <div class="metric-value">22</div>
+          <div class="metric-sub">PM mentorship program 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-chart-line"></i>Performance Charts</div>
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title"><i class="fa-solid fa-star"></i>NPS Trend - 2026 Feedback Cycles</div>
+          <div class="chart-wrap"><canvas id="npsChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="fa-solid fa-layer-group"></i>Feature Delivery - 2026 Sprints</div>
+          <div class="chart-wrap"><canvas id="featureChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- METRICS SECTION -->
+  <div id="section-metrics" style="display:none;">
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-table"></i>Feature Delivery Breakdown</div>
+      <div style="background:var(--bg-white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;">
+        <table class="sprint-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Sprint</th>
+              <th>Shipped</th>
+              <th>Outcome</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Custom Dashboard Builder</strong></td>
+              <td>Sprint 1</td>
+              <td>Jan 2026</td>
+              <td>Core feature, anchor of analytics dashboard release</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Saved Views and Filters</strong></td>
+              <td>Sprint 1</td>
+              <td>Jan 2026</td>
+              <td>Reduced setup time per user by estimated 40%</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Scheduled Report Delivery</strong></td>
+              <td>Sprint 1</td>
+              <td>Feb 2026</td>
+              <td>Replaces manual data exports, highest-requested feature</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Team-Level Permissions</strong></td>
+              <td>Sprint 2</td>
+              <td>Oct 2026</td>
+              <td>Unblocked 12 enterprise accounts from pilot conversion</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>API Export Endpoints</strong></td>
+              <td>Sprint 2</td>
+              <td>Oct 2026</td>
+              <td>Developer-facing, enables third-party BI integrations</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Trend Annotations</strong></td>
+              <td>Sprint 2</td>
+              <td>Oct 2026</td>
+              <td>Allows teams to mark events on charts, reduces misread spikes</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Goal Tracking Module</strong></td>
+              <td>Sprint 3</td>
+              <td>Nov 2026</td>
+              <td>OKR-style goal tracking surfaced in dashboard; NPS driver</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cohort Comparison View</strong></td>
+              <td>Sprint 3</td>
+              <td>Nov 2026</td>
+              <td>Enables A/B analysis within dashboard, enterprise differentiator</td>
+              <td><span class="sprint-status s-shipped"><i class="fa-solid fa-check"></i> Shipped</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-code-branch"></i>Methodology and Process</div>
+      <div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-person-running" style="color:var(--teal);margin-right:8px;"></i>Discovery to Delivery Process</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Continuous discovery interviews with 5-8 enterprise account users per sprint. Opportunity solution trees used to map customer problems before committing to solutions. Wrote all PRDs in a collaborative doc system shared with engineering leads and design. Sprint reviews held every two weeks with cross-functional stakeholders. Shipped behind feature flags with gradual rollout to 5%, 20%, 100% of pilot cohort. Post-launch retros within one week of each major feature drop.
+        </div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-chart-bar" style="color:var(--teal);margin-right:8px;"></i>Analytics Instrumentation Approach</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Defined success metrics and instrumentation plan before each sprint began. Used internal analytics infrastructure to track funnel events, feature adoption rates, and session depth. Retention metric (41.2%) measured as users returning to the dashboard feature within 30 days of first use. NPS scores collected after 30 days of active usage, not immediately post-onboarding. Support ticket reduction calculated by comparing support queue data 60 days pre and post launch, normalized for user growth.
+        </div>
+        <button class="collapse-btn" onclick="toggleCollapse(this)">
+          <span><i class="fa-solid fa-handshake" style="color:var(--teal);margin-right:8px;"></i>Cross-Functional Collaboration</span>
+          <i class="fa-solid fa-chevron-down collapse-icon"></i>
+        </button>
+        <div class="collapse-content">
+          Worked directly with engineering team of 6 (2 senior, 3 mid, 1 junior), product design lead, data infrastructure team, and enterprise customer success team. Daily standups with engineering, weekly design review, bi-weekly stakeholder sync with leadership. Used async written updates to reduce meeting load, particularly important given distributed team across two time zones.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PROJECTS SECTION -->
+  <div id="section-projects" style="display:none;">
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-briefcase"></i>Project Showcase</div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-badge">Northstar - 2026</div>
+            <h3>Analytics Dashboard</h3>
+            <div class="proj-subtitle">Enterprise self-serve analytics platform</div>
+          </div>
+          <div class="project-body">
+            <div class="project-meta">
+              <div class="project-meta-item"><i class="fa-solid fa-calendar"></i>Shipped Nov 13, 2026</div>
+              <div class="project-meta-item"><i class="fa-solid fa-users"></i>24 pilot accounts</div>
+              <div class="project-meta-item"><i class="fa-solid fa-layer-group"></i>3 sprints</div>
+            </div>
+            <div class="project-desc">
+              The analytics dashboard is the company's entry into enterprise self-serve reporting. Before this, customers relied on support to pull data exports and build custom reports. This project gave enterprise users a configurable, real-time analytics interface within the product, eliminating the manual workflow entirely. It became the top-requested feature in enterprise renewal conversations for the second half of 2026.
+            </div>
+            <div class="outcome-list">
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Pilot NPS of 9.3 from 24 enterprise accounts after 30 days of use</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>30-day retention at 41.2%, up 14 percentage points from baseline</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Support tickets down 34% - data request queue nearly eliminated</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>8 features shipped across 3 sprints without a single P0 incident</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header" style="background:linear-gradient(135deg,var(--teal-dark),var(--navy));">
+            <div class="project-badge">Growth Initiative - 2026</div>
+            <h3>Onboarding Funnel Redesign</h3>
+            <div class="proj-subtitle">First-week activation improvement</div>
+          </div>
+          <div class="project-body">
+            <div class="project-meta">
+              <div class="project-meta-item"><i class="fa-solid fa-calendar"></i>Jan-Feb 2026</div>
+              <div class="project-meta-item"><i class="fa-solid fa-flask"></i>A/B tested</div>
+              <div class="project-meta-item"><i class="fa-solid fa-user-plus"></i>New user cohort</div>
+            </div>
+            <div class="project-desc">
+              Identified friction in the onboarding funnel through session recordings and interviews with recently churned trial users. Built a revised onboarding experience focused on time-to-first-value rather than feature exposure. Reduced the required steps from 9 to 4, replaced generic tutorials with role-specific guided paths, and added contextual prompts tied to users' stated goals during sign-up.
+            </div>
+            <div class="outcome-list">
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Completed A/B test in February 2026 with statistically significant results</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>New variant reduced time-to-first-value from 3.4 days to 1.1 days</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Day-7 activation rate improved by 22% in the treatment cohort</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Findings fed directly into enterprise onboarding design for the dashboard product</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header" style="background:linear-gradient(135deg,#2c4a2e,#4a7c59);">
+            <div class="project-badge" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">PM Enablement - 2026</div>
+            <h3>PM Mentorship Program</h3>
+            <div class="proj-subtitle">Women in Product leadership pipeline</div>
+          </div>
+          <div class="project-body">
+            <div class="project-meta">
+              <div class="project-meta-item"><i class="fa-solid fa-calendar"></i>Jan - Nov 2026</div>
+              <div class="project-meta-item"><i class="fa-solid fa-people-group"></i>5 mentees</div>
+              <div class="project-meta-item"><i class="fa-solid fa-comments"></i>22 sessions</div>
+            </div>
+            <div class="project-desc">
+              Joined the company-sponsored PM mentorship program in January 2026, focusing on women transitioning into product roles from engineering or customer success backgrounds. Ran bi-weekly one-on-one sessions, led two group workshops on roadmap prioritization frameworks, and reviewed mentees' PRDs with written feedback. Three of five mentees received promotions or role changes by November 2026.
+            </div>
+            <div class="outcome-list">
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>22 mentoring sessions completed across 5 mentees over 11 months</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Two mentees promoted from associate PM to PM during the program</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>One mentee transitioned from customer success into a PM role successfully</span></div>
+              <div class="outcome-item"><i class="fa-solid fa-circle-check"></i><span>Led two group workshops on roadmap prioritization for broader PM org</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENTORING SECTION -->
+  <div id="section-mentoring" style="display:none;">
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-people-group"></i>PM Mentorship Program 2026</div>
+      <div style="background:var(--bg-white);border-radius:var(--radius);border:1px solid var(--border);padding:24px 24px;box-shadow:var(--shadow);margin-bottom:22px;">
+        <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.75;margin-bottom:0;">
+          Joined the company-sponsored mentorship program in January 2026. The program targets women and underrepresented professionals moving from adjacent roles into product management. My focus was practical craft development: how to write PRDs that engineering teams actually trust, how to run discovery without burning stakeholder goodwill, and how to navigate the politics of roadmap prioritization. Sessions are bi-weekly, 50 minutes each, with written homework between sessions.
+        </p>
+      </div>
+      <div class="mentoring-grid">
+        <div class="mentor-card">
+          <div class="mentor-icon"><i class="fa-solid fa-comments"></i></div>
+          <span class="mentor-num">22</span>
+          <div class="mentor-label">Sessions completed, Jan-Nov 2026</div>
+        </div>
+        <div class="mentor-card">
+          <div class="mentor-icon"><i class="fa-solid fa-users"></i></div>
+          <span class="mentor-num">5</span>
+          <div class="mentor-label">Active mentees, women in product</div>
+        </div>
+        <div class="mentor-card">
+          <div class="mentor-icon"><i class="fa-solid fa-arrow-up"></i></div>
+          <span class="mentor-num">3</span>
+          <div class="mentor-label">Mentees promoted or transitioned roles</div>
+        </div>
+        <div class="mentor-card">
+          <div class="mentor-icon"><i class="fa-solid fa-chalkboard-teacher"></i></div>
+          <span class="mentor-num">2</span>
+          <div class="mentor-label">Group workshops led for PM org</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-wrench"></i>Skills and Competencies</div>
+      <div class="skills-grid">
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-map"></i>Product Strategy and Roadmapping</div><div class="skill-pct">92%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:92%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-magnifying-glass-chart"></i>User Research and Discovery</div><div class="skill-pct">88%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:88%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-chart-bar"></i>Data Analysis and Metrics</div><div class="skill-pct">85%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:85%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-code"></i>SQL and Analytics Tooling</div><div class="skill-pct">78%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:78%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-people-arrows"></i>Stakeholder Communication</div><div class="skill-pct">90%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:90%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-flask"></i>Experimentation and A/B Testing</div><div class="skill-pct">82%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:82%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-building"></i>Enterprise Product Sense</div><div class="skill-pct">80%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:80%;"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-top"><div class="skill-name"><i class="fa-solid fa-person-chalkboard"></i>Mentoring and PM Development</div><div class="skill-pct">87%</div></div>
+          <div class="skill-bar-bg"><div class="skill-bar" style="--skill-w:87%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONTACT SECTION -->
+  <div id="section-contact" style="display:none;">
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-address-card"></i>Contact and Professional Info</div>
+      <div class="contact-wrap">
+        <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:4px;">Stephanie Wells</h3>
+        <p style="color:rgba(255,255,255,0.7);font-size:0.92rem;">Senior Product Manager - Growth and Analytics, Mission District, San Francisco, CA</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <span class="c-label">Location</span>
+              <span class="c-val">Mission District, San Francisco, CA</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>
+              <span class="c-label">Role</span>
+              <span class="c-val">Senior Product Manager</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-building"></i>
+            <div>
+              <span class="c-label">Industry</span>
+              <span class="c-val">Project-Management SaaS</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <div>
+              <span class="c-label">Focus</span>
+              <span class="c-val">Growth and Analytics Products</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-people-group"></i>
+            <div>
+              <span class="c-label">Mentorship</span>
+              <span class="c-val">Women in Product, PM Program 2026</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-mountain"></i>
+            <div>
+              <span class="c-label">Outside Work</span>
+              <span class="c-val">Competitive bouldering, V7 project</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section">
+      <div class="section-title"><i class="fa-solid fa-file-alt"></i>Background Summary</div>
+      <div style="background:var(--bg-white);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow);">
+        <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.8;margin-bottom:16px;">
+          Stephanie Wells is a Senior Product Manager on the growth team at a project-management SaaS company in San Francisco. She owns the analytics dashboard product, which she has taken from concept to enterprise release across three sprint cycles in 2026. Her work sits at the intersection of growth metrics and enterprise tooling, and she is known for rigorous discovery work, strong data instrumentation, and clear written PRDs.
+        </p>
+        <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.8;margin-bottom:16px;">
+          Before entering product management she came from a technical background, which informs her approach to working with engineering teams - she writes specs that are precise enough to be built without hand-holding, and joins architecture conversations without needing to defer entirely to the tech lead. She has been with her current company long enough to have navigated two major product pivots and has built strong institutional knowledge of the customer base.
+        </p>
+        <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.8;">
+          Outside work, she is a competitive boulderer currently projecting V7, trains four times a week, and competes in the regional circuit. She lives in the Mission District with her fiance Matt Collins and is getting married in October 2026 at Redwood Glen Estate in Woodside. She manages ADHD with daily medication and takes a disciplined approach to her schedule, time-blocking her most cognitively demanding work in morning hours before the calendar fills up.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-links">
+    <a href="#" onclick="switchSection('summary',this)"><i class="fa-solid fa-gauge-high" style="margin-right:4px;"></i>Summary</a>
+    <a href="#" onclick="switchSection('metrics',this)">Metrics</a>
+    <a href="#" onclick="switchSection('projects',this)">Projects</a>
+    <a href="#" onclick="switchSection('mentoring',this)">Mentoring</a>
+    <a href="#" onclick="switchSection('contact',this)">Contact</a>
+  </div>
+  <div>Stephanie Wells &nbsp;|&nbsp; Product Manager &nbsp;|&nbsp; San Francisco, CA</div>
+</footer>
+
+<script>
+  // NAV SECTION SWITCHING
+  function switchSection(name, el) {
+    document.querySelectorAll('main > div[id^="section-"]').forEach(s => s.style.display = 'none');
+    document.getElementById('section-' + name).style.display = 'block';
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    if (el) el.classList.add('active');
+    return false;
+  }
+
+  // COLLAPSIBLE
+  function toggleCollapse(btn) {
+    var content = btn.nextElementSibling;
+    var isOpen = content.classList.contains('open');
+    content.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  // NPS LINE CHART
+  (function() {
+    var ctx = document.getElementById('npsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan 2026','Feb 2026','Oct 2026','Nov 2026'],
+        datasets: [{
+          label: 'NPS Score',
+          data: [6.4, 7.2, 8.8, 9.3],
+          borderColor: '#2a9d8f',
+          backgroundColor: 'rgba(42,157,143,0.12)',
+          pointBackgroundColor: '#2a9d8f',
+          pointRadius: 6, pointHoverRadius: 9,
+          tension: 0.35, fill: true, borderWidth: 2.5,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ' NPS: ' + c.raw }}
+        },
+        scales: {
+          y: {
+            min: 5, max: 10,
+            ticks: { stepSize: 1 },
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          },
+          x: { grid: { display: false }}
+        }
+      }
+    });
+  })();
+
+  // FEATURE DELIVERY BAR CHART
+  (function() {
+    var ctx = document.getElementById('featureChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Sprint 1\nJan-Feb 26','Sprint 2\nOct 26','Sprint 3\nNov 26'],
+        datasets: [{
+          label: 'Features Shipped',
+          data: [3, 3, 2],
+          backgroundColor: ['rgba(26,46,74,0.75)','rgba(42,157,143,0.75)','rgba(42,157,143,0.55)'],
+          borderColor: ['#1a2e4a','#2a9d8f','#2a9d8f'],
+          borderWidth: 1.5, borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ' ' + c.raw + ' features shipped' }}
+        },
+        scales: {
+          y: {
+            beginAtZero: true, max: 4,
+            ticks: { stepSize: 1 },
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          },
+          x: { grid: { display: false }}
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

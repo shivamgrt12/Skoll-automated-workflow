@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Midnight Oven, Jane's Baking Notebook</title>
+<style>
+  :root{--crust:#8a5a2b;--butter:#f6c453;--cream:#fbf4e6;--cocoa:#3d2b1f;--soft:#fffdf8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--cream);color:var(--cocoa);line-height:1.6}
+  header{background:var(--cocoa);color:var(--cream);padding:22px 28px;position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 14px rgba(0,0,0,.2)}
+  .logo{font-family:Georgia,serif;font-size:1.4rem;font-weight:bold}
+  .logo span{color:var(--butter)}
+  header nav a{color:var(--cream);text-decoration:none;margin-left:20px;font-size:.9rem;opacity:.85;transition:opacity .2s,color .2s}
+  header nav a:hover{opacity:1;color:var(--butter)}
+  .intro{text-align:center;padding:64px 24px 30px;background:
+    radial-gradient(circle at 50% -10%,#fceecb,transparent 60%)}
+  .intro h1{font-family:Georgia,serif;font-size:2.6rem;margin-bottom:10px}
+  .intro p{max-width:560px;margin:0 auto;color:#6a5440}
+  .filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:26px 16px 8px}
+  .chip{cursor:pointer;border:2px solid var(--crust);background:transparent;color:var(--crust);
+    font-weight:bold;padding:9px 22px;border-radius:30px;font-size:.92rem;transition:all .22s}
+  .chip:hover{background:#f0e0c4}
+  .chip.active{background:var(--crust);color:#fff}
+  .grid{max-width:1080px;margin:0 auto;padding:30px 24px 60px;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:26px}
+  .card{background:var(--soft);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(61,43,31,.12);
+    transition:transform .25s,box-shadow .25s,opacity .4s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-8px);box-shadow:0 16px 34px rgba(61,43,31,.2)}
+  .card.hide{opacity:0;transform:scale(.9);pointer-events:none;position:absolute;width:0;height:0;overflow:hidden;padding:0;margin:0}
+  .thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:3rem}
+  .card-body{padding:18px 20px 22px;flex:1;display:flex;flex-direction:column}
+  .tag{align-self:flex-start;font-size:.72rem;text-transform:uppercase;letter-spacing:.7px;
+    background:var(--butter);color:#6a4a10;padding:3px 10px;border-radius:20px;font-weight:bold;margin-bottom:10px}
+  .card h3{font-family:Georgia,serif;font-size:1.25rem;margin-bottom:6px}
+  .card p{font-size:.9rem;color:#6a5440;flex:1}
+  .view{margin-top:14px;align-self:flex-start;background:var(--crust);color:#fff;border:none;
+    border-radius:8px;padding:9px 18px;cursor:pointer;font-size:.85rem;transition:background .2s}
+  .view:hover{background:#6e441f}
+  .modal{position:fixed;inset:0;background:rgba(61,43,31,.6);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:60;animation:fade .3s}
+  .modal.open{display:flex}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{background:var(--soft);max-width:520px;width:100%;border-radius:18px;padding:32px;
+    max-height:86vh;overflow:auto;animation:rise .35s ease}
+  @keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .sheet h2{font-family:Georgia,serif;color:var(--crust);margin-bottom:4px}
+  .sheet h4{margin:16px 0 6px;color:var(--cocoa)}
+  .sheet ul{margin-left:20px;font-size:.92rem}
+  .sheet ol{margin-left:20px;font-size:.92rem}
+  .sheet li{margin:4px 0}
+  .close{float:right;background:none;border:none;font-size:1.6rem;cursor:pointer;color:#8a5a2b;line-height:1}
+  footer{background:var(--cocoa);color:var(--cream);text-align:center;padding:40px 24px}
+  footer .note{font-family:Georgia,serif;font-size:1.1rem;margin-bottom:8px;color:var(--butter)}
+  footer p{font-size:.85rem;opacity:.85}
+  @media(max-width:600px){.intro h1{font-size:2rem}header nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">The Midnight <span>Oven</span></div>
+  <nav><a href="#book">Recipes</a><a href="#about">About</a></nav>
+</header>
+
+<div class="intro">
+  <h1>Jane's Baking Notebook</h1>
+  <p>Southern comfort baking, mostly made at the kitchen counter near midnight after a long week. Pick a category and find something worth turning the oven on for.</p>
+</div>
+
+<div class="filters" id="filters">
+  <button class="chip active" data-f="all">All</button>
+  <button class="chip" data-f="bread">Breads</button>
+  <button class="chip" data-f="pie">Pies</button>
+  <button class="chip" data-f="cake">Cakes</button>
+</div>
+
+<main class="grid" id="grid"></main>
+
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<footer id="about">
+  <div class="note">Results travel to the office Monday morning.</div>
+  <p>A personal recipe notebook kept by Jane Sparks. Grandmother's cast iron skillet does the heavy lifting.</p>
+</footer>
+
+<script>
+  var recipes=[
+    {n:"Cinnamon Rolls",c:"bread",e:"🍯",d:"The midnight batch, soft and frosted while warm.",
+      ing:["Four cups all-purpose flour","Two and a quarter teaspoons active dry yeast","One cup warm whole milk","One third cup melted butter","One cup brown sugar","Two and a half tablespoons cinnamon","Cream cheese frosting"],
+      steps:["Proof the yeast in warm milk until foamy.","Mix and knead, then rise about one hour.","Roll, spread butter and cinnamon sugar, slice.","Second rise thirty minutes.","Bake at 350 degrees for 22 minutes.","Frost while warm."]},
+    {n:"Grandmother's Buttermilk Biscuits",c:"bread",e:"🥖",d:"Family recipe, the Savannah side swears by the skillet.",
+      ing:["Two cups self-rising flour","One half cup cold cubed butter","Three quarters cup cold buttermilk","Pinch of salt"],
+      steps:["Cut cold butter into the flour until crumbly.","Stir in buttermilk just until it comes together.","Pat out and fold three times for layers.","Cut rounds, place touching in the skillet.","Bake at 450 degrees for 12 to 14 minutes."]},
+    {n:"Pecan Pie",c:"pie",e:"🥧",d:"Jane's standard, sets with a slight jiggle.",
+      ing:["One nine-inch pie crust","One and a half cups pecan halves","One cup light corn syrup","One cup brown sugar","Three large eggs","Four tablespoons butter","One teaspoon vanilla","Half teaspoon salt"],
+      steps:["Whisk the filling until smooth.","Layer pecans across the crust.","Pour the filling so pecans float up.","Bake at 350 degrees for 55 minutes.","Cool fully before slicing."]},
+    {n:"Pound Cake",c:"cake",e:"🍰",d:"Lemon version for Linda's birthday in November.",
+      ing:["One pound butter","Three cups sugar","Six eggs","Three cups flour","One cup milk","One tablespoon vanilla"],
+      steps:["Cream butter and sugar.","Add eggs one at a time.","Alternate flour and milk.","Bake at 325 degrees for 75 minutes in a tube pan.","Cool twenty minutes before turning out."]},
+    {n:"Pumpkin Spice Cinnamon Rolls",c:"bread",e:"🎂",d:"The Halloween batch for Linda's neighborhood handouts.",
+      ing:["Cinnamon roll dough with pumpkin puree","Warm spice blend","Brown sugar filling","Maple cream cheese glaze"],
+      steps:["Fold pumpkin into the base dough.","Proof, fill with spiced brown sugar.","Slice and second rise.","Bake at 350 degrees for 24 minutes.","Glaze warm."]},
+    {n:"Sweet Potato Pie",c:"pie",e:"🥧",d:"A Thanksgiving staple, lighter than it looks.",
+      ing:["One nine-inch crust","Two cups roasted sweet potato","Brown sugar to taste","Two eggs","Evaporated milk","Warm spices"],
+      steps:["Blend the filling smooth.","Pour into the crust.","Bake at 350 degrees for 50 minutes.","Cool and chill before serving."]}
+  ];
+  var grid=document.getElementById('grid');
+  function render(){
+    grid.innerHTML='';
+    recipes.forEach(function(r,i){
+      var card=document.createElement('article');
+      card.className='card';card.dataset.c=r.c;
+      card.innerHTML='<div class="thumb" style="background:linear-gradient(135deg,#f6e3bf,#f0cf8e)">'+r.e+'</div>'+
+        '<div class="card-body"><span class="tag">'+({bread:"Bread",pie:"Pie",cake:"Cake"})[r.c]+'</span>'+
+        '<h3>'+r.n+'</h3><p>'+r.d+'</p><button class="view" data-i="'+i+'">View recipe</button></div>';
+      grid.appendChild(card);
+    });
+  }
+  render();
+  document.getElementById('filters').addEventListener('click',function(e){
+    if(!e.target.classList.contains('chip'))return;
+    document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
+    e.target.classList.add('active');
+    var f=e.target.dataset.f;
+    document.querySelectorAll('.card').forEach(function(card){
+      card.classList.toggle('hide',f!=='all'&&card.dataset.c!==f);
+    });
+  });
+  var modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
+  grid.addEventListener('click',function(e){
+    if(!e.target.classList.contains('view'))return;
+    var r=recipes[+e.target.dataset.i];
+    sheet.innerHTML='<button class="close" id="closeBtn">&times;</button><h2>'+r.n+'</h2><p>'+r.d+'</p>'+
+      '<h4>Ingredients</h4><ul>'+r.ing.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
+      '<h4>Method</h4><ol>'+r.steps.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol>';
+    modal.classList.add('open');
+    document.getElementById('closeBtn').onclick=function(){modal.classList.remove('open');};
+  });
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('open');});
+</script>
+</body>
+</html>

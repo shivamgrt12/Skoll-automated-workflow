@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Law School Question</title>
+<style>
+  :root{--ink:#241a1d;--bg:#f5eef0;--card:#fff;--wine:#6e2333;--wine2:#4f1825;--wine3:#8a3346;
+    --gold:#b9892f;--mut:#6c5a60;--line:#e7dde0;--ok:#2f7d57}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .sans{font-family:'Segoe UI',Arial,sans-serif}
+  nav.top{position:sticky;top:0;z-index:60;background:rgba(79,24,37,.96);backdrop-filter:blur(6px);
+    display:flex;justify-content:space-between;align-items:center;padding:14px 30px;box-shadow:0 2px 14px rgba(0,0,0,.2);font-family:'Segoe UI',Arial,sans-serif}
+  nav.top .brand{color:#fff;font-weight:bold;font-size:1.05rem;display:flex;align-items:center;gap:10px}
+  nav.top .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--gold)}
+  nav.top ul{list-style:none;display:flex;gap:8px}
+  nav.top a{color:#f0d9de;text-decoration:none;font-size:.86rem;padding:7px 14px;border-radius:18px;transition:all .2s}
+  nav.top a:hover{background:rgba(255,255,255,.12);color:#fff}
+  .hero{position:relative;overflow:hidden;color:#fff;padding:64px 30px 80px;
+    background:linear-gradient(120deg,#4f1825,#6e2333 50%,#8a3346);background-size:200% 200%;animation:flow 16s ease infinite}
+  @keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero::after{content:"";position:absolute;right:-70px;top:-70px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(185,137,47,.35),transparent 70%)}
+  .hero h1{font-size:2.7rem;max-width:680px;line-height:1.14;position:relative}
+  .hero p{font-family:'Segoe UI',Arial,sans-serif;opacity:.92;margin-top:12px;max-width:560px;font-size:1.02rem;position:relative}
+  main{max-width:1080px;margin:0 auto;padding:36px 24px 60px}
+  section{margin-top:42px}
+  .h2{font-size:1.5rem;color:var(--wine);display:flex;align-items:center;gap:10px}
+  .h2 .bar{width:34px;height:4px;border-radius:3px;background:var(--gold)}
+  .sub{font-family:'Segoe UI',Arial,sans-serif;color:var(--mut);font-size:.9rem;margin:4px 0 18px}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+  .reveal.show{opacity:1;transform:none}
+  .card{background:var(--card);border-radius:16px;padding:26px;box-shadow:0 6px 20px rgba(110,35,51,.1)}
+  .progs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .prog{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 5px 16px rgba(110,35,51,.1);border-top:5px solid var(--wine);transition:transform .2s,box-shadow .2s}
+  .prog:hover{transform:translateY(-6px);box-shadow:0 16px 32px rgba(110,35,51,.18)}
+  .prog:nth-child(2){border-color:var(--gold)}.prog:nth-child(3){border-color:var(--wine3)}.prog:nth-child(4){border-color:var(--ok)}
+  .prog h3{color:var(--wine);font-size:1.2rem}
+  .prog .meta{font-family:'Segoe UI',Arial,sans-serif;font-size:.84rem;color:var(--mut);margin:8px 0}
+  .prog .cost{font-family:'Segoe UI',Arial,sans-serif;font-size:1.5rem;font-weight:bold;color:var(--wine)}
+  .barchart{display:flex;align-items:flex-end;gap:24px;height:240px;padding-top:26px}
+  .bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bcol .bar{width:60%;border-radius:8px 8px 0 0;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);position:relative}
+  .bcol .bar span{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-family:'Segoe UI',Arial,sans-serif;font-size:.8rem;font-weight:bold;color:var(--wine);white-space:nowrap}
+  .bcol .x{font-family:'Segoe UI',Arial,sans-serif;font-size:.76rem;color:var(--mut);margin-top:8px;text-align:center}
+  .calc{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px}
+  .sliders label{display:block;font-family:'Segoe UI',Arial,sans-serif;font-size:.88rem;margin:18px 0 6px}
+  .sliders .val{color:var(--wine);font-weight:bold}
+  input[type=range]{width:100%;accent-color:var(--wine);height:6px}
+  .scoreList .row{display:flex;align-items:center;gap:12px;margin:14px 0}
+  .scoreList .nm{width:130px;font-family:'Segoe UI',Arial,sans-serif;font-size:.84rem}
+  .scoreList .bt{flex:1;background:#f0e6e9;border-radius:8px;height:28px;overflow:hidden}
+  .scoreList .bf{height:100%;width:0;border-radius:8px;transition:width .55s ease;color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:.78rem;display:flex;align-items:center;justify-content:flex-end;padding-right:9px}
+  .winner{font-family:'Segoe UI',Arial,sans-serif;background:#eef7f1;color:var(--ok);border-radius:10px;padding:14px 16px;margin-top:18px;font-size:.92rem;font-weight:bold}
+  .fa{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .fa .col{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 5px 16px rgba(110,35,51,.08)}
+  .fa .col.for{border-left:5px solid var(--ok)}.fa .col.against{border-left:5px solid var(--wine3)}
+  .fa h3{font-size:1.1rem;margin-bottom:10px}.fa .for h3{color:var(--ok)}.fa .against h3{color:var(--wine3)}
+  .fa ul{list-style:none;font-family:'Segoe UI',Arial,sans-serif;font-size:.9rem}
+  .fa li{padding:8px 0 8px 22px;position:relative;border-bottom:1px dashed var(--line)}
+  .fa li::before{content:"";position:absolute;left:0;top:14px;width:9px;height:9px;border-radius:50%}
+  .fa .for li::before{background:var(--ok)}.fa .against li::before{background:var(--wine3)}
+  .timeline{position:relative;padding-left:28px;margin-top:8px}
+  .timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;background:linear-gradient(180deg,var(--wine),var(--gold))}
+  .tl{position:relative;margin-bottom:20px;font-family:'Segoe UI',Arial,sans-serif;opacity:0;transform:translateX(18px);transition:.6s}
+  .tl.show{opacity:1;transform:none}
+  .tl::before{content:"";position:absolute;left:-24px;top:3px;width:13px;height:13px;border-radius:50%;background:var(--gold);border:3px solid #fff;box-shadow:0 0 0 2px var(--wine)}
+  .tl b{color:var(--wine)}.tl .when{font-size:.78rem;color:var(--mut)}
+  footer{background:var(--wine2);color:#f0d9de;margin-top:50px;padding:40px 30px 26px;font-family:'Segoe UI',Arial,sans-serif}
+  footer .cols{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  footer h4{color:var(--gold);margin-bottom:10px;font-size:.95rem}footer p{font-size:.86rem;opacity:.88}
+  footer .copy{max-width:1080px;margin:24px auto 0;border-top:1px solid rgba(255,255,255,.12);padding-top:16px;font-size:.8rem;opacity:.7}
+  @media(max-width:860px){.progs,.calc,.fa,footer .cols{grid-template-columns:1fr}nav.top ul{display:none}.hero h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<nav class="top">
+  <div class="brand"><span class="dot"></span>The Law School Question</div>
+  <ul><li><a href="#programs">Programs</a></li><li><a href="#cost">Cost</a></li><li><a href="#calc">Decide</a></li><li><a href="#case">For and against</a></li><li><a href="#plan">Timeline</a></li></ul>
+</nav>
+
+<header class="hero">
+  <h1>Whether to file for the spring 2027 cycle</h1>
+  <p>Four evening and weekend programs reachable from Charlotte, weighed against a full paralegal schedule, a tight budget, and family at home. Trish has promised the reference letter.</p>
+</header>
+
+<main>
+  <section id="programs">
+    <div class="h2 reveal"><span class="bar"></span>The four programs in reach</div>
+    <div class="sub reveal">All part-time tracks built around a working week.</div>
+    <div class="progs">
+      <div class="prog reveal"><h3>NC Central University</h3><div class="meta">Evening JD, Durham<br>About 2 hours, weeknight cohort, hybrid options<br>4 years</div><div class="cost">$52,000</div></div>
+      <div class="prog reveal"><h3>Charlotte regional hybrid</h3><div class="meta">Hybrid evening, Charlotte metro<br>Local plus a monthly Saturday residency<br>4 years</div><div class="cost">$96,000</div></div>
+      <div class="prog reveal"><h3>Elon University</h3><div class="meta">Weekend cohort, Greensboro<br>About 1.5 hours, alternating Saturdays<br>4 years</div><div class="cost">$138,000</div></div>
+      <div class="prog reveal"><h3>Campbell Law</h3><div class="meta">Flex part-time, Raleigh<br>About 2.5 hours, weekend residencies plus online<br>4 years</div><div class="cost">$142,000</div></div>
+    </div>
+  </section>
+
+  <section id="cost">
+    <div class="h2 reveal"><span class="bar"></span>Estimated total cost</div>
+    <div class="sub reveal">Full program tuition estimate, lower is friendlier to a tight monthly margin.</div>
+    <div class="card reveal"><div class="barchart" id="costBars"></div></div>
+  </section>
+
+  <section id="calc">
+    <div class="h2 reveal"><span class="bar"></span>Decision calculator</div>
+    <div class="sub reveal">Set how much cost, a short commute, and schedule fit each matter, then watch the programs re-rank.</div>
+    <div class="card reveal"><div class="calc">
+      <div class="sliders">
+        <label>Cost matters <span class="val" id="wcostV">5</span> / 10</label><input type="range" id="wcost" min="0" max="10" value="5">
+        <label>Short commute matters <span class="val" id="wcommV">4</span> / 10</label><input type="range" id="wcomm" min="0" max="10" value="4">
+        <label>Schedule fit matters <span class="val" id="wfitV">7</span> / 10</label><input type="range" id="wfit" min="0" max="10" value="7">
+      </div>
+      <div><div class="scoreList" id="scores"></div><div class="winner" id="winner"></div></div>
+    </div></div>
+  </section>
+
+  <section id="case">
+    <div class="h2 reveal"><span class="bar"></span>The case, for and against</div>
+    <div class="sub reveal">Straight from the decision notes.</div>
+    <div class="fa">
+      <div class="col for reveal"><h3>In favor</h3><ul>
+        <li>The senior paralegal ceiling at the firm is close</li>
+        <li>Trish offers mentorship and a strong reference</li>
+        <li>Evening and weekend formats fit a full work schedule</li>
+        <li>The work already lives in family law every day</li></ul></div>
+      <div class="col against reveal"><h3>Against</h3><ul>
+        <li>Cost lands against a tight monthly margin</li>
+        <li>Three to four years of evenings is a long commitment</li>
+        <li>Family load with Linda and with Kyle stays heavy</li>
+        <li>A later cycle may be the right answer, not a no</li></ul></div>
+    </div>
+  </section>
+
+  <section id="plan">
+    <div class="h2 reveal"><span class="bar"></span>Application timeline</div>
+    <div class="sub reveal">Milestones toward a spring 2027 decision.</div>
+    <div class="card reveal"><div class="timeline" id="timeline">
+      <div class="tl"><div class="when">Early October 2026</div><b>Finalize the program comparison sheet</b><div>Lock costs, commute, and format fit into one view.</div></div>
+      <div class="tl"><div class="when">Mid October 2026</div><b>Confirm the reference letter with Trish</b><div>Align her timeline with the application windows.</div></div>
+      <div class="tl"><div class="when">November 2026</div><b>Register and sit for any required admissions test</b><div>Block study mornings around the running schedule.</div></div>
+      <div class="tl"><div class="when">December 2026</div><b>Request transcripts</b><div>From Appalachian State and the paralegal institute.</div></div>
+      <div class="tl"><div class="when">January 2027</div><b>Submit applications and decide</b><div>File to the evening and weekend programs.</div></div>
+    </div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="cols">
+    <div><h4>The Law School Question</h4><p>A personal decision sheet kept by Jane Sparks. Cost figures are estimates and update monthly.</p></div>
+    <div><h4>The mentor</h4><p>Trish Hartwell has pushed for it and promised a reference letter for the spring 2027 cycle.</p></div>
+    <div><h4>The fund</h4><p>A law school sub-account grows quietly in the First Citizens high-yield savings toward the day the decision is made.</p></div>
+  </div>
+  <div class="copy">Kept privately. Decide by the new year.</div>
+</footer>
+
+<script>
+  var progs=[{n:"NC Central",cost:52000,commute:120,fit:8,col:"#6e2333"},{n:"Charlotte hybrid",cost:96000,commute:20,fit:9,col:"#b9892f"},
+    {n:"Elon",cost:138000,commute:90,fit:6,col:"#8a3346"},{n:"Campbell",cost:142000,commute:150,fit:7,col:"#a85a3c"}];
+  document.getElementById('costBars').innerHTML=progs.map(function(p){
+    return '<div class="bcol"><div class="bar" data-h="'+(p.cost/142000*100)+'" style="background:linear-gradient(180deg,'+p.col+',#4f1825)"><span>$'+(p.cost/1000)+'k</span></div><div class="x">'+p.n+'</div></div>';}).join('');
+  var wcost=document.getElementById('wcost'),wcomm=document.getElementById('wcomm'),wfit=document.getElementById('wfit');
+  function norm(v,min,max,inv){var x=(v-min)/(max-min);return inv?1-x:x;}
+  function recompute(){
+    document.getElementById('wcostV').textContent=wcost.value;document.getElementById('wcommV').textContent=wcomm.value;document.getElementById('wfitV').textContent=wfit.value;
+    var a=+wcost.value,b=+wcomm.value,c=+wfit.value,sum=a+b+c||1;
+    var sc=progs.map(function(p){var s=(norm(p.cost,52000,142000,true)*a+norm(p.commute,20,150,true)*b+norm(p.fit,6,9,false)*c)/sum*100;return {n:p.n,col:p.col,s:s};}).sort(function(x,y){return y.s-x.s;});
+    document.getElementById('scores').innerHTML=sc.map(function(s){return '<div class="row"><div class="nm">'+s.n+'</div><div class="bt"><div class="bf" style="width:'+s.s.toFixed(0)+'%;background:linear-gradient(90deg,'+s.col+',#b9892f)">'+s.s.toFixed(0)+'</div></div></div>';}).join('');
+    document.getElementById('winner').textContent='Top fit right now: '+sc[0].n+', scoring '+sc[0].s.toFixed(0)+' out of 100.';
+  }
+  [wcost,wcomm,wfit].forEach(function(s){s.addEventListener('input',recompute);});
+  recompute();
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;e.target.classList.add('show');
+    e.target.querySelectorAll('#costBars .bar').forEach(function(b){if(!b.dataset.d){b.dataset.d=1;setTimeout(function(){b.style.height=b.dataset.h+'%';},80);}});
+    if(e.target.id==='plan'){var tls=e.target.querySelectorAll('.tl');tls.forEach(function(t,i){setTimeout(function(){t.classList.add('show');},120*i);});}
+  });},{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+</script>
+</body>
+</html>

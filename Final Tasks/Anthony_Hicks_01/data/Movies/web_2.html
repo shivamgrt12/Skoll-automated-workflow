@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notes from the Road</title>
+<style>
+  :root{--bg:#fbf6ee;--ink:#2c2620;--soft:#6b5d4d;--card:#fffdf9;--line:#e7dcc9;--rust:#b5532a;--rust2:#d77a45;--gold:#c79a2e;--green:#5b7a3f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,"Times New Roman",serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header{background:linear-gradient(120deg,#2c2620,#3a322a);color:#f3ebdd}
+  .top{max-width:1060px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .logo{font-size:20px;font-weight:bold;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+  .logo .pin{width:12px;height:12px;background:var(--rust2);border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:inline-block}
+  .top nav a{color:#d8cdbb;margin-left:18px;font-size:14px;font-family:Arial,sans-serif;transition:.2s}
+  .top nav a:hover{color:#fff}
+  .banner{max-width:1060px;margin:0 auto;padding:30px 20px 6px}
+  .banner h1{font-size:30px}
+  .banner p{color:var(--soft);max-width:620px;margin-top:8px}
+  .controls{max-width:1060px;margin:18px auto 0;padding:0 20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:var(--card);font-family:Arial,sans-serif}
+  .search input:focus{outline:2px solid var(--rust2);border-color:transparent}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .filters button{font-family:Arial,sans-serif;font-size:13px;padding:9px 14px;border:1px solid var(--line);background:var(--card);color:var(--soft);border-radius:20px;cursor:pointer;transition:.2s}
+  .filters button:hover{border-color:var(--rust2);color:var(--rust)}
+  .filters button.active{background:var(--rust);color:#fff;border-color:var(--rust)}
+  main{max-width:1060px;margin:0 auto;padding:22px 20px 50px}
+  .count{font-family:Arial,sans-serif;font-size:13px;color:var(--soft);margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:840px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .stop{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;opacity:0;transform:translateY(12px);animation:pop .5s forwards}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .stop:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(60,45,30,.16)}
+  .strip{height:8px;background:linear-gradient(90deg,var(--rust),var(--gold))}
+  .stop .body{padding:16px}
+  .stop .ex{font-family:Arial,sans-serif;font-size:12px;color:var(--rust);font-weight:bold;letter-spacing:.5px}
+  .stop h3{font-size:18px;margin:4px 0 2px}
+  .stop .loc{color:var(--soft);font-size:14px}
+  .ratings{margin-top:12px;display:grid;gap:6px;font-family:Arial,sans-serif;font-size:13px}
+  .rrow{display:flex;align-items:center;justify-content:space-between}
+  .stars{color:var(--gold);letter-spacing:2px}
+  .stars .off{color:#ddd1bb}
+  .modal{position:fixed;inset:0;background:rgba(30,24,18,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.open{display:flex;animation:fade .3s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{background:var(--card);border-radius:16px;max-width:440px;width:100%;padding:24px;animation:up .3s}
+  @keyframes up{from{transform:translateY(20px);opacity:.6}to{transform:none;opacity:1}}
+  .sheet h2{font-size:22px}.sheet .note{color:var(--soft);margin:10px 0 16px}
+  .sheet button{font-family:Arial,sans-serif;background:var(--rust);color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;transition:.2s}
+  .sheet button:hover{background:var(--rust2)}
+  footer{background:#2c2620;color:#cabba6;font-family:Arial,sans-serif;font-size:13px}
+  .foot{max-width:1060px;margin:0 auto;padding:22px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo"><span class="pin"></span> Field Notes from the Road</div>
+    <nav><a href="#grid">Stops</a><a href="#about">About</a></nav>
+  </div>
+</header>
+
+<section class="banner">
+  <h1>Truck Stop Field Notes</h1>
+  <p>Thirty years of pulling into the same lots teaches you which ones are worth the exit. These are my own ratings, kept honest. Showers and parking carry the most weight on a long night.</p>
+</section>
+
+<div class="controls">
+  <div class="search"><input id="q" type="text" aria-label="Search by interstate, exit, or town"></div>
+  <div class="filters">
+    <button class="active" data-f="all">All</button>
+    <button data-f="I-65">I-65</button>
+    <button data-f="I-40">I-40</button>
+    <button data-f="I-20">I-20</button>
+    <button data-f="I-75">I-75</button>
+  </div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <p id="about" style="margin-top:30px;color:var(--soft);font-family:Arial,sans-serif;font-size:14px;max-width:640px">
+    About: I keep this list for my own runs through the Southeast and Midwest. A stop earns a high shower mark for hot water and clean stalls, a high parking mark for spaces left after six in the evening, and a food mark for whether I would eat there twice.
+  </p>
+</main>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2 id="mtitle">Stop</h2>
+    <div class="note" id="mnote"></div>
+    <button id="mclose">Close</button>
+  </div>
+</div>
+
+<footer>
+  <div class="foot">
+    <div>Field Notes, Anthony Hicks, based out of Birmingham AL</div>
+    <div>Ratings are personal opinion</div>
+  </div>
+</footer>
+
+<script>
+  const stops=[
+    {ex:'I-65 Exit 231',name:'Nashville North Travel Center',loc:'Nashville, TN',i:'I-65',sh:4.6,pk:4.2,fd:4.0,n:'Best showers on the run. Get there before six or parking fills up.'},
+    {ex:'I-65 Exit 99',name:'Cullman Travel Plaza',loc:'Cullman, AL',i:'I-65',sh:3.8,pk:4.4,fd:3.5,n:'Close to home. Reliable parking late. Diner across the lot does a solid breakfast.'},
+    {ex:'I-40 Exit 147',name:'Music City West Stop',loc:'Nashville, TN',i:'I-40',sh:4.1,pk:3.6,fd:4.2,n:'Food is the draw here. Parking tight on weekends, plan ahead.'},
+    {ex:'I-75 Exit 62',name:'Queen City Plaza',loc:'Cincinnati, OH',i:'I-75',sh:3.4,pk:3.9,fd:3.2,n:'Big lot, average showers. Good turnaround on the Midwest loop.'},
+    {ex:'I-20 Exit 83',name:'Magic City Truck Stop',loc:'Birmingham, AL',i:'I-20',sh:3.9,pk:4.0,fd:3.6,n:'Handy on the way back to the terminal. Fuel price usually fair.'},
+    {ex:'I-65 Exit 308',name:'Lincoln Trail Center',loc:'Elizabethtown, KY',i:'I-65',sh:4.0,pk:4.3,fd:3.7,n:'Good halfway stop to Louisville. Showers held up well last winter.'},
+    {ex:'I-40 Exit 80',name:'River Bluff Travel Stop',loc:'Memphis, TN',i:'I-40',sh:3.5,pk:3.3,fd:3.9,n:'Book the shower ahead. Lot crowds with the Memphis freight.'},
+    {ex:'I-75 Exit 11',name:'Ridge Gateway Stop',loc:'Chattanooga, TN',i:'I-75',sh:4.3,pk:3.5,fd:3.8,n:'Clean showers, quiet at night. Small lot, no spot after seven.'},
+    {ex:'I-20 Exit 176',name:'Peach State Plaza',loc:'Atlanta, GA',i:'I-20',sh:3.6,pk:3.2,fd:4.1,n:'Skip the parking, eat and roll. Atlanta traffic makes it a daytime stop only.'}
+  ];
+  const grid=document.getElementById('grid'),count=document.getElementById('count'),q=document.getElementById('q');
+  let f='all';
+  function star(v){let s='';for(let k=1;k<=5;k++)s+= k<=Math.round(v)?'★':'<span class="off">★</span>';return s;}
+  function render(){
+    const term=q.value.trim().toLowerCase();
+    const list=stops.filter(s=>(f==='all'||s.i===f)&&(s.name+s.loc+s.ex).toLowerCase().includes(term));
+    grid.innerHTML='';
+    list.forEach((s,idx)=>{
+      const d=document.createElement('div');d.className='stop';d.style.animationDelay=(idx*.05)+'s';
+      d.innerHTML='<div class="strip"></div><div class="body"><div class="ex">'+s.ex+'</div><h3>'+s.name+'</h3>'+
+        '<div class="loc">'+s.loc+'</div><div class="ratings">'+
+        '<div class="rrow"><span>Showers</span><span class="stars">'+star(s.sh)+' '+s.sh.toFixed(1)+'</span></div>'+
+        '<div class="rrow"><span>Parking</span><span class="stars">'+star(s.pk)+' '+s.pk.toFixed(1)+'</span></div>'+
+        '<div class="rrow"><span>Food</span><span class="stars">'+star(s.fd)+' '+s.fd.toFixed(1)+'</span></div></div></div>';
+      d.addEventListener('click',()=>openModal(s));
+      grid.appendChild(d);
+    });
+    count.textContent=list.length+' stop'+(list.length===1?'':'s')+' shown';
+  }
+  function openModal(s){
+    document.getElementById('mtitle').textContent=s.name+', '+s.ex;
+    document.getElementById('mnote').textContent=s.n;
+    document.getElementById('modal').classList.add('open');
+  }
+  document.getElementById('mclose').addEventListener('click',()=>document.getElementById('modal').classList.remove('open'));
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('open')});
+  document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');f=b.dataset.f;render();
+  }));
+  q.addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

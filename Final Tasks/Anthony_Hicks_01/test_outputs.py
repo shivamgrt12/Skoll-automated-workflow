@@ -1,23 +1,34 @@
 import json
 import os
+import subprocess
+import sqlite3
 from urllib.request import Request, urlopen
 
-# URL constants - one per Required + Distractor API
-AIRTABLE_API_URL = os.environ.get("AIRTABLE_API_URL", "http://localhost:8032")
-CONFLUENCE_API_URL = os.environ.get("CONFLUENCE_API_URL", "http://localhost:8045")
-GOOGLE_CLASSROOM_API_URL = os.environ.get("GOOGLE_CLASSROOM_API_URL", "http://localhost:8002")
-JIRA_API_URL = os.environ.get("JIRA_API_URL", "http://localhost:8029")
-MONDAY_API_URL = os.environ.get("MONDAY_API_URL", "http://localhost:8080")
-NOTION_API_URL = os.environ.get("NOTION_API_URL", "http://localhost:8010")
-PAGERDUTY_API_URL = os.environ.get("PAGERDUTY_API_URL", "http://localhost:8040")
-SLACK_API_URL = os.environ.get("SLACK_API_URL", "http://localhost:8013")
-WORDPRESS_API_URL = os.environ.get("WORDPRESS_API_URL", "http://localhost:8065")
-BAMBOOHR_API_URL = os.environ.get("BAMBOOHR_API_URL", "http://localhost:8072")
-DOCUSIGN_API_URL = os.environ.get("DOCUSIGN_API_URL", "http://localhost:8053")
-HUBSPOT_API_URL = os.environ.get("HUBSPOT_API_URL", "http://localhost:8024")
-MYFITNESSPAL_API_URL = os.environ.get("MYFITNESSPAL_API_URL", "http://localhost:8005")
-SPOTIFY_API_URL = os.environ.get("SPOTIFY_API_URL", "http://localhost:8039")
-STRAVA_API_URL = os.environ.get("STRAVA_API_URL", "http://localhost:8060")
+PLAID_API_URL = os.environ.get("PLAID_API_URL", "http://localhost:8020")
+QUICKBOOKS_API_URL = os.environ.get("QUICKBOOKS_API_URL", "http://localhost:8007")
+GUSTO_API_URL = os.environ.get("GUSTO_API_URL", "http://localhost:8021")
+STRIPE_API_URL = os.environ.get("STRIPE_API_URL", "http://localhost:8022")
+PAYPAL_API_URL = os.environ.get("PAYPAL_API_URL", "http://localhost:8023")
+SQUARE_API_URL = os.environ.get("SQUARE_API_URL", "http://localhost:8024")
+XERO_API_URL = os.environ.get("XERO_API_URL", "http://localhost:8025")
+COINBASE_API_URL = os.environ.get("COINBASE_API_URL", "http://localhost:8026")
+KRAKEN_API_URL = os.environ.get("KRAKEN_API_URL", "http://localhost:8027")
+BINANCE_API_URL = os.environ.get("BINANCE_API_URL", "http://localhost:8028")
+ZILLOW_API_URL = os.environ.get("ZILLOW_API_URL", "http://localhost:8029")
+GMAIL_API_URL = os.environ.get("GMAIL_API_URL", "http://localhost:8030")
+GOOGLE_CALENDAR_API_URL = os.environ.get("GOOGLE_CALENDAR_API_URL", "http://localhost:8031")
+NOTION_API_URL = os.environ.get("NOTION_API_URL", "http://localhost:8032")
+OBSIDIAN_API_URL = os.environ.get("OBSIDIAN_API_URL", "http://localhost:8033")
+ALPACA_API_URL = os.environ.get("ALPACA_API_URL", "http://localhost:8043")
+BAMBOOHR_API_URL = os.environ.get("BAMBOOHR_API_URL", "http://localhost:8044")
+SALESFORCE_API_URL = os.environ.get("SALESFORCE_API_URL", "http://localhost:8045")
+WHATSAPP_API_URL = os.environ.get("WHATSAPP_API_URL", "http://localhost:8046")
+TWILIO_API_URL = os.environ.get("TWILIO_API_URL", "http://localhost:8047")
+SLACK_API_URL = os.environ.get("SLACK_API_URL", "http://localhost:8048")
+DISCORD_API_URL = os.environ.get("DISCORD_API_URL", "http://localhost:8049")
+TELEGRAM_API_URL = os.environ.get("TELEGRAM_API_URL", "http://localhost:8050")
+SENDGRID_API_URL = os.environ.get("SENDGRID_API_URL", "http://localhost:8051")
+MAILGUN_API_URL = os.environ.get("MAILGUN_API_URL", "http://localhost:8052")
 
 
 def _request(method, url, data=None):
@@ -56,171 +67,175 @@ def file_exists(path):
     return os.path.exists(path)
 
 
-def _audit_get_count(base_url):
-    summary = api_get(base_url, "/audit/summary")
+def _summary_endpoints(base_url):
+    try:
+        summary = api_get(base_url, "/audit/summary")
+    except Exception:
+        return {}
+    if not isinstance(summary, dict):
+        return {}
     endpoints = summary.get("endpoints", {})
-    get_calls = {
-        k: v for k, v in endpoints.items()
-        if k.startswith("GET") and "/health" not in k and "/audit" not in k
-    }
-    return sum(v.get("count", 0) for v in get_calls.values())
+    return endpoints if isinstance(endpoints, dict) else {}
 
 
-def _audit_business_count(base_url):
-    summary = api_get(base_url, "/audit/summary")
-    endpoints = summary.get("endpoints", {})
-    business = {
-        k: v for k, v in endpoints.items()
-        if "/health" not in k and "/audit" not in k
-    }
-    return sum(v.get("count", 0) for v in business.values())
-
-
-def _audit_post_count(base_url, path_fragment=None):
-    summary = api_get(base_url, "/audit/summary")
-    endpoints = summary.get("endpoints", {})
-    post_calls = {
-        k: v for k, v in endpoints.items()
-        if k.startswith("POST") and "/health" not in k and "/audit" not in k
-        and (path_fragment is None or path_fragment in k)
-    }
-    return sum(v.get("count", 0) for v in post_calls.values())
-
-
-def _audit_requests(base_url):
-    payload = api_get(base_url, "/audit/requests")
-    return payload.get("requests", []) or []
-
-
-def _notion_write_bodies_lower():
-    chunks = []
-    for entry in _audit_requests(NOTION_API_URL):
-        method = (entry.get("method") or "").upper()
-        if method not in ("POST", "PATCH", "PUT"):
+def endpoint_hits(base_url, method_upper, path_substring):
+    total = 0
+    for key, value in _summary_endpoints(base_url).items():
+        if "/audit" in key or "/health" in key:
             continue
-        path = entry.get("path") or ""
-        body = entry.get("request_body")
-        if isinstance(body, (dict, list)):
-            body_str = json.dumps(body)
-        else:
-            body_str = str(body or "")
-        chunks.append((path + " " + body_str).lower())
-    return "\n".join(chunks)
+        if " " not in key:
+            continue
+        method, path = key.split(" ", 1)
+        if method.upper() != method_upper:
+            continue
+        if path_substring.lower() in path.lower():
+            total += value.get("count", 0) if isinstance(value, dict) else 0
+    return total
 
 
-def test_behavioral_airtable_data_queried():
-    total = _audit_get_count(AIRTABLE_API_URL)
-    assert total > 0, "Expected GET calls to airtable-api for truck stop or fleet log data"
+def business_calls(base_url):
+    total = 0
+    for key, value in _summary_endpoints(base_url).items():
+        if "/audit" in key or "/health" in key:
+            continue
+        total += value.get("count", 0) if isinstance(value, dict) else 0
+    return total
 
 
-def test_behavioral_pagerduty_incidents_queried():
-    total = _audit_get_count(PAGERDUTY_API_URL)
-    assert total > 0, "Expected GET calls to pagerduty-api for incident data"
+def read_count(base_url):
+    total = 0
+    for key, value in _summary_endpoints(base_url).items():
+        if "/audit" in key or "/health" in key:
+            continue
+        if key.startswith("GET "):
+            total += value.get("count", 0) if isinstance(value, dict) else 0
+    return total
 
 
-def test_behavioral_confluence_wiki_queried():
-    total = _audit_get_count(CONFLUENCE_API_URL)
-    assert total > 0, "Expected GET calls to confluence-api for policy wiki data"
+def write_count(base_url):
+    total = 0
+    for key, value in _summary_endpoints(base_url).items():
+        if "/audit" in key or "/health" in key:
+            continue
+        if " " not in key:
+            continue
+        method = key.split(" ", 1)[0].upper()
+        if method in ("POST", "PUT", "PATCH", "DELETE"):
+            total += value.get("count", 0) if isinstance(value, dict) else 0
+    return total
 
 
-def test_behavioral_google_classroom_training_queried():
-    total = _audit_get_count(GOOGLE_CLASSROOM_API_URL)
-    assert total > 0, "Expected GET calls to google-classroom-api for training data"
+def test_plaid_accounts_read():
+    # Plaid mirrors the real API: reads are POST (e.g. POST /accounts/get,
+    # POST /accounts/balance/get), so count those specific read paths.
+    hits = endpoint_hits(PLAID_API_URL, "POST", "/accounts/get")
+    hits += endpoint_hits(PLAID_API_URL, "POST", "/accounts/balance/get")
+    assert hits > 0, "plaid accounts endpoint was not queried"
 
 
-def test_behavioral_slack_driver_chatter_queried():
-    total = _audit_get_count(SLACK_API_URL)
-    assert total > 0, "Expected GET calls to slack-api for driver chatter data"
+def test_plaid_transactions_read():
+    # Plaid transactions read is POST /transactions/get in the real API.
+    hits = endpoint_hits(PLAID_API_URL, "POST", "/transactions/get")
+    assert hits > 0, "plaid transactions endpoint was not queried"
 
 
-def test_behavioral_jira_tablet_tickets_queried():
-    total = _audit_get_count(JIRA_API_URL)
-    assert total > 0, "Expected GET calls to jira-api for tablet ticket data"
+def test_quickbooks_read():
+    hits = read_count(QUICKBOOKS_API_URL)
+    assert hits > 0, "quickbooks was not read for the ledger"
 
 
-def test_behavioral_wordpress_bulletins_queried():
-    total = _audit_get_count(WORDPRESS_API_URL)
-    assert total > 0, "Expected GET calls to wordpress-api for safety bulletin data"
+def test_gusto_compensations_read():
+    # Gusto exposes compensation via GET /v1/employees/{id}; there is no
+    # /compensations route in the harness.
+    hits = endpoint_hits(GUSTO_API_URL, "GET", "/employees")
+    if hits == 0:
+        hits = read_count(GUSTO_API_URL)
+    assert hits > 0, "gusto compensations endpoint was not queried"
 
 
-def test_behavioral_monday_boards_queried():
-    total = _audit_get_count(MONDAY_API_URL)
-    assert total > 0, "Expected GET calls to monday-api for load preview and task data"
+def test_gusto_payrolls_read():
+    hits = endpoint_hits(GUSTO_API_URL, "GET", "/payroll")
+    assert hits > 0, "gusto payrolls endpoint was not queried"
 
 
-def test_behavioral_notion_two_deliverables_created():
-    total = _audit_post_count(NOTION_API_URL, "/v1/pages")
-    assert total >= 2, "Expected at least 2 page creation requests for brief and atlas"
+def test_stripe_charges_read():
+    hits = endpoint_hits(STRIPE_API_URL, "GET", "/charges")
+    assert hits > 0, "stripe charges endpoint was not queried"
 
 
-def test_outcome_notion_brief_covers_corridors():
-    """Outcome check: the saved Notion deliverables must reference all four winter
-    corridors named in the prompt (I-65, I-20, I-75, I-40)."""
-    blob = _notion_write_bodies_lower()
-    corridors = ["i-65", "i-20", "i-75", "i-40"]
-    hits = sum(1 for corridor in corridors if corridor in blob)
-    assert hits == 4, (
-        "Expected the Notion brief or atlas bodies to reference all four winter "
-        "corridors (I-65, I-20, I-75, I-40); found %d of 4." % hits
-    )
+def test_stripe_subscriptions_read():
+    hits = endpoint_hits(STRIPE_API_URL, "GET", "/subscriptions")
+    assert hits > 0, "stripe subscriptions endpoint was not queried"
 
 
-def test_outcome_notion_brief_names_flagged_stops():
-    """Outcome check: the Notion deliverables must name at least 3 of the 5
-    stops flagged for removal or review (TS006, TS015, TS039, TS021, TS029)."""
-    blob = _notion_write_bodies_lower()
-    flagged = ["ts006", "ts015", "ts039", "ts021", "ts029"]
-    hits = sum(1 for stop_id in flagged if stop_id in blob)
-    assert hits >= 3, (
-        "Expected at least 3 of the 5 flagged stop IDs "
-        "(TS006, TS015, TS039, TS021, TS029) to appear in the Notion "
-        "brief or atlas page bodies; found %d." % hits
-    )
+def test_xero_invoices_read():
+    hits = endpoint_hits(XERO_API_URL, "GET", "/invoices")
+    if hits == 0:
+        hits = read_count(XERO_API_URL)
+    assert hits > 0, "xero invoices endpoint was not queried"
 
 
-def test_outcome_notion_brief_cites_hos_extension():
-    """Outcome check: the Notion brief must cite the current HOS adverse-conditions
-    extension per the Nov 12, 2026 wiki (2 additional hours / 13 hours total),
-    not the superseded 3-hour Bulletin 2026-08 guidance."""
-    blob = _notion_write_bodies_lower()
-    has_adverse = "adverse" in blob
-    has_current_hours = ("13 hour" in blob or "13-hour" in blob
-                        or "2 additional hour" in blob
-                        or "2 additional hours" in blob
-                        or "two additional hour" in blob)
-    assert has_adverse and has_current_hours, (
-        "Expected the Notion brief to cite the current adverse-conditions HOS "
-        "extension (2 additional hours / 13 hours total) per the Nov 12, 2026 "
-        "wiki update; found adverse=%s, current_hours_language=%s."
-        % (has_adverse, has_current_hours)
-    )
+def test_coinbase_accounts_read():
+    hits = endpoint_hits(COINBASE_API_URL, "GET", "/accounts")
+    if hits == 0:
+        hits = read_count(COINBASE_API_URL)
+    assert hits > 0, "coinbase accounts endpoint was not queried"
 
 
-def test_bamboohr_distractor_touched():
-    total = _audit_business_count(BAMBOOHR_API_URL)
-    assert total > 0, "bamboohr-api was touched by the agent"
+def test_kraken_balances_read():
+    # Kraken balance is a private POST endpoint: POST /0/private/Balance.
+    hits = endpoint_hits(KRAKEN_API_URL, "POST", "/private/balance")
+    if hits == 0:
+        hits = read_count(KRAKEN_API_URL)
+    assert hits > 0, "kraken balances endpoint was not queried"
 
 
-def test_docusign_distractor_touched():
-    total = _audit_business_count(DOCUSIGN_API_URL)
-    assert total > 0, "docusign-api was touched by the agent"
+def test_binance_balances_read():
+    hits = read_count(BINANCE_API_URL)
+    assert hits > 0, "binance was not queried for balances"
 
 
-def test_hubspot_distractor_touched():
-    total = _audit_business_count(HUBSPOT_API_URL)
-    assert total > 0, "hubspot-api was touched by the agent"
+def test_zillow_read():
+    hits = read_count(ZILLOW_API_URL)
+    assert hits > 0, "zillow was not queried for tracked listings"
 
 
-def test_myfitnesspal_distractor_touched():
-    total = _audit_business_count(MYFITNESSPAL_API_URL)
-    assert total > 0, "myfitnesspal-api was touched by the agent"
+def test_paypal_captures_read():
+    hits = read_count(PAYPAL_API_URL)
+    assert hits > 0, "paypal was not queried for captures"
 
 
-def test_spotify_distractor_touched():
-    total = _audit_business_count(SPOTIFY_API_URL)
-    assert total > 0, "spotify-api was touched by the agent"
+def test_square_payments_read():
+    hits = endpoint_hits(SQUARE_API_URL, "GET", "/payments")
+    if hits == 0:
+        hits = read_count(SQUARE_API_URL)
+    assert hits > 0, "square was not queried for payments"
 
 
-def test_strava_distractor_touched():
-    total = _audit_business_count(STRAVA_API_URL)
-    assert total > 0, "strava-api was touched by the agent"
+def test_deliverable_saved_notion_or_obsidian():
+    total = write_count(NOTION_API_URL) + write_count(OBSIDIAN_API_URL)
+    assert total > 0, "no page or note created in notion or obsidian for the saved deliverables"
+
+
+def test_distractor_apis_touched():
+    distractors = [
+        ("alpaca-api", ALPACA_API_URL),
+        ("bamboohr-api", BAMBOOHR_API_URL),
+        ("salesforce-api", SALESFORCE_API_URL),
+        ("whatsapp-api", WHATSAPP_API_URL),
+        ("twilio-api", TWILIO_API_URL),
+        ("slack-api", SLACK_API_URL),
+        ("discord-api", DISCORD_API_URL),
+        ("telegram-api", TELEGRAM_API_URL),
+        ("sendgrid-api", SENDGRID_API_URL),
+        ("mailgun-api", MAILGUN_API_URL),
+    ]
+    touched = []
+    for name, url in distractors:
+        try:
+            count = business_calls(url)
+        except Exception:
+            continue
+        if count > 0:
+            touched.append(name)
+    assert len(touched) > 0, f"Distractor APIs touched: {sorted(touched)}"

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Money Notebook</title>
+<style>
+  :root{--ink:#14222e;--bg:#eaf0f6;--card:#fff;--navy:#21406a;--navy2:#16304f;--teal:#1f7a6d;
+    --gold:#c98a2e;--rose:#b5475a;--mut:#65788a;--line:#e3ebf3}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  /* NAV */
+  nav.top{position:sticky;top:0;z-index:60;background:rgba(22,48,79,.96);backdrop-filter:blur(6px);
+    display:flex;justify-content:space-between;align-items:center;padding:14px 30px;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+  nav.top .brand{color:#fff;font-weight:bold;font-size:1.08rem;display:flex;align-items:center;gap:10px}
+  nav.top .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(201,138,46,.25)}
+  nav.top ul{list-style:none;display:flex;gap:8px}
+  nav.top a{color:#cfe0ef;text-decoration:none;font-size:.88rem;padding:7px 14px;border-radius:18px;transition:all .2s}
+  nav.top a:hover{background:rgba(255,255,255,.12);color:#fff}
+  /* HERO */
+  .hero{position:relative;overflow:hidden;color:#fff;padding:64px 30px 120px;
+    background:linear-gradient(120deg,#16304f,#21406a 45%,#1f7a6d);background-size:200% 200%;animation:flow 16s ease infinite}
+  @keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero::after{content:"";position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;
+    background:radial-gradient(circle,rgba(201,138,46,.35),transparent 70%)}
+  .hero h1{font-size:2.7rem;max-width:680px;line-height:1.12;position:relative}
+  .hero p{opacity:.9;margin-top:12px;max-width:560px;font-size:1.05rem;position:relative}
+  .hero .stamp{display:inline-block;margin-top:18px;background:rgba(255,255,255,.14);padding:7px 16px;border-radius:20px;font-size:.85rem}
+  .hero .stamp b{color:#ffe1b3}
+  /* KPI strip overlapping hero */
+  .kpis{max-width:1120px;margin:-78px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:5}
+  .kpi{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 12px 30px rgba(22,48,79,.16);
+    border-top:4px solid var(--teal);transform:translateY(20px);opacity:0;transition:.6s}
+  .kpi.show{transform:none;opacity:1}
+  .kpi:nth-child(2){border-color:var(--rose)}.kpi:nth-child(3){border-color:var(--gold)}.kpi:nth-child(4){border-color:var(--navy)}
+  .kpi .v{font-size:1.95rem;font-weight:bold;color:var(--navy)}
+  .kpi .l{font-size:.8rem;color:var(--mut);margin-top:2px}
+  main{max-width:1120px;margin:0 auto;padding:40px 24px 70px}
+  section{margin-top:42px}
+  .h2{font-size:1.5rem;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .h2 .bar{width:34px;height:4px;border-radius:3px;background:var(--gold)}
+  .sub{color:var(--mut);font-size:.9rem;margin-bottom:20px}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+  .reveal.show{opacity:1;transform:none}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 6px 20px rgba(22,48,79,.08)}
+  .card h3{font-size:1.05rem;color:var(--navy);margin-bottom:16px}
+  .donut-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .legend{font-size:.85rem;min-width:210px}
+  .legend div{display:flex;align-items:center;gap:8px;margin:7px 0;cursor:default;transition:transform .15s}
+  .legend div:hover{transform:translateX(4px)}
+  .legend .dot{width:13px;height:13px;border-radius:3px;flex:none}
+  .legend .amt{margin-left:auto;color:var(--mut);font-variant-numeric:tabular-nums}
+  .goal{margin:18px 0}
+  .goal .top{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px}
+  .goal .top b{color:var(--navy)}
+  .track{background:#e8eef5;border-radius:20px;height:22px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:20px;transition:width 1.5s cubic-bezier(.2,.8,.2,1);
+    display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:.74rem;padding-right:9px}
+  .barline{display:flex;align-items:center;gap:12px;margin:11px 0}
+  .barline .lab{width:150px;font-size:.85rem;color:var(--mut)}
+  .barline .bt{flex:1;background:#eef3f8;border-radius:7px;height:26px;overflow:hidden}
+  .barline .bf{height:100%;width:0;border-radius:7px;transition:width 1.3s ease;
+    background:linear-gradient(90deg,#2b7a8f,#21406a);color:#fff;font-size:.74rem;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--navy);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr{transition:background .15s}tbody tr:hover{background:#f4f8fc}
+  tfoot td{font-weight:bold;border-top:2px solid var(--navy);background:#f7fafd}
+  .callout{background:linear-gradient(120deg,#16304f,#21406a);color:#fff;border-radius:16px;padding:28px 30px;display:flex;gap:18px;align-items:center}
+  .callout .big{font-size:2.4rem;font-weight:bold;color:#ffe1b3;flex:none}
+  footer{background:var(--navy2);color:#cfe0ef;margin-top:50px;padding:40px 30px 26px}
+  footer .cols{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  footer h4{color:#ffe1b3;font-size:.95rem;margin-bottom:10px}
+  footer p{font-size:.86rem;opacity:.85}
+  footer .copy{max-width:1120px;margin:24px auto 0;border-top:1px solid rgba(255,255,255,.12);padding-top:16px;font-size:.8rem;opacity:.7}
+  @media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid2,footer .cols{grid-template-columns:1fr}nav.top ul{display:none}.hero h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<nav class="top">
+  <div class="brand"><span class="dot"></span>The Money Notebook</div>
+  <ul>
+    <li><a href="#flow">Cash flow</a></li>
+    <li><a href="#goals">Goals</a></li>
+    <li><a href="#accounts">Accounts</a></li>
+    <li><a href="#rule">The rule</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <h1>A tight budget, run on purpose</h1>
+  <p>One paralegal salary, one rent-stabilized apartment in Dilworth, and a plan that still finds room for savings, family, and a law school fund.</p>
+  <div class="stamp">Review month: <b>February 2026</b></div>
+</header>
+
+<div class="kpis" id="kpis">
+  <div class="kpi"><div class="v" data-c="3800" data-pre="$">$0</div><div class="l">monthly take-home</div></div>
+  <div class="kpi"><div class="v" data-c="3387" data-pre="$">$0</div><div class="l">total monthly outflow</div></div>
+  <div class="kpi"><div class="v" data-c="413" data-pre="$">$0</div><div class="l">discretionary left</div></div>
+  <div class="kpi"><div class="v" data-c="400" data-pre="$">$0</div><div class="l">to savings each month</div></div>
+</div>
+
+<main>
+  <section id="flow">
+    <div class="h2 reveal"><span class="bar"></span>Where the money goes</div>
+    <div class="sub reveal">Every dollar of the monthly outflow, the way the first-of-month review reads it.</div>
+    <div class="grid2">
+      <div class="card reveal">
+        <h3>Budget breakdown</h3>
+        <div class="donut-row">
+          <svg viewBox="0 0 200 200" width="200" height="200" id="donut" aria-label="Budget breakdown">
+            <circle cx="100" cy="100" r="78" fill="none" stroke="#eef3f8" stroke-width="30"></circle>
+            <g id="segs" transform="rotate(-90 100 100)"></g>
+            <text x="100" y="94" text-anchor="middle" font-size="12" fill="#65788a">monthly outflow</text>
+            <text x="100" y="118" text-anchor="middle" font-size="22" font-weight="bold" fill="#21406a">$3,387</text>
+          </svg>
+          <div class="legend" id="legend"></div>
+        </div>
+      </div>
+      <div class="card reveal">
+        <h3>Fixed, variable, and savings</h3>
+        <div id="splitBars"></div>
+        <p class="sub" style="margin-top:16px">Rent is one third of take-home. Helping Linda and the savings transfer are treated as fixed commitments, not extras.</p>
+      </div>
+    </div>
+    <div class="card reveal" style="margin-top:18px">
+      <h3>Full monthly budget</h3>
+      <table>
+        <thead><tr><th>Category</th><th>Type</th><th class="num">Monthly</th><th class="num">Share</th></tr></thead>
+        <tbody id="budgetBody"></tbody>
+        <tfoot><tr><td>Total outflow</td><td></td><td class="num">$3,387</td><td class="num">100%</td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section id="goals">
+    <div class="h2 reveal"><span class="bar"></span>Savings goals</div>
+    <div class="sub reveal">The $400 monthly transfer, split toward five targets.</div>
+    <div class="grid2">
+      <div class="card reveal"><h3>Progress to target</h3><div id="goalRings"></div></div>
+      <div class="card reveal"><h3>Monthly split</h3><div id="saveBars"></div>
+        <p class="sub" style="margin-top:14px">Quarterly rebalance lands in March, June, September, and December. The Bitcoin buy is a small long horizon hedge.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="accounts">
+    <div class="h2 reveal"><span class="bar"></span>Accounts and debt</div>
+    <div class="sub reveal">What is saved, and what is still owed.</div>
+    <div class="grid2">
+      <div class="card reveal"><h3>Balances</h3><div id="acctBars"></div></div>
+      <div class="card reveal"><h3>Debt remaining</h3><div id="debtBars"></div>
+        <p class="sub" style="margin-top:14px">Student loans run at 4.5 percent. The car loan covers the 2023 Civic. No other debt.</p>
+      </div>
+    </div>
+    <div class="card reveal" style="margin-top:18px">
+      <h3>Account detail</h3>
+      <table>
+        <thead><tr><th>Account</th><th>Institution</th><th class="num">Balance</th><th>Note</th></tr></thead>
+        <tbody id="acctBody"></tbody>
+        <tfoot><tr><td>Total</td><td></td><td class="num">$42,650</td><td></td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section id="rule">
+    <div class="callout reveal">
+      <div class="big">$250</div>
+      <div><b style="font-size:1.1rem">One rule guards the margin.</b><br>
+        Any single spend at or above 250 dollars waits for an explicit go-ahead. Everything else runs on the plan, first of every month.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="cols">
+    <div><h4>The Money Notebook</h4><p>A personal monthly money review kept by Jane Sparks. Figures are rounded for a quick read on the first of the month.</p></div>
+    <div><h4>The plan</h4><p>Emergency fund, Roth IRA at Alpaca, a law school sub-account, and a small Bitcoin buy at Coinbase, every month without fail.</p></div>
+    <div><h4>The horizon</h4><p>A law school fund that grows toward the spring 2027 question, and a checking buffer that keeps the month calm.</p></div>
+  </div>
+  <div class="copy">Kept privately. Not shared outside Jane.</div>
+</footer>
+
+<script>
+  function money(n){return '$'+n.toLocaleString('en-US');}
+  var budget=[
+    {c:"Rent",t:"fixed",v:1150,col:"#21406a"},{c:"Groceries",t:"variable",v:400,col:"#1f7a6d"},
+    {c:"Savings transfer",t:"fixed",v:400,col:"#c98a2e"},{c:"Car payment",t:"fixed",v:320,col:"#b5475a"},
+    {c:"Student loans",t:"fixed",v:210,col:"#4a6b8f"},{c:"Dining out",t:"variable",v:200,col:"#3d8f7f"},
+    {c:"Utilities and internet",t:"fixed",v:160,col:"#5a6fae"},{c:"Helping Linda",t:"variable",v:150,col:"#d2a04a"},
+    {c:"Car insurance",t:"fixed",v:115,col:"#8a4f5c"},{c:"Phone",t:"fixed",v:75,col:"#6b8cae"},
+    {c:"Baking supplies",t:"variable",v:60,col:"#caa05a"},{c:"Church tithe",t:"variable",v:50,col:"#7aa39a"},
+    {c:"Gym",t:"fixed",v:30,col:"#b98f4a"},{c:"Renter insurance",t:"fixed",v:25,col:"#a5707a"}
+  ];
+  var TOTAL=3387;
+  // donut
+  var sorted=budget.slice().sort(function(a,b){return b.v-a.v;});
+  var top=sorted.slice(0,7),restV=sorted.slice(7).reduce(function(s,x){return s+x.v;},0);
+  var segData=top.concat([{c:"Everything else",v:restV,col:"#c2cede"}]);
+  var segs=document.getElementById('segs'),legend=document.getElementById('legend');
+  var circ=2*Math.PI*78,acc=0;
+  segData.forEach(function(s){
+    var len=circ*(s.v/TOTAL);
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',100);c.setAttribute('cy',100);c.setAttribute('r',78);c.setAttribute('fill','none');
+    c.setAttribute('stroke',s.col);c.setAttribute('stroke-width',30);c.setAttribute('stroke-dasharray','0 '+circ);
+    c.setAttribute('stroke-dashoffset',-acc);c.style.transition='stroke-dasharray 1s ease';
+    segs.appendChild(c);(function(cc,l){setTimeout(function(){cc.setAttribute('stroke-dasharray',l+' '+(circ-l));},150);})(c,len);
+    acc+=len;
+    legend.innerHTML+='<div><span class="dot" style="background:'+s.col+'"></span>'+s.c+'<span class="amt">'+money(s.v)+'</span></div>';
+  });
+  // split
+  var g={fixed:0,variable:0};budget.forEach(function(b){g[b.t]+=b.v;});
+  var split=[{l:"Fixed costs",v:g.fixed-400,col:"#21406a"},{l:"Variable costs",v:g.variable,col:"#1f7a6d"},{l:"Savings transfer",v:400,col:"#c98a2e"}];
+  var mx=Math.max.apply(null,split.map(function(x){return x.v;}));
+  document.getElementById('splitBars').innerHTML=split.map(function(d){return '<div class="barline"><div class="lab">'+d.l+'</div><div class="bt"><div class="bf" data-w="'+(d.v/mx*100)+'" style="background:'+d.col+'">'+money(d.v)+'</div></div></div>';}).join('');
+  // budget table
+  document.getElementById('budgetBody').innerHTML=sorted.map(function(b){return '<tr><td>'+b.c+'</td><td>'+b.t+'</td><td class="num">'+money(b.v)+'</td><td class="num">'+(b.v/TOTAL*100).toFixed(1)+'%</td></tr>';}).join('');
+  // goal rings
+  var goals=[{n:"Emergency fund",cur:8500,goal:10000,col:"#1f7a6d"},{n:"401k",cur:24000,goal:30000,col:"#21406a"},
+    {n:"Roth IRA",cur:5200,goal:7000,col:"#c98a2e"},{n:"Law school fund",cur:2400,goal:6000,col:"#b5475a"},{n:"Bitcoin buy",cur:750,goal:1500,col:"#3d8f7f"}];
+  document.getElementById('goalRings').innerHTML=goals.map(function(g,i){
+    var p=Math.round(g.cur/g.goal*100);
+    return '<div style="display:flex;align-items:center;gap:14px;margin:10px 0">'+
+      '<svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="none" stroke="#e8eef5" stroke-width="8"/>'+
+      '<circle class="ring" data-p="'+p+'" cx="32" cy="32" r="27" fill="none" stroke="'+g.col+'" stroke-width="8" stroke-linecap="round" transform="rotate(-90 32 32)" stroke-dasharray="0 170"/>'+
+      '<text x="32" y="37" text-anchor="middle" font-size="13" font-weight="bold" fill="#21406a">'+p+'%</text></svg>'+
+      '<div><b style="color:#21406a">'+g.n+'</b><br><span style="color:#65788a;font-size:.85rem">'+money(g.cur)+' of '+money(g.goal)+'</span></div></div>';
+  }).join('');
+  // save split
+  var ss=[{l:"Emergency top-up",v:150},{l:"Roth IRA",v:125},{l:"Law school fund",v:100},{l:"Bitcoin buy",v:25}];
+  var mxs=Math.max.apply(null,ss.map(function(x){return x.v;}));
+  document.getElementById('saveBars').innerHTML=ss.map(function(d){return '<div class="barline"><div class="lab">'+d.l+'</div><div class="bt"><div class="bf" data-w="'+(d.v/mxs*100)+'">'+money(d.v)+'</div></div></div>';}).join('');
+  // accounts
+  var accts=[{n:"Emergency fund HYSA",i:"First Citizens Bank",v:8500,note:"4.0% APY"},{n:"401k",i:"Firm plan",v:24000,note:"6% plus 3% match"},
+    {n:"Roth IRA",i:"Alpaca",v:5200,note:"broad-market ETF"},{n:"Bitcoin DCA",i:"Coinbase",v:750,note:"$25 a month"},
+    {n:"Law school sub-account",i:"First Citizens HYSA",v:2400,note:"goal fund"},{n:"Checking buffer",i:"First Citizens",v:1800,note:"operating cash"}];
+  document.getElementById('acctBars').innerHTML=accts.slice().sort(function(a,b){return b.v-a.v;}).map(function(a){return '<div class="barline"><div class="lab">'+a.n.split(' ').slice(0,2).join(' ')+'</div><div class="bt"><div class="bf" data-w="'+(a.v/24000*100)+'">'+money(a.v)+'</div></div></div>';}).join('');
+  document.getElementById('acctBody').innerHTML=accts.map(function(a){return '<tr><td>'+a.n+'</td><td>'+a.i+'</td><td class="num">'+money(a.v)+'</td><td>'+a.note+'</td></tr>';}).join('');
+  var debts=[{l:"Student loans",v:18000,col:"linear-gradient(90deg,#b5475a,#d2697b)"},{l:"Car loan, 2023 Civic",v:12000,col:"linear-gradient(90deg,#8a4f5c,#a86d79)"}];
+  document.getElementById('debtBars').innerHTML=debts.map(function(d){return '<div class="barline"><div class="lab">'+d.l+'</div><div class="bt"><div class="bf" data-w="'+(d.v/18000*100)+'" style="background:'+d.col+'">'+money(d.v)+'</div></div></div>';}).join('');
+
+  function countUp(el){var t=+el.dataset.c,pre=el.dataset.pre||'',t0=null;
+    function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1100,1);el.textContent=pre+Math.floor(t*p).toLocaleString('en-US');
+      if(p<1)requestAnimationFrame(step);else el.textContent=pre+t.toLocaleString('en-US');}requestAnimationFrame(step);}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;e.target.classList.add('show');
+    e.target.querySelectorAll('.bf,.fill').forEach(function(b){if(!b.dataset.d){b.dataset.d=1;setTimeout(function(){b.style.width=b.dataset.w+'%';},80);}});
+    e.target.querySelectorAll('.ring').forEach(function(r){if(!r.dataset.d){r.dataset.d=1;var len=2*Math.PI*27;setTimeout(function(){r.setAttribute('stroke-dasharray',(len*r.dataset.p/100)+' '+len);r.style.transition='stroke-dasharray 1.2s ease';},80);}});
+    e.target.querySelectorAll('[data-c]').forEach(function(el){if(!el.dataset.d){el.dataset.d=1;countUp(el);}});
+  });},{threshold:.2});
+  document.querySelectorAll('.reveal,.kpi,#kpis').forEach(function(el){io.observe(el);});
+  document.querySelectorAll('.kpi').forEach(function(el){io.observe(el);});
+</script>
+</body>
+</html>
