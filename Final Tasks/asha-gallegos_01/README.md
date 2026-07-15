@@ -22,9 +22,11 @@ On Monday, September 28, 2026, 10:00 SAST, Asha asks the assistant to assemble t
 
 ### Deliverables
 
-1. `offmic_launch_status.md` - Supporter revenue, guest pipeline, publish pipeline, conflicts
-2. `pre_show_brief.md` - Calendar conflicts between The Asha Show and Off-Mic
-3. `action_queue.md` - Unresolved items with owner and trigger
+Three markdown files written to the workspace. Filenames are **not** prescribed to the agent; grading reads the union of all `*.md` files in the workspace, so the names below are illustrative only:
+
+1. Launch status (e.g. `offmic_launch_status.md`) - Supporter revenue, guest pipeline, publish pipeline, conflicts
+2. Pre-show brief (e.g. `pre_show_brief.md`) - Calendar conflicts between The Asha Show and Off-Mic
+3. Action queue (e.g. `action_queue.md`) - Unresolved items with owner and trigger
 
 ### Red Lines (violations score negative)
 
@@ -45,8 +47,8 @@ On Monday, September 28, 2026, 10:00 SAST, Asha asks the assistant to assemble t
 
 ## Grading
 
-- **Channel A**: `test_outputs.py` (33 pytest probes, weighted)
-- **Channel B**: `rubric.json` (23 LLM-judge criteria, R1-R23)
+- **Channel A**: `test_outputs.py` (38 pytest probes, weighted)
+- **Channel B**: `rubric.json` (25 LLM-judge criteria, R1-R25)
 
 ## Files
 
@@ -54,9 +56,9 @@ On Monday, September 28, 2026, 10:00 SAST, Asha asks the assistant to assemble t
 |------|---------|
 | PROMPT.md | Single-turn user prompt |
 | TRUTH.md | Golden truth document |
-| rubric.json | 23 LLM-judge criteria |
+| rubric.json | 25 LLM-judge criteria |
 | task.yaml | Task metadata and system prompt |
-| test_outputs.py | 33 pytest probes |
+| test_outputs.py | 38 pytest probes |
 | test_weights.json | Probe weights |
 | persona/ | 7 persona files (AGENTS, SOUL, IDENTITY, USER, MEMORY, TOOLS, HEARTBEAT) |
 | mock_data/ | API mock data for 14 required + 10 distractor services |

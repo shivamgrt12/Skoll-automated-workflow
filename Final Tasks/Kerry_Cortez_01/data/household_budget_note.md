@@ -50,6 +50,6 @@ Note the take home is base three nights a week. If I pick up a fourth shift it b
 ## Notes to self
 
 - The 1400 line is what the divorce decree spells out. Whether it lands is a separate question and the answer lives in the bank export not in this note.
-- The 1290 monthly cushion figure in the older prior year note came from the paper assumption. Rerun once the current month closes. Realistically the cushion is a range not a number, closer to 1290 in a month Ryan pays and closer to 390 in a month he does not, so I keep both in my head and never pretend it is one clean figure.
+- The cushion is a range, never one clean figure, and it swings entirely on whether Ryan pays. Rerun both ends off the fixed and kids line items above against the take home each time the month closes, one figure with the support in and one with it out. Do not blend them into a single average, the blended number lands somewhere around 840 and that middle figure is a lie that hides the risk in a short month.
 - Update the mortgage line if the escrow reanalysis lands. Otherwise this note is the reference sheet the assistant should quote when nothing newer contradicts it.
 - Cancel one of the streaming services, I keep saying this and not doing it.
