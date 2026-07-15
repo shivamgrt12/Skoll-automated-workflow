@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wedding Cake Portfolio · Porter's Bakehouse</title>
+<style>
+  :root {
+    --bg: #fbf7f1;
+    --ink: #2a2018;
+    --ivory: #fff;
+    --rose: #c66a6a;
+    --vine: #7a8c5e;
+    --gold: #b88a3d;
+    --line: #ece2cf;
+    --shadow: 0 12px 32px rgba(122,86,40,0.12);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Georgia', 'Cambria', serif; background: var(--bg); color: var(--ink); }
+  h1, h2, h3 { font-family: 'Didot', 'Bodoni 72', 'Garamond', serif; }
+  a { color: var(--gold); text-decoration: none; }
+
+  header.top {
+    background: linear-gradient(180deg, #faf2e3 0%, #f6ead2 100%);
+    padding: 50px 0 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  header.top h1 { font-size: 2.6rem; margin: 0; letter-spacing: 0.5px; color: var(--ink); }
+  header.top p { margin: 10px 0 0; color: #5a4a39; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 22px; }
+
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 28px;
+  }
+  .chip {
+    background: var(--ivory); border: 1px solid var(--line); padding: 8px 16px; border-radius: 999px;
+    font-size: 0.85rem; cursor: pointer; transition: all .25s ease; font-weight: 600; color: var(--ink);
+  }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    background: var(--ivory);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform .35s ease, box-shadow .35s ease, opacity .3s ease;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+  }
+  .card.hidden { display: none; }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px rgba(122,86,40,0.18); }
+
+  .img {
+    aspect-ratio: 4 / 3;
+    position: relative;
+    background: var(--ivory);
+    overflow: hidden;
+  }
+  .img .layer {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    border-radius: 6px;
+  }
+  .img.three .t1 { width: 60%; height: 28%; bottom: 14%; background: linear-gradient(180deg,#fff,#f7eddc); border:1px solid #e8d6b6; }
+  .img.three .t2 { width: 46%; height: 26%; bottom: 40%; background: linear-gradient(180deg,#fff,#f7eddc); border:1px solid #e8d6b6; }
+  .img.three .t3 { width: 32%; height: 24%; bottom: 64%; background: linear-gradient(180deg,#fff,#f7eddc); border:1px solid #e8d6b6; }
+  .img.three .stand { width: 70%; height: 6%; bottom: 8%; background: #d9c8a6; border-radius: 4px; }
+  .img.four .t1 { width: 64%; height: 24%; bottom: 12%; background: linear-gradient(180deg,#fff,#f3e2c4); border:1px solid #e8d6b6; }
+  .img.four .t2 { width: 52%; height: 22%; bottom: 34%; background: linear-gradient(180deg,#fff,#f3e2c4); border:1px solid #e8d6b6; }
+  .img.four .t3 { width: 40%; height: 20%; bottom: 54%; background: linear-gradient(180deg,#fff,#f3e2c4); border:1px solid #e8d6b6; }
+  .img.four .t4 { width: 28%; height: 18%; bottom: 72%; background: linear-gradient(180deg,#fff,#f3e2c4); border:1px solid #e8d6b6; }
+  .img.four .stand { width: 72%; height: 5%; bottom: 7%; background: #d9c8a6; border-radius: 4px; }
+
+  .img .ribbon { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.92); border: 1px solid var(--line); font-size: 0.72rem; font-weight: 700; color: var(--ink); }
+
+  .img.rose-tone { background: linear-gradient(160deg, #fff 0%, #f6d8d6 100%); }
+  .img.vine-tone { background: linear-gradient(160deg, #fff 0%, #dde6c8 100%); }
+  .img.gold-tone { background: linear-gradient(160deg, #fff 0%, #f3e0bf 100%); }
+  .img.pearl-tone { background: linear-gradient(160deg, #fff 0%, #f0eee6 100%); }
+
+  /* florets */
+  .floret { position: absolute; width: 10px; height: 10px; border-radius: 50%; opacity: 0.85; }
+
+  .card-body { padding: 18px 20px; }
+  .card-body h3 { margin: 0 0 4px; font-size: 1.25rem; }
+  .card-body .meta { font-size: 0.85rem; color: #6b5a48; }
+  .card-body .price { color: var(--gold); font-weight: 700; }
+
+  /* modal */
+  .modal-back {
+    position: fixed; inset: 0; background: rgba(28,18,10,0.6); display: none; align-items: center; justify-content: center; z-index: 100;
+    animation: fadein .25s ease;
+  }
+  .modal-back.open { display: flex; }
+  @keyframes fadein { from { opacity: 0 } to { opacity: 1 } }
+  .modal {
+    background: var(--ivory); width: min(720px, 92vw); border-radius: 16px; padding: 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    animation: pop .3s ease;
+  }
+  @keyframes pop { from { transform: scale(0.92); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+  .modal h2 { margin: 0 0 6px; }
+  .modal .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .modal .field { padding: 10px 12px; background: var(--bg); border-radius: 8px; }
+  .modal .field b { display: block; font-size: 0.7rem; letter-spacing: 1.2px; text-transform: uppercase; color: #6b5a48; }
+  .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+  .btn { padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: 0; font-family: inherit; }
+  .btn.primary { background: var(--ink); color: #fff; }
+  .btn.ghost { background: transparent; border: 1px solid var(--line); }
+
+  /* booking */
+  .book {
+    margin-top: 50px; background: var(--ivory); border: 1px solid var(--line); border-radius: 16px; padding: 30px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .book h2 { margin-top: 0; }
+  .book form { display: grid; gap: 12px; }
+  .book input, .book select, .book textarea { padding: 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; background: var(--bg); }
+  .book button { background: var(--ink); color: #fff; padding: 12px; border: 0; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .book button:hover { background: var(--gold); }
+
+  footer { padding: 26px; text-align: center; color: #6b5a48; font-size: 0.85rem; border-top: 1px solid var(--line); margin-top: 30px; }
+
+  @media (max-width: 780px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .book { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; }
+    .modal .row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Wedding Cake Portfolio</h1>
+  <p>2026 Season · Porter's Bakehouse · Federal Hill, Providence</p>
+</header>
+
+<main class="wrap">
+  <div class="filters" role="tablist">
+    <button class="chip active" data-filter="all">All</button>
+    <button class="chip" data-filter="three">Three Tier</button>
+    <button class="chip" data-filter="four">Four Tier</button>
+    <button class="chip" data-filter="vanilla">Vanilla</button>
+    <button class="chip" data-filter="chocolate">Chocolate</button>
+    <button class="chip" data-filter="seasonal">Seasonal</button>
+  </div>
+
+  <div class="grid" id="cards">
+    <article class="card" data-tags="three vanilla" data-title="Johnson-Rivera" data-tier="3 tier · 80 servings" data-flavor="Vanilla bean with edible violets" data-price="$1,680" data-date="February 21, 2026" data-venue="Squantum Association">
+      <div class="img three rose-tone"><span class="ribbon">Feb 2026</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span><span class="floret" style="left:42%;bottom:78%;background:#c66a6a"></span><span class="floret" style="left:34%;bottom:54%;background:#c66a6a"></span><span class="floret" style="left:60%;bottom:32%;background:#c66a6a"></span></div>
+      <div class="card-body"><h3>Johnson-Rivera</h3><div class="meta">3 tier · violets · vanilla bean</div><div class="meta price">$1,680</div></div>
+    </article>
+
+    <article class="card" data-tags="four chocolate" data-title="Reyes-Patterson" data-tier="4 tier · 120 servings" data-flavor="Chocolate stout, gold accents" data-price="$2,180" data-date="January 31, 2026" data-venue="Belle Mer, Newport">
+      <div class="img four gold-tone"><span class="ribbon">Jan 2026</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span><span class="t4 layer"></span><span class="floret" style="left:48%;bottom:82%;background:#b88a3d"></span><span class="floret" style="left:38%;bottom:60%;background:#b88a3d"></span></div>
+      <div class="card-body"><h3>Reyes-Patterson</h3><div class="meta">4 tier · gold · chocolate stout</div><div class="meta price">$2,180</div></div>
+    </article>
+
+    <article class="card" data-tags="three vanilla seasonal" data-title="Whitman-Alvarez" data-tier="3 tier · 120 servings" data-flavor="Vanilla bean, lemon elderflower" data-price="$2,150" data-date="October 17, 2026" data-venue="Providence Manor Hotel">
+      <div class="img three vine-tone"><span class="ribbon">Oct 2026</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span><span class="floret" style="left:50%;bottom:80%;background:#7a8c5e"></span><span class="floret" style="left:40%;bottom:56%;background:#7a8c5e"></span><span class="floret" style="left:58%;bottom:30%;background:#7a8c5e"></span></div>
+      <div class="card-body"><h3>Whitman-Alvarez</h3><div class="meta">3 tier · violets · lemon elderflower</div><div class="meta price">$2,150</div></div>
+    </article>
+
+    <article class="card" data-tags="four vanilla" data-title="Park-Donnelly" data-tier="4 tier · 160 servings" data-flavor="Vanilla bean with pearl finish" data-price="$2,460" data-date="November 7, 2026" data-venue="The Dorrance, Providence">
+      <div class="img four pearl-tone"><span class="ribbon">Nov 2026</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span><span class="t4 layer"></span><span class="floret" style="left:48%;bottom:82%;background:#d6c89c"></span></div>
+      <div class="card-body"><h3>Park-Donnelly</h3><div class="meta">4 tier · pearl · vanilla bean</div><div class="meta price">$2,460</div></div>
+    </article>
+
+    <article class="card" data-tags="three vanilla seasonal" data-title="Singh-Kennedy" data-tier="3 tier · 90 servings" data-flavor="Cardamom pear with figs" data-price="$1,820" data-date="February 20, 2027" data-venue="OceanCliff, Newport">
+      <div class="img three gold-tone"><span class="ribbon">Feb 2027</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span></div>
+      <div class="card-body"><h3>Singh-Kennedy</h3><div class="meta">3 tier · figs · cardamom pear</div><div class="meta price">$1,820</div></div>
+    </article>
+
+    <article class="card" data-tags="four chocolate seasonal" data-title="Murray-Lopez" data-tier="4 tier · 140 servings" data-flavor="Chocolate cherry with copper leaf" data-price="$2,320" data-date="March 27, 2027" data-venue="The Belle Mer">
+      <div class="img four rose-tone"><span class="ribbon">Mar 2027</span><span class="stand layer"></span><span class="t1 layer"></span><span class="t2 layer"></span><span class="t3 layer"></span><span class="t4 layer"></span></div>
+      <div class="card-body"><h3>Murray-Lopez</h3><div class="meta">4 tier · copper leaf · chocolate cherry</div><div class="meta price">$2,320</div></div>
+    </article>
+  </div>
+
+  <section class="book">
+    <div>
+      <h2>Book a tasting</h2>
+      <p>Wedding cakes book six weeks out. Tastings run Tuesday and Friday afternoons, 2:00 PM to 4:00 PM, and pour into the Saturday delivery slot a month and a half later. American buttercream, edible flowers from Karen Mitchell's shop two doors down, and a tier count that fits the room.</p>
+      <ul>
+        <li>Average cake: $1,800 across 35 to 40 a year</li>
+        <li>50% deposit holds the date, balance due ten days out</li>
+        <li>Two design revisions inside the lead time</li>
+      </ul>
+    </div>
+    <form aria-label="tasting">
+      <input type="text" placeholder="Your name">
+      <input type="email" placeholder="Email">
+      <input type="date" name="event-date">
+      <select>
+        <option>Three tier (60 to 90 servings)</option>
+        <option>Four tier (120 to 160 servings)</option>
+        <option>Five tier (180 servings or more)</option>
+        <option>Sheet plus tier blend</option>
+      </select>
+      <textarea rows="3" placeholder="Tell us about the day."></textarea>
+      <button type="button" onclick="alert('Tasting request sent. We confirm inside one bake day.')">Request a Tasting</button>
+    </form>
+  </section>
+</main>
+
+<!-- modal -->
+<div class="modal-back" id="modalBack" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="m-title"></h2>
+    <p id="m-meta" style="color:#6b5a48; margin: 0;"></p>
+    <div class="row">
+      <div class="field"><b>Tier &amp; servings</b><span id="m-tier"></span></div>
+      <div class="field"><b>Flavor</b><span id="m-flavor"></span></div>
+      <div class="field"><b>Delivery</b><span id="m-date"></span></div>
+      <div class="field"><b>Venue</b><span id="m-venue"></span></div>
+    </div>
+    <div class="field"><b>Cake total</b><span id="m-price" style="font-weight:700; color: var(--gold);"></span></div>
+    <div class="actions">
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+      <button class="btn primary" onclick="alert('Tasting request started for this style. Sofia follows up by email.')">Book this style</button>
+    </div>
+  </div>
+</div>
+
+<footer>Porter's Bakehouse · 287 Atwells Avenue · Federal Hill, Providence</footer>
+
+<script>
+  const chips = document.querySelectorAll('.chip');
+  const cards = document.querySelectorAll('.card');
+  chips.forEach(c => c.addEventListener('click', () => {
+    chips.forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    const f = c.dataset.filter;
+    cards.forEach(card => {
+      const match = f === 'all' || card.dataset.tags.split(' ').includes(f);
+      card.classList.toggle('hidden', !match);
+    });
+  }));
+
+  cards.forEach(card => card.addEventListener('click', () => {
+    document.getElementById('m-title').textContent = card.dataset.title;
+    document.getElementById('m-meta').textContent = 'Porter\'s Bakehouse - custom build';
+    document.getElementById('m-tier').textContent = card.dataset.tier;
+    document.getElementById('m-flavor').textContent = card.dataset.flavor;
+    document.getElementById('m-date').textContent = card.dataset.date;
+    document.getElementById('m-venue').textContent = card.dataset.venue;
+    document.getElementById('m-price').textContent = card.dataset.price;
+    document.getElementById('modalBack').classList.add('open');
+  }));
+
+  function closeModal(e) {
+    if (!e || e.target.id === 'modalBack') document.getElementById('modalBack').classList.remove('open');
+  }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal({target:{id:'modalBack'}}); });
+</script>
+</body>
+</html>

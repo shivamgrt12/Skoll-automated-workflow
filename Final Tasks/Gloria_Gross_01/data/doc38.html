@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>North Frisian Medieval Wreck Survey</title>
+<style>
+  :root {
+    --ink: #12243b;
+    --sea: #1f5f7a;
+    --foam: #4fa8c0;
+    --amber: #c98c2e;
+    --mist: #e8eff5;
+    --white: #fff;
+    --text: #2a3540;
+    --light-text: #5a6a78;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--text); }
+
+  /* STICKY NAV */
+  .site-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(18,36,59,0.95);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav-logo { color: white; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; }
+  .nav-logo span { color: var(--amber); }
+  .nav-menu { display: flex; gap: 24px; }
+  .nav-menu a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.84rem; transition: color 0.2s; }
+  .nav-menu a:hover { color: var(--amber); }
+  .nav-cta {
+    background: var(--amber);
+    color: var(--ink);
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: #d9a040; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--ink) 0%, #1a3d5e 50%, var(--sea) 100%);
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(79,168,192,0.15) 0%, transparent 70%);
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 640px; }
+  .hero-tag {
+    display: inline-block;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease;
+  }
+  .hero-h1 {
+    font-size: 3rem;
+    color: white;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+  .hero-h1 em { color: var(--foam); font-style: normal; }
+  .hero-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.65;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; animation: fadeUp 0.5s 0.3s ease both; }
+  .btn-main {
+    background: var(--foam);
+    color: var(--ink);
+    padding: 13px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .btn-main:hover { background: #5fbbd0; transform: translateY(-2px); }
+  .btn-ghost {
+    border: 2px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 11px 28px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+  .hero-badges {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 2;
+    animation: fadeUp 0.5s 0.4s ease both;
+  }
+  .badge-card {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: white;
+    text-align: center;
+    min-width: 140px;
+  }
+  .badge-n { font-size: 1.8rem; font-weight: 700; color: var(--foam); }
+  .badge-l { font-size: 0.68rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* BANNER */
+  .banner {
+    background: var(--amber);
+    color: var(--ink);
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .banner-dot { width: 8px; height: 8px; background: var(--ink); border-radius: 50%; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* SECTIONS */
+  section { padding: 80px 48px; }
+  .section-hd { text-align: center; margin-bottom: 52px; }
+  .s-tag { font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--foam); margin-bottom: 8px; }
+  .s-title { font-size: 2rem; color: var(--ink); font-weight: 700; }
+  .s-bar { width: 40px; height: 3px; background: var(--amber); margin: 12px auto 0; }
+
+  /* TIMELINE */
+  .timeline { max-width: 900px; margin: 0 auto; position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--foam), var(--amber));
+    transform: translateX(-50%);
+  }
+  .t-item {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 48px;
+    position: relative;
+    align-items: flex-start;
+  }
+  .t-item.right { flex-direction: row-reverse; }
+  .t-content {
+    flex: 1;
+    background: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .t-dot {
+    width: 16px; height: 16px;
+    background: var(--amber);
+    border: 3px solid white;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 20px;
+    box-shadow: 0 0 0 3px var(--amber);
+    position: relative;
+    z-index: 2;
+  }
+  .t-year { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--foam); margin-bottom: 4px; font-weight: 600; }
+  .t-title { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .t-desc { font-size: 0.83rem; color: var(--light-text); line-height: 1.6; }
+  .t-spacer { flex: 1; }
+
+  /* TEAM */
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .team-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .team-card:hover { transform: translateY(-4px); }
+  .team-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sea), var(--foam));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin: 0 auto 14px;
+  }
+  .team-name { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .team-role { font-size: 0.78rem; color: var(--foam); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .team-inst { font-size: 0.8rem; color: var(--light-text); }
+
+  /* NEWS */
+  .news-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .news-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+  }
+  .news-top { height: 6px; background: linear-gradient(90deg, var(--sea), var(--foam)); }
+  .news-body { padding: 20px 22px; flex: 1; }
+  .news-date { font-size: 0.72rem; color: var(--foam); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .news-title { font-size: 0.93rem; font-weight: 700; color: var(--ink); margin-bottom: 10px; line-height: 1.4; }
+  .news-desc { font-size: 0.82rem; color: var(--light-text); line-height: 1.6; }
+
+  /* FOOTER */
+  footer { background: var(--ink); color: rgba(255,255,255,0.65); padding: 48px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 36px; max-width: 1200px; }
+  .fc h4 { color: var(--amber); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; }
+  .fc p, .fc a { font-size: 0.82rem; line-height: 1.9; color: rgba(255,255,255,0.6); text-decoration: none; display: block; }
+  .fc a:hover { color: var(--amber); }
+  .footer-bot { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.3); max-width: 1200px; }
+
+  @media(max-width:900px) {
+    .site-nav { padding: 12px 20px; }
+    .nav-menu { display: none; }
+    .hero { padding: 90px 20px 60px; }
+    .hero-h1 { font-size: 2rem; }
+    .hero-badges { display: none; }
+    section { padding: 60px 20px; }
+    .timeline::before { left: 16px; }
+    .t-item, .t-item.right { flex-direction: column; padding-left: 40px; }
+    .t-dot { position: absolute; left: 0; top: 12px; }
+    .t-spacer { display: none; }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .news-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-logo">NORTH FRISIAN <span>WRECK SURVEY</span></div>
+  <div class="nav-menu">
+    <a href="#project">Project</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#team">Team</a>
+    <a href="#news">News</a>
+  </div>
+  <a href="#contact-section" class="nav-cta">Contact</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">DFG Project GR 4471/3 &nbsp;|&nbsp; 2023-2027</div>
+    <h1 class="hero-h1">Recovering <em>Hanseatic</em> Stories from the North Sea Floor</h1>
+    <p class="hero-sub">The North Frisian Medieval Wreck Survey investigates a cluster of 14th-century Hanseatic vessel remains in the shallow waters off the North Frisian Islands, combining multibeam sonar survey, controlled excavation, and close community partnership with Frisian heritage representatives.</p>
+    <div class="hero-btns">
+      <a href="#project" class="btn-main">About the Project</a>
+      <a href="#news" class="btn-ghost">Latest Updates</a>
+    </div>
+  </div>
+  <div class="hero-badges">
+    <div class="badge-card"><div class="badge-n">3</div><div class="badge-l">Field seasons</div></div>
+    <div class="badge-card"><div class="badge-n">84</div><div class="badge-l">Finds in 2025</div></div>
+    <div class="badge-card"><div class="badge-n">14th C</div><div class="badge-l">Vessel date</div></div>
+  </div>
+</div>
+
+<div class="banner">
+  <div class="banner-dot"></div>
+  Phase 3 (2025) successfully completed. 84 finds catalogued. Phase 4 planning underway for summer 2027.
+</div>
+
+<section id="project">
+  <div class="section-hd">
+    <div class="s-tag">Overview</div>
+    <h2 class="s-title">About the Project</h2>
+    <div class="s-bar"></div>
+  </div>
+  <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+    <div>
+      <p style="line-height:1.75; margin-bottom:16px; color:#444;">The German Bight hides one of the most archaeologically significant concentrations of medieval shipwrecks in northern Europe. Where the Hanseatic trade routes crossed the shallow shelf sea off the North Frisian coast, vessels were lost to storms, navigational hazards, and the harsh conditions of the outer Wattenmeer.</p>
+      <p style="line-height:1.75; margin-bottom:16px; color:#444;">Our project focuses on a cluster of sonar anomalies first identified from archival research. Phase 1 completed systematic MBES coverage. Phase 2 confirmed the presence of a major organic timber deposit at Site NF-7. Phase 3 achieved detailed excavation and recovered 84 individually catalogued finds, including a significant 2.4-metre clinker plank section.</p>
+      <p style="line-height:1.75; color:#444;">Phase 4 (planned summer 2027) will extend NF-7 documentation and investigate Target T08, a sonar anomaly detected in August 2025 that may represent an adjacent wreck deposit.</p>
+    </div>
+    <div>
+      <div style="background:var(--mist); border-radius:12px; padding:24px;">
+        <h3 style="color:var(--ink); margin-bottom:16px; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.08em;">Project Facts</h3>
+        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.85rem;">
+          <div><strong>Lead institution:</strong> Nordmeer Maritime University</div>
+          <div><strong>Funder:</strong> Deutsche Forschungsgemeinschaft (DFG)</div>
+          <div><strong>Reference:</strong> DFG GR 4471/3</div>
+          <div><strong>PI:</strong> Prof. Dr. Gloria Gross</div>
+          <div><strong>Period:</strong> 2023-2027</div>
+          <div><strong>Primary site:</strong> NF-7, North Frisian Islands</div>
+          <div><strong>Site depth:</strong> 11.5-14.2 metres</div>
+          <div><strong>Partners:</strong> Hamburg Maritime Museum, Caledonia Maritime University, Frisian Cultural Heritage (Aurich)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline" style="background:var(--mist);">
+  <div class="section-hd">
+    <div class="s-tag">History</div>
+    <h2 class="s-title">Project Timeline</h2>
+    <div class="s-bar"></div>
+  </div>
+  <div class="timeline">
+    <div class="t-item">
+      <div class="t-content">
+        <div class="t-year">2020-2022</div>
+        <div class="t-title">Archival Research and Reconnaissance</div>
+        <div class="t-desc">Systematic review of historical charts, Hanseatic trade records, and existing survey data identified the North Frisian anomaly cluster as a priority investigation target. Community consultation programme initiated with Frisian heritage liaison.</div>
+      </div>
+      <div class="t-dot"></div>
+      <div class="t-spacer"></div>
+    </div>
+    <div class="t-item right">
+      <div class="t-content">
+        <div class="t-year">2023 - Phase 1</div>
+        <div class="t-title">MBES Survey and Site Selection</div>
+        <div class="t-desc">Systematic multibeam sonar survey of 12 km2. 47 candidate anomalies identified and classified. NF-7 confirmed as the primary investigation priority on the basis of its H1-class signature and position in the historical navigation channel.</div>
+      </div>
+      <div class="t-dot"></div>
+      <div class="t-spacer"></div>
+    </div>
+    <div class="t-item">
+      <div class="t-content">
+        <div class="t-year">2024 - Phase 2</div>
+        <div class="t-title">Test Trenches and Confirmation</div>
+        <div class="t-desc">Test trenches at NF-7 confirmed substantial organic preservation and established stratigraphic context. 22 finds recovered. Clinker hull construction confirmed. Preliminary dating range 1350-1420 proposed on ceramic and structural evidence.</div>
+      </div>
+      <div class="t-dot"></div>
+      <div class="t-spacer"></div>
+    </div>
+    <div class="t-item right">
+      <div class="t-content">
+        <div class="t-year">2025 - Phase 3</div>
+        <div class="t-title">Detailed Excavation - 84 Finds</div>
+        <div class="t-desc">Full photogrammetric mosaic of exposed hull timbers. 84 finds catalogued. NF7-014 plank section (2.4m) recovered. Target T08 identified as possible adjacent wreck. Dendrochronology samples at Caledonia Maritime University for analysis.</div>
+      </div>
+      <div class="t-dot"></div>
+      <div class="t-spacer"></div>
+    </div>
+    <div class="t-item">
+      <div class="t-content">
+        <div class="t-year">2026-2027 - Phase 4</div>
+        <div class="t-title">Planning and Phase 4 Field Season</div>
+        <div class="t-desc">DFG Phase 4 submission due November 2026. Field season planned from Husum base camp, summer 2027. Objectives: extend NF-7 documentation, investigate Target T08, complete sediment coring programme. EU Horizon decision expected Q4 2026.</div>
+      </div>
+      <div class="t-dot"></div>
+      <div class="t-spacer"></div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="section-hd">
+    <div class="s-tag">People</div>
+    <h2 class="s-title">Project Team</h2>
+    <div class="s-bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">&#9875;</div>
+      <div class="team-name">Prof. Dr. Gloria Gross</div>
+      <div class="team-role">Principal Investigator</div>
+      <div class="team-inst">Nordmeer Maritime University</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">&#127955;</div>
+      <div class="team-name">Nils Johansen</div>
+      <div class="team-role">Dive Master, Field Lead</div>
+      <div class="team-inst">Nordkai Marine Services</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">&#127963;</div>
+      <div class="team-name">Dr. Frida Moe</div>
+      <div class="team-role">Conservation Partner</div>
+      <div class="team-inst">Hamburg Maritime Museum</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">&#127758;</div>
+      <div class="team-name">Prof. James Whitfield</div>
+      <div class="team-role">International Co-Investigator</div>
+      <div class="team-inst">Caledonia Maritime University</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">&#128081;</div>
+      <div class="team-name">Ailo Reimer</div>
+      <div class="team-role">Frisian Heritage Liaison</div>
+      <div class="team-inst">Cultural Heritage, Aurich</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">&#128203;</div>
+      <div class="team-name">Anja Bergmann</div>
+      <div class="team-role">Survey Diver / PhD Candidate</div>
+      <div class="team-inst">Nordmeer Maritime University</div>
+    </div>
+  </div>
+</section>
+
+<section id="news" style="background:var(--mist);">
+  <div class="section-hd">
+    <div class="s-tag">Updates</div>
+    <h2 class="s-title">Latest News</h2>
+    <div class="s-bar"></div>
+  </div>
+  <div class="news-grid">
+    <div class="news-card">
+      <div class="news-top"></div>
+      <div class="news-body">
+        <div class="news-date">October 2025</div>
+        <div class="news-title">Phase 3 Final Report Submitted to DFG</div>
+        <div class="news-desc">The Phase 3 final report, including the full finds catalogue and the Phase 4 planning outline, was submitted to the DFG on 07 October 2025. Acknowledgement of receipt received 14 October.</div>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top"></div>
+      <div class="news-body">
+        <div class="news-date">November 2025</div>
+        <div class="news-title">Conservation Assessment Complete at Hamburg Maritime Museum</div>
+        <div class="news-desc">Dr. Frida Moe and the conservation team completed condition assessments for all 84 Phase 3 finds. Iron desalination and PEG timber treatment underway. Exhibition planning discussions commenced.</div>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top"></div>
+      <div class="news-body">
+        <div class="news-date">January 2026</div>
+        <div class="news-title">New Publication: Sonar Methods in Nordic Journal of Maritime Archaeology</div>
+        <div class="news-desc">Gross and Whitfield (2026) published in the Nordic Journal of Maritime Archaeology, presenting the NF-7 sonar methodology and its validation results across three field seasons.</div>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top"></div>
+      <div class="news-body">
+        <div class="news-date">February 2026</div>
+        <div class="news-title">EU Horizon Application Submitted</div>
+        <div class="news-desc">The joint EU Horizon application (reference 101187724) on climate change and submerged heritage was submitted in February 2026. Decision expected by 31 December 2026. Five-year programme if funded.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact-section">
+  <div class="section-hd">
+    <div class="s-tag">Get in Touch</div>
+    <h2 class="s-title">Contact the Project</h2>
+    <div class="s-bar"></div>
+  </div>
+  <div style="max-width:600px; margin:0 auto; text-align:center;">
+    <p style="color:#555; margin-bottom:28px; line-height:1.7;">For research enquiries, collaboration proposals, or media requests, contact the Principal Investigator. For questions about the community consultation programme, contact the Frisian cultural liaison directly via the PI.</p>
+    <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+      <div style="font-size:1rem; color:var(--sea);">&#9993; g.gross@nordmeer-maritime.de</div>
+      <div style="font-size:0.9rem; color:#666;">Am Sandtorkai 48, 20457 Hamburg, Germany</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="fc">
+      <h4>North Frisian Medieval Wreck Survey</h4>
+      <p>DFG-funded investigation of medieval Hanseatic wrecks in the North Frisian Islands. Part of the wider North Sea Coastal Heritage Mapping programme.</p>
+    </div>
+    <div class="fc">
+      <h4>Project Team</h4>
+      <a href="#">Nordmeer Maritime University</a>
+      <a href="#">Hamburg Maritime Museum</a>
+      <a href="#">Caledonia Maritime University</a>
+    </div>
+    <div class="fc">
+      <h4>Links</h4>
+      <a href="#">DFG Funding Portal</a>
+      <a href="#">Project Blog</a>
+      <a href="#">Publications</a>
+    </div>
+    <div class="fc">
+      <h4>Contact</h4>
+      <p>Prof. Dr. Gloria Gross</p>
+      <p>Am Sandtorkai 48</p>
+      <p>20457 Hamburg</p>
+    </div>
+  </div>
+  <div class="footer-bot">Site NF-7 coordinates and unpublished research data are restricted. This project site is for public information only. &copy; 2025 Nordmeer Maritime University / Hamburg Maritime Museum.</div>
+</footer>
+
+</body>
+</html>

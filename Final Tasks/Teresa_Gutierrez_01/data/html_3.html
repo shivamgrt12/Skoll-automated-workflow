@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U8 Orange • Bangor Youth Soccer</title>
+<style>
+  :root{
+    --bg:#fff8f0; --ink:#2a2530; --paper:#ffffff;
+    --orange:#d7651f; --orange2:#f48d31; --charcoal:#2b303a;
+    --line:#f1e2cf; --muted:#7a6f64;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  a{color:var(--orange);text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+
+  header.site{
+    background:var(--charcoal);color:#fff;
+    border-bottom:6px solid var(--orange);
+  }
+  header.site .row{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;flex-wrap:wrap;gap:14px}
+  .logo{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.5px}
+  .ball{
+    width:32px;height:32px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#fff 0,#fff 40%,#d7651f 41%,#d7651f 100%);
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);
+  }
+  nav.top a{
+    color:#f3e8db;font-weight:600;font-size:13px;letter-spacing:.04em;padding:8px 12px;border-radius:8px;
+    transition:.18s background,.18s color
+  }
+  nav.top a:hover{background:rgba(255,255,255,.08);color:#fff}
+
+  .hero{
+    padding:54px 0 64px;
+    background:
+      radial-gradient(60% 80% at 80% 0%, rgba(244,141,49,.25), transparent 60%),
+      linear-gradient(135deg,#2b303a 0%,#1d2129 70%);
+    color:#fff;
+  }
+  .hero h1{font-size:42px;line-height:1.1;max-width:780px}
+  .hero p.lead{margin-top:14px;font-size:18px;color:#ffe1c4;max-width:680px}
+  .pills{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.10);color:#fff;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
+
+  section{padding:54px 0}
+  section h2{font-size:26px;color:var(--charcoal)}
+  section p.intro{color:var(--muted);max-width:680px;margin-top:8px}
+
+  /* Roster */
+  .roster{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+  @media (max-width:900px){.roster{grid-template-columns:repeat(2,1fr)}}
+  .player{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;
+    transition:.22s transform,.22s box-shadow
+  }
+  .player:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(60,40,15,.10)}
+  .num{
+    width:48px;height:48px;border-radius:50%;background:var(--orange);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;
+  }
+  .player.coach .num{background:var(--charcoal)}
+  .player .name{font-weight:700}
+  .player .parent{font-size:12px;color:var(--muted)}
+
+  /* Schedule accordion */
+  .schedule{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+  details.game{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;
+    transition:.18s background
+  }
+  details.game[open]{background:#fff3e2}
+  details.game summary{
+    display:flex;justify-content:space-between;cursor:pointer;font-weight:700;color:var(--charcoal);
+    list-style:none
+  }
+  details.game summary::-webkit-details-marker{display:none}
+  details.game summary .when{color:var(--orange);font-weight:600}
+  details.game .body{margin-top:10px;color:var(--muted);font-size:14px}
+
+  /* Drills */
+  .drills{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+  @media (max-width:900px){.drills{grid-template-columns:1fr}}
+  .drill{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;
+    border-top:4px solid var(--orange);
+    transition:.22s transform
+  }
+  .drill:nth-child(2){border-top-color:var(--charcoal)}
+  .drill:nth-child(3){border-top-color:#3a7a4d}
+  .drill:hover{transform:translateY(-3px)}
+  .drill h3{font-size:17px;color:var(--charcoal)}
+  .drill .meta{font-size:12px;color:var(--muted);margin:6px 0 10px}
+  .drill ul{padding-left:18px;color:var(--ink);font-size:14px}
+  .drill li{padding:3px 0}
+
+  /* Stats stripe */
+  .stripe{background:var(--charcoal);color:#fff;padding:30px 0}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media (max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+  .stat-grid div{text-align:center}
+  .stat-grid .n{font-size:34px;font-weight:800;color:var(--orange2)}
+  .stat-grid .l{font-size:12px;color:#d3c8be;text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+  /* Form */
+  form.signup{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:560px}
+  label{font-size:12px;color:var(--charcoal);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  input,select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;
+    font:14px/1.4 inherit;color:var(--ink);margin-top:4px;background:#fffaf2
+  }
+  input:focus,select:focus{outline:2px solid var(--orange2);border-color:var(--orange2);background:#fff}
+  .field+.field{margin-top:12px}
+  .btn{
+    background:var(--orange);color:#fff;border:none;padding:10px 16px;border-radius:9px;
+    cursor:pointer;font:700 13px/1 inherit;letter-spacing:.04em;
+    transition:.18s background,.18s transform
+  }
+  .btn:hover{background:var(--orange2);transform:translateY(-1px)}
+  .msg{margin-top:10px;color:var(--orange);font-size:13px;min-height:18px}
+
+  footer.site{
+    background:#1d2129;color:#c7c1bb;padding:36px 0 18px;margin-top:40px;border-top:4px solid var(--orange)
+  }
+  footer.site .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:0 22px}
+  footer.site h5{color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+  footer.site .legal{margin-top:20px;padding:14px 22px 0;border-top:1px solid #2c3340;text-align:center;font-size:12px;color:#857f78}
+  @media (max-width:900px){footer.site .grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="row">
+    <div class="logo"><div class="ball"></div>U8 Orange</div>
+    <nav class="top">
+      <a href="#about">About</a>
+      <a href="#roster">Roster</a>
+      <a href="#schedule">Schedule</a>
+      <a href="#drills">Drills</a>
+      <a href="#signup">Spring sign-up</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="about">
+  <div class="wrap">
+    <h1>U8 Orange, Bangor Youth Soccer.</h1>
+    <p class="lead">Eight players, eyes up, a complete pass before the goal. Coach Teresa and a parent ring that shows up. Saturdays at 9:00 AM, fall and spring.</p>
+    <div class="pills">
+      <span class="pill">Fall record: 4 wins, 2 ties, 1 loss</span>
+      <span class="pill">Practice Saturdays 8:00 AM</span>
+      <span class="pill">Coach Teresa Gutierrez</span>
+    </div>
+  </div>
+</section>
+
+<section id="roster">
+  <div class="wrap">
+    <h2>Roster</h2>
+    <p class="intro">Eight on the team. Hover a card for parent contact.</p>
+    <div class="roster">
+      <div class="player coach"><div class="num">C</div><div class="name">Coach Teresa</div><div class="parent">207-555-0147</div></div>
+      <div class="player"><div class="num">3</div><div class="name">Luc Gutierrez</div><div class="parent">Parent: Teresa Gutierrez</div></div>
+      <div class="player"><div class="num">5</div><div class="name">Owen Pelletier</div><div class="parent">Parent: Sarah Pelletier</div></div>
+      <div class="player"><div class="num">7</div><div class="name">Mason Cyr</div><div class="parent">Parent: Adam Cyr</div></div>
+      <div class="player"><div class="num">8</div><div class="name">Liam Bouchard</div><div class="parent">Parent: Renee Bouchard</div></div>
+      <div class="player"><div class="num">11</div><div class="name">Noah Levesque</div><div class="parent">Parent: Paul Levesque</div></div>
+      <div class="player"><div class="num">12</div><div class="name">Henry Robichaud</div><div class="parent">Parent: Kim Robichaud</div></div>
+      <div class="player"><div class="num">14</div><div class="name">Eli Thibodeau</div><div class="parent">Parent: Marc Thibodeau</div></div>
+      <div class="player"><div class="num">16</div><div class="name">Jack Ouellette</div><div class="parent">Parent: Dawn Ouellette</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="stripe">
+  <div class="wrap stat-grid">
+    <div><div class="n">7</div><div class="l">Games this fall</div></div>
+    <div><div class="n">21</div><div class="l">Goals scored</div></div>
+    <div><div class="n">8</div><div class="l">Players</div></div>
+    <div><div class="n">100%</div><div class="l">Parents on the contact ring</div></div>
+  </div>
+</section>
+
+<section id="schedule">
+  <div class="wrap">
+    <h2>Schedule</h2>
+    <p class="intro">Fall season recap. Spring schedule posts in March.</p>
+    <div class="schedule">
+      <details class="game"><summary><span>Brewer Blue</span><span class="when">Sat Sep 12 • 9:00 AM</span></summary>
+        <div class="body">Bangor field 2. Result W 4-2. Two goals from Mason, one each from Luc and Noah. Defense held shape after the first ten minutes.</div>
+      </details>
+      <details class="game"><summary><span>Hampden Stars</span><span class="when">Sat Sep 19 • 9:00 AM</span></summary>
+        <div class="body">Hampden park. Result T 3-3. Wind off the river, kids adjusted on the second half kickoff. First clean wall pass of the season.</div>
+      </details>
+      <details class="game"><summary><span>Orrington Owls</span><span class="when">Sat Sep 26 • 9:00 AM</span></summary>
+        <div class="body">Bangor field 2. Result L 2-4. Talked about transition defense the next practice. Heads up.</div>
+      </details>
+      <details class="game"><summary><span>Holden Hawks</span><span class="when">Sat Oct 3 • 9:00 AM</span></summary>
+        <div class="body">Holden field. Result W 5-1. Every player got a touch in the final third.</div>
+      </details>
+      <details class="game"><summary><span>Brewer Red</span><span class="when">Sat Oct 10 • 9:00 AM</span></summary>
+        <div class="body">Bangor field 3. Result W 3-0. Three completed passes before each goal. Worked the way we practiced it.</div>
+      </details>
+      <details class="game"><summary><span>Bangor Maroon</span><span class="when">Sat Oct 24 • 9:00 AM</span></summary>
+        <div class="body">Bangor field 2. Result W 2-1. Game ball stayed with Luc, his first.</div>
+      </details>
+      <details class="game"><summary><span>Hampden Stars (return)</span><span class="when">Sat Nov 7 • 9:00 AM</span></summary>
+        <div class="body">Bangor field 2. Result T 2-2. Best defensive shape of the season, kept their forward off the back line.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="drills">
+  <div class="wrap">
+    <h2>How we practice</h2>
+    <p class="intro">Three drills, every Saturday, one hour.</p>
+    <div class="drills">
+      <div class="drill">
+        <h3>Gates game</h3>
+        <div class="meta">15 minutes • dribbling</div>
+        <ul>
+          <li>Set ten cone gates across a 20 by 20 grid</li>
+          <li>Dribble through as many as you can in 90 seconds</li>
+          <li>Call out the color of the cone you pass</li>
+          <li>Cue word: eyes up</li>
+        </ul>
+      </div>
+      <div class="drill">
+        <h3>Pass and follow</h3>
+        <div class="meta">15 minutes • passing</div>
+        <ul>
+          <li>Triangle of three players, two balls</li>
+          <li>Inside-foot pass, follow your pass</li>
+          <li>Plant foot pointing at the target</li>
+          <li>Switch the triangle direction after 30 reps</li>
+        </ul>
+      </div>
+      <div class="drill">
+        <h3>Three on three</h3>
+        <div class="meta">15 minutes • small sided</div>
+        <ul>
+          <li>Small goals, no keepers</li>
+          <li>One point for a completed pass before the goal</li>
+          <li>Rotate teams every two goals</li>
+          <li>End with the freeze drill on transition</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="signup">
+  <div class="wrap">
+    <h2>Spring sign-up</h2>
+    <p class="intro">Add your player to the spring 2027 roster. Six game season starting April 17, plus the Memorial Day weekend tournament if you want it.</p>
+    <form class="signup" onsubmit="return submit(event)">
+      <div class="field"><label for="p">Player name</label><input id="p" required></div>
+      <div class="field"><label for="a">Player age (turning by April 17)</label><input id="a" type="number" min="5" max="9" required></div>
+      <div class="field"><label for="c">Parent contact</label><input id="c" placeholder="Phone or email"></div>
+      <div class="field"><label for="t">Tournament weekend</label>
+        <select id="t">
+          <option>Yes, count us in</option>
+          <option>No, regular season only</option>
+          <option>Maybe, ask in April</option>
+        </select>
+      </div>
+      <div class="field"><button class="btn" type="submit">Send to Coach Teresa</button></div>
+      <div class="msg" id="m"></div>
+    </form>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="grid">
+    <div>
+      <h5>Coach</h5>
+      <p>Teresa Gutierrez<br>207-555-0147<br>teresa.gutierrez@finthesiss.ai</p>
+    </div>
+    <div>
+      <h5>Where we play</h5>
+      <p>Bangor Parks fields<br>Saturday mornings, fall and spring</p>
+    </div>
+    <div>
+      <h5>League</h5>
+      <p>Bangor Youth Soccer<br>U8 division</p>
+    </div>
+  </div>
+  <div class="legal">U8 Orange • Bangor Youth Soccer • parent volunteer site</div>
+</footer>
+
+<script>
+  function submit(e){
+    e.preventDefault();
+    document.getElementById('m').textContent = "Got it. Coach Teresa will confirm by email before the season opens.";
+    e.target.reset();
+    return false;
+  }
+</script>
+</body>
+</html>

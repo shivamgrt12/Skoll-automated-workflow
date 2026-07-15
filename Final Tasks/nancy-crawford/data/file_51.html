@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Practice Dashboard . Nancy Crawford</title>
+<style>
+:root{--bg:#f3f5f4;--card:#ffffff;--ink:#1d2a2a;--soft:#5e7070;--line:#dde5e3;--teal:#1f8a86;--rust:#b5763e;--slate:#3e6e86;--gold:#caa15a;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:#13302e;color:#eaf4f2;padding:26px 5vw;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+header h1{font-size:24px;font-weight:600}
+header .sub{color:#9fc0bc;font-size:14px;margin-top:4px}
+header .as-of{font-size:13px;color:#9fc0bc;text-align:right}
+.bar{background:var(--teal);height:4px}
+main{padding:30px 5vw 60px;max-width:1240px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-bottom:26px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--teal)}
+.kpi.r::before{background:var(--rust)}.kpi.s::before{background:var(--slate)}.kpi.g::before{background:var(--gold)}
+.kpi .v{font-size:32px;font-weight:700}
+.kpi .k{font-size:13px;color:var(--soft);letter-spacing:.4px;margin-top:4px}
+.kpi .d{font-size:12px;color:var(--teal);margin-top:6px}
+.panels{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}
+.panel h2{font-size:16px;margin-bottom:4px}
+.panel .pn{font-size:12px;color:var(--soft);margin-bottom:18px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:13px;color:var(--soft)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:#fff;color:var(--soft);padding:7px 16px;border-radius:30px;cursor:pointer;font-size:13px;transition:.2s}
+.filters button.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--soft);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
+.tag.c{background:#e3f1ea;color:#2c6b4a}.tag.p{background:#fdeede;color:#9a5a1e}
+.tag.d{background:#e6eef4;color:#345a78}.tag.x{background:#eee;color:#666}
+footer{background:#13302e;color:#9fc0bc;padding:30px 5vw;font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.barrow{display:flex;align-items:center;margin:11px 0;font-size:14px}
+.barrow .lab{width:130px;color:var(--soft)}
+.barrow .track{flex:1;background:#eef3f1;border-radius:6px;height:22px;overflow:hidden;margin:0 12px}
+.barrow .fill{height:100%;width:0;border-radius:6px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.barrow .val{width:54px;text-align:right;font-weight:700}
+@media(max-width:880px){.panels{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Studio Practice Dashboard</h1><div class="sub">Nancy Crawford . Mixed-media studio, Philadelphia</div></div>
+  <div class="as-of">Snapshot from working records<br>October 2026 . US dollars</div>
+</header>
+<div class="bar"></div>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v">17</div><div class="k">Works tracked</div><div class="d">across studio and galleries</div></div>
+    <div class="kpi r"><div class="v">8</div><div class="k">Complete and ready</div><div class="d">6 in progress, 1 in design</div></div>
+    <div class="kpi s"><div class="v">$27,700</div><div class="k">Found Light retail value</div><div class="d">twelve works, gallery split 50%</div></div>
+    <div class="kpi g"><div class="v">$52,000</div><div class="k">Annual income</div><div class="d">teaching and studio combined</div></div>
+  </div>
+
+  <div class="panels">
+    <div>
+      <div class="panel">
+        <h2>Inventory by status</h2><div class="pn">Where every tracked work sits today</div>
+        <div id="statusChart"></div>
+      </div>
+      <div class="panel">
+        <h2>2025 studio expenses by category</h2><div class="pn">Schedule C support, total $7,460</div>
+        <div id="expChart"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Income split</h2><div class="pn">Gross, calendar year</div>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <svg id="donut" width="190" height="190" viewBox="0 0 190 190" aria-label="Income split"></svg>
+          <div class="legend" style="flex-direction:column;align-items:flex-start;gap:10px">
+            <div><i style="background:var(--slate)"></i>Studio and galleries $31,000</div>
+            <div><i style="background:var(--gold)"></i>Teaching $21,000</div>
+            <div style="color:var(--ink);font-weight:600;margin-top:4px">Total $52,000</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Consignment on hand</h2><div class="pn">Brooklyn gallery, retail value</div>
+        <div class="barrow"><span class="lab">On view</span><div class="track"><div class="fill" style="background:var(--teal)" data-w="74"></div></div><span class="val">$8,500</span></div>
+        <div class="barrow"><span class="lab">Reserved</span><div class="track"><div class="fill" style="background:var(--slate)" data-w="17"></div></div><span class="val">$2,000</span></div>
+        <div class="barrow"><span class="lab">Sold 2025</span><div class="track"><div class="fill" style="background:var(--rust)" data-w="13"></div></div><span class="val">$1,500</span></div>
+        <div class="pn" style="margin-top:14px;margin-bottom:0">Total retail on hand $11,500 across seven works.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Works register</h2><div class="pn">Filter by year of making</div>
+    <div class="filters" id="yf">
+      <button class="active" data-y="all">All years</button>
+      <button data-y="2024">2024</button>
+      <button data-y="2025">2025</button>
+      <button data-y="2026">2026</button>
+    </div>
+    <table><thead><tr><th>Ref</th><th>Title</th><th>Year</th><th>Status</th><th>Location</th><th>Value</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+  </div>
+</main>
+<footer>
+  <div><strong style="color:#eaf4f2">Studio Practice Dashboard</strong><br>Internal working view, for the studio only.</div>
+  <div>Figures tie to the Airtable inventory and the filed 2025 ledger.<br>Prepared with Greenleaf Financial at tax time.</div>
+  <div>Nancy Crawford<br>nancy.crawford@finthesiss.ai</div>
+</footer>
+<script>
+var WORKS=[
+ ['NC-101','Tide Register I',2025,'Complete','Ironwork','$2,400'],
+ ['NC-102','Tide Register II',2025,'Complete','Ironwork','$2,400'],
+ ['NC-103','Frankford Nocturne',2025,'Complete','Ironwork','$1,800'],
+ ['NC-104','Rust Letter',2025,'Complete','Ironwork','$1,600'],
+ ['NC-105','Delaware Edge',2026,'Complete','Ironwork','$3,200'],
+ ['NC-106','Quiet Register VII',2026,'Complete','Ironwork','$2,200'],
+ ['NC-107','Penn Treaty Morning',2026,'Complete','Ironwork','$1,800'],
+ ['NC-108','Ledger of Small Light',2026,'Complete','Ironwork','$1,900'],
+ ['NC-109','Found Light',2026,'In progress','Studio','$3,600'],
+ ['NC-110','Schuylkill Trace',2026,'In progress','Studio','$2,400'],
+ ['NC-111','Tide Register III',2026,'In progress','Studio','$2,400'],
+ ['NC-112','Untitled (window)',2026,'In progress','Studio','$2,000'],
+ ['NC-C01','Confluence, panel 1',2026,'In progress','Commission','Commission'],
+ ['NC-C02','Confluence, panel 2',2026,'In progress','Commission','Commission'],
+ ['NC-C03','Confluence, panel 3',2026,'Design done','Commission','Commission'],
+ ['NC-090','Marks of Industry IV',2024,'Sold','Brooklyn','$1,500'],
+ ['NC-088','Surface and Trace II',2024,'Consigned','Brooklyn','$1,400']
+];
+var tagcls={'Complete':'c','In progress':'p','Design done':'d','Sold':'x','Consigned':'x'};
+function render(y){var tb=document.getElementById('rows');tb.innerHTML='';
+ WORKS.filter(function(w){return y==='all'||w[2]==(+y)}).forEach(function(w){
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+w[0]+'</td><td>'+w[1]+'</td><td>'+w[2]+'</td><td><span class="tag '+tagcls[w[3]]+'">'+w[3]+'</span></td><td>'+w[4]+'</td><td>'+w[5]+'</td>';
+  tb.appendChild(tr);});}
+render('all');
+document.querySelectorAll('#yf button').forEach(function(b){b.addEventListener('click',function(){
+  document.querySelectorAll('#yf button').forEach(function(x){x.classList.remove('active')});
+  b.classList.add('active');render(b.dataset.y);});});
+// status bar chart
+var STAT=[['Complete',8,'#1f8a86'],['In progress',6,'#b5763e'],['Design done',1,'#3e6e86'],['Sold',1,'#8aa0a8'],['Consigned',1,'#caa15a']];
+var sc=document.getElementById('statusChart');var mx=8;
+STAT.forEach(function(s){var r=document.createElement('div');r.className='barrow';
+ r.innerHTML='<span class="lab">'+s[0]+'</span><div class="track"><div class="fill" style="background:'+s[2]+'" data-w="'+(s[1]/mx*100)+'"></div></div><span class="val">'+s[1]+'</span>';
+ sc.appendChild(r);});
+// expenses bar chart
+var EXP=[['Supplies',2291],['Commissions',2200],['Framing',1260],['Travel',572],['Shipping',500],['Professional',300],['Website',192],['Equipment',145]];
+var ec=document.getElementById('expChart');var emx=2291;var cols=['#1f8a86','#3e6e86','#b5763e','#caa15a','#7a9a98','#a36a3e','#557b94','#9a8a5a'];
+EXP.forEach(function(e,i){var r=document.createElement('div');r.className='barrow';
+ r.innerHTML='<span class="lab">'+e[0]+'</span><div class="track"><div class="fill" style="background:'+cols[i]+'" data-w="'+(e[1]/emx*100)+'"></div></div><span class="val">$'+e[1].toLocaleString()+'</span>';
+ ec.appendChild(r);});
+// donut
+(function(){var svg=document.getElementById('donut');var cx=95,cy=95,r=70,c=2*Math.PI*r;
+ var data=[[31000,'#3e6e86'],[21000,'#caa15a']];var tot=52000;var off=0;
+ var ns='http://www.w3.org/2000/svg';
+ var bg=document.createElementNS(ns,'circle');bg.setAttribute('cx',cx);bg.setAttribute('cy',cy);bg.setAttribute('r',r);
+ bg.setAttribute('fill','none');bg.setAttribute('stroke','#eef3f1');bg.setAttribute('stroke-width','26');svg.appendChild(bg);
+ data.forEach(function(d){var seg=document.createElementNS(ns,'circle');
+  seg.setAttribute('cx',cx);seg.setAttribute('cy',cy);seg.setAttribute('r',r);seg.setAttribute('fill','none');
+  seg.setAttribute('stroke',d[1]);seg.setAttribute('stroke-width','26');seg.setAttribute('stroke-dasharray',c);
+  seg.setAttribute('stroke-dashoffset',c);seg.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+  svg.appendChild(seg);var len=d[0]/tot*c;
+  setTimeout(function(){seg.style.transition='stroke-dashoffset 1.1s ease';seg.setAttribute('stroke-dashoffset',c-len-off*0);
+   seg.setAttribute('stroke-dashoffset',c*(1-d[0]/tot));seg.setAttribute('transform','rotate('+(off/tot*360-90)+' '+cx+' '+cy+')');},120);
+  off+=d[0];});
+ var t=document.createElementNS(ns,'text');t.setAttribute('x',cx);t.setAttribute('y',cy+6);t.setAttribute('text-anchor','middle');
+ t.setAttribute('font-size','22');t.setAttribute('font-weight','700');t.setAttribute('fill','#1d2a2a');t.textContent='$52k';svg.appendChild(t);
+})();
+// animate bars on load
+window.addEventListener('load',function(){setTimeout(function(){
+ document.querySelectorAll('.fill').forEach(function(f){f.style.width=f.dataset.w+'%'});},150);});
+</script>
+</body>
+</html>

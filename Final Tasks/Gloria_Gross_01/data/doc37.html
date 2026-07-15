@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gloria Gross - Marine Archaeologist</title>
+<style>
+  :root {
+    --deep: #0d2137;
+    --ocean: #1b5e7b;
+    --mid: #2e8b9a;
+    --sand: #d4a853;
+    --cream: #f5ede0;
+    --light: #f8f9fa;
+    --white: #ffffff;
+    --dark: #222;
+    --grey: #666;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Georgia, serif; background: var(--light); color: var(--dark); }
+
+  /* HEADER / HERO */
+  header {
+    background: linear-gradient(180deg, var(--deep) 0%, var(--ocean) 60%, var(--mid) 100%);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .wave-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%23f8f9fa' d='M0,60 C360,120 720,0 1440,60 L1440,120 L0,120 Z'/%3E%3C/svg%3E") no-repeat bottom;
+    background-size: cover;
+  }
+
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    z-index: 10;
+  }
+  .nav-brand { font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.8; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--sand); }
+
+  .hero {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 60px 60px 140px;
+    gap: 60px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-text { flex: 1; }
+  .hero-eyebrow {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--sand);
+    margin-bottom: 16px;
+    animation: fadeIn 0.6s ease;
+  }
+  .hero-name {
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    animation: fadeIn 0.6s ease 0.1s both;
+  }
+  .hero-title {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 24px;
+    animation: fadeIn 0.6s ease 0.2s both;
+  }
+  .hero-desc {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    max-width: 520px;
+    animation: fadeIn 0.6s ease 0.3s both;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero-stats {
+    display: flex;
+    gap: 36px;
+    margin-top: 40px;
+    animation: fadeIn 0.6s ease 0.4s both;
+  }
+  .stat { text-align: center; }
+  .stat-n { font-size: 2rem; font-weight: 700; color: var(--sand); }
+  .stat-l { font-size: 0.72rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    margin-top: 36px;
+    animation: fadeIn 0.6s ease 0.5s both;
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .btn-primary { background: var(--sand); color: var(--deep); }
+  .btn-primary:hover { background: #e6b96a; transform: translateY(-1px); }
+  .btn-outline { border: 2px solid rgba(255,255,255,0.5); color: white; }
+  .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+  /* SECTIONS */
+  section { padding: 80px 60px; }
+  section:nth-child(even) { background: var(--cream); }
+  .section-header { text-align: center; margin-bottom: 52px; }
+  .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--mid); margin-bottom: 10px; }
+  .section-title { font-size: 2rem; color: var(--deep); font-weight: 700; }
+  .section-line { width: 48px; height: 3px; background: var(--sand); margin: 14px auto 0; }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; max-width: 1100px; margin: 0 auto; }
+  .about-text p { line-height: 1.75; margin-bottom: 16px; color: #444; font-size: 0.95rem; }
+  .about-info { display: flex; flex-direction: column; gap: 14px; }
+  .info-row { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; background: white; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+  .info-icon { color: var(--mid); font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+  .info-content strong { display: block; font-size: 0.78rem; color: var(--grey); text-transform: uppercase; letter-spacing: 0.06em; }
+  .info-content span { font-size: 0.9rem; color: var(--deep); }
+
+  /* PROJECTS */
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
+  .project-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .project-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
+  .project-top { height: 8px; }
+  .project-top.active { background: linear-gradient(90deg, var(--ocean), var(--mid)); }
+  .project-top.review { background: linear-gradient(90deg, var(--sand), #e6a030); }
+  .project-top.writing { background: linear-gradient(90deg, #7b5ea7, #9b7ec7); }
+  .project-body { padding: 22px; }
+  .project-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .tag-active { background: #d1ecf1; color: #0c5460; }
+  .tag-review { background: #fff3cd; color: #856404; }
+  .tag-writing { background: #e2d4f0; color: #553d70; }
+  .project-body h3 { font-size: 1rem; color: var(--deep); margin-bottom: 8px; }
+  .project-body p { font-size: 0.83rem; color: #555; line-height: 1.6; margin-bottom: 14px; }
+  .project-meta { font-size: 0.75rem; color: var(--grey); }
+
+  /* PUBLICATIONS */
+  .pubs-list { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+  .pub-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    border-left: 4px solid var(--mid);
+    transition: border-left-color 0.2s;
+  }
+  .pub-item:hover { border-left-color: var(--sand); }
+  .pub-year { font-size: 0.72rem; color: var(--grey); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .pub-title { font-size: 0.93rem; font-weight: 600; color: var(--deep); margin-bottom: 6px; line-height: 1.4; }
+  .pub-authors { font-size: 0.82rem; color: #555; font-style: italic; }
+  .pub-journal { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+
+  /* CONTACT */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; max-width: 900px; margin: 0 auto; }
+  .contact-info { display: flex; flex-direction: column; gap: 18px; }
+  .contact-item { display: flex; gap: 14px; align-items: flex-start; }
+  .contact-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--sand); font-size: 1rem; flex-shrink: 0; }
+  .contact-text strong { display: block; font-size: 0.78rem; color: var(--grey); text-transform: uppercase; }
+  .contact-text span { font-size: 0.92rem; color: var(--dark); }
+  .contact-form { display: flex; flex-direction: column; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); }
+  .form-group input, .form-group textarea {
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--mid); }
+  .form-submit {
+    background: var(--deep);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    align-self: flex-start;
+  }
+  .form-submit:hover { background: var(--ocean); }
+
+  /* FOOTER */
+  footer {
+    background: var(--deep);
+    color: rgba(255,255,255,0.65);
+    padding: 40px 60px;
+    text-align: center;
+  }
+  footer .footer-links { display: flex; justify-content: center; gap: 28px; margin-bottom: 20px; flex-wrap: wrap; }
+  footer .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.83rem; transition: color 0.2s; }
+  footer .footer-links a:hover { color: var(--sand); }
+  footer p { font-size: 0.78rem; }
+
+  @media (max-width: 900px) {
+    .top-nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { flex-direction: column; padding: 40px 20px 120px; }
+    .hero-name { font-size: 2.2rem; }
+    section { padding: 60px 20px; }
+    .about-grid, .projects-grid, .contact-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top-nav">
+    <div class="nav-brand">Gloria Gross &ndash; Marine Archaeology</div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#projects">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Marine Archaeologist &amp; Associate Professor</div>
+      <div class="hero-name">Prof. Dr.<br>Gloria Gross</div>
+      <div class="hero-title">Nordmeer Maritime University, Hamburg</div>
+      <div class="hero-desc">Investigating medieval Hanseatic wrecks in the North Sea. Lead PI on the DFG-funded North Frisian Survey and co-PI on the North Sea Coastal Heritage Mapping project. Twenty years of fieldwork in the German Bight and adjacent waters.</div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-n">20+</div><div class="stat-l">Years fieldwork</div></div>
+        <div class="stat"><div class="stat-n">84</div><div class="stat-l">NF-7 finds 2025</div></div>
+        <div class="stat"><div class="stat-n">3</div><div class="stat-l">PhD candidates</div></div>
+        <div class="stat"><div class="stat-n">3</div><div class="stat-l">Active projects</div></div>
+      </div>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn btn-primary">Research Projects</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+  </div>
+  <div class="wave-bg"></div>
+</header>
+
+<section id="about">
+  <div class="section-header">
+    <div class="section-label">Background</div>
+    <h2 class="section-title">About</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I am an associate professor in the Department of Archaeology, History, Religious Studies and Theology at Nordmeer Maritime University in Hamburg, where I hold a permanent position since 2010 and was promoted to associate professor in 2016.</p>
+      <p>My research centres on medieval Hanseatic maritime trade and its material evidence in the shallow-water North Sea environment. I lead the DFG-funded North Frisian Medieval Wreck Survey, now in its third phase following the highly productive 2025 field season at Site NF-7. I am also co-principal investigator on the North Sea Coastal Heritage Mapping project with Hamburg Maritime Museum, and co-leading an EU Horizon application on climate change and submerged heritage with Caledonia Maritime University.</p>
+      <p>Before joining Nordmeer Maritime University as a postdoctoral researcher in 2006, I completed a B.A. at Schleswig-Holstein University, an M.A. at Leiden Maritime Academy, and a doctorate at Nordmeer Maritime University examining medieval Hanseatic trading routes.</p>
+      <p>I supervise three doctoral candidates and two master's students. I teach one graduate seminar per semester in Maritime Archaeology Methods.</p>
+    </div>
+    <div class="about-info">
+      <div class="info-row">
+        <div class="info-icon">&#127963;</div>
+        <div class="info-content">
+          <strong>Institution</strong>
+          <span>Nordmeer Maritime University, Hamburg</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">&#127891;</div>
+        <div class="info-content">
+          <strong>Education</strong>
+          <span>Ph.D. Nordmeer Maritime University, 2006</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">&#128205;</div>
+        <div class="info-content">
+          <strong>Location</strong>
+          <span>Am Sandtorkai 48, 20457 Hamburg, Germany</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">&#127758;</div>
+        <div class="info-content">
+          <strong>Languages</strong>
+          <span>German (native), English, Dutch (fluent), Danish</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">&#9875;</div>
+        <div class="info-content">
+          <strong>Dive Certification</strong>
+          <span>CMAS 2 star, annual medical at UKE Hamburg</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">&#128196;</div>
+        <div class="info-content">
+          <strong>Research Areas</strong>
+          <span>Hanseatic archaeology, North Sea wrecks, climate heritage risk</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" style="background:var(--light);">
+  <div class="section-header">
+    <div class="section-label">Active Work</div>
+    <h2 class="section-title">Research Projects</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-top active"></div>
+      <div class="project-body">
+        <span class="project-tag tag-active">Active - Fieldwork</span>
+        <h3>North Frisian Medieval Wreck Survey</h3>
+        <p>Lead PI on DFG-funded multi-year survey of medieval Hanseatic vessel remains off the North Frisian Islands. Phase 3 (summer 2025) excavated Site NF-7 in detail, recovering 84 catalogued finds. Phase 4 planned for summer 2027 from Husum.</p>
+        <div class="project-meta">DFG GR 4471/3 &nbsp;|&nbsp; 2023-2027</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-top active"></div>
+      <div class="project-body">
+        <span class="project-tag tag-active">Active - Year 2</span>
+        <h3>North Sea Coastal Heritage Mapping</h3>
+        <p>Co-PI with Hamburg Maritime Museum on a four-year programme mapping submerged cultural heritage along the Schleswig-Holstein coast. Combines MBES survey with archival research and Frisian community consultation led by Ailo Reimer.</p>
+        <div class="project-meta">HMM-CHM-22 &nbsp;|&nbsp; 2022-2026</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-top review"></div>
+      <div class="project-body">
+        <span class="project-tag tag-review">Decision Pending</span>
+        <h3>Climate Change and Submerged Heritage</h3>
+        <p>EU Horizon application submitted February 2026. Joint programme with Prof. James Whitfield at Caledonia Maritime University quantifying climate-driven threat to organic wreck preservation in the North Sea. Decision expected Q4 2026.</p>
+        <div class="project-meta">EU Horizon 101187724 &nbsp;|&nbsp; Submitted 13.02.2026</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-top writing"></div>
+      <div class="project-body">
+        <span class="project-tag tag-writing">Writing Phase</span>
+        <h3>Monograph: Hanseatic Routes Beneath the German Bight</h3>
+        <p>Comprehensive academic publication of the North Frisian Survey findings, in preparation. Two chapters drafted, three in outline. Target submission to publisher spring 2027. Chapter 5 includes Frisian oral history contribution by Ailo Reimer.</p>
+        <div class="project-meta">Draft target: spring 2027</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-top active"></div>
+      <div class="project-body">
+        <span class="project-tag tag-active">Active - Teaching</span>
+        <h3>MARE 6010: Maritime Archaeology Methods</h3>
+        <p>Graduate seminar offered each semester. Covers the full research cycle from archival research and sonar survey to underwater excavation, finds analysis, and publication. Students work on datasets from the North Frisian Survey.</p>
+        <div class="project-meta">Nordmeer Maritime University &nbsp;|&nbsp; Annual</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-top review"></div>
+      <div class="project-body">
+        <span class="project-tag tag-review">Planning</span>
+        <h3>NF-7 Phase 4 Preparation</h3>
+        <p>Planning for Phase 4 of the North Frisian Survey, including investigation of Target T08 (possible adjacent wreck identified by sonar in August 2025). DFG Phase 4 planning submission due November 2026. Base camp: Husum.</p>
+        <div class="project-meta">DFG submission due: 05.11.2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="publications">
+  <div class="section-header">
+    <div class="section-label">Selected Output</div>
+    <h2 class="section-title">Publications</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="pubs-list">
+    <div class="pub-item">
+      <div class="pub-year">2026</div>
+      <div class="pub-title">Multibeam Sonar as a Primary Discovery Tool for Shallow-Water Medieval Wreck Sites in the North Sea: Methods, Limitations, and Validation at Site NF-7</div>
+      <div class="pub-authors">Gross, G. and Whitfield, J.</div>
+      <div class="pub-journal">Nordic Journal of Maritime Archaeology, 52(1), pp. 14-38</div>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2024</div>
+      <div class="pub-title">Site NF-7: First Results from a 14th-Century Hanseatic Wreck in the Outer Wattenmeer</div>
+      <div class="pub-authors">Gross, G., Moe, F. and Johansen, N.</div>
+      <div class="pub-journal">International Journal of Nautical Archaeology, 53(2), pp. 398-421</div>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2023</div>
+      <div class="pub-title">Community Consultation in Marine Heritage: The Frisian Partnership Model</div>
+      <div class="pub-authors">Gross, G. and Reimer, A.</div>
+      <div class="pub-journal">Public Archaeology, 22(3), pp. 188-207</div>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-title">Organic Preservation Under Threat: Evidence from Repeat Survey of North Sea Wreck Sites 2012-2021</div>
+      <div class="pub-authors">Gross, G., Whitfield, J. and Bergmann, A.</div>
+      <div class="pub-journal">Journal of Maritime Archaeology, 17(4), pp. 501-528</div>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2020</div>
+      <div class="pub-title">The Hanseatic Cog in the Archaeological Record: Typology, Distribution, and Preservation</div>
+      <div class="pub-authors">Gross, G.</div>
+      <div class="pub-journal">In: Hanseatic Trade Networks: New Perspectives. Hamburg University Press, pp. 214-248</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="background:var(--cream);">
+  <div class="section-header">
+    <div class="section-label">Reach Out</div>
+    <h2 class="section-title">Contact</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-icon">&#128205;</div>
+        <div class="contact-text">
+          <strong>Address</strong>
+          <span>Am Sandtorkai 48<br>20457 Hamburg, Germany</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">&#9993;</div>
+        <div class="contact-text">
+          <strong>Institutional Email</strong>
+          <span>g.gross@nordmeer-maritime.de</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">&#128222;</div>
+        <div class="contact-text">
+          <strong>Phone</strong>
+          <span>+49 171 555 7700</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">&#128336;</div>
+        <div class="contact-text">
+          <strong>Office Hours</strong>
+          <span>Tuesdays 14:00-16:00 by appointment<br>Use Calendly link for doctoral candidates</span>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="your.email@institution.edu">
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <input type="text" placeholder="Research enquiry / collaboration / media">
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea rows="5" placeholder="Your message..."></textarea>
+      </div>
+      <button class="form-submit" type="button">Send Message</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="#">Nordmeer Maritime University</a>
+    <a href="#">DFG Project Page</a>
+    <a href="#">Hamburg Maritime Museum</a>
+    <a href="#">Caledonia Maritime University</a>
+    <a href="#">North Sea Coastal Heritage</a>
+  </div>
+  <p>Prof. Dr. Gloria Gross &nbsp;|&nbsp; Nordmeer Maritime University &nbsp;|&nbsp; Am Sandtorkai 48, 20457 Hamburg</p>
+</footer>
+
+</body>
+</html>

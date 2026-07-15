@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Base</title>
+<style>
+  :root{
+    --bg:#f6f4ee; --ink:#23241f; --muted:#6a6a64;
+    --accent:#2c5f3a; --accent2:#c97a25; --line:#e3ddcb;
+    --card:#ffffff; --shadow:0 6px 20px rgba(40,40,30,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45}
+  a{color:inherit;text-decoration:none}
+  header.site{
+    background:linear-gradient(120deg,#244c2e,#3a7a4d);color:#fff;padding:18px 24px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
+  }
+  header.site .brand{font-weight:700;font-size:20px;letter-spacing:.3px}
+  header.site .who{font-size:13px;opacity:.9}
+  nav.tabs{display:flex;gap:6px;padding:14px 24px 0;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--line)}
+  nav.tabs button{
+    background:transparent;border:1px solid transparent;color:var(--muted);
+    padding:9px 14px;border-radius:10px 10px 0 0;cursor:pointer;font:600 13px/1 inherit;
+    transition:.18s background,.18s color,.18s border;
+  }
+  nav.tabs button.active{background:var(--card);color:var(--ink);border-color:var(--line);border-bottom-color:var(--card)}
+  nav.tabs button:hover{color:var(--ink)}
+  main{padding:22px 24px 60px;max-width:1180px;margin:0 auto}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);transition:.22s transform}
+  .card:hover{transform:translateY(-2px)}
+  .card h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .col-4{grid-column:span 4} .col-6{grid-column:span 6} .col-8{grid-column:span 8} .col-12{grid-column:span 12}
+  @media (max-width:900px){.col-4,.col-6,.col-8{grid-column:span 12}}
+  .stat{display:flex;align-items:baseline;gap:8px}
+  .stat .n{font-size:34px;font-weight:700;color:var(--accent)}
+  .stat .l{color:var(--muted);font-size:13px}
+  .progress{position:relative;height:14px;background:#eee5cf;border-radius:8px;overflow:hidden;margin-top:10px}
+  .progress > span{
+    display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border-radius:8px;width:0;transition:width 1.4s ease-out;
+  }
+  .progress .legend{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--muted)}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .k{font-weight:600}
+  .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em}
+  .pill.ok{background:#e6efe1;color:#2c5f3a}
+  .pill.warn{background:#fbe9d4;color:#a45f1a}
+  .pill.muted{background:#eee;color:#555}
+  .pane{display:none}
+  .pane.active{display:block;animation:fade .35s ease-out}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{background:#fbf7ec;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:120px}
+  .day h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+  .day .ev{font-size:12px;background:#fff;border-left:3px solid var(--accent);padding:5px 7px;border-radius:6px;margin-bottom:4px}
+  .day .ev.alt{border-left-color:var(--accent2)}
+  .btn{
+    background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;
+    cursor:pointer;font:600 12px/1 inherit;letter-spacing:.04em;
+    transition:.18s background,.18s transform;
+  }
+  .btn:hover{background:#244c2e;transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .btn.ghost:hover{background:rgba(44,95,58,.07)}
+  .weather{display:flex;align-items:center;gap:14px}
+  .weather .icon{
+    width:54px;height:54px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff5cc,#e8b746);
+    box-shadow:0 0 16px rgba(232,183,70,.45);
+  }
+  .weather .t{font-size:28px;font-weight:700}
+  .footnote{margin-top:18px;color:var(--muted);font-size:12px}
+  footer.site{padding:22px 24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;background:#efece2}
+  footer.site a{color:var(--accent)}
+  .toggle{display:flex;gap:6px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;width:fit-content}
+  .toggle button{background:transparent;border:none;padding:5px 11px;border-radius:999px;font:600 11px/1 inherit;color:var(--muted);cursor:pointer}
+  .toggle button.on{background:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="brand">Home Base</div>
+  <div class="who">Teresa Gutierrez • 87 Birch Street, Bangor ME</div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-pane="today">Today</button>
+  <button data-pane="week">This Week</button>
+  <button data-pane="money">Money</button>
+  <button data-pane="care">Care plan</button>
+</nav>
+
+<main>
+
+  <!-- TODAY -->
+  <section id="today" class="pane active">
+    <div class="grid">
+
+      <div class="card col-4">
+        <h3>Right now</h3>
+        <div class="weather">
+          <div class="icon"></div>
+          <div>
+            <div class="t">41&deg;F</div>
+            <div style="color:var(--muted);font-size:13px">Bangor, partly cloudy</div>
+          </div>
+        </div>
+        <div class="footnote">Saturday game on. Bring the second whistle, ground is dry.</div>
+      </div>
+
+      <div class="card col-4">
+        <h3>Next appointment</h3>
+        <div class="row"><span class="k">Dental, Dr. Doyle</span><span>Tue Nov 10, 8:30 AM</span></div>
+        <div class="row"><span class="k">ENT, Dr. Kimball</span><span>Tue Nov 17, 2:30 PM</span></div>
+        <div class="row"><span class="k">Sophie recital</span><span>Sat Nov 7, 2:00 PM</span></div>
+      </div>
+
+      <div class="card col-4">
+        <h3>Medication today</h3>
+        <div class="row"><span class="k">Betahistine 16 mg</span><span class="pill ok">Morning &check;</span></div>
+        <div class="row"><span class="k">Betahistine 16 mg</span><span class="pill warn">Midday due</span></div>
+        <div class="row"><span class="k">Betahistine 16 mg</span><span class="pill muted">6:00 PM</span></div>
+        <button class="btn ghost" style="margin-top:10px" onclick="markDose(event)">Mark midday taken</button>
+      </div>
+
+      <div class="card col-8">
+        <h3>On the smoker / on the bench</h3>
+        <div class="list">
+          <div class="row"><span class="k">Brisket for Thanksgiving</span><span>Plan, 12 lb, hickory, 16 hr cook</span></div>
+          <div class="row"><span class="k">Upstairs bathroom retile</span><span>Tile picked up at Aubuchon, set Saturday</span></div>
+          <div class="row"><span class="k">Garage workbench</span><span>Pegboard re-marked, drawer 2 audited</span></div>
+        </div>
+      </div>
+
+      <div class="card col-4">
+        <h3>Quick reach</h3>
+        <button class="btn" onclick="alert('Drafted in Gmail, review before send.')">Draft a note to Steve</button>
+        <button class="btn ghost" style="margin-top:8px" onclick="alert('Calendar opened.')">Open shared calendar</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WEEK -->
+  <section id="week" class="pane">
+    <div class="grid">
+      <div class="card col-12">
+        <h3>Week of November 2, 2026</h3>
+        <div class="week" id="week-grid"></div>
+        <div class="footnote">Brian plans, I execute. Calendar is the spine.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONEY -->
+  <section id="money" class="pane">
+    <div class="grid">
+
+      <div class="card col-6">
+        <h3>Savings target</h3>
+        <div class="stat"><div class="n" id="bal">$13,504</div><div class="l">of $20,000 target</div></div>
+        <div class="progress"><span id="bar"></span></div>
+        <div class="legend"><span>67.5% there</span><span>$482 monthly transfer</span></div>
+        <div class="toggle" style="margin-top:14px" onclick="toggle(this)">
+          <button class="on">Round to $500</button>
+          <button>Stick to $482</button>
+        </div>
+      </div>
+
+      <div class="card col-6">
+        <h3>This month, where it went</h3>
+        <div class="list">
+          <div class="row"><span class="k">Mortgage</span><span>$1,340</span></div>
+          <div class="row"><span class="k">Groceries (Hannaford)</span><span>$448</span></div>
+          <div class="row"><span class="k">Truck loan</span><span>$365</span></div>
+          <div class="row"><span class="k">Health insurance</span><span>$310</span></div>
+          <div class="row"><span class="k">Utilities</span><span>$275</span></div>
+        </div>
+      </div>
+
+      <div class="card col-12">
+        <h3>Statements waiting</h3>
+        <div class="list">
+          <div class="row"><span class="k">Bangor Savings checking, ending 4417</span><span class="pill ok">Reconciled</span></div>
+          <div class="row"><span class="k">Bangor Savings Visa, ending 3052</span><span class="pill ok">Pays in full</span></div>
+          <div class="row"><span class="k">Ford Credit, ending 7741</span><span class="pill ok">On autopay</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARE PLAN -->
+  <section id="care" class="pane">
+    <div class="grid">
+      <div class="card col-6">
+        <h3>Menieres plan</h3>
+        <div class="row"><span class="k">Diagnosis</span><span>Left ear, since 2023</span></div>
+        <div class="row"><span class="k">Daily</span><span>Betahistine 16 mg, three times</span></div>
+        <div class="row"><span class="k">As needed</span><span>Meclizine 25 mg in the work bag</span></div>
+        <div class="row"><span class="k">Diet</span><span>Sodium under 2,000 mg, caffeine before noon only</span></div>
+        <div class="row"><span class="k">ENT</span><span>Dr. Elaine Kimball</span></div>
+      </div>
+      <div class="card col-6">
+        <h3>Sodium today</h3>
+        <div class="stat"><div class="n" id="sod">880</div><div class="l">mg, target under 2,000</div></div>
+        <div class="progress"><span id="sodbar" style="background:linear-gradient(90deg,#3a7a4d,#c97a25)"></span></div>
+        <div class="legend"><span>Breakfast 320 • Lunch 200 • Dinner 360</span><span>Headroom 1,120</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  Home Base • personal dashboard • not connected to medical or banking systems •
+  <a href="mailto:teresa.gutierrez@finthesiss.ai">teresa.gutierrez@finthesiss.ai</a>
+</footer>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('#tabs button');
+  tabs.forEach(b => b.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.pane).classList.add('active');
+    if (b.dataset.pane === 'money') animateBar();
+    if (b.dataset.pane === 'care') animateSodium();
+  }));
+
+  // Animated progress
+  function animateBar(){
+    const bar = document.getElementById('bar');
+    if (!bar) return;
+    requestAnimationFrame(() => { bar.style.width = '67.5%'; });
+  }
+  function animateSodium(){
+    const bar = document.getElementById('sodbar');
+    if (!bar) return;
+    requestAnimationFrame(() => { bar.style.width = '44%'; });
+  }
+  window.addEventListener('load', () => { animateBar(); });
+
+  // Toggle buttons
+  function toggle(wrap){
+    wrap.addEventListener('click', e => {
+      if (e.target.tagName !== 'BUTTON') return;
+      wrap.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      e.target.classList.add('on');
+    });
+  }
+
+  // Mark dose
+  function markDose(e){
+    e.target.previousElementSibling.previousElementSibling.querySelector('.pill').textContent = 'Done';
+    e.target.previousElementSibling.previousElementSibling.querySelector('.pill').className = 'pill ok';
+    e.target.textContent = 'Recorded';
+    e.target.disabled = true;
+  }
+
+  // Week renderer
+  const week = [
+    ['Mon Nov 2',  ['Week-ahead check 6:30 AM','Shift 7 to 3:30','Pauline pickup off']],
+    ['Tue Nov 3',  ['Shift 7 to 3:30','Pick up Sophie 5:00 PM']],
+    ['Wed Nov 4',  ['Shift 7 to 3:30','Smoker prep']],
+    ['Thu Nov 5',  ['Shift 7 to 3:30','Pick up Sophie 5:00 PM','Status deck to Steve']],
+    ['Fri Nov 6',  ['Shift 7 to 3:30','Beers w/ Danny 4:00 PM','Phase 1 demo wrap']],
+    ['Sat Nov 7',  ['Pancake 7:30','Luc soccer 9:00','Sophie recital 2:00 PM']],
+    ['Sun Nov 8',  ['Mass 9:00','Sophie birthday','Dinner at Pauline']],
+  ];
+  const wg = document.getElementById('week-grid');
+  if (wg) {
+    week.forEach(([d, evs]) => {
+      const cell = document.createElement('div'); cell.className = 'day';
+      cell.innerHTML = '<h4>'+d+'</h4>' + evs.map((e,i)=>'<div class="ev'+(i%2?' alt':'')+'">'+e+'</div>').join('');
+      wg.appendChild(cell);
+    });
+  }
+</script>
+</body>
+</html>

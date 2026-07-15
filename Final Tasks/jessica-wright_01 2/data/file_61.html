@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wright Interiors | Studio Dashboard</title>
+<style>
+  :root{
+    --bg:#f5f6f4; --panel:#ffffff; --ink:#22281f; --muted:#6c7568;
+    --char:#2e3a2c; --sage:#8a9a7b; --gold:#c2a878; --teal:#2c5a5a;
+    --terra:#b5613f; --line:#e7eae3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);
+    color:var(--ink);line-height:1.5}
+  .serif{font-family:Georgia,serif}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+  header{background:var(--char);color:#eef1ea}
+  .top{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{font-family:Georgia,serif;font-size:20px;font-weight:700}
+  .logo small{display:block;font-size:10px;letter-spacing:3px;color:var(--gold);
+    font-family:'Segoe UI',sans-serif}
+  .top nav{display:flex;gap:8px;flex-wrap:wrap}
+  .top nav button{background:transparent;border:1px solid #4a5746;color:#d6ddcf;
+    padding:8px 16px;border-radius:30px;font:inherit;font-size:13px;cursor:pointer;transition:.2s}
+  .top nav button:hover{border-color:var(--gold)}
+  .top nav button.active{background:var(--gold);color:#2c2417;border-color:var(--gold);font-weight:600}
+
+  .subbar{background:#26301f;color:#aeb8a2;font-size:13px}
+  .subbar .wrap{display:flex;justify-content:space-between;padding:10px 24px;flex-wrap:wrap;gap:6px}
+
+  main{padding:30px 0 60px}
+  .pagehead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+  .pagehead h1{font-size:30px}
+  .pagehead p{color:var(--muted);font-size:14px}
+  .asof{font-size:13px;color:var(--muted)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:20px 22px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+  .kpi.k1::before{background:var(--teal)}.kpi.k2::before{background:var(--gold)}
+  .kpi.k3::before{background:var(--sage)}.kpi.k4::before{background:var(--terra)}
+  .kpi .lab{font-size:12px;letter-spacing:.8px;color:var(--muted);text-transform:uppercase}
+  .kpi .val{font-family:Georgia,serif;font-size:34px;margin:8px 0 2px;color:var(--char)}
+  .kpi .delta{font-size:12.5px;color:var(--sage);font-weight:600}
+  .kpi .delta.down{color:var(--terra)}
+
+  .row{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 24px}
+  .card h3{font-size:16px;margin-bottom:2px}
+  .card .hint{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .chart-head{display:flex;justify-content:space-between;align-items:flex-start}
+  .seg{display:flex;gap:4px}
+  .seg button{font:inherit;font-size:12px;padding:5px 12px;border:1px solid var(--line);
+    background:#f3f5f0;border-radius:20px;cursor:pointer;color:var(--muted)}
+  .seg button.active{background:var(--char);color:#fff;border-color:var(--char)}
+
+  svg{width:100%;display:block;overflow:visible}
+  .bar{transition:height .9s cubic-bezier(.2,.8,.2,1),y .9s cubic-bezier(.2,.8,.2,1)}
+  .gridline{stroke:#eceee9}
+  .axis{fill:var(--muted);font-size:11px;font-family:'Segoe UI',sans-serif}
+  .vlabel{fill:var(--char);font-size:11px;font-weight:600}
+
+  .donut-wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .legend{flex:1;min-width:150px}
+  .legend .li{display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 0}
+  .legend .sw{width:13px;height:13px;border-radius:3px;flex:none}
+  .legend .pc{margin-left:auto;font-weight:700;color:var(--char)}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .proj{display:flex;flex-direction:column;gap:16px}
+  .pr .pr-top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px}
+  .pr .track{height:9px;background:#eef0ea;border-radius:6px;overflow:hidden}
+  .pr .fill{height:100%;width:0;border-radius:6px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;letter-spacing:.6px;color:var(--muted);text-transform:uppercase}
+  .pill{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+  .on{background:#e7efe0;color:#4d6b3c}.soon{background:#f6ecd8;color:#8a6a2b}
+  .hold{background:#f3e2db;color:#9b4f33}
+
+  footer{background:var(--char);color:#aeb8a2;padding:34px 0;font-size:13px;margin-top:30px}
+  .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center}
+  footer b{color:#eef1ea;font-family:Georgia,serif}
+
+  @media(max-width:900px){
+    .kpis{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.row2{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="logo">Wright Interiors<small>STUDIO DASHBOARD</small></div>
+    <nav>
+      <button class="active">Overview</button>
+      <button>Projects</button>
+      <button>Sourcing</button>
+      <button>Finance</button>
+    </nav>
+  </div>
+</header>
+<div class="subbar"><div class="wrap">
+  <span>Principal: Jessica Wright</span>
+  <span>Woodley Park, Washington DC</span>
+  <span>Reporting period: Winter 2026</span>
+</div></div>
+
+<main class="wrap">
+  <div class="pagehead">
+    <div><h1 class="serif">Studio Overview</h1><p>Active projects, booked fees, and where the season stands.</p></div>
+    <div class="asof">As of February 27, 2026</div>
+  </div>
+
+  <section class="kpis">
+    <div class="kpi k1"><div class="lab">Active Projects</div><div class="val" data-count="4">0</div><div class="delta">+1 since autumn</div></div>
+    <div class="kpi k2"><div class="lab">Fees Booked YTD</div><div class="val" data-count="124000" data-prefix="$">0</div><div class="delta">on plan</div></div>
+    <div class="kpi k3"><div class="lab">Samples Pending</div><div class="val" data-count="7">0</div><div class="delta down">2 overdue</div></div>
+    <div class="kpi k4"><div class="lab">Days to Install</div><div class="val" data-count="231">0</div><div class="delta">Pemberton, October</div></div>
+  </section>
+
+  <div class="row">
+    <div class="card">
+      <div class="chart-head">
+        <div><h3>Design Fees by Project</h3><div class="hint">Gross fees booked across active engagements, USD</div></div>
+        <div class="seg" id="barseg"><button class="active" data-v="fees">Fees</button><button data-v="hours">Hours</button></div>
+      </div>
+      <svg id="barchart" viewBox="0 0 640 320" role="img" aria-label="Design fees by project"></svg>
+    </div>
+    <div class="card">
+      <h3>Revenue Share</h3><div class="hint">Concentration of booked fees this season</div>
+      <div class="donut-wrap">
+        <svg id="donut" viewBox="0 0 220 220" width="200" height="200" aria-label="Revenue share donut"></svg>
+        <div class="legend" id="dlegend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <h3>Invoiced by Month</h3><div class="hint">Trailing four months, USD</div>
+      <svg id="line" viewBox="0 0 600 280" aria-label="Invoiced by month"></svg>
+    </div>
+    <div class="card">
+      <h3>Project Progress</h3><div class="hint">Completion against current phase</div>
+      <div class="proj" id="proj"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Upcoming Milestones</h3><div class="hint">Next dates that need eyes</div>
+    <table>
+      <thead><tr><th>Project</th><th>Milestone</th><th>Date</th><th>Owner</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Pemberton Georgetown</td><td>Sourcing sign off</td><td>Feb 12, 2026</td><td>Jessica</td><td><span class="pill on">On track</span></td></tr>
+        <tr><td>Foxhall Kitchen</td><td>Cabinetry shop drawings</td><td>Feb 24, 2026</td><td>Priya</td><td><span class="pill soon">Due soon</span></td></tr>
+        <tr><td>Pemberton Georgetown</td><td>Install and walkthrough</td><td>Oct 15 to 16, 2026</td><td>Jessica</td><td><span class="pill on">Scheduled</span></td></tr>
+        <tr><td>Cleveland Park</td><td>Soft goods samples</td><td>Feb 18, 2026</td><td>Priya</td><td><span class="pill hold">Waiting</span></td></tr>
+        <tr><td>Kalorama</td><td>Discovery meeting</td><td>Feb 11, 2027</td><td>Jessica</td><td><span class="pill on">Booked</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer><div class="wrap frow">
+  <span><b>Wright Interiors</b> &nbsp; Residential design studio</span>
+  <span>jessica@wrightinteriors.com | @wrightinteriors | Washington DC</span>
+  <span>Internal dashboard, Winter 2026</span>
+</div></footer>
+
+<script>
+  var GOLD='#c2a878',SAGE='#8a9a7b',TEAL='#2c5a5a',CHAR='#2e3a2c',TERRA='#b5613f',SLATE='#a9b59a';
+  var PAL=[CHAR,SAGE,GOLD,SLATE,TERRA];
+
+  // ---- count up KPIs ----
+  function animateCount(el){
+    var target=+el.dataset.count,pre=el.dataset.prefix||'',dur=1100,t0=null;
+    function step(ts){
+      if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1);var e=1-Math.pow(1-p,3);
+      var v=Math.round(target*e);
+      el.textContent=pre+v.toLocaleString('en-US');
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ---- bar chart ----
+  var feesData=[['Pemberton',48000],['Foxhall',28000],['Cleveland Pk',22000],['Capitol Hill',16500],['Kalorama',9500]];
+  var hoursData=[['Pemberton',420],['Foxhall',250],['Cleveland Pk',180],['Capitol Hill',120],['Kalorama',60]];
+  function drawBars(data,fmtPrefix){
+    var svg=document.getElementById('barchart');svg.innerHTML='';
+    var W=640,H=320,padL=58,padB=44,padT=14,padR=14;
+    var max=Math.max.apply(null,data.map(function(d){return d[1]}));
+    var niceMax=Math.ceil(max/10000)*10000; if(fmtPrefix==='')niceMax=Math.ceil(max/100)*100;
+    var plotH=H-padB-padT,plotW=W-padL-padR;
+    var NS='http://www.w3.org/2000/svg';
+    function mk(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e}
+    // gridlines + y labels
+    for(var i=0;i<=4;i++){
+      var gy=padT+plotH*i/4,val=niceMax*(1-i/4);
+      svg.appendChild(mk('line',{x1:padL,y1:gy,x2:W-padR,y2:gy,class:'gridline'}));
+      var tl=mk('text',{x:padL-8,y:gy+4,'text-anchor':'end',class:'axis'});
+      tl.textContent=(fmtPrefix?'$':'')+Math.round(val).toLocaleString('en-US');
+      svg.appendChild(tl);
+    }
+    var bw=plotW/data.length*0.56,gap=plotW/data.length;
+    data.forEach(function(d,i){
+      var bh=plotH*(d[1]/niceMax);
+      var x=padL+gap*i+(gap-bw)/2,y=padT+plotH-bh;
+      var r=mk('rect',{x:x,y:padT+plotH,width:bw,height:0,rx:4,fill:PAL[i%PAL.length],class:'bar'});
+      svg.appendChild(r);
+      setTimeout(function(){r.setAttribute('y',y);r.setAttribute('height',bh)},60+i*70);
+      var vl=mk('text',{x:x+bw/2,y:y-8,'text-anchor':'middle',class:'vlabel'});
+      vl.textContent=(fmtPrefix?'$':'')+d[1].toLocaleString('en-US');
+      vl.style.opacity=0;vl.style.transition='opacity .5s';
+      setTimeout(function(){vl.style.opacity=1},700);
+      svg.appendChild(vl);
+      var xl=mk('text',{x:x+bw/2,y:H-padB+20,'text-anchor':'middle',class:'axis'});
+      xl.textContent=d[0];svg.appendChild(xl);
+    });
+  }
+  document.getElementById('barseg').addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    [].forEach.call(this.children,function(b){b.classList.remove('active')});
+    e.target.classList.add('active');
+    if(e.target.dataset.v==='fees')drawBars(feesData,'$');else drawBars(hoursData,'');
+  });
+
+  // ---- donut ----
+  var share=[['Pemberton Georgetown',48000],['Foxhall Kitchen',28000],['Cleveland Park',22000],['Capitol Hill',16500],['Kalorama',9500]];
+  function drawDonut(){
+    var svg=document.getElementById('donut');svg.innerHTML='';
+    var NS='http://www.w3.org/2000/svg',cx=110,cy=110,r=78,sw=30;
+    var total=share.reduce(function(a,b){return a+b[1]},0),off=0;
+    var leg=document.getElementById('dlegend');leg.innerHTML='';
+    var circ=2*Math.PI*r;
+    share.forEach(function(d,i){
+      var frac=d[1]/total;
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+      c.setAttribute('fill','none');c.setAttribute('stroke',PAL[i%PAL.length]);
+      c.setAttribute('stroke-width',sw);
+      c.setAttribute('stroke-dasharray',circ);
+      c.setAttribute('stroke-dashoffset',circ);
+      c.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+      c.style.transition='stroke-dashoffset 1s ease '+(i*0.12)+'s';
+      // use dasharray segment trick
+      c.setAttribute('stroke-dasharray',(circ*frac)+' '+(circ*(1-frac)));
+      c.setAttribute('stroke-dashoffset',circ*(1-off));
+      svg.appendChild(c);
+      off+=frac;
+      var li=document.createElement('div');li.className='li';
+      li.innerHTML='<span class="sw" style="background:'+PAL[i%PAL.length]+'"></span>'+d[0]+
+        '<span class="pc">'+Math.round(frac*100)+'%</span>';
+      leg.appendChild(li);
+    });
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',cx);t.setAttribute('y',cy-2);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-family','Georgia,serif');t.setAttribute('font-size','22');t.setAttribute('fill',CHAR);
+    t.textContent='$124k';svg.appendChild(t);
+    var t2=document.createElementNS(NS,'text');
+    t2.setAttribute('x',cx);t2.setAttribute('y',cy+16);t2.setAttribute('text-anchor','middle');
+    t2.setAttribute('font-size','11');t2.setAttribute('fill','#6c7568');t2.textContent='booked';
+    svg.appendChild(t2);
+  }
+
+  // ---- line/area ----
+  var months=[['Nov 2025',12400],['Dec 2025',18200],['Jan 2026',21600],['Feb 2026',24900]];
+  function drawLine(){
+    var svg=document.getElementById('line');svg.innerHTML='';
+    var NS='http://www.w3.org/2000/svg',W=600,H=280,padL=56,padB=38,padT=16,padR=18;
+    var max=26000,plotH=H-padB-padT,plotW=W-padL-padR;
+    function mk(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e}
+    for(var i=0;i<=4;i++){var gy=padT+plotH*i/4;
+      svg.appendChild(mk('line',{x1:padL,y1:gy,x2:W-padR,y2:gy,class:'gridline'}));
+      var tl=mk('text',{x:padL-8,y:gy+4,'text-anchor':'end',class:'axis'});
+      tl.textContent='$'+Math.round(max*(1-i/4)/1000)+'k';svg.appendChild(tl);}
+    var pts=months.map(function(d,i){
+      var x=padL+plotW*i/(months.length-1),y=padT+plotH*(1-d[1]/max);return [x,y,d];});
+    var dpath='M'+pts.map(function(p){return p[0]+','+p[1]}).join(' L');
+    var area=dpath+' L'+pts[pts.length-1][0]+','+(padT+plotH)+' L'+pts[0][0]+','+(padT+plotH)+' Z';
+    var ar=mk('path',{d:area,fill:'rgba(138,154,123,.18)'});svg.appendChild(ar);
+    var ln=mk('path',{d:dpath,fill:'none',stroke:TEAL,'stroke-width':3,'stroke-linecap':'round'});
+    svg.appendChild(ln);
+    var L=ln.getTotalLength();ln.style.strokeDasharray=L;ln.style.strokeDashoffset=L;
+    ln.style.transition='stroke-dashoffset 1.2s ease';setTimeout(function(){ln.style.strokeDashoffset=0},80);
+    pts.forEach(function(p,i){
+      var c=mk('circle',{cx:p[0],cy:p[1],r:5,fill:'#fff',stroke:TEAL,'stroke-width':3});
+      c.style.opacity=0;c.style.transition='opacity .4s '+(0.4+i*0.18)+'s';svg.appendChild(c);
+      setTimeout(function(){c.style.opacity=1},100);
+      var vl=mk('text',{x:p[0],y:p[1]-14,'text-anchor':'middle',class:'vlabel'});
+      vl.textContent='$'+(p[2][1]/1000).toFixed(1)+'k';vl.style.opacity=0;vl.style.transition='opacity .5s 1s';
+      setTimeout(function(){vl.style.opacity=1},120);svg.appendChild(vl);
+      var xl=mk('text',{x:p[0],y:H-padB+20,'text-anchor':'middle',class:'axis'});
+      xl.textContent=p[2][0];svg.appendChild(xl);
+    });
+  }
+
+  // ---- progress bars ----
+  var projects=[['Pemberton Georgetown, Phase 2',82,TEAL],['Foxhall Kitchen',58,GOLD],
+                ['Cleveland Park Refresh',40,SAGE],['Capitol Hill Study',22,TERRA]];
+  (function(){
+    var box=document.getElementById('proj');
+    projects.forEach(function(p){
+      var d=document.createElement('div');d.className='pr';
+      d.innerHTML='<div class="pr-top"><span>'+p[0]+'</span><b>'+p[1]+'%</b></div>'+
+        '<div class="track"><div class="fill" style="background:'+p[2]+'"></div></div>';
+      box.appendChild(d);
+    });
+  })();
+
+  // ---- run on view ----
+  var ran=false;
+  function runAll(){
+    if(ran)return;ran=true;
+    document.querySelectorAll('.kpi .val').forEach(animateCount);
+    drawBars(feesData,'$');drawDonut();drawLine();
+    setTimeout(function(){
+      document.querySelectorAll('.pr .fill').forEach(function(f,i){
+        f.style.width=projects[i][1]+'%';
+      });
+    },200);
+  }
+  window.addEventListener('load',runAll);
+</script>
+</body>
+</html>

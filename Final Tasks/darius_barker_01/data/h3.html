@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen Operations Dashboard</title>
+<style>
+  :root{
+    --bg:#10141c; --panel:#19202c; --panel2:#1f2836; --line:#2c374a;
+    --amber:#f2b441; --teal:#39c6c0; --rose:#ef6f6c; --text:#e8eef6; --dim:#9aa7ba;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Roboto,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
+  header.site{background:var(--panel2);padding:24px 22px;border-bottom:3px solid var(--amber);display:flex;flex-wrap:wrap;
+    justify-content:space-between;align-items:center;gap:12px}
+  header.site h1{font-size:1.5rem;letter-spacing:.5px}
+  header.site .who{color:var(--dim);font-size:.85rem;margin-top:3px}
+  header.site .pill{background:var(--amber);color:#1a1205;padding:7px 14px;border-radius:20px;font-weight:700;font-size:.82rem}
+  main{max-width:1080px;margin:0 auto;padding:22px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;animation:fade .6s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .kpi .label{color:var(--dim);font-size:.78rem;text-transform:uppercase;letter-spacing:1px}
+  .kpi .val{font-size:1.8rem;font-weight:800;margin-top:6px}
+  .kpi.t .val{color:var(--teal)} .kpi.a .val{color:var(--amber)} .kpi.r .val{color:var(--rose)}
+  .kpi .sub{color:var(--dim);font-size:.8rem;margin-top:3px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
+  .controls span{color:var(--dim);font-size:.85rem;margin-right:4px}
+  .controls button{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:9px 16px;border-radius:8px;
+    cursor:pointer;font-size:.9rem;transition:all .2s}
+  .controls button:hover{border-color:var(--amber)}
+  .controls button.on{background:var(--amber);color:#1a1205;border-color:var(--amber);font-weight:700}
+  .panels{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .panel h2{font-size:1.05rem;margin-bottom:12px;color:var(--text)}
+  canvas{width:100%;height:auto;display:block}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .bar{height:8px;border-radius:4px;background:var(--teal)}
+  footer.site{background:var(--panel2);color:var(--dim);padding:22px;border-top:3px solid var(--amber);margin-top:24px;font-size:.85rem}
+  footer.site .wrap{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+  footer.site a{color:var(--teal)}
+  @media (max-width:760px){.panels{grid-template-columns:1fr}header.site h1{font-size:1.25rem}}
+</style>
+</head>
+<body>
+<header class="site">
+  <div>
+    <h1>Kitchen Operations Dashboard</h1>
+    <div class="who">Memphis Soul Kitchen LLC &nbsp;|&nbsp; Darius Marcus Barker, Owner and Head Chef</div>
+  </div>
+  <div class="pill" id="period-pill">Quarter 4, 2025</div>
+</header>
+<main>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="controls">
+    <span>View period:</span>
+    <button data-p="q4" class="on">Quarter 4, 2025</button>
+    <button data-p="jan">January 2026</button>
+    <button data-p="feb">February 2026</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Revenue by Channel (monthly, USD)</h2>
+      <canvas id="chart" width="640" height="320"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Top Plates by Covers</h2>
+      <table id="plates">
+        <thead><tr><th>Dish</th><th>Covers</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<footer class="site">
+  <div class="wrap">
+    <div>Memphis Soul Kitchen LLC, 2501 East Broad Street, Richmond, VA 23223</div>
+    <div>
+      (804) 555-2200 &nbsp;|&nbsp;
+      <a href="mailto:darius.barker@Greenridertech.co">darius.barker@Greenridertech.co</a>
+      &nbsp;|&nbsp; &copy; 2026 Memphis Soul Kitchen
+    </div>
+  </div>
+</footer>
+<script>
+  var data = {
+    q4:{label:"Quarter 4, 2025", dine:38600, cater:5900, deliv:4100,
+        kpis:[["Net revenue","$5,100","monthly average","t"],["Covers served","3,840","Oct to Dec","a"],
+              ["Catering events","7","quarter total","t"],["Food cost","32%","of revenue","r"]],
+        plates:[["Smoked Pork Ribs",612],["Fried Catfish Plate",548],["Mac and Cheese",1020],
+                ["Collard Greens",905],["Seafood Gumbo",430]]},
+    jan:{label:"January 2026", dine:41200, cater:6800, deliv:4400,
+        kpis:[["Net revenue","$5,400","this month","t"],["Covers served","1,360","January","a"],
+              ["Catering events","3","this month","t"],["Food cost","32%","of revenue","r"]],
+        plates:[["Smoked Pork Ribs",228],["Fried Catfish Plate",201],["Mac and Cheese",372],
+                ["Collard Greens",330],["Seafood Gumbo",165]]},
+    feb:{label:"February 2026", dine:36400, cater:7600, deliv:3900,
+        kpis:[["Net revenue","$5,200","this month","t"],["Covers served","1,205","February","a"],
+              ["Catering events","4","this month","t"],["Food cost","33%","of revenue","r"]],
+        plates:[["Smoked Pork Ribs",205],["Fried Catfish Plate",214],["Mac and Cheese",344],
+                ["Collard Greens",298],["Seafood Gumbo",158]]}
+  };
+  function renderKpis(p){
+    var box=document.getElementById('kpis');box.innerHTML='';
+    data[p].kpis.forEach(function(k,i){
+      var el=document.createElement('div');el.className='kpi '+k[3];
+      el.style.animationDelay=(i*0.06)+'s';
+      el.innerHTML='<div class="label">'+k[0]+'</div><div class="val">'+k[1]+'</div><div class="sub">'+k[2]+'</div>';
+      box.appendChild(el);
+    });
+  }
+  function renderPlates(p){
+    var tb=document.querySelector('#plates tbody');tb.innerHTML='';
+    var max=Math.max.apply(null,data[p].plates.map(function(x){return x[1];}));
+    data[p].plates.forEach(function(r){
+      var tr=document.createElement('tr');
+      var w=Math.round(r[1]/max*100);
+      tr.innerHTML='<td>'+r[0]+'</td><td class="num">'+r[1].toLocaleString()+'</td>'+
+        '<td><div class="bar" style="width:'+w+'%"></div></td>';
+      tb.appendChild(tr);
+    });
+  }
+  function drawChart(p){
+    var c=document.getElementById('chart'), ctx=c.getContext('2d');
+    var W=c.width,H=c.height; ctx.clearRect(0,0,W,H);
+    var d=data[p];
+    var bars=[["Dine in",d.dine,"#39c6c0"],["Catering",d.cater,"#f2b441"],["Delivery",d.deliv,"#ef6f6c"]];
+    var max=Math.max.apply(null,bars.map(function(b){return b[1];}))*1.15;
+    var padL=58,padB=40,padT=18, gw=(W-padL-20)/bars.length;
+    ctx.strokeStyle="#2c374a";ctx.fillStyle="#9aa7ba";ctx.font="12px Segoe UI";
+    for(var g=0;g<=4;g++){
+      var y=padT+(H-padT-padB)*(g/4);
+      ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-12,y);ctx.stroke();
+      var v=Math.round(max*(1-g/4));
+      ctx.fillText('$'+(v/1000).toFixed(0)+'k',8,y+4);
+    }
+    bars.forEach(function(b,i){
+      var bh=(b[1]/max)*(H-padT-padB);
+      var x=padL+i*gw+gw*0.22, bw=gw*0.56, y=H-padB-bh;
+      ctx.fillStyle=b[2];ctx.fillRect(x,y,bw,bh);
+      ctx.fillStyle="#e8eef6";ctx.textAlign="center";
+      ctx.fillText('$'+b[1].toLocaleString(),x+bw/2,y-6);
+      ctx.fillStyle="#9aa7ba";ctx.fillText(b[0],x+bw/2,H-padB+18);
+      ctx.textAlign="left";
+    });
+  }
+  function show(p){
+    renderKpis(p);renderPlates(p);drawChart(p);
+    document.getElementById('period-pill').textContent=data[p].label;
+  }
+  var btns=document.querySelectorAll('.controls button');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      btns.forEach(function(o){o.classList.remove('on');});
+      b.classList.add('on');
+      show(b.getAttribute('data-p'));
+    });
+  });
+  show('q4');
+</script>
+</body>
+</html>

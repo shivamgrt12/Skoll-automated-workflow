@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chesapeake Acoustic Collective</title>
+<style>
+  :root{--bg:#161210;--bg2:#1f1916;--card:#251d19;--amber:#e0a458;--amber-d:#c2863c;
+    --cream:#f2e7d8;--mut:#b09a86;--line:#3a2e26;--green:#7bbf8a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--cream);line-height:1.6}
+  a{color:var(--amber);text-decoration:none}
+  h1,h2,h3{font-family:Georgia,serif}
+  header{position:sticky;top:0;z-index:40;background:rgba(22,18,16,.92);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:15px 28px}
+  .logo{display:flex;align-items:center;gap:12px;font-family:Georgia,serif;font-weight:700;font-size:17px;letter-spacing:.4px}
+  .logo .ico{width:34px;height:34px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--amber);font-size:16px}
+  nav a{font-size:13.5px;color:var(--mut);margin-left:22px;letter-spacing:.6px;text-transform:uppercase;transition:color .2s}
+  nav a:hover{color:var(--cream)}
+  .hero{position:relative;padding:96px 28px 80px;text-align:center;overflow:hidden;
+    background:radial-gradient(circle at 50% 0%,#2c211a,#161210 70%)}
+  .strings{position:absolute;inset:0;opacity:.16;background:
+    repeating-linear-gradient(0deg,transparent 0 38px,var(--amber) 38px 39px)}
+  .hero .inner{position:relative;max-width:760px;margin:0 auto}
+  .hero h1{font-size:48px;letter-spacing:1px;margin-bottom:14px}
+  .hero .sub{font-size:18px;color:var(--mut);margin-bottom:26px}
+  .cta{display:inline-block;background:var(--amber);color:#231a12;font-weight:700;padding:13px 28px;
+    border-radius:30px;transition:transform .2s,background .2s}
+  .cta:hover{transform:translateY(-2px);background:var(--amber-d)}
+  section{max-width:960px;margin:0 auto;padding:56px 24px;border-top:1px solid var(--line)}
+  .eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--amber);font-size:12.5px;margin-bottom:8px}
+  h2{font-size:30px;margin-bottom:8px}
+  .muted{color:var(--mut);margin-bottom:24px}
+  .shows{display:flex;flex-direction:column;gap:14px}
+  .show{display:grid;grid-template-columns:96px 1fr auto;gap:18px;align-items:center;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:16px 20px;transition:border-color .2s}
+  .show:hover{border-color:var(--amber)}
+  .date{text-align:center;background:#2f241d;border-radius:10px;padding:8px 6px}
+  .date .m{font-size:12px;letter-spacing:1px;color:var(--amber)}
+  .date .d{font-size:24px;font-weight:800;font-family:Georgia,serif}
+  .show .v{font-size:17px;font-weight:600}
+  .show .c{font-size:13.5px;color:var(--mut)}
+  .pill{font-size:12px;padding:6px 14px;border-radius:20px;font-weight:600}
+  .pill.tk{background:var(--amber);color:#241a12}
+  .pill.free{background:#2d3a2e;color:var(--green)}
+  .tracks{display:grid;gap:12px}
+  .track{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:12px 16px}
+  .play{width:44px;height:44px;border-radius:50%;border:none;background:var(--amber);color:#241a12;
+    font-size:16px;cursor:pointer;flex-shrink:0;transition:transform .15s,background .2s}
+  .play:hover{transform:scale(1.07)}
+  .play.on{background:var(--green)}
+  .track .meta{flex:1}
+  .track .tt{font-weight:600;font-size:15.5px}
+  .track .ta{font-size:13px;color:var(--mut)}
+  .wave{display:flex;align-items:flex-end;gap:3px;height:30px}
+  .wave i{width:3px;background:var(--amber);border-radius:2px;height:8px;transition:height .25s}
+  .track.playing .wave i{animation:bob .8s ease-in-out infinite}
+  @keyframes bob{0%,100%{height:8px}50%{height:26px}}
+  .track.playing .wave i:nth-child(2){animation-delay:.1s}
+  .track.playing .wave i:nth-child(3){animation-delay:.2s}
+  .track.playing .wave i:nth-child(4){animation-delay:.05s}
+  .track.playing .wave i:nth-child(5){animation-delay:.15s}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+  form{display:grid;gap:14px}
+  label{font-size:13px;font-weight:600;color:var(--mut)}
+  input,select,textarea{width:100%;padding:12px 14px;background:#1b1512;border:1px solid var(--line);
+    border-radius:10px;color:var(--cream);font-family:inherit;font-size:14.5px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
+  button.send{background:var(--amber);color:#241a12;border:none;border-radius:30px;padding:12px 26px;
+    font-weight:700;cursor:pointer;justify-self:start;transition:background .2s}
+  button.send:hover{background:var(--amber-d)}
+  .joined{display:none;color:var(--green);font-size:14px;margin-top:6px}
+  .signup{display:flex;gap:10px}
+  .signup input{flex:1}
+  footer{background:#0f0c0a;color:var(--mut);padding:30px 28px;text-align:center;font-size:13.5px;border-top:1px solid var(--line)}
+  footer strong{color:var(--cream)}
+  .reveal{opacity:0;transform:translateY(18px);transition:all .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(max-width:780px){.two{grid-template-columns:1fr}.show{grid-template-columns:72px 1fr}
+    .show .pill{grid-column:2;justify-self:start}nav{display:none}.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="ico">&#9834;</span> Chesapeake Acoustic Collective</div>
+  <nav>
+    <a href="#shows">Shows</a><a href="#listen">Listen</a><a href="#book">Booking</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="strings"></div>
+  <div class="inner">
+    <h1>Two guitars, three harmonies, one room at a time.</h1>
+    <div class="sub">Fingerstyle and folk arrangements from Baltimore and Washington. Gerald Roman and Chris Nyberg.</div>
+    <a class="cta" href="#shows">See upcoming shows</a>
+  </div>
+</div>
+
+<section id="shows" class="reveal">
+  <div class="eyebrow">On the calendar</div>
+  <h2>Upcoming shows</h2>
+  <div class="muted">Come early, the quiet pieces open the set.</div>
+  <div class="shows">
+    <div class="show">
+      <div class="date"><div class="m">OCT</div><div class="d">24</div></div>
+      <div><div class="v">House gathering set, Silver Spring</div><div class="c">An evening of new arrangements, by invitation</div></div>
+      <span class="pill free">Free</span>
+    </div>
+    <div class="show">
+      <div class="date"><div class="m">NOV</div><div class="d">07</div></div>
+      <div><div class="v">Brookhaven Arts Festival, Washington DC</div><div class="c">Stage B outdoor, 3:00 PM, a 45 minute fingerstyle set</div></div>
+      <span class="pill tk">Festival</span>
+    </div>
+    <div class="show">
+      <div class="date"><div class="m">DEC</div><div class="d">13</div></div>
+      <div><div class="v">Winter house concert, Charles Village</div><div class="c">A small living-room show, seats are limited</div></div>
+      <span class="pill tk">RSVP</span>
+    </div>
+  </div>
+</section>
+
+<section id="listen" class="reveal">
+  <div class="eyebrow">From the set</div>
+  <h2>Listen</h2>
+  <div class="muted">Rough room recordings from rehearsal. Press play to follow along.</div>
+  <div class="tracks" id="tracks">
+    <div class="track">
+      <button class="play">&#9654;</button>
+      <div class="meta"><div class="tt">Flightless Bird, American Mouth</div><div class="ta">Arranged by G. Roman  ·  4:10</div></div>
+      <div class="wave"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="track">
+      <button class="play">&#9654;</button>
+      <div class="meta"><div class="tt">Angelina</div><div class="ta">Solo fingerstyle  ·  3:45</div></div>
+      <div class="wave"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="track">
+      <button class="play">&#9654;</button>
+      <div class="meta"><div class="tt">Passing Afternoon</div><div class="ta">Full arrangement with box percussion  ·  4:50</div></div>
+      <div class="wave"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</section>
+
+<section id="book" class="reveal">
+  <div class="two">
+    <div>
+      <div class="eyebrow">Bring us to your room</div>
+      <h2>Booking</h2>
+      <div class="muted">House concerts, festivals, and small venues across the mid-Atlantic.</div>
+      <form id="bookForm" novalidate>
+        <div><label>Your name</label><input name="bn" type="text"></div>
+        <div><label>Email</label><input name="be" type="email"></div>
+        <div><label>Type of show</label>
+          <select name="bt"><option>House concert</option><option>Festival set</option><option>Private event</option><option>Workshop and concert</option></select>
+        </div>
+        <div><label>Tell us about the date and place</label><textarea name="bm" rows="3"></textarea></div>
+        <button class="send" type="submit">Request a date</button>
+        <div class="joined" id="bookOk">Thanks, your booking request is ready. We will reply within a few days.</div>
+      </form>
+    </div>
+    <div>
+      <div class="eyebrow">Stay in the loop</div>
+      <h2>Show list</h2>
+      <div class="muted">A short note before each show, nothing more. No more than once a month.</div>
+      <form id="mailForm" novalidate>
+        <label>Email</label>
+        <div class="signup"><input name="me" type="email" aria-label="Your email address"><button class="send" type="submit">Join</button></div>
+        <div class="joined" id="mailOk">You are on the list. See you at a show.</div>
+      </form>
+      <p style="margin-top:22px;color:var(--mut);font-size:14px">Or write directly to <a href="mailto:gerald.roman@gmail.com">gerald.roman@gmail.com</a> and we will sort out the rest.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Chesapeake Acoustic Collective</strong><br>
+  Baltimore and Washington  ·  Booking by email at <a href="mailto:gerald.roman@gmail.com">gerald.roman@gmail.com</a>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click",function(e){var t=document.querySelector(a.getAttribute("href"));
+      if(t){e.preventDefault();t.scrollIntoView({behavior:"smooth"});}});
+  });
+
+  document.querySelectorAll("#tracks .track").forEach(function(tr){
+    var btn=tr.querySelector(".play");
+    btn.addEventListener("click",function(){
+      var on=tr.classList.contains("playing");
+      document.querySelectorAll("#tracks .track").forEach(function(o){
+        o.classList.remove("playing"); var b=o.querySelector(".play");
+        b.classList.remove("on"); b.innerHTML="&#9654;";
+      });
+      if(!on){ tr.classList.add("playing"); btn.classList.add("on"); btn.innerHTML="&#10073;&#10073;"; }
+    });
+  });
+
+  function wire(formId,okId){
+    var f=document.getElementById(formId), ok=document.getElementById(okId);
+    f.addEventListener("submit",function(e){
+      e.preventDefault();
+      var email=(f.querySelector('input[type=email]')||{}).value||"";
+      if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())){ ok.style.display="block"; f.reset(); }
+      else { ok.style.display="none"; var inp=f.querySelector('input[type=email]'); inp.style.borderColor="#d98a5a"; inp.focus(); }
+    });
+  }
+  wire("bookForm","bookOk"); wire("mailForm","mailOk");
+
+  var io=new IntersectionObserver(function(en){en.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+</script>
+</body>
+</html>

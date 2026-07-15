@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerald Roman, PhD, MPH</title>
+<style>
+  :root{--ink:#1f2933;--mut:#5b6770;--paper:#fbfaf7;--line:#e7e2d8;
+    --accent:#9a3b34;--accent-d:#7a2c27;--gold:#c08a2d;--soft:#f3efe7}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--paper);line-height:1.6}
+  .sans{font-family:"Segoe UI",Helvetica,Arial,sans-serif}
+  a{color:var(--accent-d);text-decoration:none}
+  header{position:sticky;top:0;z-index:40;background:rgba(251,250,247,.94);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:16px 30px}
+  header .name{font-weight:700;font-size:18px;letter-spacing:.3px}
+  header nav a{font-family:"Segoe UI",sans-serif;font-size:13.5px;color:var(--mut);margin-left:24px;
+    text-transform:uppercase;letter-spacing:.8px;transition:color .2s}
+  header nav a:hover{color:var(--accent)}
+  #menuBtn{display:none;font-size:22px;background:none;border:none;cursor:pointer;color:var(--ink)}
+  .hero{padding:90px 30px 70px;max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center}
+  .hero h1{font-size:44px;line-height:1.12;margin-bottom:16px}
+  .hero .role{font-family:"Segoe UI",sans-serif;color:var(--accent);font-size:15px;letter-spacing:1.5px;
+    text-transform:uppercase;margin-bottom:20px}
+  .hero p{color:var(--mut);font-size:18px;max-width:520px}
+  .portrait{aspect-ratio:1;border-radius:20px;background:
+    radial-gradient(circle at 30% 30%,#c9a27a,#9a3b34 70%);position:relative;overflow:hidden;
+    box-shadow:0 18px 40px rgba(122,44,39,.25)}
+  .portrait .mono{position:absolute;inset:0;display:grid;place-items:center;font-family:"Segoe UI",sans-serif;
+    font-size:96px;font-weight:800;color:rgba(255,255,255,.85);letter-spacing:2px}
+  .portrait .wave{position:absolute;bottom:0;left:0;right:0;height:46%;background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 6px,transparent 6px 14px)}
+  section{max-width:1000px;margin:0 auto;padding:54px 30px;border-top:1px solid var(--line)}
+  .eyebrow{font-family:"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;
+    color:var(--gold);margin-bottom:10px}
+  h2{font-size:30px;margin-bottom:22px}
+  .lead{font-size:18px;color:var(--mut);max-width:720px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:28px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;transition:transform .25s,box-shadow .25s}
+  .card:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(31,41,51,.1)}
+  .card h3{font-size:19px;margin-bottom:10px;color:var(--accent-d)}
+  .card p{font-family:"Segoe UI",sans-serif;font-size:14.5px;color:var(--mut)}
+  .timeline{margin-top:26px;border-left:3px solid var(--line);padding-left:26px}
+  .tl{position:relative;padding:0 0 26px}
+  .tl::before{content:"";position:absolute;left:-34px;top:4px;width:14px;height:14px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 0 4px var(--soft)}
+  .tl .yr{font-family:"Segoe UI",sans-serif;font-size:13px;letter-spacing:1px;color:var(--gold);font-weight:700}
+  .tl h4{font-size:18px;margin:3px 0 5px}
+  .tl p{font-family:"Segoe UI",sans-serif;font-size:14.5px;color:var(--mut)}
+  .pubs{margin-top:24px;list-style:none}
+  .pubs li{padding:16px 0;border-bottom:1px solid var(--line);font-family:"Segoe UI",sans-serif}
+  .pubs .t{font-size:15.5px;color:var(--ink);font-weight:600}
+  .pubs .j{font-size:13.5px;color:var(--mut);margin-top:3px;font-style:italic}
+  form{margin-top:26px;display:grid;gap:16px;max-width:560px;font-family:"Segoe UI",sans-serif}
+  .field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:6px}
+  .field input,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:14.5px;background:#fff}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+  .err{color:var(--accent);font-size:12.5px;margin-top:5px;display:none}
+  .field.bad input,.field.bad textarea{border-color:var(--accent)}
+  .field.bad .err{display:block}
+  .submit{justify-self:start;background:var(--accent);color:#fff;border:none;border-radius:30px;
+    padding:13px 30px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+  .submit:hover{background:var(--accent-d)}
+  .ok{display:none;background:#eef6ee;border:1px solid #bcd9bc;color:#2c5e2c;padding:14px 18px;border-radius:10px;
+    font-family:"Segoe UI",sans-serif;font-size:14.5px}
+  footer{background:#2a211f;color:#d8c9c2;font-family:"Segoe UI",sans-serif;padding:34px 30px}
+  footer .wrap{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:13.5px}
+  footer strong{color:#fff}
+  .reveal{opacity:0;transform:translateY(20px);transition:all .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(max-width:820px){.hero{grid-template-columns:1fr}.portrait{max-width:300px}
+    .grid3{grid-template-columns:1fr}header nav{display:none;position:absolute;top:60px;right:14px;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;flex-direction:column}
+    header nav.open{display:flex}header nav a{margin:8px 0}#menuBtn{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div class="name">Gerald Roman, PhD, MPH</div>
+  <button id="menuBtn">&#9776;</button>
+  <nav id="nav">
+    <a href="#about">About</a><a href="#research">Research</a>
+    <a href="#path">Path</a><a href="#writing">Writing</a><a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="role">Epidemiologist  ·  Research Scientist</div>
+    <h1>Counting what makes a city breathe harder.</h1>
+    <p>I study respiratory illness in Baltimore neighborhoods, where housing, income, and air meet the people who live with them.</p>
+  </div>
+  <div class="portrait" aria-hidden="true"><div class="mono">GR</div><div class="wave"></div></div>
+</div>
+
+<section id="about" class="reveal">
+  <div class="eyebrow">About</div>
+  <h2>Evidence in service of a place</h2>
+  <p class="lead">I am a research scientist at the Chesapeake Institute of Public Health and the principal investigator of the Urban Respiratory Illness Surveillance Network. My work pairs careful statistics with a stubborn belief that the numbers describe real families on real blocks. When I am not at the institute, I play fingerstyle guitar around the mid-Atlantic.</p>
+</section>
+
+<section id="research" class="reveal">
+  <div class="eyebrow">Research</div>
+  <h2>What I work on</h2>
+  <div class="grid3">
+    <div class="card"><h3>Surveillance design</h3><p>Building community-embedded systems that follow respiratory illness at the neighborhood level, not just the city average.</p></div>
+    <div class="card"><h3>Housing and health</h3><p>Measuring how structural housing quality shapes who gets sick, and how often, across a socioeconomic gradient.</p></div>
+    <div class="card"><h3>Health equity</h3><p>Turning findings into recommendations that local housing and public health policy can actually use.</p></div>
+  </div>
+</section>
+
+<section id="path" class="reveal">
+  <div class="eyebrow">Path</div>
+  <h2>How I got here</h2>
+  <div class="timeline">
+    <div class="tl"><div class="yr">2015</div><h4>Master of Public Health, Epidemiology</h4><p>Trained in the methods that still anchor my work.</p></div>
+    <div class="tl"><div class="yr">2022</div><h4>Doctor of Philosophy, Epidemiology</h4><p>Dissertation on socioeconomic determinants of respiratory illness in mid-Atlantic urban populations.</p></div>
+    <div class="tl"><div class="yr">2022</div><h4>Research Scientist, Chesapeake Institute of Public Health</h4><p>Joined the Division of Infectious Disease Epidemiology and Surveillance.</p></div>
+    <div class="tl"><div class="yr">2023</div><h4>Founded the URISN study</h4><p>Six Baltimore neighborhoods, individual-level surveillance, three years of foundation support.</p></div>
+  </div>
+</section>
+
+<section id="writing" class="reveal">
+  <div class="eyebrow">Writing</div>
+  <h2>Selected publications</h2>
+  <ul class="pubs">
+    <li><div class="t">Spatial Clustering of Respiratory Illness Burden in Baltimore City</div><div class="j">American Journal of Public Health, 2023 (first author)</div></li>
+    <li><div class="t">Socioeconomic Stratification and Respiratory Illness Hospitalization Rates in Baltimore City</div><div class="j">Journal of Epidemiology and Community Health, 2022 (first author)</div></li>
+    <li><div class="t">Income-Level Disparities in Ambulatory Care Access for Respiratory Illness in Baltimore</div><div class="j">Journal of Urban Health, 2024 (first author)</div></li>
+  </ul>
+</section>
+
+<section id="contact" class="reveal">
+  <div class="eyebrow">Contact</div>
+  <h2>Get in touch</h2>
+  <p class="lead">For research collaborations, data questions, or speaking, send a note with a clear subject line. I read everything, and I answer what I can.</p>
+  <form id="cform" novalidate>
+    <div class="field" id="f-name"><label>Name</label><input type="text" name="name"><div class="err">Please add your name.</div></div>
+    <div class="field" id="f-email"><label>Email</label><input type="email" name="email"><div class="err">Please enter a valid email address.</div></div>
+    <div class="field" id="f-msg"><label>Message</label><textarea name="msg" rows="4"></textarea><div class="err">A sentence or two helps me reply well.</div></div>
+    <button type="submit" class="submit">Send message</button>
+    <div class="ok" id="ok">Thank you, your message is ready to send. I will reply from gerald.roman@gmail.com.</div>
+  </form>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><strong>Gerald Roman, PhD, MPH</strong><br>Chesapeake Institute of Public Health, Baltimore</div>
+    <div><strong>Reach me</strong><br><a href="mailto:gerald.roman@gmail.com" style="color:#e8c9c2">gerald.roman@gmail.com</a></div>
+    <div><strong>Also</strong><br>Fingerstyle guitar, long runs, Sunday dinners</div>
+  </div>
+</footer>
+
+<script>
+  var menuBtn=document.getElementById("menuBtn"), nav=document.getElementById("nav");
+  menuBtn.addEventListener("click",function(){ nav.classList.toggle("open"); });
+  nav.querySelectorAll("a").forEach(function(a){ a.addEventListener("click",function(){ nav.classList.remove("open"); }); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click",function(e){
+      var t=document.querySelector(a.getAttribute("href"));
+      if(t){ e.preventDefault(); t.scrollIntoView({behavior:"smooth"}); }
+    });
+  });
+
+  var io=new IntersectionObserver(function(en){en.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+
+  var form=document.getElementById("cform"), ok=document.getElementById("ok");
+  function setBad(id,bad){ document.getElementById(id).classList.toggle("bad",bad); }
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var name=form.name.value.trim(), email=form.email.value.trim(), msg=form.msg.value.trim();
+    var emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    setBad("f-name",!name); setBad("f-email",!emailOk); setBad("f-msg",msg.length<3);
+    if(name && emailOk && msg.length>=3){
+      ok.style.display="block"; form.reset();
+      ok.scrollIntoView({behavior:"smooth",block:"center"});
+    } else { ok.style.display="none"; }
+  });
+</script>
+</body>
+</html>

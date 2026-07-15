@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household Finance Dashboard, Lisa &amp; Mark Reyes</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy:   #1A2B4A;
+    --orange: #F47B20;
+    --steel:  #4A5C6A;
+    --light:  #F2F4F7;
+    --white:  #FFFFFF;
+    --green:  #227A3C;
+    --red:    #C03020;
+    --midgrey:#8A9AA8;
+    --yellow: #FFC000;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--light);
+    color: var(--navy);
+  }
+
+  /* ── header ── */
+  header {
+    background: var(--navy);
+    border-bottom: 4px solid var(--orange);
+  }
+  .header-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-left .title { font-size: 20px; font-weight: 800; color: var(--white); }
+  .header-left .sub   { font-size: 12px; color: var(--midgrey); margin-top: 3px; }
+  .header-right .month-badge {
+    background: var(--orange);
+    color: var(--white);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: .5px;
+  }
+  .header-right .review-note { font-size: 11px; color: var(--midgrey); margin-top: 5px; text-align: right; }
+
+  /* ── layout ── */
+  .page { max-width: 1300px; margin: 0 auto; padding: 24px; }
+
+  /* ── KPI strip ── */
+  .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 26px; }
+  .kpi {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 16px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    border-top: 4px solid var(--orange);
+  }
+  .kpi.green  { border-top-color: var(--green); }
+  .kpi.navy   { border-top-color: var(--navy); }
+  .kpi.red    { border-top-color: var(--red); }
+  .kpi.yellow { border-top-color: var(--yellow); }
+  .kpi-label  { font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--midgrey); margin-bottom: 6px; }
+  .kpi-value  { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .kpi-sub    { font-size: 11px; color: var(--steel); margin-top: 4px; }
+
+  /* ── card ── */
+  .card {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .card h3 {
+    font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--steel); margin-bottom: 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--light);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card h3 .tag {
+    font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .tag-green  { background: #d4edda; color: var(--green); }
+  .tag-orange { background: #fde8cf; color: var(--orange); }
+  .tag-red    { background: #f8d7da; color: var(--red); }
+
+  /* ── grids ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── budget rows ── */
+  .budget-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--light);
+    font-size: 13px;
+  }
+  .budget-row:last-child { border-bottom: none; }
+  .br-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .br-cat { flex: 1; color: var(--navy); }
+  .br-cat .br-sub { font-size: 10px; color: var(--midgrey); }
+  .br-amount { font-weight: 700; min-width: 70px; text-align: right; }
+  .br-bar-wrap { width: 100px; }
+  .br-bar { height: 6px; border-radius: 3px; background: var(--light); }
+  .br-fill { height: 100%; border-radius: 3px; }
+
+  /* ── savings progress ── */
+  .savings-item { margin-bottom: 16px; }
+  .savings-item .s-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+  .savings-item .s-name   { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .savings-item .s-val    { font-size: 13px; color: var(--steel); }
+  .savings-item .s-goal   { font-size: 10px; color: var(--midgrey); }
+  .savings-bar { background: var(--light); border-radius: 5px; height: 10px; overflow: hidden; }
+  .savings-fill { height: 100%; border-radius: 5px; background: var(--green); }
+
+  /* ── debt tracker ── */
+  .debt-item { padding: 12px 0; border-bottom: 1px solid var(--light); }
+  .debt-item:last-child { border-bottom: none; }
+  .d-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .d-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .d-remain { font-size: 14px; font-weight: 800; color: var(--red); }
+  .d-meta { font-size: 11px; color: var(--midgrey); display: flex; gap: 16px; margin-bottom: 6px; }
+  .d-bar { background: var(--light); border-radius: 4px; height: 7px; overflow: hidden; }
+  .d-fill { height: 100%; border-radius: 4px; background: var(--red); }
+
+  /* ── income strip ── */
+  .income-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--light); font-size: 13px; }
+  .income-row:last-child { border-bottom: none; }
+  .i-name   { color: var(--navy); }
+  .i-amount { font-weight: 700; color: var(--green); }
+  .i-note   { font-size: 10px; color: var(--midgrey); margin-top: 2px; }
+
+  /* ── timeline ── */
+  .timeline { list-style: none; position: relative; padding-left: 22px; }
+  .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background: var(--light); }
+  .timeline li { position: relative; margin-bottom: 14px; font-size: 12px; }
+  .timeline li::before { content:''; position:absolute; left:-18px; top:4px; width:10px; height:10px; border-radius:50%; background: var(--orange); border: 2px solid var(--white); box-shadow: 0 0 0 2px var(--orange); }
+  .tl-date  { font-weight: 700; color: var(--orange); font-size: 11px; }
+  .tl-item  { color: var(--navy); margin-top: 1px; }
+  .tl-meta  { font-size: 10px; color: var(--midgrey); }
+
+  /* ── tips ── */
+  .tip { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--light); font-size: 12px; }
+  .tip:last-child { border-bottom: none; }
+  .tip-icon { font-size: 16px; flex-shrink: 0; }
+  .tip-text { color: var(--navy); line-height: 1.5; }
+
+  /* ── toggle tabs ── */
+  .tab-group { display: flex; gap: 0; margin-bottom: 16px; border-radius: 6px; overflow: hidden; border: 1.5px solid #dce2e8; width: fit-content; }
+  .tab-btn { padding: 7px 18px; font-size: 12px; font-weight: 700; border: none; background: var(--light); color: var(--steel); cursor: pointer; letter-spacing: .5px; text-transform: uppercase; }
+  .tab-btn.active { background: var(--navy); color: var(--white); }
+
+  footer {
+    background: var(--navy);
+    color: var(--midgrey);
+    text-align: center;
+    font-size: 11px;
+    padding: 14px;
+    border-top: 3px solid var(--orange);
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="title">Household Finance Dashboard</div>
+      <div class="sub">Lisa &amp; Mark Reyes &nbsp;·&nbsp; Ironbound, Newark, NJ &nbsp;·&nbsp; Affinity Federal Credit Union &nbsp;·&nbsp; Vanguard</div>
+    </div>
+    <div class="header-right">
+      <div class="month-badge">October 2026 Review</div>
+      <div class="review-note">Monthly budget review · 1st of each month</div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- KPIs -->
+  <div class="kpi-strip">
+    <div class="kpi green">
+      <div class="kpi-label">Combined Take-Home</div>
+      <div class="kpi-value">$8,200</div>
+      <div class="kpi-sub">/ month</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Total Monthly Outflow</div>
+      <div class="kpi-value">$5,382</div>
+      <div class="kpi-sub">65.6% of take-home</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Monthly Buffer</div>
+      <div class="kpi-value">$2,818</div>
+      <div class="kpi-sub">Saved + discretionary</div>
+    </div>
+    <div class="kpi navy">
+      <div class="kpi-label">Emergency Fund</div>
+      <div class="kpi-value">$22,000</div>
+      <div class="kpi-sub">Affinity FCU savings</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Total Retirement</div>
+      <div class="kpi-value">$79,000</div>
+      <div class="kpi-sub">Lisa 401k + Mark 401k</div>
+    </div>
+    <div class="kpi yellow">
+      <div class="kpi-label">Joint Brokerage</div>
+      <div class="kpi-value">$8,500</div>
+      <div class="kpi-sub">Vanguard</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Total Debt</div>
+      <div class="kpi-value">$212,500</div>
+      <div class="kpi-sub">Mortgage + truck loan</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Total Net Worth</div>
+      <div class="kpi-value">~$109,500</div>
+      <div class="kpi-sub">Liquid + invested assets</div>
+    </div>
+  </div>
+
+  <!-- income + pie chart -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Monthly Income <span class="tag tag-green">Both Sources</span></h3>
+      <div class="income-row">
+        <div>
+          <div class="i-name"><strong>Lisa Reyes</strong>, Construction Foreman, Turner Construction</div>
+          <div class="i-note">Base $76,000 + ~$6,000 OT &nbsp;·&nbsp; Laborers' Local 472</div>
+        </div>
+        <div class="i-amount">$4,800</div>
+      </div>
+      <div class="income-row">
+        <div>
+          <div class="i-name"><strong>Mark Reyes</strong>, Medical Billing Specialist, RWJBarnabas Health</div>
+          <div class="i-note">Base salary ~$54,000 &nbsp;·&nbsp; Jersey City, NJ</div>
+        </div>
+        <div class="i-amount">$3,400</div>
+      </div>
+      <div class="income-row" style="border-top: 2px solid var(--navy); padding-top:12px; margin-top:6px;">
+        <div>
+          <div class="i-name" style="font-weight:800; font-size:15px;">Combined Monthly Take-Home</div>
+        </div>
+        <div class="i-amount" style="font-size:18px; color:var(--navy);">$8,200</div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <h3>Income Split</h3>
+        <canvas id="incomeChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Expense Breakdown <span class="tag tag-orange">This Month</span></h3>
+      <canvas id="expenseChart" height="240"></canvas>
+    </div>
+  </div>
+
+  <!-- detailed expense list + savings -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Monthly Outflows, Detail</h3>
+
+      <div class="budget-row">
+        <div class="br-dot" style="background:#1A2B4A;"></div>
+        <div class="br-cat">Mortgage (incl. taxes &amp; insurance)<div class="br-sub">Affinity FCU · due 1st</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:100%;background:#1A2B4A;"></div></div></div>
+        <div class="br-amount">$1,850</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#F47B20;"></div>
+        <div class="br-cat">Groceries &amp; household<div class="br-sub">Mark + Elena handle shopping</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:63%;background:#F47B20;"></div></div></div>
+        <div class="br-amount">$520</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#4A5C6A;"></div>
+        <div class="br-cat">Pickup Truck Loan<div class="br-sub">Affinity FCU · auto-debit 15th</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:51%;background:#4A5C6A;"></div></div></div>
+        <div class="br-amount">$420</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Utilities (electric, gas, water, internet)<div class="br-sub">Ironbound row house</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:38%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$310</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Auto insurance (both vehicles)</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:35%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$285</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#F47B20;"></div>
+        <div class="br-cat">Lisa's truck fuel<div class="br-sub">Harrison site commute + errands</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:27%;background:#F47B20;"></div></div></div>
+        <div class="br-amount">$220</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#227A3C;"></div>
+        <div class="br-cat">Savings (automatic transfer)<div class="br-sub">Emergency fund top-up</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:27%;background:#227A3C;"></div></div></div>
+        <div class="br-amount">$800</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#FFC000;"></div>
+        <div class="br-cat">Dining, social &amp; misc<div class="br-sub">McGovern's, site lunches, outings</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:24%;background:#FFC000;"></div></div></div>
+        <div class="br-amount">$200</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Home maintenance fund</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:18%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$150</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#C03020;"></div>
+        <div class="br-cat">Carla support (avg)<div class="br-sub">Car trouble, groceries</div></div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:18%;background:#C03020;"></div></div></div>
+        <div class="br-amount">$150</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Misc household</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:30%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$250</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Elena prescriptions &amp; copays</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:12%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$95</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#8A9AA8;"></div>
+        <div class="br-cat">Our Lady of Mount Carmel donation</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:10%;background:#8A9AA8;"></div></div></div>
+        <div class="br-amount">$80</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-dot" style="background:#4A5C6A;"></div>
+        <div class="br-cat">Streaming (video, sports, movie apps)</div>
+        <div class="br-bar-wrap"><div class="br-bar"><div class="br-fill" style="width:6%;background:#4A5C6A;"></div></div></div>
+        <div class="br-amount">$52</div>
+      </div>
+
+      <div class="budget-row" style="border-top:2px solid var(--navy); margin-top:8px; padding-top:12px;">
+        <div class="br-cat" style="font-weight:800; font-size:14px;">Total Outflow</div>
+        <div class="br-amount" style="font-size:16px; color:var(--red);">$5,382</div>
+      </div>
+      <div class="budget-row">
+        <div class="br-cat" style="font-weight:700; color:var(--green);">Monthly Buffer Remaining</div>
+        <div class="br-amount" style="color:var(--green);">$2,818</div>
+      </div>
+    </div>
+
+    <!-- savings + debt -->
+    <div>
+      <div class="card">
+        <h3>Savings &amp; Investments <span class="tag tag-green">On Track</span></h3>
+        <div class="savings-item">
+          <div class="s-header">
+            <div>
+              <div class="s-name">Emergency Fund</div>
+              <div class="s-goal">Goal: $25,000 &nbsp;·&nbsp; Affinity FCU</div>
+            </div>
+            <div class="s-val">$22,000 / $25,000</div>
+          </div>
+          <div class="savings-bar"><div class="savings-fill" style="width:88%;"></div></div>
+        </div>
+        <div class="savings-item">
+          <div class="s-header">
+            <div>
+              <div class="s-name">Lisa 401(k)</div>
+              <div class="s-goal">Turner Construction plan</div>
+            </div>
+            <div class="s-val">$48,000</div>
+          </div>
+          <div class="savings-bar"><div class="savings-fill" style="width:70%; background:var(--navy);"></div></div>
+        </div>
+        <div class="savings-item">
+          <div class="s-header">
+            <div>
+              <div class="s-name">Mark 401(k)</div>
+              <div class="s-goal">RWJBarnabas Health plan</div>
+            </div>
+            <div class="s-val">$31,000</div>
+          </div>
+          <div class="savings-bar"><div class="savings-fill" style="width:45%; background:var(--navy);"></div></div>
+        </div>
+        <div class="savings-item">
+          <div class="s-header">
+            <div>
+              <div class="s-name">Joint Vanguard Brokerage</div>
+              <div class="s-goal">Goal: $20,000 &nbsp;·&nbsp; Index funds</div>
+            </div>
+            <div class="s-val">$8,500 / $20,000</div>
+          </div>
+          <div class="savings-bar"><div class="savings-fill" style="width:43%; background:var(--orange);"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Debt Tracker <span class="tag tag-red">$212,500 Remaining</span></h3>
+
+        <div class="debt-item">
+          <div class="d-top">
+            <div class="d-name">Mortgage, Ironbound Row House</div>
+            <div class="d-remain">$198,000</div>
+          </div>
+          <div class="d-meta">
+            <span>Affinity FCU &nbsp;·&nbsp; due 1st</span>
+            <span>$1,850 / month</span>
+            <span>Purchased 2019</span>
+          </div>
+          <div class="d-bar"><div class="d-fill" style="width:66%;"></div></div>
+        </div>
+
+        <div class="debt-item">
+          <div class="d-top">
+            <div class="d-name">Pickup Truck Loan (2021)</div>
+            <div class="d-remain">$14,500</div>
+          </div>
+          <div class="d-meta">
+            <span>Affinity FCU &nbsp;·&nbsp; auto-debit 15th</span>
+            <span>$420 / month</span>
+            <span>Lisa's work vehicle</span>
+          </div>
+          <div class="d-bar"><div class="d-fill" style="width:35%;"></div></div>
+        </div>
+
+        <div class="debt-item">
+          <div class="d-top">
+            <div class="d-name">Credit Card Balance</div>
+            <div class="d-remain" style="color:var(--green);">$0</div>
+          </div>
+          <div class="d-meta"><span>No balances carried &nbsp;·&nbsp; Paid in full monthly</span></div>
+          <div class="d-bar"><div class="d-fill" style="width:0%; background:var(--green);"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>October &amp; Q4 Financial Reminders</h3>
+        <ul class="timeline">
+          <li>
+            <div class="tl-date">Oct 1</div>
+            <div class="tl-item">Monthly budget review with Mark (this session)</div>
+            <div class="tl-meta">Mark's spreadsheet, joint review</div>
+          </li>
+          <li>
+            <div class="tl-date">Oct 1</div>
+            <div class="tl-item">Q4 union dues, Laborers' Local 472</div>
+            <div class="tl-meta">Verify amount and confirm payment</div>
+          </li>
+          <li>
+            <div class="tl-date">Oct 15</div>
+            <div class="tl-item">Pickup loan auto-debit ($420)</div>
+            <div class="tl-meta">Verify Affinity FCU cleared</div>
+          </li>
+          <li>
+            <div class="tl-date">Oct 22</div>
+            <div class="tl-item">Carla's birthday, coordinate card for kids</div>
+            <div class="tl-meta">Small gift, Sofia and Lucas involved</div>
+          </li>
+          <li>
+            <div class="tl-date">Nov 1</div>
+            <div class="tl-item">Mortgage payment due ($1,850)</div>
+            <div class="tl-meta">Auto-pay Affinity FCU · verify posted</div>
+          </li>
+          <li>
+            <div class="tl-date">Nov 17</div>
+            <div class="tl-item">NJ Construction Supervisor License renewal deadline</div>
+            <div class="tl-meta">CE credits must be submitted, no cost if on time</div>
+          </li>
+          <li>
+            <div class="tl-date">Nov 26</div>
+            <div class="tl-item">Thanksgiving grocery run, Lisa cooks turkey</div>
+            <div class="tl-meta">Budget $120 to 140 for family dinner</div>
+          </li>
+          <li>
+            <div class="tl-date">Dec 25</div>
+            <div class="tl-item">Christmas family dinner, Carla, Sofia, Lucas, Miguel</div>
+            <div class="tl-meta">Gift budget: confirm with Mark by Nov 15</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- money notes -->
+  <div class="card">
+    <h3>Mark's Budget Notes, October 1, 2026</h3>
+    <div class="tip">
+      <div class="tip-icon">✅</div>
+      <div class="tip-text"><strong>Buffer is holding at $2,818.</strong> The emergency fund is 88% to the $25K goal. At the current $800/month savings rate, we hit it in 4 months, March 2027.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-text"><strong>Family support creep:</strong> Carla support averaged $212 the past three months vs. the $150 budget. Miguel's $500 loan from earlier this year is still out. Worth a conversation before the holidays.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">💡</div>
+      <div class="tip-text"><strong>Truck loan payoff:</strong> At $420/month, loan is cleared in ~34 months (August 2029). Extra $100/month would cut 4 months. Lisa's call, truck is a work tool, not burning capital.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">📊</div>
+      <div class="tip-text"><strong>Vanguard brokerage lagging:</strong> $8,500 vs. $20K goal. Once emergency fund is closed, redirect $800/month savings split: $500 to brokerage, $300 to cash buffer.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">🎄</div>
+      <div class="tip-text"><strong>Q4 holiday budget:</strong> Set aside $400 for Thanksgiving + Christmas gifts. Mark handles the spreadsheet, Lisa approves the number before any purchase over $200.</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">🏠</div>
+      <div class="tip-text"><strong>Upstairs bathroom tile (late 2026):</strong> Home maintenance fund at $150/month. Project estimate $2,200 to 2,800. Fund has ~$1,800 accumulated. Lisa will source tile from the Ironbound supplier she trusts.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<footer>
+  Lisa &amp; Mark Reyes &nbsp;·&nbsp; Ironbound, Newark, NJ &nbsp;·&nbsp;
+  Affinity Federal Credit Union &nbsp;·&nbsp; Vanguard Brokerage &nbsp;·&nbsp;
+  Monthly Review: October 1, 2026 &nbsp;·&nbsp; Mark's Spreadsheet v10.2026
+</footer>
+
+<script>
+  // Income donut
+  new Chart(document.getElementById('incomeChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Lisa (Foreman)', 'Mark (Medical Billing)'],
+      datasets: [{
+        data: [4800, 3400],
+        backgroundColor: ['#1A2B4A', '#F47B20'],
+        borderWidth: 3,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 14 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: $${ctx.parsed.toLocaleString()}/mo` } }
+      }
+    }
+  });
+
+  // Expense bar
+  const expenseData = {
+    labels: [
+      'Mortgage', 'Groceries', 'Truck Loan', 'Utilities',
+      'Auto Ins.', 'Fuel', 'Savings', 'Dining/Misc',
+      'Home Maint.', 'Carla', 'Misc HH', 'Elena Rx',
+      'Parish', 'Streaming'
+    ],
+    values: [1850, 520, 420, 310, 285, 220, 800, 200, 150, 150, 250, 95, 80, 52],
+    colors: [
+      '#1A2B4A','#F47B20','#4A5C6A','#8A9AA8',
+      '#8A9AA8','#F47B20','#227A3C','#FFC000',
+      '#8A9AA8','#C03020','#8A9AA8','#8A9AA8',
+      '#4A5C6A','#4A5C6A'
+    ]
+  };
+
+  new Chart(document.getElementById('expenseChart'), {
+    type: 'bar',
+    data: {
+      labels: expenseData.labels,
+      datasets: [{
+        label: 'Monthly ($)',
+        data: expenseData.values,
+        backgroundColor: expenseData.colors,
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` $${ctx.parsed.x.toLocaleString()}` } }
+      },
+      scales: {
+        x: { ticks: { callback: v => '$' + v.toLocaleString() }, grid: { color: '#F2F4F7' } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

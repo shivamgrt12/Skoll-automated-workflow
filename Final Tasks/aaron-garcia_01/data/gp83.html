@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St. Nicholas Greek Festival | Food Booth</title>
+<style>
+  :root{--blue:#0b4f9e;--blue2:#1267c7;--gold:#e3b341;--cream:#fbf7ee;--ink:#1c2330;--white:#fff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header{background:var(--blue);color:#fff;position:sticky;top:0;z-index:40}
+  .nav{display:flex;justify-content:space-between;align-items:center;height:60px}
+  .logo{font-weight:800;letter-spacing:.5px}
+  .logo b{color:var(--gold)}
+  .nav a{color:#fff;text-decoration:none;margin-left:22px;font-size:.92rem;opacity:.9}
+  .nav a:hover{opacity:1;color:var(--gold)}
+  .navlinks{display:flex}
+  .hero{background:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 18px,transparent 18px 36px),
+      linear-gradient(160deg,var(--blue) 0%,var(--blue2) 70%);
+    color:#fff;text-align:center;padding:70px 20px 80px}
+  .hero h1{font-size:2.8rem;line-height:1.1}
+  .hero h1 b{color:var(--gold)}
+  .hero p{opacity:.92;margin:14px auto 26px;max-width:560px;font-size:1.05rem}
+  .count{display:flex;justify-content:center;gap:16px;margin-top:10px}
+  .cbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:14px 18px;min-width:78px}
+  .cbox .n{font-size:2rem;font-weight:800;color:var(--gold)}
+  .cbox .l{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;opacity:.85}
+  .btn{display:inline-block;margin-top:26px;background:var(--gold);color:#33270a;font-weight:800;padding:13px 28px;border:0;border-radius:8px;cursor:pointer;font-size:1rem;transition:transform .15s}
+  .btn:hover{transform:translateY(-2px)}
+
+  section{padding:64px 0}
+  h2{text-align:center;color:var(--blue);font-size:2rem;margin-bottom:8px}
+  .lead{text-align:center;color:#6a6557;max-width:620px;margin:0 auto 36px}
+  .reveal{opacity:0;transform:translateY(26px);transition:.7s}
+  .reveal.in{opacity:1;transform:none}
+
+  .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .mcard{background:#fff;border-radius:14px;border:1px solid #ece3cf;padding:20px;text-align:center;box-shadow:0 6px 18px rgba(11,79,158,.06);transition:transform .2s}
+  .mcard:hover{transform:translateY(-5px)}
+  .mcard .ic{font-size:2.4rem}
+  .mcard h4{color:var(--blue);margin:8px 0 4px}
+  .mcard .pr{color:var(--gold);font-weight:800;font-size:1.2rem}
+  .mcard p{font-size:.82rem;color:#857e6c;margin-top:4px}
+
+  .sched{background:var(--blue);color:#fff}
+  .sched h2{color:#fff}
+  .timeline{max-width:680px;margin:0 auto}
+  .ev{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.15)}
+  .ev .t{color:var(--gold);font-weight:800;width:120px;flex-shrink:0}
+  .ev .d b{display:block}
+  .ev .d span{opacity:.8;font-size:.88rem}
+
+  .vol{background:var(--cream)}
+  form{max-width:560px;margin:0 auto;display:grid;gap:14px}
+  .r2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{font-size:.82rem;font-weight:600;color:#6a6557}
+  input,select{width:100%;padding:11px;border:1px solid #d9cfb6;border-radius:7px;font-size:.95rem;background:#fff;font-family:inherit}
+  input:focus,select:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid #d9cfb6;border-radius:20px;padding:8px 14px;font-size:.85rem;cursor:pointer;user-select:none;background:#fff;transition:.15s}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .ok{display:none;text-align:center;background:#eaf5ee;border:1px solid #9ad0a8;color:#1d6b34;padding:14px;border-radius:8px}
+  .ok.show{display:block;animation:fade .4s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  footer{background:#08376f;color:#cfe0f3;text-align:center;padding:30px 0;font-size:.85rem}
+  footer b{color:var(--gold)}
+  @media(max-width:780px){.navlinks{display:none}.hero h1{font-size:2rem}.menu{grid-template-columns:1fr}.r2{grid-template-columns:1fr}.count{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="logo">St. Nicholas <b>Greek Festival</b></div>
+    <div class="navlinks">
+      <a href="#booth">The Booth</a><a href="#schedule">Schedule</a><a href="#volunteer">Volunteer</a>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Taste of <b>Greece</b> on the Sponge Docks</h1>
+    <p>The St. Nicholas Cathedral food booth returns for festival weekend, October 17 and 18, 2026. Lamb souvlaki, fresh loukoumades, and Greek coffee, run by the Mykonos Taverna kitchen.</p>
+    <div class="count" id="count">
+      <div class="cbox"><div class="n" id="d">0</div><div class="l">Days</div></div>
+      <div class="cbox"><div class="n" id="h">0</div><div class="l">Hours</div></div>
+      <div class="cbox"><div class="n" id="m">0</div><div class="l">Minutes</div></div>
+      <div class="cbox"><div class="n" id="s">0</div><div class="l">Seconds</div></div>
+    </div>
+    <br><a href="#volunteer" class="btn">Volunteer at the Booth</a>
+  </div>
+</div>
+
+<section id="booth">
+  <div class="wrap">
+    <h2 class="reveal">From the Booth</h2>
+    <p class="lead reveal">Booth #3 on the cathedral grounds. Made fresh on site by chef George Hatzis and the team.</p>
+    <div class="menu">
+      <div class="mcard reveal"><div class="ic">&#127844;</div><h4>Lamb Souvlaki on Pita</h4><div class="pr">$9.00</div><p>Charcoal grilled, the line favorite.</p></div>
+      <div class="mcard reveal"><div class="ic">&#129360;</div><h4>Spanakopita</h4><div class="pr">$4.50</div><p>Spinach and feta in crisp phyllo.</p></div>
+      <div class="mcard reveal"><div class="ic">&#127855;</div><h4>Grilled Octopus</h4><div class="pr">$12.00</div><p>Olive oil, lemon, oregano.</p></div>
+      <div class="mcard reveal"><div class="ic">&#127870;</div><h4>Loukoumades</h4><div class="pr">$5.50</div><p>Honey puffs fried to order.</p></div>
+      <div class="mcard reveal"><div class="ic">&#9749;</div><h4>Greek Coffee</h4><div class="pr">$3.50</div><p>Two brewing stations, metrio or glykos.</p></div>
+      <div class="mcard reveal"><div class="ic">&#127870;</div><h4>Baklava</h4><div class="pr">$4.00</div><p>Walnut and thyme honey.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="schedule" class="sched">
+  <div class="wrap">
+    <h2 class="reveal">Festival Weekend</h2>
+    <p class="lead reveal" style="color:#cfe0f3">Saturday and Sunday, October 17 and 18, 2026.</p>
+    <div class="timeline">
+      <div class="ev reveal"><div class="t">Fri evening</div><div class="d"><b>Booth setup</b><span>Tent, fryers, and grills go up. Prep begins.</span></div></div>
+      <div class="ev reveal"><div class="t">Sat 11 AM</div><div class="d"><b>Gates open</b><span>Souvlaki and coffee stations running all day.</span></div></div>
+      <div class="ev reveal"><div class="t">Sat 6 PM</div><div class="d"><b>Live bouzouki</b><span>Music and dancing on the main grounds.</span></div></div>
+      <div class="ev reveal"><div class="t">Sun 12 PM</div><div class="d"><b>Family day</b><span>Loukoumades made fresh through the afternoon.</span></div></div>
+      <div class="ev reveal"><div class="t">Sun evening</div><div class="d"><b>Tear down</b><span>Closing and reconciliation with the finance table.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="volunteer" class="vol">
+  <div class="wrap">
+    <h2 class="reveal">Lend a Hand</h2>
+    <p class="lead reveal">Parish volunteers keep the booth running. Pick a shift and a station, and we will be in touch.</p>
+    <form id="vform" class="reveal" novalidate>
+      <div class="r2">
+        <div><label for="vn">Name</label><input id="vn" required></div>
+        <div><label for="vp">Phone</label><input id="vp" required></div>
+      </div>
+      <div>
+        <label>Stations you can help with</label>
+        <div class="chips" id="chips">
+          <span class="chip" data-v="Grill">Grill</span>
+          <span class="chip" data-v="Fryer">Loukoumades</span>
+          <span class="chip" data-v="Coffee">Coffee</span>
+          <span class="chip" data-v="Cashier">Cashier</span>
+          <span class="chip" data-v="Setup">Setup / Tear down</span>
+        </div>
+      </div>
+      <div class="r2">
+        <div><label for="vd">Day</label><select id="vd"><option>Saturday, Oct 17</option><option>Sunday, Oct 18</option><option>Both days</option></select></div>
+        <div><label for="vt">Shift</label><select id="vt"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+      </div>
+      <button type="submit" class="btn" style="margin-top:6px;justify-self:start">Sign Me Up</button>
+      <div class="ok" id="ok">Thank you. Your volunteer details are in. Eleni will reach out to confirm your shift.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">St. Nicholas Greek Orthodox Cathedral &nbsp;&bull;&nbsp; Tarpon Springs, Florida<br>
+  Food booth chaired by <b>Aaron Garcia</b>. All proceeds support the parish.</div>
+</footer>
+
+<script>
+  var target=new Date(2026,9,17,11,0,0).getTime();
+  function tick(){
+    var now=new Date().getTime(), diff=Math.max(0,target-now);
+    var d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+    document.getElementById('d').textContent=d;
+    document.getElementById('h').textContent=h;
+    document.getElementById('m').textContent=m;
+    document.getElementById('s').textContent=s;
+  }
+  tick(); setInterval(tick,1000);
+
+  document.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){c.classList.toggle('on');});});
+
+  var f=document.getElementById('vform'), ok=document.getElementById('ok');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=document.getElementById('vn'),p=document.getElementById('vp');
+    if(!n.value.trim()||!p.value.trim()){
+      n.style.borderColor=n.value.trim()?'#d9cfb6':'#c0392b';
+      p.style.borderColor=p.value.trim()?'#d9cfb6':'#c0392b';
+      return;
+    }
+    ok.classList.add('show'); f.reset();
+    document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  });
+
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('in');});},1600);
+</script>
+</body>
+</html>

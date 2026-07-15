@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mykonos Taverna | Greek Kitchen in Tarpon Springs</title>
+<style>
+  :root{
+    --blue:#1565a3; --deep:#0d3c61; --sand:#f6f1e7; --ink:#23211c; --gold:#c8992e; --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--sand);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(13,60,97,.96);color:#fff;backdrop-filter:blur(4px)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-size:1.35rem;font-weight:700;letter-spacing:.5px}
+  .brand span{color:var(--gold)}
+  .nav ul{display:flex;gap:26px;list-style:none}
+  .nav ul a{font-size:.95rem;opacity:.9;transition:opacity .2s,color .2s}
+  .nav ul a:hover{opacity:1;color:var(--gold)}
+  .burger{display:none;background:none;border:0;color:#fff;font-size:1.6rem;cursor:pointer}
+
+  .hero{position:relative;min-height:78vh;display:flex;align-items:center;
+    background:linear-gradient(120deg,#0d3c61 0%,#1565a3 60%,#2b86c5 100%);color:#fff;overflow:hidden}
+  .hero .wave{position:absolute;bottom:-2px;left:0;width:100%;line-height:0}
+  .hero-content{max-width:640px}
+  .hero h1{font-size:3rem;line-height:1.1;margin-bottom:14px}
+  .hero p{font-size:1.15rem;opacity:.92;margin-bottom:26px}
+  .tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);
+    padding:5px 14px;border-radius:30px;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:18px}
+  .btn{display:inline-block;background:var(--gold);color:#241c05;font-weight:700;padding:13px 26px;border-radius:6px;
+    border:0;cursor:pointer;font-size:1rem;transition:transform .15s,box-shadow .2s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+  .btn.ghost{background:transparent;border:2px solid #fff;color:#fff;margin-left:12px}
+
+  section{padding:72px 0}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  h2{font-size:2rem;color:var(--deep);margin-bottom:8px;text-align:center}
+  .lead{text-align:center;max-width:680px;margin:0 auto 38px;color:#5a5648}
+
+  .about{background:var(--white)}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  .stat-row{display:flex;gap:30px;margin-top:22px}
+  .stat b{display:block;font-size:2.1rem;color:var(--blue);line-height:1}
+  .stat span{font-size:.85rem;color:#7a7568}
+
+  .tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:30px}
+  .tab{background:#fff;border:1px solid #d9d0bd;color:var(--deep);padding:9px 20px;border-radius:30px;cursor:pointer;
+    font-size:.92rem;transition:all .2s}
+  .tab.active,.tab:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 40px}
+  .dish{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dotted #cdbfa3;padding-bottom:12px}
+  .dish h4{font-size:1.05rem;color:var(--ink)}
+  .dish p{font-size:.88rem;color:#777}
+  .price{color:var(--gold);font-weight:700;white-space:nowrap}
+  .panel{display:none}
+  .panel.show{display:block;animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .loc{background:var(--deep);color:#fff}
+  .loc h2{color:#fff}
+  .loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:26px}
+  .card h3{color:var(--gold);margin-bottom:6px}
+  .card .hours{margin-top:14px;font-size:.9rem;opacity:.85}
+
+  .booking{background:var(--white)}
+  form{max-width:560px;margin:0 auto;display:grid;gap:14px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{font-size:.82rem;color:#5a5648;font-weight:600}
+  input,select,textarea{width:100%;padding:11px;border:1px solid #cdbfa3;border-radius:6px;font-size:.95rem;font-family:inherit;background:#fffdf8}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+  .msg{display:none;text-align:center;background:#e7f4ea;border:1px solid #9ad0a8;color:#1d6b34;padding:14px;border-radius:8px;margin-top:6px}
+  .msg.show{display:block;animation:fade .4s ease}
+
+  footer{background:#0a2f4d;color:#cfe0ee;padding:40px 0 24px;text-align:center}
+  footer .cols{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;text-align:left;margin-bottom:26px}
+  footer h5{color:var(--gold);margin-bottom:8px;font-size:.95rem}
+  footer p{font-size:.88rem;opacity:.85}
+  footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:16px;font-size:.8rem;opacity:.7}
+
+  @media(max-width:760px){
+    .nav ul{position:absolute;top:64px;left:0;right:0;background:var(--deep);flex-direction:column;
+      gap:0;max-height:0;overflow:hidden;transition:max-height .3s}
+    .nav ul.open{max-height:320px}
+    .nav ul li{border-top:1px solid rgba(255,255,255,.1)}
+    .nav ul a{display:block;padding:14px 22px}
+    .burger{display:block}
+    .hero h1{font-size:2.1rem}
+    .about-grid,.menu-grid,.loc-grid,.row2{grid-template-columns:1fr}
+    .btn.ghost{margin-left:0;margin-top:10px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand">Mykonos <span>Taverna</span></div>
+    <button class="burger" id="burger" aria-label="Toggle menu">&#9776;</button>
+    <ul id="menu">
+      <li><a href="#about">Our Story</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#locations">Locations</a></li>
+      <li><a href="#book">Reservations</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero" style="padding:0">
+  <div class="wrap hero-content reveal">
+    <span class="tag">Tarpon Springs and Palm Harbor, Florida</span>
+    <h1>Real Greek cooking, made by hand every day.</h1>
+    <p>Twenty years on the sponge docks and beyond. Lamb on the grill, fish off the Gulf, and a table that feels like Sunday at home.</p>
+    <a href="#book" class="btn">Reserve a Table</a>
+    <a href="#menu" class="btn ghost">See the Menu</a>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none" style="width:100%;height:80px"><path fill="#f6f1e7" d="M0,40 C360,90 1080,0 1440,50 L1440,90 L0,90 Z"></path></svg>
+  </div>
+</section>
+
+<section id="about" class="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="reveal">
+        <h2 style="text-align:left">From Thessaloniki to the sponge docks</h2>
+        <p style="margin-top:12px;color:#5a5648">Aaron Garcia built Mykonos Taverna from one small kitchen into two full-service restaurants. The recipes come from his family in northern Greece, the fish comes from the Gulf, and the oregano is imported from the same hillside grower the kitchen has trusted for years.</p>
+        <p style="margin-top:12px;color:#5a5648">Nothing here is from a box. The moussaka is layered by hand, the baklava is cut before it bakes, and the lamb is turned slowly over charcoal the way it has always been done.</p>
+        <div class="stat-row">
+          <div class="stat"><b>2</b><span>Locations</span></div>
+          <div class="stat"><b>20</b><span>Years Cooking</span></div>
+          <div class="stat"><b>205</b><span>Seats</span></div>
+        </div>
+      </div>
+      <div class="reveal" style="background:linear-gradient(135deg,#1565a3,#0d3c61);border-radius:16px;min-height:300px;display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;padding:30px">
+        <div>
+          <div style="font-size:3.4rem">&#127869;</div>
+          <p style="font-size:1.1rem;margin-top:10px;opacity:.92">"Do it with your hands, do it right, feed people while you do it."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="menu">
+  <div class="wrap">
+    <h2 class="reveal">From the Kitchen</h2>
+    <p class="lead reveal">A few of the dishes our regulars come back for. Ask your server about the fasting season specials.</p>
+    <div class="tabs reveal">
+      <button class="tab active" data-tab="meze">Meze</button>
+      <button class="tab" data-tab="mains">Mains</button>
+      <button class="tab" data-tab="sweets">Sweets</button>
+      <button class="tab" data-tab="wine">Greek Wine</button>
+    </div>
+    <div class="reveal">
+      <div class="panel show" id="meze">
+        <div class="menu-grid">
+          <div class="dish"><div><h4>Grilled Octopus</h4><p>Charred over wood, olive oil, lemon, oregano.</p></div><div class="price">$18</div></div>
+          <div class="dish"><div><h4>Saganaki</h4><p>Kefalotyri flamed tableside.</p></div><div class="price">$14</div></div>
+          <div class="dish"><div><h4>Dolmades</h4><p>Grape leaves, rice, herbs, pine nuts.</p></div><div class="price">$13</div></div>
+          <div class="dish"><div><h4>Spanakopita</h4><p>Phyllo, spinach, feta, baked to order.</p></div><div class="price">$12</div></div>
+        </div>
+      </div>
+      <div class="panel" id="mains">
+        <div class="menu-grid">
+          <div class="dish"><div><h4>Lamb Souvlaki Plate</h4><p>Charcoal skewers, rice pilaf, grilled pita.</p></div><div class="price">$26</div></div>
+          <div class="dish"><div><h4>Moussaka</h4><p>Eggplant, spiced lamb, bechamel.</p></div><div class="price">$22</div></div>
+          <div class="dish"><div><h4>Grilled Branzino</h4><p>Whole sea bass, lemon, Aegean sea salt.</p></div><div class="price">$34</div></div>
+          <div class="dish"><div><h4>Pastitsio</h4><p>Baked pasta, seasoned meat, golden top.</p></div><div class="price">$20</div></div>
+        </div>
+      </div>
+      <div class="panel" id="sweets">
+        <div class="menu-grid">
+          <div class="dish"><div><h4>Baklava</h4><p>Walnuts and Greek thyme honey.</p></div><div class="price">$8</div></div>
+          <div class="dish"><div><h4>Loukoumades</h4><p>Honey puffs fried to order, cinnamon.</p></div><div class="price">$9</div></div>
+          <div class="dish"><div><h4>Galaktoboureko</h4><p>Custard wrapped in crisp phyllo.</p></div><div class="price">$8</div></div>
+          <div class="dish"><div><h4>Greek Coffee</h4><p>Briki method, metrio, medium sweet.</p></div><div class="price">$4</div></div>
+        </div>
+      </div>
+      <div class="panel" id="wine">
+        <div class="menu-grid">
+          <div class="dish"><div><h4>Assyrtiko</h4><p>Crisp mineral white from Santorini.</p></div><div class="price">$12</div></div>
+          <div class="dish"><div><h4>Agiorgitiko</h4><p>Soft red from Nemea.</p></div><div class="price">$11</div></div>
+          <div class="dish"><div><h4>Retsina</h4><p>Traditional pine resin white.</p></div><div class="price">$9</div></div>
+          <div class="dish"><div><h4>Ouzo</h4><p>Served with ice and water.</p></div><div class="price">$8</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="locations" class="loc">
+  <div class="wrap">
+    <h2 class="reveal">Two Tables, One Family</h2>
+    <p class="lead reveal" style="color:#cfe0ee">Find us on the docks or up on Alternate 19.</p>
+    <div class="loc-grid">
+      <div class="card reveal">
+        <h3>Original on Dodecanese</h3>
+        <p>721 Dodecanese Blvd, Tarpon Springs, FL 34689</p>
+        <p>(727) 555-0101</p>
+        <div class="hours">Lunch and dinner, seven days. Patio seating on the water.</div>
+      </div>
+      <div class="card reveal">
+        <h3>Alt 19 in Palm Harbor</h3>
+        <p>4847 Alternate 19 N, Palm Harbor, FL 34683</p>
+        <p>(727) 555-0101</p>
+        <div class="hours">Dinner Tuesday through Sunday, 5 PM to close. Larger dining room and covered patio.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="book" class="booking">
+  <div class="wrap">
+    <h2 class="reveal">Reserve a Table</h2>
+    <p class="lead reveal">Tell us when, and we will have a table ready. For parties over eight, please call.</p>
+    <form id="bookForm" class="reveal" novalidate>
+      <div class="row2">
+        <div><label for="nm">Name</label><input id="nm" name="nm" required></div>
+        <div><label for="ph">Phone</label><input id="ph" name="ph" required></div>
+      </div>
+      <div class="row2">
+        <div><label for="loc">Location</label>
+          <select id="loc"><option>Original on Dodecanese</option><option>Alt 19 in Palm Harbor</option></select></div>
+        <div><label for="sz">Party Size</label>
+          <select id="sz"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+      </div>
+      <div><label for="nt">Anything we should know?</label><textarea id="nt" rows="3"></textarea></div>
+      <button type="submit" class="btn" style="justify-self:start">Request Reservation</button>
+      <div class="msg" id="msg">Thank you. Your reservation request has been received. We will call to confirm shortly.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><h5>Mykonos Taverna</h5><p>Greek kitchen and grill.<br>Tarpon Springs and Palm Harbor.</p></div>
+      <div><h5>Hours</h5><p>Original: daily, lunch and dinner.<br>Alt 19: Tuesday to Sunday, dinner.</p></div>
+      <div><h5>Contact</h5><p>(727) 555-0101<br>aaron.garcia@Finthesiss.ai</p></div>
+    </div>
+    <div class="fine">Family owned and operated. Built by hand, one plate at a time.</div>
+  </div>
+</footer>
+
+<script>
+  var burger=document.getElementById('burger'), menu=document.getElementById('menu');
+  burger.addEventListener('click',function(){menu.classList.toggle('open');});
+  menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open');});});
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('show');});
+      t.classList.add('active');
+      document.getElementById(t.dataset.tab).classList.add('show');
+    });
+  });
+
+  var form=document.getElementById('bookForm'), msg=document.getElementById('msg');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var nm=document.getElementById('nm'), ph=document.getElementById('ph');
+    if(!nm.value.trim()||!ph.value.trim()){
+      nm.style.borderColor=nm.value.trim()?'#cdbfa3':'#c0392b';
+      ph.style.borderColor=ph.value.trim()?'#cdbfa3':'#c0392b';
+      return;
+    }
+    msg.classList.add('show'); form.reset();
+  });
+
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in'); io.unobserve(en.target);} });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('in');});},1600);
+</script>
+</body>
+</html>

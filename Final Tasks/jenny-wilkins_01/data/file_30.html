@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garden Records</title>
+<style>
+  :root{
+    --ink:#22302a; --paper:#f6f3ea; --card:#fffdf7; --line:#d9d2c2;
+    --green:#4a6b4d; --green2:#7fa074; --gold:#c79a3a; --rust:#a8562f; --blue:#5d7b8a;
+    --shadow:0 6px 20px rgba(34,48,42,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper);line-height:1.55}
+  header.site{background:linear-gradient(135deg,#3c5740,#5d7b5a);color:#f3efe2;padding:34px 26px 28px}
+  header.site .wrap{max-width:1040px;margin:0 auto}
+  header.site h1{font-size:30px;letter-spacing:.5px}
+  header.site p{opacity:.9;margin-top:6px;font-style:italic;font-size:15px}
+  nav.crumbs{max-width:1040px;margin:0 auto;padding:12px 26px;font-size:13px;color:#6c6450;border-bottom:1px solid var(--line)}
+  main{max-width:1040px;margin:0 auto;padding:26px}
+  .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow);text-align:center}
+  .stat .num{font-size:34px;font-weight:bold;color:var(--green)}
+  .stat .lab{font-size:13px;color:#736b58;margin-top:4px}
+  section.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:26px;box-shadow:var(--shadow)}
+  h2{font-size:20px;color:var(--green);margin-bottom:4px}
+  .sub{font-size:13px;color:#857c66;margin-bottom:18px}
+  .bar-row{display:grid;grid-template-columns:160px 1fr 46px;align-items:center;gap:10px;margin:10px 0}
+  .bar-track{background:#ece6d6;border-radius:6px;height:22px;overflow:hidden}
+  .bar-fill{height:100%;width:0;border-radius:6px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .bar-row .name{font-size:14px}
+  .bar-row .val{font-size:13px;text-align:right;color:#736b58}
+  .split{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:center}
+  .legend li{list-style:none;font-size:14px;margin:8px 0;display:flex;align-items:center;gap:10px}
+  .dot{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  button.filter{font-family:inherit;font-size:13px;border:1px solid var(--green2);background:#fff;color:var(--green);
+    padding:7px 15px;border-radius:20px;cursor:pointer;transition:all .25s}
+  button.filter:hover{background:#eef3ea}
+  button.filter.active{background:var(--green);color:#fff;border-color:var(--green)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:#857c66}
+  tr.hide{display:none}
+  .tag{font-size:11px;padding:2px 8px;border-radius:10px;color:#fff}
+  .timeline{position:relative;margin-top:8px}
+  .tl-row{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:10px;margin:9px 0}
+  .tl-track{position:relative;height:18px;background:#ece6d6;border-radius:9px}
+  .tl-span{position:absolute;height:100%;border-radius:9px;opacity:.85;transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
+  .months{display:grid;grid-template-columns:repeat(7,1fr);font-size:11px;color:#9b927c;margin:4px 0 2px 140px}
+  footer.site{background:#2f3d33;color:#cfd8cb;font-size:13px;padding:24px 26px;margin-top:10px}
+  footer.site .wrap{max-width:1040px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:760px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .split{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:110px 1fr 40px}
+    .months{margin-left:0}
+    .tl-row{grid-template-columns:90px 1fr}
+  }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+<header class="site"><div class="wrap">
+  <h1>Garden Records</h1>
+  <p>A quarter acre, edited for nearly forty years. Updated February 2026.</p>
+</div></header>
+<nav class="crumbs">Home shelf of records, kept the way the seed packets are kept, sorted and findable.</nav>
+
+<main>
+  <div class="stats">
+    <div class="stat reveal"><div class="num" data-count="62">0</div><div class="lab">Perennials tracked</div></div>
+    <div class="stat reveal"><div class="num" data-count="15">0</div><div class="lab">Cultivars and species</div></div>
+    <div class="stat reveal"><div class="num" data-count="4">0</div><div class="lab">Garden beds</div></div>
+    <div class="stat reveal"><div class="num" data-count="6">0</div><div class="lab">June crowns to divide</div></div>
+  </div>
+
+  <section class="panel reveal">
+    <h2>Plants by bed</h2>
+    <div class="sub">Where the counts sit this season, before the fall dividing.</div>
+    <div id="barchart"></div>
+  </section>
+
+  <section class="panel reveal">
+    <h2>How the plants are doing</h2>
+    <div class="sub">A quick read on vigor across the whole garden.</div>
+    <div class="split">
+      <svg viewBox="0 0 42 42" width="220" height="220" id="donut" aria-label="Status breakdown"></svg>
+      <ul class="legend" id="legend"></ul>
+    </div>
+  </section>
+
+  <section class="panel reveal">
+    <h2>Bloom window</h2>
+    <div class="sub">Roughly when each group carries the border, early spring through autumn.</div>
+    <div class="months"><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Oct</span></div>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <section class="panel reveal">
+    <h2>Plant ledger</h2>
+    <div class="sub">Filter by exposure. The shade border is the spine of the whole thing.</div>
+    <div class="controls" id="filters">
+      <button class="filter active" data-f="all">All</button>
+      <button class="filter" data-f="shade">Shade</button>
+      <button class="filter" data-f="sun">Sun</button>
+      <button class="filter" data-f="mixed">Mixed</button>
+    </div>
+    <table>
+      <thead><tr><th>Plant</th><th>Cultivar</th><th>Bed</th><th>Qty</th><th>Status</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table>
+  </section>
+</main>
+
+<footer class="site"><div class="wrap">
+  <span>Glastonbury, Connecticut</span>
+  <span>Kept by hand on graph paper, mirrored here. Right plant, right place.</span>
+</div></footer>
+
+<script>
+  var beds=[
+    {name:'Shade border N',count:24,color:'#4a6b4d'},
+    {name:'Front border',color:'#c79a3a',count:29},
+    {name:'Mixed border',count:13,color:'#5d7b8a'},
+    {name:'Stone path',count:11,color:'#7fa074'}
+  ];
+  var statusData=[
+    {label:'Thriving',value:24,color:'#4a6b4d'},
+    {label:'Good',value:23,color:'#7fa074'},
+    {label:'Naturalized',value:12,color:'#c79a3a'},
+    {label:'Variable',value:3,color:'#a8562f'}
+  ];
+  var bloom=[
+    {group:'Hellebore',start:0,len:2,color:'#5d7b8a'},
+    {group:'Brunnera',start:1,len:2,color:'#7fa074'},
+    {group:'Hosta',start:3,len:2,color:'#4a6b4d'},
+    {group:'Echinacea',start:3,len:3,color:'#c79a3a'},
+    {group:'Rudbeckia',start:4,len:2,color:'#a8562f'},
+    {group:'Sedum',start:5,len:2,color:'#8a6d3b'}
+  ];
+  var plants=[
+    {p:'Hosta',c:'June',b:'Shade border N',q:9,s:'Thriving',ex:'shade'},
+    {p:'Hosta',c:'Patriot',b:'Shade border N',q:5,s:'Thriving',ex:'shade'},
+    {p:'Hosta',c:'Blue Angel',b:'Shade border N',q:4,s:'Good',ex:'shade'},
+    {p:'Lady fern',c:'native',b:'Stone path',q:7,s:'Good',ex:'shade'},
+    {p:'Brunnera',c:'Jack Frost',b:'Stone path',q:4,s:'Good',ex:'shade'},
+    {p:'Echinacea',c:'Magnus',b:'Front border',q:8,s:'Thriving',ex:'sun'},
+    {p:'Echinacea',c:'White Swan',b:'Front border',q:6,s:'Good',ex:'sun'},
+    {p:'Echinacea',c:'Green Envy',b:'Front border',q:3,s:'Variable',ex:'sun'},
+    {p:'Rudbeckia',c:'Goldsturm',b:'Front border',q:12,s:'Naturalized',ex:'sun'},
+    {p:'Sedum',c:'Autumn Joy',b:'Front border',q:6,s:'Good',ex:'sun'},
+    {p:'Hardy geranium',c:'Rozanne',b:'Mixed border',q:5,s:'Thriving',ex:'mixed'},
+    {p:'Nepeta',c:"Walker's Low",b:'Mixed border',q:4,s:'Good',ex:'mixed'},
+    {p:'Phlox',c:'David',b:'Mixed border',q:4,s:'Good',ex:'mixed'}
+  ];
+  var statusColor={Thriving:'#4a6b4d',Good:'#7fa074',Naturalized:'#c79a3a',Variable:'#a8562f'};
+
+  var maxBed=Math.max.apply(null,beds.map(function(b){return b.count}));
+  var bc=document.getElementById('barchart');
+  beds.forEach(function(b){
+    var row=document.createElement('div');row.className='bar-row';
+    row.innerHTML='<span class="name">'+b.name+'</span><div class="bar-track"><div class="bar-fill" style="background:'+b.color+'"></div></div><span class="val">'+b.count+'</span>';
+    bc.appendChild(row);
+    var fill=row.querySelector('.bar-fill');
+    setTimeout(function(){fill.style.width=(b.count/maxBed*100)+'%'},250);
+  });
+
+  var total=statusData.reduce(function(a,s){return a+s.value},0),off=0;
+  var svg=document.getElementById('donut'),leg=document.getElementById('legend');
+  statusData.forEach(function(s){
+    var pct=s.value/total*100;
+    var ci=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ci.setAttribute('cx','21');ci.setAttribute('cy','21');ci.setAttribute('r','15.915');
+    ci.setAttribute('fill','transparent');ci.setAttribute('stroke',s.color);ci.setAttribute('stroke-width','7');
+    ci.setAttribute('stroke-dasharray','0 100');
+    ci.setAttribute('stroke-dashoffset','25');
+    ci.style.transition='stroke-dasharray 1s ease';
+    ci.setAttribute('transform','rotate(-90 21 21)');
+    svg.appendChild(ci);
+    (function(c,p,o){setTimeout(function(){c.setAttribute('stroke-dasharray',p+' '+(100-p));c.setAttribute('stroke-dashoffset',(100-o+25))},350)})(ci,pct,off);
+    off+=pct;
+    var li=document.createElement('li');
+    li.innerHTML='<span class="dot" style="background:'+s.color+'"></span>'+s.label+' ('+s.value+')';
+    leg.appendChild(li);
+  });
+
+  var tl=document.getElementById('timeline');
+  bloom.forEach(function(b){
+    var row=document.createElement('div');row.className='tl-row';
+    row.innerHTML='<span class="name" style="font-size:13px">'+b.group+'</span><div class="tl-track"><div class="tl-span" style="left:'+(b.start/7*100)+'%;width:'+(b.len/7*100)+'%;background:'+b.color+'"></div></div>';
+    tl.appendChild(row);
+    var span=row.querySelector('.tl-span');
+    setTimeout(function(){span.style.transform='scaleX(1)'},450);
+  });
+
+  var body=document.getElementById('ledger');
+  plants.forEach(function(p){
+    var tr=document.createElement('tr');tr.dataset.ex=p.ex;
+    tr.innerHTML='<td>'+p.p+'</td><td>'+p.c+'</td><td>'+p.b+'</td><td>'+p.q+'</td><td><span class="tag" style="background:'+statusColor[p.s]+'">'+p.s+'</span></td>';
+    body.appendChild(tr);
+  });
+  document.getElementById('filters').addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    var f=e.target.dataset.f;
+    Array.prototype.forEach.call(this.children,function(b){b.classList.toggle('active',b===e.target)});
+    Array.prototype.forEach.call(body.children,function(tr){
+      tr.classList.toggle('hide',!(f==='all'||tr.dataset.ex===f));
+    });
+  });
+
+  var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting)x.target.classList.add('in')})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+  document.querySelectorAll('.num').forEach(function(el){
+    var target=+el.dataset.count,n=0,step=Math.max(1,Math.round(target/30));
+    var t=setInterval(function(){n+=step;if(n>=target){n=target;clearInterval(t)}el.textContent=n},35);
+  });
+</script>
+</body>
+</html>

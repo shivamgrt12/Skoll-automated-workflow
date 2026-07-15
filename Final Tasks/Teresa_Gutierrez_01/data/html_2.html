@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Penobscot Electrical Contractors</title>
+<style>
+  :root{
+    --ink:#10131a; --bg:#0e1623; --paper:#fbfbfd;
+    --blue:#1c416e; --blue2:#2f6caa; --amber:#dc8a18; --line:#dfe5ee;
+    --muted:#6b7280;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font:16px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+  .container{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header.site{
+    background:linear-gradient(135deg,#0e1d36,#1c416e);color:#fff;
+    position:sticky;top:0;z-index:10;box-shadow:0 1px 0 rgba(0,0,0,.1)
+  }
+  header.site .row{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;flex-wrap:wrap;gap:14px}
+  .logo{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.5px}
+  .logo .mark{
+    width:34px;height:34px;border-radius:8px;background:var(--amber);position:relative;
+  }
+  .logo .mark::before{
+    content:"";position:absolute;inset:7px;border:2px solid #0e1d36;border-radius:4px;
+  }
+  nav.primary{display:flex;gap:6px;flex-wrap:wrap}
+  nav.primary a{
+    color:#dfe6f1;padding:8px 12px;border-radius:8px;font-weight:600;font-size:13px;letter-spacing:.04em;
+    transition:.18s background,.18s color
+  }
+  nav.primary a:hover{background:rgba(255,255,255,.08);color:#fff}
+
+  /* Hero */
+  .hero{
+    background:
+      radial-gradient(80% 50% at 20% 0%, rgba(220,138,24,.20), transparent 60%),
+      linear-gradient(135deg,#0e1d36 0%,#1c416e 70%);
+    color:#fff;padding:64px 0 80px;
+  }
+  .hero h1{font-size:44px;line-height:1.1;max-width:760px}
+  .hero p.lead{margin-top:16px;font-size:18px;opacity:.88;max-width:680px}
+  .cta{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;background:var(--amber);color:#10131a;font-weight:700;
+    padding:11px 16px;border-radius:10px;border:none;cursor:pointer;letter-spacing:.04em;font-size:14px;
+    transition:.18s transform,.18s background
+  }
+  .btn:hover{background:#f4a13a;transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+  .btn.ghost:hover{background:rgba(255,255,255,.08)}
+
+  /* Counters */
+  .counters{
+    background:#fff;border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(4,1fr);max-width:1080px;margin:-40px auto 0;
+    border-radius:14px;box-shadow:0 18px 40px rgba(15,30,60,.10);position:relative;z-index:5;
+  }
+  .counters div{padding:22px;text-align:center;border-right:1px solid var(--line)}
+  .counters div:last-child{border-right:none}
+  .counters .n{font-size:34px;font-weight:800;color:var(--blue)}
+  .counters .l{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:6px}
+
+  /* Section base */
+  section.body{padding:72px 0}
+  section.body h2{font-size:28px;color:var(--ink)}
+  section.body p.intro{color:var(--muted);max-width:680px;margin-top:8px}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:28px}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;
+    transition:.22s transform,.22s box-shadow
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(15,30,60,.10)}
+  .card h3{font-size:17px;color:var(--blue);margin-bottom:6px}
+  .card p{color:var(--muted);font-size:14px}
+  .col-3{grid-column:span 3} .col-4{grid-column:span 4} .col-6{grid-column:span 6} .col-12{grid-column:span 12}
+  @media (max-width:900px){.col-3,.col-4,.col-6{grid-column:span 12} .counters{grid-template-columns:repeat(2,1fr)}}
+
+  /* Projects strip */
+  .projects{background:#f1f4f9;padding:64px 0}
+  .pcard{display:flex;flex-direction:column;background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .pcard .top{padding:16px 18px;background:var(--blue);color:#fff}
+  .pcard .top .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  .pcard .top h4{margin-top:4px;font-size:16px}
+  .pcard ul{list-style:none;padding:16px 18px}
+  .pcard li{padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px;color:#36405a}
+  .pcard li:last-child{border-bottom:none}
+
+  /* Team */
+  .team .person{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#dc8a18,#1c416e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+  /* Contact form */
+  form.contact{background:#fff;padding:24px;border-radius:14px;border:1px solid var(--line)}
+  label{font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em}
+  input,select,textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;
+    font:14px/1.4 inherit;color:var(--ink);margin-top:4px;background:#fbfbfd;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--blue2);border-color:var(--blue2);background:#fff}
+  .field + .field{margin-top:14px}
+  .msg{margin-top:12px;font-size:13px;color:var(--blue);min-height:18px}
+
+  /* Footer */
+  footer.site{background:#10131a;color:#cfd6e2;padding:40px 0 20px;margin-top:60px}
+  footer.site .row{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:0 24px}
+  footer.site h5{color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+  footer.site a{color:#cfd6e2}
+  footer.site a:hover{color:#fff}
+  footer.site .legal{margin-top:24px;padding:14px 24px 0;border-top:1px solid #1f2638;font-size:12px;color:#8b94a6;text-align:center}
+  @media (max-width:900px){footer.site .row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="row">
+    <div class="logo"><div class="mark"></div>Penobscot Electrical Contractors</div>
+    <nav class="primary">
+      <a href="#services">Services</a>
+      <a href="#projects">Projects</a>
+      <a href="#team">Team</a>
+      <a href="#safety">Safety</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Commercial and residential electrical work, done by people who finish the job.</h1>
+    <p class="lead">A union shop in Bangor, Maine, on the same block for thirty years. IBEW Local 567 journeymen wiring offices, restaurants, and houses across the Penobscot region.</p>
+    <div class="cta">
+      <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Request a quote</button>
+      <a class="btn ghost" href="#projects">See recent work</a>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="counters" id="counters">
+    <div><div class="n" data-c="45">0</div><div class="l">Employees</div></div>
+    <div><div class="n" data-c="30">0</div><div class="l">Years in Bangor</div></div>
+    <div><div class="n" data-c="612">0</div><div class="l">Projects since 2010</div></div>
+    <div><div class="n" data-c="0">0</div><div class="l">Recordable incidents YTD</div></div>
+  </div>
+</div>
+
+<section class="body" id="services">
+  <div class="container">
+    <h2>What we do</h2>
+    <p class="intro">Service calls Monday through Friday. After-hours cutovers when the panel cannot wait.</p>
+    <div class="grid">
+      <div class="card col-3"><h3>Commercial rewires</h3><p>Office floors, retail spaces, restaurants. Full panel and branch circuit replacement, lighting controls, occupancy sensors.</p></div>
+      <div class="card col-3"><h3>Residential service</h3><p>Service upgrades, panel swaps, kitchen and bath circuits, generator transfer switches.</p></div>
+      <div class="card col-3"><h3>Emergency calls</h3><p>Storm damage, tripped mains, lost neutrals. Same-day response inside Bangor and Brewer.</p></div>
+      <div class="card col-3"><h3>Inspections</h3><p>Pre-purchase walkthroughs and code-correction punch lists, written report inside 24 hours.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="projects" id="projects">
+  <div class="container">
+    <h2>Recent projects</h2>
+    <p class="intro">A sample of the work this year. Names withheld where the client asked.</p>
+    <div class="grid">
+      <div class="col-4">
+        <div class="pcard">
+          <div class="top"><div class="tag">Commercial</div><h4>Downtown Bangor office rewire</h4></div>
+          <ul>
+            <li>Three floors, full panel and branch circuit replacement</li>
+            <li>October 2026 through January 2027</li>
+            <li>Lead: Teresa Gutierrez, journeyman</li>
+            <li>Foreman: Steve Gilmore</li>
+            <li>Status: phase 1 in progress, panel A cutover 11/25</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="pcard">
+          <div class="top"><div class="tag">Residential</div><h4>Holden basement rewire</h4></div>
+          <ul>
+            <li>Six AFCI breakers, 14-2 NM-B home runs</li>
+            <li>Completed February 2026</li>
+            <li>Customer: private homeowner</li>
+            <li>Inspection passed first walk</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="pcard">
+          <div class="top"><div class="tag">Residential</div><h4>Orrington generator transfer</h4></div>
+          <ul>
+            <li>Manual transfer switch, 200A service</li>
+            <li>Completed February 2026</li>
+            <li>Customer: private homeowner</li>
+            <li>Walked the owner through the test sequence</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="body" id="team">
+  <div class="container">
+    <h2>People on the floor</h2>
+    <p class="intro">Forty-five employees across the shop. A few of the journeymen leading projects this season.</p>
+    <div class="grid team">
+      <div class="col-4 person"><div class="avatar">SG</div><div><strong>Steve Gilmore</strong><div style="color:var(--muted);font-size:13px">Foreman, twenty years on the floor</div></div></div>
+      <div class="col-4 person"><div class="avatar">TG</div><div><strong>Teresa Gutierrez</strong><div style="color:var(--muted);font-size:13px">Journeyman, lead on the downtown rewire</div></div></div>
+      <div class="col-4 person"><div class="avatar">DB</div><div><strong>Danny Burgess</strong><div style="color:var(--muted);font-size:13px">Journeyman, residential service lead</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="body" id="safety" style="background:#f7f9fc">
+  <div class="container">
+    <h2>Safety posture</h2>
+    <p class="intro">OSHA 30 current for every journeyman. NFPA 70E arc flash refresh every three years. Daily safety stand-up on every commercial site.</p>
+    <div class="grid">
+      <div class="card col-4"><h3>OSHA 30</h3><p>All journeymen current. Apprentices complete OSHA 10 within ninety days of hire.</p></div>
+      <div class="card col-4"><h3>NFPA 70E</h3><p>Arc flash refresh on the three-year cycle. Category 2 PPE on every cutover.</p></div>
+      <div class="card col-4"><h3>CPR and First Aid</h3><p>Two journeymen current per crew. American Red Cross certified through 2027.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="body" id="contact">
+  <div class="container">
+    <h2>Get a quote</h2>
+    <p class="intro">Tell us what the job looks like. We will schedule a site walk inside two business days.</p>
+    <div class="grid">
+      <form class="contact col-6" onsubmit="return submitForm(event)">
+        <div class="field"><label for="n">Name</label><input id="n" required></div>
+        <div class="field"><label for="p">Phone</label><input id="p" placeholder="207-555-0000" pattern="[0-9\-\s\(\)]+"></div>
+        <div class="field"><label for="t">Job type</label>
+          <select id="t">
+            <option>Commercial rewire</option>
+            <option>Residential service</option>
+            <option>Emergency call</option>
+            <option>Inspection</option>
+          </select>
+        </div>
+        <div class="field"><label for="m">Describe the work</label><textarea id="m" rows="4" placeholder="Address, square footage, timeline"></textarea></div>
+        <div class="field"><button class="btn" type="submit">Send to dispatch</button></div>
+        <div class="msg" id="msg"></div>
+      </form>
+      <div class="col-6">
+        <div class="card">
+          <h3>Shop address</h3>
+          <p>144 Perry Road, Bangor, ME 04401<br>Office: 207-555-0566<br>Dispatch hours: 7:00 AM to 3:30 PM, weekdays</p>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Union</h3>
+          <p>IBEW Local 567. Apprenticeship inquiries through the Joint Apprenticeship and Training Committee on Sylvan Road.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="row">
+    <div>
+      <h5>Shop</h5>
+      <p>144 Perry Road<br>Bangor, ME 04401<br>207-555-0566</p>
+    </div>
+    <div>
+      <h5>Services</h5>
+      <p><a href="#services">Commercial</a><br><a href="#services">Residential</a><br><a href="#services">Emergency</a></p>
+    </div>
+    <div>
+      <h5>Company</h5>
+      <p><a href="#team">Team</a><br><a href="#safety">Safety</a><br><a href="#contact">Contact</a></p>
+    </div>
+    <div>
+      <h5>Affiliations</h5>
+      <p>IBEW Local 567<br>Maine AGC<br>Bangor Chamber of Commerce</p>
+    </div>
+  </div>
+  <div class="legal">Penobscot Electrical Contractors. Bangor, Maine. Union shop since 1996.</div>
+</footer>
+
+<script>
+  // Animated counters
+  function runCounters(){
+    document.querySelectorAll('#counters .n').forEach(el => {
+      const target = +el.dataset.c;
+      if (target === 0) { el.textContent = '0'; return; }
+      let cur = 0;
+      const step = Math.max(1, Math.round(target/60));
+      const timer = setInterval(() => {
+        cur += step;
+        if (cur >= target) { cur = target; clearInterval(timer); }
+        el.textContent = cur.toLocaleString();
+      }, 24);
+    });
+  }
+  // Run when in view
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { runCounters(); io.disconnect(); } });
+  }, {threshold:.2});
+  io.observe(document.getElementById('counters'));
+
+  // Form
+  function submitForm(e){
+    e.preventDefault();
+    document.getElementById('msg').textContent = 'Thanks. Dispatch will reach out by phone inside two business days.';
+    e.target.reset();
+    return false;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARE 6010 - Maritime Archaeology Methods - Seminar Portal</title>
+<style>
+  :root {
+    --primary: #1e3a5f;
+    --accent: #2e8575;
+    --gold: #c5862b;
+    --light-bg: #f2f6fb;
+    --card-bg: #ffffff;
+    --border: #dce4ee;
+    --text: #1e2d3d;
+    --muted: #5a7080;
+    --success: #1a7a5a;
+    --warn: #b06820;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light-bg); color: var(--text); }
+
+  /* HEADER */
+  header {
+    background: var(--primary);
+    color: white;
+  }
+  .uni-bar {
+    background: rgba(0,0,0,0.2);
+    padding: 8px 48px;
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255,255,255,0.7);
+  }
+  .header-main {
+    padding: 24px 48px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .header-left h1 { font-size: 1.4rem; font-weight: 700; }
+  .header-left .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+  .header-right { text-align: right; }
+  .term-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .header-right p { font-size: 0.8rem; color: rgba(255,255,255,0.65); margin-top: 5px; }
+
+  .course-nav {
+    background: rgba(0,0,0,0.15);
+    display: flex;
+    padding: 0 48px;
+  }
+  .course-nav a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 0.83rem;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .course-nav a:hover, .course-nav a.active {
+    color: white;
+    border-bottom-color: var(--gold);
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1300px; margin: 0 auto; padding: 32px 48px; }
+  .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 28px; }
+
+  /* ALERT */
+  .alert {
+    background: #fff8e6;
+    border: 1px solid var(--gold);
+    border-left: 4px solid var(--gold);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--warn);
+    animation: slideIn 0.4s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform: translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+
+  /* CARDS */
+  .card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .card-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-header h2 {
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .card-body { padding: 22px; }
+
+  /* SESSION LIST */
+  .session-list { display: flex; flex-direction: column; }
+  .session-row {
+    display: grid;
+    grid-template-columns: 95px 1fr auto;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+    transition: background 0.15s;
+  }
+  .session-row:last-child { border-bottom: none; }
+  .session-row:hover { background: #f7faff; margin: 0 -22px; padding-left: 22px; padding-right: 22px; }
+  .session-date { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+  .session-title { font-size: 0.88rem; color: var(--text); font-weight: 600; }
+  .session-inst { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+  .session-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .s-done { background: #d4edda; color: var(--success); }
+  .s-upcoming { background: #cfe2ff; color: #084298; }
+  .s-guest { background: #f3e6ff; color: #5a3070; }
+
+  /* ASSESSMENT TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  th { text-align: left; padding: 10px 14px; background: var(--light-bg); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--border); }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f7faff; }
+  .wt { font-weight: 700; color: var(--primary); }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 22px; }
+  .info-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .info-card h3 {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .info-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .label { color: var(--muted); }
+  .info-row .value { color: var(--text); font-weight: 600; }
+
+  /* PROGRESS BAR */
+  .prog-item { margin-bottom: 12px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; }
+  .prog-label span:first-child { color: var(--text); }
+  .prog-label span:last-child { color: var(--accent); font-weight: 700; }
+  .prog-track { background: var(--border); border-radius: 4px; height: 8px; }
+  .prog-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--primary)); animation: fillBar 1s ease; }
+  @keyframes fillBar { from { width: 0; } }
+
+  /* DEADLINES */
+  .deadline-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .deadline-item:last-child { border-bottom: none; }
+  .deadline-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .dl-red { background: #dc3545; }
+  .dl-orange { background: var(--gold); }
+  .dl-green { background: var(--success); }
+  .deadline-text .date { font-size: 0.72rem; color: var(--muted); }
+  .deadline-text .desc { font-size: 0.82rem; color: var(--text); font-weight: 600; }
+
+  /* RESOURCES */
+  .resource-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.15s;
+  }
+  .resource-item:last-child { border-bottom: none; }
+  .resource-item:hover { color: var(--accent); }
+  .res-icon { font-size: 1.2rem; width: 32px; text-align: center; }
+  .res-text .name { font-size: 0.84rem; font-weight: 600; }
+  .res-text .type { font-size: 0.72rem; color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    background: var(--primary);
+    color: rgba(255,255,255,0.7);
+    padding: 32px 48px;
+    margin-top: 16px;
+  }
+  .footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.8rem; }
+  .footer-inner a { color: rgba(255,255,255,0.6); text-decoration: none; }
+  .footer-inner a:hover { color: var(--gold); }
+
+  @media(max-width:900px) {
+    .uni-bar, .header-main, .course-nav, .container { padding-left: 16px; padding-right: 16px; }
+    .main-grid { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="uni-bar">
+    <span>Nordmeer Maritime University - Learning Management Portal</span>
+    <span>Department of Archaeology, History, Religious Studies and Theology</span>
+  </div>
+  <div class="header-main">
+    <div class="header-left">
+      <h1>MARE 6010 - Maritime Archaeology Methods</h1>
+      <div class="subtitle">Graduate Seminar &nbsp;|&nbsp; Room H.214 &nbsp;|&nbsp; Tuesdays 11:00-13:00</div>
+    </div>
+    <div class="header-right">
+      <span class="term-badge">AUTUMN 2025</span>
+      <p>8 ECTS &nbsp;|&nbsp; Level: Graduate</p>
+    </div>
+  </div>
+  <div class="course-nav">
+    <a href="#" class="active">Overview</a>
+    <a href="#">Sessions</a>
+    <a href="#">Materials</a>
+    <a href="#">Submissions</a>
+    <a href="#">Discussion</a>
+    <a href="#">Grades</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="alert">
+    <span style="font-size:1.2rem;">&#9888;</span>
+    <div>
+      <strong>Assignment reminder:</strong> Seminar paper submissions are due 31.01.2026 via email to g.gross@nordmeer-maritime.de. Please confirm your paper topic with the instructor by the end of November 2025.
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="main-col">
+
+      <!-- COURSE OVERVIEW -->
+      <div class="card">
+        <div class="card-header"><h2>Course Overview</h2></div>
+        <div class="card-body">
+          <p style="line-height:1.7; margin-bottom:14px; font-size:0.9rem;">This seminar introduces graduate students to the theoretical and practical methods of maritime archaeology, covering the full research cycle from archival research and remote sensing survey through underwater excavation, finds analysis, conservation liaison, and academic publication.</p>
+          <p style="line-height:1.7; font-size:0.9rem; color:var(--muted);">Students will work with real survey datasets from the North Frisian Medieval Wreck Survey and will complete a semester project involving the analysis of sonar data, finds records, or historical source material. Guest sessions are provided by dive operations specialist Nils Johansen, conservation curator Dr. Frida Moe (Hamburg Maritime Museum), and Frisian heritage liaison Ailo Reimer.</p>
+        </div>
+      </div>
+
+      <!-- SESSION SCHEDULE -->
+      <div class="card">
+        <div class="card-header"><h2>Session Schedule</h2></div>
+        <div class="card-body">
+          <div class="session-list">
+            <div class="session-row">
+              <div class="session-date">14.10.2025</div>
+              <div><div class="session-title">The North Sea as an archaeological environment</div><div class="session-inst">G. Gross - formation processes, taphonomy, preservation conditions</div></div>
+              <div><span class="session-status s-done">Done</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">21.10.2025</div>
+              <div><div class="session-title">Archival sources for maritime archaeology</div><div class="session-inst">G. Gross - port records, historical charts, wreck lists</div></div>
+              <div><span class="session-status s-done">Done</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">28.10.2025</div>
+              <div><div class="session-title">Remote sensing I: sonar theory and data types</div><div class="session-inst">G. Gross - MBES, sidescan, sub-bottom profiling</div></div>
+              <div><span class="session-status s-done">Done</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">04.11.2025</div>
+              <div><div class="session-title">Remote sensing II: data processing lab session</div><div class="session-inst">G. Gross - feature classification, coverage assessment</div></div>
+              <div><span class="session-status s-done">Done</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">11.11.2025</div>
+              <div><div class="session-title">Dive operations: safety, planning, and underwater recording</div><div class="session-inst">N. Johansen (guest) - safety protocol, survey techniques</div></div>
+              <div><span class="session-status s-guest">Guest</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">18.11.2025</div>
+              <div><div class="session-title">Finds recording and the waterlogged assemblage</div><div class="session-inst">G. Gross - classification, context, in-situ recording</div></div>
+              <div><span class="session-status s-upcoming">Upcoming</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">25.11.2025</div>
+              <div><div class="session-title">Conservation in the field and museum</div><div class="session-inst">Dr. F. Moe (guest) - Hamburg Maritime Museum</div></div>
+              <div><span class="session-status s-guest">Guest</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">02.12.2025</div>
+              <div><div class="session-title">Case study: Site NF-7 from discovery to present</div><div class="session-inst">G. Gross</div></div>
+              <div><span class="session-status s-upcoming">Upcoming</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">16.12.2025</div>
+              <div><div class="session-title">Community partnerships in marine heritage</div><div class="session-inst">A. Reimer (guest) - Frisian heritage consultation model</div></div>
+              <div><span class="session-status s-guest">Guest</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">20.01.2026</div>
+              <div><div class="session-title">Student presentations - session 1</div><div class="session-inst">All students</div></div>
+              <div><span class="session-status s-upcoming">Upcoming</span></div>
+            </div>
+            <div class="session-row">
+              <div class="session-date">27.01.2026</div>
+              <div><div class="session-title">Student presentations - session 2</div><div class="session-inst">All students</div></div>
+              <div><span class="session-status s-upcoming">Upcoming</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSESSMENT -->
+      <div class="card">
+        <div class="card-header"><h2>Assessment</h2></div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Component</th><th>Deadline</th><th>Format</th><th>Weight</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Seminar Paper</strong><br><span style="font-size:0.78rem; color:var(--muted);">Topic agreed with instructor by end of November</span></td>
+                <td>31.01.2026</td>
+                <td>3000-4000 words, PDF, submitted by email</td>
+                <td class="wt">50%</td>
+              </tr>
+              <tr>
+                <td><strong>Semester Project Presentation</strong><br><span style="font-size:0.78rem; color:var(--muted);">15 minutes + 5 minutes discussion</span></td>
+                <td>20 or 27.01.2026</td>
+                <td>Presentation slides + verbal</td>
+                <td class="wt">30%</td>
+              </tr>
+              <tr>
+                <td><strong>Participation</strong><br><span style="font-size:0.78rem; color:var(--muted);">Quality and consistency of seminar contribution</span></td>
+                <td>Ongoing</td>
+                <td>Assessed throughout semester</td>
+                <td class="wt">20%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="info-card">
+        <h3>Course Information</h3>
+        <div class="info-row"><span class="label">Instructor</span><span class="value">Prof. Dr. G. Gross</span></div>
+        <div class="info-row"><span class="label">Credits</span><span class="value">8 ECTS</span></div>
+        <div class="info-row"><span class="label">Room</span><span class="value">H.214</span></div>
+        <div class="info-row"><span class="label">Schedule</span><span class="value">Tue 11:00-13:00</span></div>
+        <div class="info-row"><span class="label">Office hours</span><span class="value">Tue 14:00-16:00</span></div>
+        <div class="info-row"><span class="label">Contact</span><span class="value">g.gross@nordmeer-maritime.de</span></div>
+      </div>
+
+      <div class="info-card">
+        <h3>Semester Progress</h3>
+        <div class="prog-item">
+          <div class="prog-label"><span>Sessions completed</span><span>5 / 11</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:45%"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label"><span>Weeks elapsed</span><span>5 / 16</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:31%"></div></div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Key Deadlines</h3>
+        <div class="deadline-item">
+          <div class="deadline-dot dl-orange"></div>
+          <div class="deadline-text"><div class="date">30 November 2025</div><div class="desc">Paper topic confirmation</div></div>
+        </div>
+        <div class="deadline-item">
+          <div class="deadline-dot dl-red"></div>
+          <div class="deadline-text"><div class="date">20 January 2026</div><div class="desc">Presentations - Session 1</div></div>
+        </div>
+        <div class="deadline-item">
+          <div class="deadline-dot dl-red"></div>
+          <div class="deadline-text"><div class="date">27 January 2026</div><div class="desc">Presentations - Session 2</div></div>
+        </div>
+        <div class="deadline-item">
+          <div class="deadline-dot dl-red"></div>
+          <div class="deadline-text"><div class="date">31 January 2026</div><div class="desc">Seminar paper submission</div></div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Course Resources</h3>
+        <a href="#" class="resource-item">
+          <div class="res-icon">&#128196;</div>
+          <div class="res-text"><div class="name">Course Syllabus</div><div class="type">PDF</div></div>
+        </a>
+        <a href="#" class="resource-item">
+          <div class="res-icon">&#128200;</div>
+          <div class="res-text"><div class="name">NF-7 Sonar Dataset</div><div class="type">GeoTIFF, restricted</div></div>
+        </a>
+        <a href="#" class="resource-item">
+          <div class="res-icon">&#128203;</div>
+          <div class="res-text"><div class="name">Finds Catalogue Template</div><div class="type">Spreadsheet</div></div>
+        </a>
+        <a href="#" class="resource-item">
+          <div class="res-icon">&#128216;</div>
+          <div class="res-text"><div class="name">Reading List</div><div class="type">PDF</div></div>
+        </a>
+        <a href="#" class="resource-item">
+          <div class="res-icon">&#127955;</div>
+          <div class="res-text"><div class="name">Dive Safety Protocol</div><div class="type">PDF, v4.2</div></div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <strong style="color:white;">MARE 6010 - Maritime Archaeology Methods</strong><br>
+      Nordmeer Maritime University - Department of Archaeology, History, Religious Studies and Theology
+    </div>
+    <div style="text-align:right;">
+      <a href="#">University Homepage</a> &nbsp;|&nbsp;
+      <a href="#">Library</a> &nbsp;|&nbsp;
+      <a href="#">IT Support</a><br>
+      Am Sandtorkai 48, 20457 Hamburg
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

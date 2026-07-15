@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catering Quote Builder</title>
+<style>
+  :root{
+    --teal:#0f6e64; --teal-d:#0a4d46; --mint:#e7f5f1; --lime:#7cc24a;
+    --ink:#16302c; --card:#ffffff; --line:#cfe6df;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--mint);color:var(--ink);line-height:1.5}
+  header.site{background:linear-gradient(120deg,var(--teal),var(--teal-d));color:#eafff9;padding:30px 20px}
+  header.site .wrap{max-width:900px;margin:0 auto}
+  header.site h1{font-size:2rem}
+  header.site p{margin-top:6px;color:#bfeee3}
+  main{max-width:900px;margin:0 auto;padding:26px 20px}
+  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;box-shadow:0 4px 14px rgba(15,110,100,.08)}
+  h2{color:var(--teal-d);margin-bottom:14px;font-size:1.3rem}
+  label{display:block;font-weight:600;margin:14px 0 5px;font-size:.92rem}
+  input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:1rem;font-family:inherit;background:#fbfffd}
+  input:focus,select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,110,100,.15)}
+  .checks{display:grid;gap:8px;margin-top:8px}
+  .checks label{display:flex;align-items:center;gap:10px;font-weight:500;margin:0;cursor:pointer}
+  .checks input{width:auto}
+  button.go{margin-top:20px;width:100%;background:var(--lime);color:#16302c;border:none;padding:14px;border-radius:10px;
+    font-size:1.05rem;font-weight:700;cursor:pointer;transition:transform .15s,background .25s}
+  button.go:hover{background:#6bb13c;transform:translateY(-2px)}
+  .err{color:#b3261e;font-size:.85rem;margin-top:8px;min-height:1em}
+  .result{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#eafff9;border-radius:12px;padding:22px;
+    opacity:0;transform:scale(.96);transition:all .4s}
+  .result.show{opacity:1;transform:scale(1)}
+  .result .big{font-size:2.4rem;font-weight:800;color:#dffff5}
+  .result .line{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.18);font-size:.95rem}
+  .result .line:last-child{border:none}
+  .note{font-size:.82rem;color:#5a7a72;margin-top:14px}
+  footer.site{background:var(--teal-d);color:#cdeee6;padding:24px 20px;margin-top:10px}
+  footer.site .wrap{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:.88rem}
+  footer.site a{color:var(--lime)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,194,74,.5)}70%{box-shadow:0 0 0 12px rgba(124,194,74,0)}100%{box-shadow:0 0 0 0 rgba(124,194,74,0)}}
+  button.go:focus{animation:pulse 1.1s}
+  @media (max-width:680px){.grid{grid-template-columns:1fr}header.site h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <h1>Catering Quote Builder</h1>
+    <p>Memphis Soul Kitchen &nbsp;|&nbsp; estimate a Southern spread for your event</p>
+  </div>
+</header>
+<main>
+  <div class="grid">
+    <div class="card">
+      <h2>Event Details</h2>
+      <label for="guests">Number of guests (for example, 75)</label>
+      <input id="guests" type="number" min="10" max="400">
+      <label for="style">Service style</label>
+      <select id="style">
+        <option value="22">Buffet, three meats and three sides ($22 per guest)</option>
+        <option value="18">Family style, two meats and three sides ($18 per guest)</option>
+        <option value="14">Boxed lunch, one meat and two sides ($14 per guest)</option>
+      </select>
+      <label for="date">Event date (for example, October 24, 2026)</label>
+      <input id="date" type="text">
+      <label>Add ons</label>
+      <div class="checks">
+        <label><input type="checkbox" data-add="3" id="a1">Peach cobbler dessert tray (+$3 per guest)</label>
+        <label><input type="checkbox" data-add="2" id="a2">Sweet tea and lemonade service (+$2 per guest)</label>
+        <label><input type="checkbox" data-add="250" data-flat="1" id="a3">On site setup and staffing (+$250 flat)</label>
+        <label><input type="checkbox" data-add="120" data-flat="1" id="a4">Delivery within Richmond (+$120 flat)</label>
+      </div>
+      <button class="go" id="calc">Build My Estimate</button>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="card">
+      <h2>Your Estimate</h2>
+      <div class="result" id="result">
+        <div class="big" id="total">$0</div>
+        <div id="lines"></div>
+      </div>
+      <p class="note">This is a working estimate, not a final invoice. A signed agreement and a deposit of twenty percent hold your date. Catering commitments at or above $200 are confirmed by Darius personally.</p>
+    </div>
+  </div>
+</main>
+<footer class="site">
+  <div class="wrap">
+    <div>
+      <strong>Memphis Soul Kitchen LLC</strong><br>
+      2501 East Broad Street, Richmond, VA 23223<br>
+      Darius Marcus Barker, Owner and Head Chef
+    </div>
+    <div>
+      Phone: (804) 555-2200<br>
+      Email: <a href="mailto:darius.barker@Greenridertech.co">darius.barker@Greenridertech.co</a><br>
+      &copy; 2026 Memphis Soul Kitchen, Church Hill, Richmond
+    </div>
+  </div>
+</footer>
+<script>
+  function money(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+  document.getElementById('calc').addEventListener('click',function(){
+    var err=document.getElementById('err');
+    var res=document.getElementById('result');
+    var g=parseInt(document.getElementById('guests').value,10);
+    err.textContent='';
+    if(isNaN(g)||g<10){err.textContent='Please enter a guest count of at least 10.';res.classList.remove('show');return;}
+    if(g>400){err.textContent='For events over 400 guests, call Darius directly at (804) 555-3162.';res.classList.remove('show');return;}
+    var per=parseInt(document.getElementById('style').value,10);
+    var base=per*g;
+    var perAdds=0, flatAdds=0, items=[];
+    items.push(['Base service, '+g+' guests',base]);
+    document.querySelectorAll('.checks input:checked').forEach(function(c){
+      var v=parseInt(c.getAttribute('data-add'),10);
+      var lbl=c.parentNode.textContent.trim().replace(/\s*\(\+.*\)$/,'');
+      if(c.getAttribute('data-flat')){flatAdds+=v;items.push([lbl,v]);}
+      else{perAdds+=v*g;items.push([lbl+' x '+g,v*g]);}
+    });
+    var sub=base+perAdds+flatAdds;
+    var deposit=Math.round(sub*0.20);
+    items.push(['Estimated subtotal',sub]);
+    items.push(['Deposit to hold date (20%)',deposit]);
+    document.getElementById('total').textContent=money(sub);
+    var box=document.getElementById('lines');box.innerHTML='';
+    items.forEach(function(it){
+      var d=document.createElement('div');d.className='line';
+      d.innerHTML='<span>'+it[0]+'</span><span>'+money(it[1])+'</span>';
+      box.appendChild(d);
+    });
+    res.classList.add('show');
+  });
+</script>
+</body>
+</html>

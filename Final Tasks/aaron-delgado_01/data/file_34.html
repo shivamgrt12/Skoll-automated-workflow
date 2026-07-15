@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cedar Ridge Academy, Operations Dashboard</title>
+<style>
+  :root{--bg:#f6f3ee;--ink:#2a2a2e;--crim:#9e2b25;--gold:#c4a04a;--sage:#6b8e7b;
+    --card:#ffffff;--mut:#7a726b;--line:#e6ded2;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;min-height:100vh}
+  /* sidebar */
+  aside{width:230px;background:var(--ink);color:#efe9e0;padding:26px 18px;flex-shrink:0}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:30px}
+  .logo .mk{width:26px;height:26px;background:var(--crim);border-radius:7px;transform:rotate(45deg)}
+  aside nav a{display:block;padding:11px 14px;border-radius:10px;color:#c9c2b8;
+    font-size:14px;font-weight:600;margin-bottom:4px;cursor:pointer;transition:background .2s,color .2s}
+  aside nav a:hover,aside nav a.active{background:rgba(196,160,74,.18);color:#fff}
+  .aside-foot{margin-top:30px;font-size:12px;color:#8c857b;line-height:1.5}
+  /* main */
+  main{flex:1;min-width:0}
+  .topbar{background:var(--crim);color:#fff;padding:20px 30px;display:flex;
+    justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  .topbar h1{margin:0;font-size:22px}
+  .topbar .sub{font-size:13px;color:#f2cfca}
+  .filters{display:flex;gap:8px}
+  .chip{background:rgba(255,255,255,.15);color:#fff;border:0;padding:8px 16px;border-radius:20px;
+    font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+  .chip.active,.chip:hover{background:#fff;color:var(--crim)}
+  .content{padding:28px 30px}
+  /* kpi */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:26px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;
+    border-top:4px solid var(--crim);opacity:0;transform:translateY(16px);animation:rise .6s forwards}
+  .kpi:nth-child(2){border-top-color:var(--gold);animation-delay:.08s}
+  .kpi:nth-child(3){border-top-color:var(--sage);animation-delay:.16s}
+  .kpi:nth-child(4){border-top-color:var(--ink);animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .lbl{color:var(--mut);font-size:13px;font-weight:600}
+  .kpi .val{font-size:32px;font-weight:700;font-family:Verdana;margin:6px 0 2px}
+  .kpi .delta{font-size:12px;font-weight:700}
+  .up{color:#2e7d52}.down{color:var(--crim)}
+  /* panels */
+  .row{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:18px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .panel h2{margin:0 0 16px;font-size:17px}
+  svg{width:100%;height:auto;display:block}
+  .bar{transition:opacity .2s}.bar:hover{opacity:.78}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .pill{font-size:12px;font-weight:700;padding:3px 10px;border-radius:14px}
+  .pill.on{background:#e4f1ea;color:#2e7d52}.pill.wait{background:#fbeede;color:#9a6b12}
+  footer{padding:18px 30px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:880px){aside{display:none}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo"><span class="mk"></span> Cedar Ridge</div>
+  <nav>
+    <a class="active">Overview</a>
+    <a>Enrollment</a>
+    <a>Attendance</a>
+    <a>Tournaments</a>
+    <a>Billing</a>
+  </nav>
+  <div class="aside-foot">Cedar Ridge Martial Arts Academy<br>Beaverton, Oregon<br>Winter term, February 2026</div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <div>
+      <h1>Operations Overview</h1>
+      <div class="sub">Winter term snapshot, refreshed February 2026</div>
+    </div>
+    <div class="filters">
+      <button class="chip active" data-f="term">This term</button>
+      <button class="chip" data-f="year">Year</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="kpis">
+      <div class="kpi"><div class="lbl">Active members</div><div class="val" id="k1">96</div><div class="delta up">+7 since last term</div></div>
+      <div class="kpi"><div class="lbl">Term retention</div><div class="val" id="k2">88%</div><div class="delta up">+4 points</div></div>
+      <div class="kpi"><div class="lbl">Monthly revenue</div><div class="val" id="k3">$14,200</div><div class="delta up">+5.2%</div></div>
+      <div class="kpi"><div class="lbl">Class fill rate</div><div class="val" id="k4">82%</div><div class="delta down">-3 points</div></div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <h2>Enrollment by program</h2>
+        <svg id="bars" viewBox="0 0 560 280" role="img" aria-label="Enrollment bar chart"></svg>
+      </div>
+      <div class="panel">
+        <h2>Weekly attendance trend</h2>
+        <svg id="line" viewBox="0 0 380 280" role="img" aria-label="Attendance line chart"></svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Instructor roster, this term</h2>
+      <table>
+        <thead><tr><th>Instructor</th><th>Discipline</th><th>Classes / week</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>A. Delgado</td><td>Kendo, head instructor</td><td>6</td><td><span class="pill on">Active</span></td></tr>
+          <tr><td>R. Okafor</td><td>Judo fundamentals</td><td>4</td><td><span class="pill on">Active</span></td></tr>
+          <tr><td>M. Santos</td><td>Youth kendo</td><td>5</td><td><span class="pill on">Active</span></td></tr>
+          <tr><td>J. Whitfield</td><td>Private lessons</td><td>3</td><td><span class="pill wait">On leave</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <div>Cedar Ridge Martial Arts Academy &middot; internal operations view</div>
+    <div>Next review: spring term planning, October 2026</div>
+  </footer>
+</main>
+
+<script>
+  // bar chart
+  var data=[["Youth Kendo",38,"#9e2b25"],["Adult Kendo",27,"#c4a04a"],["Judo Fund.",22,"#6b8e7b"],["Private",9,"#2a2a2e"]];
+  var svg=document.getElementById('bars'),W=560,H=280,pad=40,max=40;
+  var bw=(W-pad*2)/data.length, ns="http://www.w3.org/2000/svg";
+  for(var g=0;g<=4;g++){var y=H-pad-(g*10/max)*(H-pad*2);
+    add('line',{x1:pad,y1:y,x2:W-pad/2,y2:y,stroke:"#e6ded2"});
+    add('text',{x:pad-8,y:y+4,"text-anchor":"end","font-size":10,fill:"#7a726b"},g*10);}
+  data.forEach(function(d,i){
+    var h=(d[1]/max)*(H-pad*2), x=pad+i*bw+12, y=H-pad-h;
+    var r=add('rect',{class:"bar",x:x,y:H-pad,width:bw-30,height:0,rx:5,fill:d[2]});
+    r.animate([{height:0,y:H-pad},{height:h,y:y}],{duration:700,delay:i*90,fill:"forwards",easing:"ease-out"});
+    setTimeout(function(){r.setAttribute('height',h);r.setAttribute('y',y);},700+i*90);
+    add('text',{x:x+(bw-30)/2,y:y-7,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"#2a2a2e"},d[1]);
+    add('text',{x:x+(bw-30)/2,y:H-pad+18,"text-anchor":"middle","font-size":10,fill:"#7a726b"},d[0]);
+  });
+  // line chart
+  var att=[58,61,57,64,66,68,65,71];
+  var ls=document.getElementById('line'),LW=380,LH=280,lp=34,lmax=80;
+  var step=(LW-lp*2)/(att.length-1), pts=[];
+  att.forEach(function(v,i){pts.push([lp+i*step, LH-lp-(v/lmax)*(LH-lp*2)]);});
+  for(var g2=0;g2<=4;g2++){var yy=LH-lp-(g2*20/lmax)*(LH-lp*2);
+    add2('line',{x1:lp,y1:yy,x2:LW-lp/2,y2:yy,stroke:"#e6ded2"});
+    add2('text',{x:lp-8,y:yy+4,"text-anchor":"end","font-size":10,fill:"#7a726b"},g2*20);}
+  var dpath=pts.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+  var area=dpath+" L"+pts[pts.length-1][0]+" "+(LH-lp)+" L"+pts[0][0]+" "+(LH-lp)+" Z";
+  add2('path',{d:area,fill:"rgba(107,142,123,.18)"});
+  var pl=add2('path',{d:dpath,fill:"none",stroke:"#6b8e7b","stroke-width":3,"stroke-linecap":"round"});
+  var len=pl.getTotalLength();pl.style.strokeDasharray=len;pl.style.strokeDashoffset=len;
+  pl.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:1100,fill:"forwards",easing:"ease-out"});
+  setTimeout(function(){pl.style.strokeDashoffset=0;},1100);
+  pts.forEach(function(p,i){add2('circle',{cx:p[0],cy:p[1],r:3.5,fill:"#9e2b25"});
+    add2('text',{x:p[0],y:LH-lp+16,"text-anchor":"middle","font-size":9,fill:"#7a726b"},"W"+(i+1));});
+
+  function add(t,a,txt){return mk(svg,t,a,txt);}
+  function add2(t,a,txt){return mk(ls,t,a,txt);}
+  function mk(p,t,a,txt){var e=document.createElementNS(ns,t);
+    for(var k in a)e.setAttribute(k,a[k]); if(txt!=null)e.textContent=txt; p.appendChild(e);return e;}
+
+  // filter chips (demo toggle of the numbers)
+  var term={k1:"96",k2:"88%",k3:"$14,200",k4:"82%"}, year={k1:"112",k2:"85%",k3:"$13,640",k4:"79%"};
+  document.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){
+    document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active')});
+    c.classList.add('active');
+    var d=c.dataset.f==="year"?year:term;
+    for(var k in d)document.getElementById(k).textContent=d[k];
+  });});
+  // nav active state
+  document.querySelectorAll('aside nav a').forEach(function(a){a.addEventListener('click',function(){
+    document.querySelectorAll('aside nav a').forEach(function(x){x.classList.remove('active')});a.classList.add('active');});});
+</script>
+</body>
+</html>

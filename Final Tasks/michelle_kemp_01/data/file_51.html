@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Student Intake</title>
+<style>
+  :root{--ink:#222;--paper:#f4f1ec;--plum:#6d4d7a;--plum-deep:#523a5e;--gold:#d6a647;--ok:#3f8f6b;--err:#b54141;--line:#e1d9cd;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
+  header{background:var(--plum);color:#fff;padding:22px 26px}
+  header .wrap,main,footer .wrap{max-width:680px;margin:0 auto;width:100%}
+  header h1{font-size:1.4rem;letter-spacing:.3px}
+  header p{opacity:.85;font-size:.9rem;margin-top:2px}
+  main{flex:1;padding:30px 22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 16px 40px -30px rgba(82,58,94,.6)}
+  .progress{height:8px;background:var(--paper);border-radius:999px;overflow:hidden;margin-bottom:8px}
+  .progress > div{height:100%;width:33%;background:linear-gradient(90deg,var(--plum),var(--gold));transition:width .4s ease}
+  .stepnum{font-size:.78rem;color:var(--plum);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:18px}
+  .step{display:none;animation:slide .35s ease both}
+  .step.active{display:block}
+  @keyframes slide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+  h2{font-size:1.35rem;margin-bottom:6px}
+  .sub{color:#6b6b6b;margin-bottom:22px;font-size:.95rem}
+  .field{margin-bottom:18px}
+  label{display:block;font-weight:600;margin-bottom:6px}
+  input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;background:var(--paper)}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--plum);border-color:var(--plum)}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice{border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;font-weight:600;text-align:center;background:var(--paper);transition:.2s}
+  .choice:hover{border-color:var(--plum)}
+  .choice.sel{background:var(--plum);color:#fff;border-color:var(--plum)}
+  .err-msg{color:var(--err);font-size:.85rem;font-weight:600;margin-top:6px;min-height:1em}
+  .nav{display:flex;justify-content:space-between;margin-top:26px;gap:12px}
+  button{font-family:inherit;font-weight:700;border-radius:10px;padding:13px 24px;cursor:pointer;font-size:1rem;border:0;transition:.2s}
+  .back{background:none;border:1px solid var(--line);color:var(--ink)}
+  .back:hover{background:var(--paper)}
+  .next,.send{background:var(--plum);color:#fff;margin-left:auto}
+  .next:hover,.send:hover{background:var(--plum-deep)}
+  .done{text-align:center;padding:14px 0}
+  .done .ring{width:74px;height:74px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 18px;animation:pop .5s ease both}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  footer{background:var(--ink);color:#ddd;padding:18px;text-align:center;font-size:.85rem}
+  @media(max-width:560px){.choices{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Open Floor Studio</h1><p>New student intake, let us get you on the floor</p></div></header>
+<main>
+  <div class="card">
+    <div class="progress"><div id="pbar"></div></div>
+    <div class="stepnum" id="stepnum">Step 1 of 3</div>
+
+    <form id="intake" onsubmit="return false">
+      <div class="step active" data-step="1">
+        <h2>The basics</h2>
+        <p class="sub">Just enough to save you a spot and send class reminders.</p>
+        <div class="field"><label for="fname">Full name</label><input id="fname" type="text"><div class="err-msg" id="e-fname"></div></div>
+        <div class="field"><label for="email">Email</label><input id="email" type="email"><div class="err-msg" id="e-email"></div></div>
+        <div class="field"><label for="phone">Mobile (for weather and cancellation texts)</label><input id="phone" type="tel"><div class="err-msg" id="e-phone"></div></div>
+      </div>
+
+      <div class="step" data-step="2">
+        <h2>Where you are starting</h2>
+        <p class="sub">No wrong answer. Beginners are the heart of this studio.</p>
+        <div class="field">
+          <label>Experience level</label>
+          <div class="choices" id="levelChoices">
+            <div class="choice" data-val="Total beginner">Total beginner</div>
+            <div class="choice" data-val="Some experience">Some experience</div>
+            <div class="choice" data-val="Intermediate">Intermediate</div>
+            <div class="choice" data-val="Advanced">Advanced</div>
+          </div>
+          <div class="err-msg" id="e-level"></div>
+        </div>
+        <div class="field"><label for="class">Which class are you eyeing?</label>
+          <select id="class">
+            <option value="">Choose one</option>
+            <option>Tuesday, all levels, 7 PM</option>
+            <option>Thursday, intermediate plus, 7 PM</option>
+            <option>Saturday open class, 11 AM</option>
+            <option>Winter intensive (seasonal)</option>
+          </select>
+          <div class="err-msg" id="e-class"></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <h2>Anything I should know</h2>
+        <p class="sub">Injuries, goals, or what brought you in. Optional, but it helps me plan the floor.</p>
+        <div class="field"><label for="goals">A line or two (optional)</label><textarea id="goals" rows="4"></textarea></div>
+        <div class="field"><label><input type="checkbox" id="agree" style="width:auto;margin-right:8px">I understand class confirmations and weather cancellations come by text and email.</label><div class="err-msg" id="e-agree"></div></div>
+      </div>
+
+      <div class="step" data-step="done">
+        <div class="done">
+          <div class="ring">&#10003;</div>
+          <h2>You are in</h2>
+          <p class="sub" id="doneMsg">See you on the floor.</p>
+        </div>
+      </div>
+
+      <div class="nav" id="nav">
+        <button type="button" class="back" id="backBtn" onclick="go(-1)" style="visibility:hidden">Back</button>
+        <button type="button" class="next" id="nextBtn" onclick="go(1)">Next</button>
+      </div>
+    </form>
+  </div>
+</main>
+<footer>Open Floor Studio, Hartford CT. Your details stay with Michelle and the class list only.</footer>
+
+<script>
+  var step=1,total=3,level="";
+  var levelEls=document.querySelectorAll('#levelChoices .choice');
+  levelEls.forEach(function(el){el.onclick=function(){levelEls.forEach(function(x){x.classList.remove('sel')});el.classList.add('sel');level=el.dataset.val;document.getElementById('e-level').textContent="";};});
+
+  function show(){
+    document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active')});
+    if(step==='done'){
+      document.querySelector('[data-step="done"]').classList.add('active');
+      document.getElementById('nav').style.display='none';
+      document.getElementById('pbar').style.width='100%';
+      document.getElementById('stepnum').textContent='Complete';
+      return;
+    }
+    document.querySelector('[data-step="'+step+'"]').classList.add('active');
+    document.getElementById('pbar').style.width=(step/total*100)+'%';
+    document.getElementById('stepnum').textContent='Step '+step+' of '+total;
+    document.getElementById('backBtn').style.visibility=step===1?'hidden':'visible';
+    document.getElementById('nextBtn').textContent=step===total?'Submit':'Next';
+    document.getElementById('nextBtn').className=step===total?'send':'next';
+  }
+
+  function valid(){
+    var ok=true;
+    function set(id,msg){document.getElementById('e-'+id).textContent=msg;if(msg)ok=false;}
+    if(step===1){
+      set('fname',document.getElementById('fname').value.trim()?'':'Please tell me your name.');
+      var em=document.getElementById('email').value.trim();
+      set('email',/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)?'':'A working email, please.');
+      var ph=document.getElementById('phone').value.replace(/\D/g,'');
+      set('phone',ph.length>=10?'':'A 10-digit mobile number.');
+    } else if(step===2){
+      set('level',level?'':'Pick where you are starting.');
+      set('class',document.getElementById('class').value?'':'Choose a class to start with.');
+    } else if(step===3){
+      set('agree',document.getElementById('agree').checked?'':'Please confirm so I can reach you.');
+    }
+    return ok;
+  }
+
+  function go(dir){
+    if(dir>0){
+      if(!valid())return;
+      if(step===total){submit();return;}
+      step++;
+    } else { step--; }
+    show();
+  }
+
+  function submit(){
+    var name=document.getElementById('fname').value.trim().split(' ')[0];
+    document.getElementById('doneMsg').textContent='Thanks, '+name+'. You are on the list for '+document.getElementById('class').value+'. See you on the floor.';
+    step='done';show();
+  }
+
+  show();
+</script>
+</body>
+</html>

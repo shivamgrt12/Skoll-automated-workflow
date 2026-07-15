@@ -9,6 +9,8 @@
 - **Gmail** (`gmail-api`): Primary account for institutional, DFG, and museum correspondence. Formal register for university and agency contacts.
 - **Google Calendar** (`google-calendar-api`): Master calendar for teaching, supervision, dive windows, permit deadlines, and family commitments.
 - **Outlook** (`outlook-api`): Manages Exchange threads with partner institutions including the Caledonia and museum consortia.
+- **Google Drive** (`google-drive-api`): Research documents, grant proposals, field reports, and expedition planning files.
+- **Dropbox** (`dropbox-api`): Shared folders with the dive team for field photos and sonar exports.
 - **Box** (`box-api`): Hamburg Maritime Museum's preferred platform for lending agreements and conservation records.
 - **DocuSign** (`docusign-api`): Permit applications, vessel charter contracts, and lending agreements. Nothing gets signed without her confirmation.
 - **Calendly** (`calendly-api`): Office-hour and consultation slots so doctoral candidates book time without email back and forth.
@@ -92,6 +94,7 @@
 - **Eventbrite** (`eventbrite-api`): Registrations for public lectures and heritage events around Hamburg.
 - **Ticketmaster** (`ticketmaster-api`): Books classical concert tickets at the Elbphilharmonie for evenings with Erik.
 - **Twitter** (`twitter-api`): Follows archaeology and climate research accounts. Drafts only, nothing published without her review.
+- **LinkedIn** (`linkedin-api`): Professional profile upkeep and tracking former students' careers.
 - **Instagram** (`instagram-api`): The survey project's outreach account; she approves every post before publication.
 
 #### Publishing, Outreach & Heritage Communication
@@ -137,7 +140,6 @@
 
 #### Not Connected
 
-- **LinkedIn** (`linkedin-api`): Her professional profile and former-student career notes. Off-task for the current reconciliation and should be left untouched.
 - Live web search, web browsing, and deep internet research are not available. The agent works only from connected services and stored memory.
 - Nordmeer Maritime University internal systems (grading, HR back end, library catalog) are not directly connected; work from what Gloria provides.
 - Unpublished site coordinates and raw field databases live on protected project storage and are not reachable through any connected service.

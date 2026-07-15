@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantern Keeper, Development Report</title>
+<style>
+  :root{--bg:#f4f6f7;--ink:#1d2b2a;--teal:#0f766e;--teal2:#14b8a6;--amber:#d98a2b;
+    --card:#ffffff;--mut:#5e7370;--line:#dde6e4;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.65}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{background:linear-gradient(135deg,#0f766e,#134e4a);color:#eafaf7;padding:46px 0 40px}
+  .kick{letter-spacing:2px;text-transform:uppercase;font-size:12px;font-weight:700;color:#8fe0d4}
+  header h1{margin:8px 0 6px;font-size:clamp(28px,5vw,42px)}
+  header p{margin:0;color:#bfe9e2;max-width:640px}
+  .htags{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  .htag{background:rgba(255,255,255,.14);padding:6px 13px;border-radius:18px;font-size:12px;font-weight:600}
+  main{padding:36px 0 10px}
+  section{margin-bottom:34px}
+  h2{font-size:23px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:10px;height:22px;background:var(--teal2);border-radius:3px}
+  .lead{color:var(--mut);margin-top:0}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+  .m{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .m b{display:block;font-size:30px;font-family:Verdana;color:var(--teal)}
+  .m span{color:var(--mut);font-size:13px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--mut)}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  p.body{color:#39524f}
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px}
+  ul.clean li span:last-child{color:var(--mut);font-size:14px}
+  .progress-row{margin:14px 0}
+  .plbl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+  .track{height:12px;background:#e4eeec;border-radius:8px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal2));width:0;border-radius:8px;
+    transition:width 1.1s ease}
+  footer{background:#0f1f1d;color:#9fb8b3;padding:28px 0;font-size:13px}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kick">Solo project, internal report</div>
+    <h1>Lantern Keeper</h1>
+    <p>Development progress through the February 2026 vertical slice review. A look at scope burndown, playtest signal, and what stands between the slice and a wider build.</p>
+    <div class="htags">
+      <span class="htag">Puzzle-platformer</span><span class="htag">Solo build</span><span class="htag">Vertical slice</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>At a glance</h2>
+    <div class="summary">
+      <div class="m"><b>4</b><span>levels playable end to end</span></div>
+      <div class="m"><b>11 min</b><span>median playtest session</span></div>
+      <div class="m"><b>12</b><span>external playtesters</span></div>
+      <div class="m"><b>73%</b><span>slice scope complete</span></div>
+    </div>
+  </section>
+
+  <section class="two">
+    <div class="panel">
+      <h2>Scope burndown</h2>
+      <p class="lead">Open tasks remaining by build week.</p>
+      <svg id="burn" viewBox="0 0 460 260" role="img" aria-label="Burndown chart"></svg>
+    </div>
+    <div class="panel">
+      <h2>Playtest session length</h2>
+      <p class="lead">Median minutes per session, by week.</p>
+      <svg id="bars" viewBox="0 0 460 260" role="img" aria-label="Session length bar chart"></svg>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Level completion</h2>
+    <p class="lead">How finished each level feels against the slice bar.</p>
+    <div id="prog"></div>
+  </section>
+
+  <section>
+    <h2>What the playtests said</h2>
+    <p class="body">Blind testers reach the first puzzle without a single line of on-screen text, which confirms the lighting is doing its job. The lantern reads as both tool and compass. The recurring note is pacing in the third level: players stall before the water puzzle and a few set the controller down. The fix is a shorter approach and a clearer first beat.</p>
+    <ul class="clean">
+      <li><span>Onboarding without text</span><span>Working as intended</span></li>
+      <li><span>Lantern as guide</span><span>Reads clearly in blind tests</span></li>
+      <li><span>Third level pacing</span><span>Needs a re-cut</span></li>
+      <li><span>Mid level checkpoints</span><span>Not yet wired</span></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Next milestone</h2>
+    <p class="body">Re-cut level three, add three checkpoints per level, and book a fresh playtest round for October 2026. If the slice holds up, the decision after that is whether to commit to a wider build or keep it a tight, focused release.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>Lantern Keeper development report &middot; prepared by A. Delgado</div>
+    <div>February 2026 &middot; revision 3</div>
+  </div>
+</footer>
+
+<script>
+  var ns="http://www.w3.org/2000/svg";
+  function mk(p,t,a,txt){var e=document.createElementNS(ns,t);for(var k in a)e.setAttribute(k,a[k]);
+    if(txt!=null)e.textContent=txt;p.appendChild(e);return e;}
+  // burndown line
+  (function(){
+    var s=document.getElementById('burn'),W=460,H=260,pad=38,max=60;
+    var d=[60,54,49,40,33,25,16];
+    var step=(W-pad*2)/(d.length-1),pts=d.map(function(v,i){return [pad+i*step,H-pad-(v/max)*(H-pad*2)];});
+    for(var g=0;g<=3;g++){var y=H-pad-(g*20/max)*(H-pad*2);
+      mk(s,'line',{x1:pad,y1:y,x2:W-pad/2,y2:y,stroke:"#dde6e4"});
+      mk(s,'text',{x:pad-8,y:y+4,"text-anchor":"end","font-size":10,fill:"#5e7370"},g*20);}
+    var path=pts.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+    mk(s,'path',{d:path+" L"+pts[pts.length-1][0]+" "+(H-pad)+" L"+pts[0][0]+" "+(H-pad)+" Z",fill:"rgba(20,184,166,.15)"});
+    var pl=mk(s,'path',{d:path,fill:"none",stroke:"#0f766e","stroke-width":3,"stroke-linecap":"round"});
+    var L=pl.getTotalLength();pl.style.strokeDasharray=L;pl.style.strokeDashoffset=L;
+    pl.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:1200,fill:"forwards"});
+    setTimeout(function(){pl.style.strokeDashoffset=0;},1200);
+    pts.forEach(function(p,i){mk(s,'circle',{cx:p[0],cy:p[1],r:3.5,fill:"#0f766e"});
+      mk(s,'text',{x:p[0],y:H-pad+16,"text-anchor":"middle","font-size":9,fill:"#5e7370"},"W"+(i+1));});
+  })();
+  // session bars
+  (function(){
+    var s=document.getElementById('bars'),W=460,H=260,pad=38,max=14;
+    var d=[6,7,9,9,11,11],bw=(W-pad*2)/d.length;
+    for(var g=0;g<=2;g++){var y=H-pad-(g*7/max)*(H-pad*2);
+      mk(s,'line',{x1:pad,y1:y,x2:W-pad/2,y2:y,stroke:"#dde6e4"});
+      mk(s,'text',{x:pad-8,y:y+4,"text-anchor":"end","font-size":10,fill:"#5e7370"},g*7);}
+    d.forEach(function(v,i){var h=(v/max)*(H-pad*2),x=pad+i*bw+10,y=H-pad-h;
+      var r=mk(s,'rect',{x:x,y:H-pad,width:bw-20,height:0,rx:5,fill:"#14b8a6"});
+      r.animate([{height:0,y:H-pad},{height:h,y:y}],{duration:700,delay:i*80,fill:"forwards"});
+      setTimeout(function(){r.setAttribute('height',h);r.setAttribute('y',y);},700+i*80);
+      mk(s,'text',{x:x+(bw-20)/2,y:y-6,"text-anchor":"middle","font-size":11,"font-weight":700,fill:"#1d2b2a"},v);
+      mk(s,'text',{x:x+(bw-20)/2,y:H-pad+16,"text-anchor":"middle","font-size":9,fill:"#5e7370"},"W"+(i+1));});
+  })();
+  // progress bars
+  (function(){
+    var levels=[["Level 1, the threshold",95],["Level 2, the cistern",84],["Level 3, the flooded wing",58],["Level 4, the high gallery",72]];
+    var host=document.getElementById('prog');
+    levels.forEach(function(l){
+      var row=document.createElement('div');row.className="progress-row";
+      row.innerHTML='<div class="plbl"><span>'+l[0]+'</span><span>'+l[1]+'%</span></div><div class="track"><div class="fill"></div></div>';
+      host.appendChild(row);
+      var f=row.querySelector('.fill');
+      var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){f.style.width=l[1]+'%';io.disconnect();}},{threshold:.3});
+      io.observe(row);
+    });
+  })();
+</script>
+</body>
+</html>

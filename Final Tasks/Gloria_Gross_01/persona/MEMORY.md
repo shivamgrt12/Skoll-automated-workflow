@@ -112,7 +112,7 @@
 
 ## Connected Accounts
 
-- Gmail and Google Calendar: gloria.gross@gmail.com
+- Gmail, Google Calendar, and Google Drive: gloria.gross@gmail.com
 - WhatsApp: connected, linked to her mobile +49 171 555 7700.
 - Additional research, project, logistics, finance, and media services are connected as listed in the tools configuration.
 

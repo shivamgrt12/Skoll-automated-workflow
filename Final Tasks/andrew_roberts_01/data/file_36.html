@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Roberts Line</title>
+<style>
+  :root{
+    --ink:#20242b; --paper:#f4efe6; --card:#fbf8f2; --line:#d9cfbd;
+    --accent:#7a4a24; --accent2:#b07a3c; --sage:#5f6b52; --slate:#3d4a58; --gold:#c8a24a;
+    --muted:#6b6357;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper);line-height:1.6}
+  h1,h2,h3,.sans{font-family:'Segoe UI',Helvetica,Arial,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header.nav{position:sticky;top:0;z-index:20;background:rgba(244,239,230,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brandmark{display:flex;align-items:center;gap:10px;font-family:'Segoe UI',sans-serif;font-weight:700;letter-spacing:.5px}
+  .brandmark svg{width:26px;height:26px}
+  nav ul{display:flex;gap:26px;list-style:none;font-family:'Segoe UI',sans-serif;font-size:.86rem;letter-spacing:.4px}
+  nav a{color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
+  nav a:hover{color:var(--accent)}
+  @media(max-width:720px){nav ul{display:none}}
+
+  .hero{position:relative;padding:96px 0 72px;overflow:hidden}
+  .hero:before{content:"";position:absolute;inset:0;background:
+     radial-gradient(circle at 82% 18%, rgba(176,122,60,.16), transparent 40%),
+     radial-gradient(circle at 12% 88%, rgba(95,107,82,.14), transparent 45%);}
+  .hero .wrap{position:relative}
+  .eyebrow{font-family:'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:3px;font-size:.74rem;color:var(--accent2);margin-bottom:14px}
+  .hero h1{font-size:3.3rem;line-height:1.05;font-weight:800;color:var(--ink);max-width:12ch}
+  .hero h1 span{color:var(--accent)}
+  .hero p.lede{margin-top:20px;max-width:56ch;font-size:1.16rem;color:var(--muted)}
+  .cta{margin-top:30px;display:inline-flex;gap:14px;flex-wrap:wrap}
+  .btn{font-family:'Segoe UI',sans-serif;font-size:.9rem;padding:12px 22px;border-radius:2px;text-decoration:none;border:1px solid var(--accent);transition:.2s}
+  .btn.primary{background:var(--accent);color:#fbf8f2}
+  .btn.primary:hover{background:#5f3818}
+  .btn.ghost{color:var(--accent)}
+  .btn.ghost:hover{background:rgba(122,74,36,.08)}
+
+  section{padding:64px 0}
+  .sect-head{margin-bottom:34px;max-width:60ch}
+  .sect-head .eyebrow{color:var(--sage)}
+  .sect-head h2{font-size:2rem;font-weight:800}
+  .sect-head p{color:var(--muted);margin-top:8px}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px;position:relative;overflow:hidden}
+  .kpi:after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent2)}
+  .kpi .num{font-family:'Segoe UI',sans-serif;font-size:2.4rem;font-weight:800;color:var(--accent);line-height:1}
+  .kpi .lab{font-size:.82rem;color:var(--muted);margin-top:8px;font-family:'Segoe UI',sans-serif}
+
+  .tree{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:28px;overflow-x:auto}
+  .tree svg{min-width:640px;width:100%;height:auto;display:block}
+  .node rect{fill:#fff;stroke:var(--accent2);stroke-width:1.5}
+  .node.gen1 rect{stroke:var(--slate)}
+  .node.self rect{fill:#f3e7d4;stroke:var(--accent)}
+  .node text{font-family:'Segoe UI',sans-serif}
+  .node .nm{font-size:12px;font-weight:700;fill:var(--ink)}
+  .node .dt{font-size:10px;fill:var(--muted)}
+  .edge{fill:none;stroke:var(--line);stroke-width:1.6}
+
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:26px}
+  .panel h3{font-size:1.15rem;margin-bottom:18px}
+
+  .bar-row{margin:14px 0}
+  .bar-row .top{display:flex;justify-content:space-between;font-family:'Segoe UI',sans-serif;font-size:.84rem;margin-bottom:6px}
+  .track{height:12px;background:#eae1d0;border-radius:20px;overflow:hidden}
+  .fill{height:100%;border-radius:20px;width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+
+  .donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .legend{font-family:'Segoe UI',sans-serif;font-size:.86rem}
+  .legend li{list-style:none;display:flex;align-items:center;gap:10px;margin:8px 0}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .ring{transform:rotate(-90deg);transform-origin:center}
+  .ring circle{fill:none;stroke-width:22;stroke-linecap:butt}
+
+  table.log{width:100%;border-collapse:collapse;font-family:'Segoe UI',sans-serif;font-size:.85rem}
+  table.log th,table.log td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  table.log thead th{background:#efe6d6;color:var(--slate);text-transform:uppercase;letter-spacing:.6px;font-size:.72rem}
+  table.log tbody tr:hover{background:#f6eddd}
+  .tag{font-size:.7rem;padding:3px 9px;border-radius:20px;font-weight:700}
+  .tag.v{background:#e2ead9;color:#43572f}
+  .tag.p{background:#f3e4cf;color:#8a5a1e}
+
+  .timeline{position:relative;margin-top:10px;padding-left:26px}
+  .timeline:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{position:relative;padding:0 0 22px 8px}
+  .tl-item:before{content:"";position:absolute;left:-23px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent2);border:3px solid var(--paper)}
+  .tl-item .yr{font-family:'Segoe UI',sans-serif;font-weight:700;color:var(--accent)}
+
+  footer{background:var(--slate);color:#d9d2c6;padding:48px 0 30px;font-family:'Segoe UI',sans-serif}
+  footer .cols{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  footer h4{color:#fff;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+  footer a{color:#d9d2c6;text-decoration:none;display:block;font-size:.88rem;margin:6px 0}
+  footer a:hover{color:var(--gold)}
+  .fine{border-top:1px solid #4d5a68;margin-top:30px;padding-top:18px;font-size:.78rem;color:#9aa4af}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="brandmark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7a4a24" stroke-width="1.7"><path d="M12 3v18M12 7c-3-2-7-1-8 1M12 7c3-2 7-1 8 1M4 8v5c0 2 2 3 4 3M20 8v5c0 2-2 3-4 3"/><circle cx="12" cy="3" r="1.6" fill="#7a4a24"/></svg>
+      THE ROBERTS LINE
+    </div>
+    <nav><ul>
+      <li><a href="#tree">Family Tree</a></li>
+      <li><a href="#progress">Progress</a></li>
+      <li><a href="#records">Records</a></li>
+      <li><a href="#timeline">Timeline</a></li>
+    </ul></nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">A private family research project</div>
+    <h1>Tracing four generations of the <span>Roberts</span> family.</h1>
+    <p class="lede">Begun in the autumn of 2025 at the den workbench, this is the working record of who we came from: iron molders and machinists out of Chicago's South Side, and a great-grandfather who crossed from Wales with a trade in his hands and not much else.</p>
+    <div class="cta">
+      <a class="btn primary" href="#tree">Open the tree</a>
+      <a class="btn ghost" href="#records">See the source log</a>
+    </div>
+  </div>
+</div>
+
+<section id="stats">
+  <div class="wrap">
+    <div class="kpis">
+      <div class="kpi reveal"><div class="num" data-count="41">0</div><div class="lab">Records logged</div></div>
+      <div class="kpi reveal"><div class="num" data-count="4">0</div><div class="lab">Generations traced</div></div>
+      <div class="kpi reveal"><div class="num" data-count="1891">0</div><div class="lab">Earliest arrival, Ellis crossing</div></div>
+      <div class="kpi reveal"><div class="num" data-count="6">0</div><div class="lab">Open questions to resolve</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="tree">
+  <div class="wrap">
+    <div class="sect-head"><div class="eyebrow">The line, so far</div><h2>Four generations, confirmed and probable</h2><p>Solid borders are verified against a primary source. The Welsh crossing is still marked probable until a second record corroborates it.</p></div>
+    <div class="tree reveal">
+      <svg viewBox="0 0 680 300" role="img" aria-label="Roberts family tree">
+        <path class="edge" d="M120 70 V110 H340 V140"/>
+        <path class="edge" d="M340 110 V140"/>
+        <path class="edge" d="M560 70 V110 H340"/>
+        <path class="edge" d="M340 190 V210 H250 V230"/>
+        <path class="edge" d="M340 210 H430 V230"/>
+        <g class="node gen1" transform="translate(60,40)"><rect width="120" height="52" rx="4"/><text class="nm" x="60" y="22" text-anchor="middle">Thomas Roberts</text><text class="dt" x="60" y="38" text-anchor="middle">Wales, arr. 1891</text></g>
+        <g class="node gen1" transform="translate(500,40)"><rect width="120" height="52" rx="4"/><text class="nm" x="60" y="22" text-anchor="middle">(spouse unknown)</text><text class="dt" x="60" y="38" text-anchor="middle">research open</text></g>
+        <g class="node" transform="translate(280,140)"><rect width="120" height="52" rx="4"/><text class="nm" x="60" y="22" text-anchor="middle">Walter Roberts</text><text class="dt" x="60" y="38" text-anchor="middle">1898 to 1967</text></g>
+        <g class="node" transform="translate(190,230)"><rect width="120" height="52" rx="4"/><text class="nm" x="60" y="22" text-anchor="middle">Raymond Roberts</text><text class="dt" x="60" y="38" text-anchor="middle">1925 to 1998</text></g>
+        <g class="node self" transform="translate(370,230)"><rect width="120" height="52" rx="4"/><text class="nm" x="60" y="22" text-anchor="middle">Andrew Roberts</text><text class="dt" x="60" y="38" text-anchor="middle">b. 1955</text></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="progress" style="background:#efe7d9;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sect-head"><div class="eyebrow">Where the work stands</div><h2>Research progress by branch</h2><p>Confidence is my own estimate, weighted by how many independent sources agree.</p></div>
+    <div class="grid2">
+      <div class="panel reveal">
+        <h3>Confidence by branch</h3>
+        <div class="bar-row"><div class="top"><span>Roberts, direct paternal line</span><span>82%</span></div><div class="track"><div class="fill" style="background:var(--accent)" data-w="82"></div></div></div>
+        <div class="bar-row"><div class="top"><span>Doyle, maternal grandmother</span><span>68%</span></div><div class="track"><div class="fill" style="background:var(--accent2)" data-w="68"></div></div></div>
+        <div class="bar-row"><div class="top"><span>Welsh origin, Merthyr Tydfil</span><span>40%</span></div><div class="track"><div class="fill" style="background:var(--sage)" data-w="40"></div></div></div>
+        <div class="bar-row"><div class="top"><span>Foster line, Carol's people</span><span>25%</span></div><div class="track"><div class="fill" style="background:var(--slate)" data-w="25"></div></div></div>
+      </div>
+      <div class="panel reveal">
+        <h3>Records by source type</h3>
+        <div class="donut-wrap">
+          <svg width="150" height="150" viewBox="0 0 150 150" class="ring" id="donut">
+            <circle cx="75" cy="75" r="52" stroke="#eae1d0"></circle>
+          </svg>
+          <ul class="legend">
+            <li><span class="dot" style="background:var(--accent)"></span>Census, 12</li>
+            <li><span class="dot" style="background:var(--accent2)"></span>Vital records, 9</li>
+            <li><span class="dot" style="background:var(--sage)"></span>Church, 7</li>
+            <li><span class="dot" style="background:var(--slate)"></span>Newspaper, 8</li>
+            <li><span class="dot" style="background:var(--gold)"></span>Immigration, 5</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="records">
+  <div class="wrap">
+    <div class="sect-head"><div class="eyebrow">The paper trail</div><h2>Selected source log</h2><p>Pulled from the research binder. Verified means held to a primary source; probable still needs a second.</p></div>
+    <div class="panel reveal" style="padding:0;overflow-x:auto">
+      <table class="log">
+        <thead><tr><th>Logged</th><th>Source</th><th>Person</th><th>Record date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Oct 16, 2025</td><td>1940 Federal Census, Cook County</td><td>Walter Roberts</td><td>Nov 8, 1940</td><td><span class="tag v">Verified</span></td></tr>
+          <tr><td>Oct 30, 2025</td><td>Marriage record, Cook County Clerk</td><td>Walter and Margaret Doyle</td><td>Nov 10, 1922</td><td><span class="tag v">Verified</span></td></tr>
+          <tr><td>Nov 6, 2025</td><td>Baptismal register, parish office</td><td>Raymond Roberts</td><td>Feb 20, 1925</td><td><span class="tag v">Verified</span></td></tr>
+          <tr><td>Nov 13, 2025</td><td>Passenger manifest, Liverpool to New York</td><td>Thomas Roberts</td><td>Nov 2, 1891</td><td><span class="tag p">Probable</span></td></tr>
+          <tr><td>Nov 20, 2025</td><td>Death certificate, Cook County Clerk</td><td>Thomas Roberts</td><td>Dec 14, 1936</td><td><span class="tag v">Verified</span></td></tr>
+          <tr><td>Dec 4, 2025</td><td>Obituary, newspaper archive clipping</td><td>Raymond Roberts</td><td>Nov 19, 1998</td><td><span class="tag v">Verified</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="timeline" style="background:#efe7d9;border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sect-head"><div class="eyebrow">How it unfolded</div><h2>Project timeline</h2></div>
+    <div class="timeline reveal">
+      <div class="tl-item"><div class="yr">October 2025</div><div>Opened the binder. First census pulls confirmed the Sawyer Avenue household and Walter's trade as an iron molder.</div></div>
+      <div class="tl-item"><div class="yr">November 2025</div><div>Marriage and baptismal records tied the Doyle connection together. Found a probable Welsh manifest for Thomas.</div></div>
+      <div class="tl-item"><div class="yr">December 2025</div><div>Raymond's obituary filled in the last of his service record and named Eleanor.</div></div>
+      <div class="tl-item"><div class="yr">February 2026</div><div>Wrote to a South Side historic site asking after foundry employment ledgers. Waiting on the reply before the next round of letters.</div></div>
+      <div class="tl-item"><div class="yr">Next</div><div>Corroborate the Merthyr Tydfil origin with a second source, then start the Foster line properly.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div style="max-width:34ch">
+        <h4>The Roberts Line</h4>
+        <p style="font-size:.88rem;color:#c3bcae">A private research project kept by Andrew Roberts, Naperville, Illinois. Shared with family only.</p>
+      </div>
+      <div>
+        <h4>Sections</h4>
+        <a href="#tree">Family tree</a>
+        <a href="#progress">Research progress</a>
+        <a href="#records">Source log</a>
+        <a href="#timeline">Timeline</a>
+      </div>
+      <div>
+        <h4>Kept in</h4>
+        <a href="#">Research binder, den study</a>
+        <a href="#">Scanned records, family drive</a>
+        <a href="#">Structured tree, worksheet</a>
+      </div>
+    </div>
+    <div class="fine">Compiled at the den workbench. Last updated February 2026. For the grandchildren, when they are old enough to ask.</div>
+  </div>
+</footer>
+
+<script>
+  // scroll reveal
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');
+    e.target.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%');
+    e.target.querySelectorAll('.num[data-count]').forEach(runCount);
+    io.unobserve(e.target);}})},{threshold:.25});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  function runCount(el){
+    const target=+el.dataset.count; const dur=1200; const start=performance.now();
+    function step(t){const p=Math.min(1,(t-start)/dur);el.textContent=Math.floor(p*target).toLocaleString();if(p<1)requestAnimationFrame(step);else el.textContent=target.toLocaleString();}
+    requestAnimationFrame(step);
+  }
+
+  // build donut
+  (function(){
+    const data=[['#7a4a24',12],['#b07a3c',9],['#5f6b52',7],['#3d4a58',8],['#c8a24a',5]];
+    const total=data.reduce((s,d)=>s+d[1],0);
+    const r=52,c=2*Math.PI*r,svg=document.getElementById('donut');
+    let off=0;
+    data.forEach(([col,val],i)=>{
+      const len=c*val/total;
+      const seg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      seg.setAttribute('cx',75);seg.setAttribute('cy',75);seg.setAttribute('r',r);
+      seg.setAttribute('stroke',col);seg.setAttribute('stroke-width',22);seg.setAttribute('fill','none');
+      seg.setAttribute('stroke-dasharray',c);seg.setAttribute('stroke-dashoffset',c);
+      svg.appendChild(seg);
+      setTimeout(()=>{seg.style.transition='stroke-dashoffset 1s ease';seg.setAttribute('stroke-dasharray',len+' '+(c-len));seg.setAttribute('stroke-dashoffset',-off);},200+i*180);
+      off+=len;
+    });
+  })();
+</script>
+</body>
+</html>

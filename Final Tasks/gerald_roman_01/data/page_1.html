@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URISN Surveillance Dashboard</title>
+<style>
+  :root{
+    --navy:#0b2545; --teal:#1b9aaa; --teal-d:#147683; --light:#e6f2f2;
+    --ink:#16303f; --mut:#5a6b7b; --card:#ffffff; --line:#d6e4e6; --warn:#c0623a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:#f4f8f8;line-height:1.55}
+  a{color:var(--teal-d);text-decoration:none}
+  header.top{position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:space-between;padding:14px 28px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.3px}
+  .brand .dot{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--teal),#7fd0d8);
+    display:grid;place-items:center;font-size:15px;color:var(--navy)}
+  nav.top a{color:#cfe6e8;margin-left:22px;font-size:14px;transition:color .2s}
+  nav.top a:hover{color:#fff}
+  .hero{background:linear-gradient(120deg,var(--navy),#123b5e);color:#fff;padding:54px 28px 70px}
+  .hero .wrap{max-width:1080px;margin:0 auto}
+  .hero h1{font-size:34px;font-weight:700;margin-bottom:10px}
+  .hero p{max-width:680px;color:#bfe3e6;font-size:17px}
+  .tag{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+    padding:5px 12px;border-radius:30px;font-size:12.5px;margin-bottom:18px;letter-spacing:.5px}
+  main{max-width:1080px;margin:-44px auto 0;padding:0 20px 60px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+  .kpi{background:var(--card);border-radius:14px;padding:22px 20px;box-shadow:0 8px 22px rgba(11,37,69,.08);
+    border-top:4px solid var(--teal)}
+  .kpi .num{font-size:34px;font-weight:800;color:var(--navy);line-height:1}
+  .kpi .lbl{color:var(--mut);font-size:13px;margin-top:8px}
+  section.panel{background:var(--card);border-radius:16px;padding:26px;margin-bottom:24px;
+    box-shadow:0 8px 22px rgba(11,37,69,.07)}
+  .panel h2{font-size:21px;color:var(--navy);margin-bottom:4px}
+  .panel .sub{color:var(--mut);font-size:14px;margin-bottom:18px}
+  .controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+  .btn{cursor:pointer;border:1px solid var(--line);background:#eef6f6;color:var(--teal-d);
+    padding:9px 18px;border-radius:30px;font-size:14px;font-weight:600;transition:all .18s}
+  .btn:hover{border-color:var(--teal)}
+  .btn.active{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 4px 12px rgba(27,154,170,.35)}
+  .chart{display:flex;flex-direction:column;gap:14px}
+  .bar-row{display:grid;grid-template-columns:170px 1fr 64px;align-items:center;gap:14px}
+  .bar-row .name{font-size:13.5px;color:var(--ink);font-weight:600}
+  .track{background:#eef3f4;border-radius:8px;height:26px;overflow:hidden;position:relative}
+  .fill{height:100%;border-radius:8px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+  .bar-row .val{font-size:14px;font-weight:700;color:var(--navy);text-align:right}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:18px;font-size:13px;color:var(--mut)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .two{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+  .note-list{list-style:none}
+  .note-list li{padding:11px 0;border-bottom:1px solid var(--line);display:flex;gap:12px}
+  .note-list li:last-child{border-bottom:none}
+  .note-list .mk{color:var(--teal);font-weight:800}
+  .callout{background:var(--light);border-left:5px solid var(--teal);border-radius:10px;padding:18px 20px;font-size:15px}
+  footer{background:var(--navy);color:#9fc9ce;padding:30px 28px;font-size:13.5px}
+  footer .wrap{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  footer strong{color:#fff}
+  .reveal{opacity:0;transform:translateY(18px);transition:all .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(max-width:880px){.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:120px 1fr 52px}nav.top{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot">U</span> URISN Surveillance Dashboard</div>
+  <nav class="top">
+    <a href="#findings">Findings</a>
+    <a href="#sites">Sites</a>
+    <a href="#gradient">Gradient</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="tag">PUBLIC DATA SUMMARY  |  CHESAPEAKE INSTITUTE OF PUBLIC HEALTH</span>
+    <h1>Respiratory illness across six Baltimore neighborhoods</h1>
+    <p>An open view of what the Urban Respiratory Illness Surveillance Network is learning about housing, income, and how often residents get sick. Figures update as each surveillance year closes.</p>
+  </div>
+</div>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="num" data-count="2785">0</div><div class="lbl">Active participants, 2024</div></div>
+    <div class="kpi"><div class="num" data-count="6">0</div><div class="lbl">Neighborhoods tracked</div></div>
+    <div class="kpi"><div class="num" data-count="91" data-suffix="%">0</div><div class="lbl">Follow-up retention</div></div>
+    <div class="kpi"><div class="num" data-count="1885">0</div><div class="lbl">Illness episodes recorded</div></div>
+  </div>
+
+  <section class="panel reveal" id="sites">
+    <h2>Illness incidence by neighborhood</h2>
+    <div class="sub">Episodes per 1,000 person-months. Switch the surveillance year to compare.</div>
+    <div class="controls">
+      <button class="btn" data-year="2023">2023</button>
+      <button class="btn active" data-year="2024">2024</button>
+    </div>
+    <div class="chart" id="incidenceChart"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#0b2545"></i> Higher burden</span>
+      <span><i class="swatch" style="background:#1b9aaa"></i> Middle</span>
+      <span><i class="swatch" style="background:#7fd0d8"></i> Lower burden</span>
+    </div>
+  </section>
+
+  <div class="two">
+    <section class="panel reveal" id="gradient">
+      <h2>The housing gradient</h2>
+      <div class="sub">Mean Housing Quality Index by site, 2024. Higher is better.</div>
+      <div class="chart" id="hqiChart"></div>
+    </section>
+    <section class="panel reveal" id="findings">
+      <h2>What stands out</h2>
+      <ul class="note-list">
+        <li><span class="mk">+</span> Each 10-point drop in housing quality tracks a 14 percent rise in respiratory illness.</li>
+        <li><span class="mk">+</span> The gap between the highest and lowest sites is more than two to one.</li>
+        <li><span class="mk">+</span> The pattern holds after adjusting for age, income, insurance, and smoking.</li>
+        <li><span class="mk">+</span> Adults 55 and older carry the steepest part of the gradient.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="panel reveal" id="about">
+    <h2>About this dashboard</h2>
+    <div class="sub">How to read these numbers</div>
+    <div class="callout">
+      The Housing Quality Index combines city inspection records with resident self-report on a scale of 0 to 100, where lower scores mean worse conditions. Incidence counts symptom-confirmed respiratory illness episodes for every 1,000 person-months of follow-up, so neighborhoods of different sizes can be compared fairly. This is a public summary. Individual records stay confidential and never leave the secure study systems.
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><strong>Urban Respiratory Illness Surveillance Network</strong><br>Chesapeake Institute of Public Health, Baltimore, Maryland</div>
+    <div>Principal Investigator: <strong>Gerald Roman, PhD, MPH</strong><br>Supported by the Meridian Public Health Foundation</div>
+    <div>Questions: <a href="mailto:gerald.roman@gmail.com">gerald.roman@gmail.com</a><br>Last updated October 2026</div>
+  </div>
+</footer>
+
+<script>
+  var SITES = [
+    {name:"Jonestown",        inc:{2023:42.2,2024:39.8}, hqi:48.5},
+    {name:"Sandtown-Winchester",inc:{2023:41.4,2024:39.8}, hqi:50.1},
+    {name:"Franklin Square",  inc:{2023:29.3,2024:28.5}, hqi:55.0},
+    {name:"Cherry Hill",      inc:{2023:23.7,2024:22.7}, hqi:59.4},
+    {name:"Park Heights",     inc:{2023:20.1,2024:19.5}, hqi:62.8},
+    {name:"Greenmount West",  inc:{2023:19.7,2024:18.7}, hqi:69.0}
+  ];
+  function colorFor(v){ return v>=35 ? "#0b2545" : (v>=25 ? "#1b9aaa" : "#7fd0d8"); }
+
+  function renderIncidence(year){
+    var max = 45, host = document.getElementById("incidenceChart");
+    host.innerHTML = "";
+    SITES.forEach(function(s){
+      var v = s.inc[year];
+      var row = document.createElement("div"); row.className="bar-row";
+      row.innerHTML = '<div class="name">'+s.name+'</div>'+
+        '<div class="track"><div class="fill" style="background:'+colorFor(v)+'"></div></div>'+
+        '<div class="val">'+v.toFixed(1)+'</div>';
+      host.appendChild(row);
+      var fill = row.querySelector(".fill");
+      requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = (v/max*100)+"%"; },40); });
+    });
+  }
+  function renderHQI(){
+    var host = document.getElementById("hqiChart"); host.innerHTML="";
+    SITES.slice().sort(function(a,b){return b.hqi-a.hqi;}).forEach(function(s){
+      var row=document.createElement("div"); row.className="bar-row";
+      row.innerHTML='<div class="name">'+s.name+'</div>'+
+        '<div class="track"><div class="fill" style="background:linear-gradient(90deg,#147683,#7fd0d8)"></div></div>'+
+        '<div class="val">'+s.hqi.toFixed(1)+'</div>';
+      host.appendChild(row);
+      var fill=row.querySelector(".fill");
+      requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width=(s.hqi)+"%"; },40); });
+    });
+  }
+  var btns = document.querySelectorAll(".btn[data-year]");
+  btns.forEach(function(b){
+    b.addEventListener("click", function(){
+      btns.forEach(function(x){x.classList.remove("active");});
+      b.classList.add("active");
+      renderIncidence(b.getAttribute("data-year"));
+    });
+  });
+
+  function animateCount(el){
+    var target = parseFloat(el.getAttribute("data-count"));
+    var suffix = el.getAttribute("data-suffix") || "";
+    var start = null, dur = 1200;
+    function step(t){
+      if(!start) start=t;
+      var p = Math.min((t-start)/dur,1);
+      var val = Math.floor(p*target);
+      el.textContent = val.toLocaleString() + suffix;
+      if(p<1) requestAnimationFrame(step); else el.textContent = target.toLocaleString()+suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} });
+  },{threshold:.15});
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+
+  window.addEventListener("load", function(){
+    document.querySelectorAll(".num[data-count]").forEach(animateCount);
+    renderIncidence("2024");
+    renderHQI();
+  });
+</script>
+</body>
+</html>

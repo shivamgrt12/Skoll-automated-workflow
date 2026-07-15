@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fall Showcase Dashboard</title>
+<style>
+  :root{--bg:#0f1b2d;--panel:#16263d;--panel2:#1d3147;--ink:#eaf1fb;--muted:#9fb3cc;
+        --teal:#2dd4bf;--amber:#f6c453;--rose:#f472a3;--line:#27405c;--good:#4ade80;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(15,27,45,.95);backdrop-filter:blur(6px);z-index:20}
+  .title h1{font-size:1.3rem;letter-spacing:.3px}
+  .title p{color:var(--muted);font-size:.85rem}
+  .pill{font-size:.75rem;color:var(--bg);background:var(--teal);padding:6px 12px;border-radius:999px;font-weight:700}
+  main{max-width:1120px;margin:0 auto;padding:28px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+  .kpi{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:22px;animation:fade .6s ease both}
+  .kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.16s}.kpi:nth-child(4){animation-delay:.24s}
+  .kpi .label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px}
+  .kpi .value{font-size:2.1rem;font-weight:800;margin-top:6px}
+  .kpi .delta{font-size:.82rem;margin-top:4px;color:var(--good)}
+  @keyframes fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:24px}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px}
+  .panel-head h2{font-size:1.05rem}
+  .toggle{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:4px}
+  .toggle button{background:none;border:0;color:var(--muted);padding:7px 14px;border-radius:7px;font-weight:700;cursor:pointer;font-size:.85rem;transition:.2s}
+  .toggle button.active{background:var(--teal);color:var(--bg)}
+  svg{width:100%;height:auto;display:block}
+  .bar{transition:height .6s cubic-bezier(.2,.8,.2,1),y .6s cubic-bezier(.2,.8,.2,1)}
+  .axis{stroke:var(--line);stroke-width:1}
+  .glabel{fill:var(--muted);font-size:11px}
+  .two{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:.9rem}
+  th{color:var(--muted);text-transform:uppercase;font-size:.72rem;letter-spacing:1px}
+  .track{height:8px;background:var(--bg);border-radius:999px;overflow:hidden;margin-top:4px}
+  .fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:999px;transition:width .8s ease}
+  footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:22px;font-size:.85rem;margin-top:10px}
+  @media(max-width:840px){.kpis{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="title"><h1>Fall Showcase Dashboard</h1><p>Hartford Dance Collective, presented by Michelle Kemp</p></div>
+  <span class="pill">Show: Oct 24, 2026</span>
+</header>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Tickets sold</div><div class="value">165</div><div class="delta">Sales closed morning of show</div></div>
+    <div class="kpi"><div class="label">Gross sales</div><div class="value">$3,005</div><div class="delta">+18% over last fall</div></div>
+    <div class="kpi"><div class="label">Avg ticket</div><div class="value">$18.2</div><div class="delta">Blended across tiers</div></div>
+    <div class="kpi"><div class="label">Advanced team</div><div class="value">8</div><div class="delta">Dancers in the lineup</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Sales by date</h2>
+      <div class="toggle">
+        <button id="bRev" class="active" onclick="setMetric('rev')">Revenue</button>
+        <button id="bQty" onclick="setMetric('qty')">Tickets</button>
+      </div>
+    </div>
+    <svg id="barChart" viewBox="0 0 720 280" role="img" aria-label="Sales by date bar chart"></svg>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <div class="panel-head"><h2>Cumulative revenue</h2></div>
+      <svg id="lineChart" viewBox="0 0 480 240" role="img" aria-label="Cumulative revenue line chart"></svg>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Revenue by tier</h2></div>
+      <table id="tierTable">
+        <thead><tr><th>Tier</th><th>Revenue</th><th>Share</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Advanced team attendance, fall term</h2></div>
+    <table id="attTable">
+      <thead><tr><th>Dancer</th><th>Sessions present (of 12)</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>Open Floor Studio planning data, drawn from the fall term. Numbers reconcile to the ticketing and attendance records. Internal review copy.</footer>
+
+<script>
+  var sales=[
+    {date:"Oct 1",tier:"General",rev:330,qty:22},
+    {date:"Oct 5",tier:"General",rev:270,qty:18},
+    {date:"Oct 8",tier:"Family 4-pack",rev:300,qty:6},
+    {date:"Oct 12",tier:"General",rev:465,qty:31},
+    {date:"Oct 15",tier:"Student",rev:140,qty:14},
+    {date:"Oct 19",tier:"General",rev:600,qty:40},
+    {date:"Oct 22",tier:"Family 4-pack",rev:450,qty:9},
+    {date:"Oct 24",tier:"Door",rev:450,qty:25}
+  ];
+  var attendance=[
+    ["Tommy Nguyen",12],["Hannah Cole",12],["Priya Raman",11],["Sofia Alvarez",11],
+    ["Janelle Brooks",6],["Marcus Hill",6],["Derek Okafor",5],["Ray Mendez",5]
+  ];
+  var metric="rev";
+
+  function setMetric(m){
+    metric=m;
+    document.getElementById('bRev').classList.toggle('active',m==='rev');
+    document.getElementById('bQty').classList.toggle('active',m==='qty');
+    drawBars();
+  }
+
+  function drawBars(){
+    var svg=document.getElementById('barChart');
+    var W=720,H=280,padL=46,padB=40,padT=14;
+    var vals=sales.map(function(s){return metric==='rev'?s.rev:s.qty;});
+    var max=Math.max.apply(null,vals); var niceMax=Math.ceil(max/100)*100;
+    var plotH=H-padB-padT, plotW=W-padL-20;
+    var bw=plotW/sales.length*0.62, gap=plotW/sales.length;
+    var html='';
+    for(var g=0;g<=4;g++){
+      var yy=padT+plotH-(plotH*g/4);
+      html+='<line class="axis" x1="'+padL+'" y1="'+yy+'" x2="'+(W-12)+'" y2="'+yy+'"/>';
+      html+='<text class="glabel" x="6" y="'+(yy+4)+'">'+Math.round(niceMax*g/4)+'</text>';
+    }
+    sales.forEach(function(s,i){
+      var v=metric==='rev'?s.rev:s.qty;
+      var h=plotH*v/niceMax;
+      var x=padL+gap*i+(gap-bw)/2;
+      var y=padT+plotH-h;
+      var color=i%2?'var(--amber)':'var(--teal)';
+      html+='<rect class="bar" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="5" fill="'+color+'"><title>'+s.date+': '+(metric==='rev'?('$'+v):v)+'</title></rect>';
+      html+='<text class="glabel" text-anchor="middle" x="'+(x+bw/2).toFixed(1)+'" y="'+(H-padB+18)+'">'+s.date+'</text>';
+    });
+    svg.innerHTML=html;
+  }
+
+  function drawLine(){
+    var svg=document.getElementById('lineChart');
+    var W=480,H=240,padL=46,padB=34,padT=14;
+    var cum=[],run=0;
+    sales.forEach(function(s){run+=s.rev;cum.push(run);});
+    var max=Math.ceil(cum[cum.length-1]/500)*500;
+    var plotH=H-padB-padT,plotW=W-padL-16;
+    var pts=cum.map(function(v,i){
+      var x=padL+plotW*i/(cum.length-1);
+      var y=padT+plotH-(plotH*v/max);
+      return [x,y];
+    });
+    var html='';
+    for(var g=0;g<=4;g++){
+      var yy=padT+plotH-(plotH*g/4);
+      html+='<line class="axis" x1="'+padL+'" y1="'+yy+'" x2="'+(W-8)+'" y2="'+yy+'"/>';
+      html+='<text class="glabel" x="4" y="'+(yy+4)+'">'+Math.round(max*g/4)+'</text>';
+    }
+    var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);}).join(' ');
+    var area=d+' L'+pts[pts.length-1][0].toFixed(1)+' '+(padT+plotH)+' L'+pts[0][0].toFixed(1)+' '+(padT+plotH)+' Z';
+    html+='<path d="'+area+'" fill="rgba(45,212,191,.15)"/>';
+    html+='<path d="'+d+'" fill="none" stroke="var(--teal)" stroke-width="2.5"/>';
+    pts.forEach(function(p,i){html+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="var(--amber)"><title>$'+cum[i]+'</title></circle>';});
+    svg.innerHTML=html;
+  }
+
+  function fillTier(){
+    var byTier={};var total=0;
+    sales.forEach(function(s){byTier[s.tier]=(byTier[s.tier]||0)+s.rev;total+=s.rev;});
+    var tb=document.querySelector('#tierTable tbody');var rows='';
+    Object.keys(byTier).forEach(function(t){
+      var pct=Math.round(byTier[t]/total*100);
+      rows+='<tr><td>'+t+'</td><td>$'+byTier[t]+'</td><td>'+pct+'%<div class="track"><div class="fill" style="width:'+pct+'%"></div></div></td></tr>';
+    });
+    tb.innerHTML=rows;
+  }
+
+  function fillAtt(){
+    var tb=document.querySelector('#attTable tbody');var rows='';
+    attendance.forEach(function(a){
+      var pct=Math.round(a[1]/12*100);
+      rows+='<tr><td>'+a[0]+'</td><td>'+a[1]+'</td><td style="width:45%"><div class="track"><div class="fill" style="width:'+pct+'%"></div></div></td></tr>';
+    });
+    tb.innerHTML=rows;
+  }
+
+  drawBars();drawLine();fillTier();fillAtt();
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sunday Table</title>
+<style>
+  :root{
+    --ink:#2b2320; --paper:#fbf6ee; --cream:#f3e9d9; --rust:#9c3b1b;
+    --olive:#6b6a3a; --gold:#c8932f; --line:#e3d6c2; --soft:#7a6f63;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper);line-height:1.6}
+  h1,h2,h3,nav,.eyebrow{font-family:'Helvetica Neue',Arial,sans-serif}
+  /* header */
+  header{position:sticky;top:0;z-index:50;background:rgba(251,246,238,.92);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .bar{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px}
+  .brand{font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px;color:var(--rust)}
+  nav a{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink);
+    text-decoration:none;margin-left:26px;padding-bottom:3px;border-bottom:2px solid transparent;transition:.25s}
+  nav a:hover{border-color:var(--gold);color:var(--rust)}
+  .menu-toggle{display:none}
+  /* hero */
+  .hero{position:relative;text-align:center;padding:96px 24px 80px;overflow:hidden}
+  .hero:before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 20% 30%,rgba(200,147,47,.16),transparent 40%),
+      repeating-linear-gradient(45deg,rgba(156,59,27,.04) 0 12px,transparent 12px 24px)}
+  .hero>*{position:relative}
+  .eyebrow{text-transform:uppercase;letter-spacing:.32em;font-size:12px;color:var(--olive)}
+  .hero h1{font-size:64px;line-height:1.02;margin:14px 0;color:var(--ink)}
+  .hero p{max-width:620px;margin:0 auto;color:var(--soft);font-size:19px;font-style:italic}
+  .scrollcue{margin-top:34px}
+  .btn{display:inline-block;margin-top:30px;background:var(--rust);color:#fff;text-decoration:none;
+    padding:13px 30px;border:none;border-radius:2px;font-family:'Helvetica Neue',Arial,sans-serif;
+    letter-spacing:.1em;text-transform:uppercase;font-size:12px;cursor:pointer;transition:.25s}
+  .btn:hover{background:#7e2f15;transform:translateY(-2px)}
+  /* sections */
+  section{max-width:1080px;margin:0 auto;padding:70px 24px}
+  .sec-head{text-align:center;margin-bottom:44px}
+  .sec-head h2{font-size:38px}
+  .sec-head .rule{width:70px;height:3px;background:var(--gold);margin:14px auto}
+  .sec-head p{color:var(--soft);max-width:560px;margin:0 auto}
+  /* filter */
+  .filters{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:34px}
+  .filters button{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;padding:9px 18px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:30px;cursor:pointer;transition:.2s}
+  .filters button.active,.filters button:hover{background:var(--rust);color:#fff;border-color:var(--rust)}
+  /* cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden;
+    box-shadow:0 8px 24px rgba(43,35,32,.06);opacity:0;transform:translateY(26px);transition:.6s}
+  .card.show{opacity:1;transform:none}
+  .card .top{padding:18px 22px;border-bottom:1px solid var(--line);
+    background:linear-gradient(120deg,var(--cream),#fff)}
+  .card .tag{font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--olive)}
+  .card h3{font-size:23px;margin-top:5px;color:var(--rust)}
+  .card .meta{font-size:13px;color:var(--soft);margin-top:6px}
+  .card .body{padding:6px 22px 0;max-height:0;overflow:hidden;transition:max-height .5s ease}
+  .card.open .body{max-height:700px;padding-bottom:20px}
+  .card h4{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink);margin:16px 0 6px}
+  .card ul{list-style:none;font-size:15px}
+  .card ul li{padding:3px 0 3px 18px;position:relative}
+  .card ul li:before{content:"";position:absolute;left:0;top:12px;width:6px;height:6px;
+    background:var(--gold);border-radius:50%}
+  .card .method{font-size:15px;color:#43392f}
+  .expand{width:100%;font-family:'Helvetica Neue',Arial,sans-serif;background:none;border:none;
+    border-top:1px solid var(--line);padding:13px;cursor:pointer;color:var(--rust);font-size:12px;
+    letter-spacing:.12em;text-transform:uppercase}
+  /* ritual band */
+  .ritual{background:var(--ink);color:var(--paper)}
+  .ritual .inner{max-width:1080px;margin:0 auto;padding:74px 24px;display:grid;
+    grid-template-columns:1fr 1fr;gap:46px;align-items:center}
+  .ritual h2{font-size:34px;color:#fff}
+  .ritual p{color:#d9cdbb;margin-top:16px}
+  .ritual .stats{display:flex;gap:30px;margin-top:26px}
+  .ritual .stat .n{font-size:40px;color:var(--gold);font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700}
+  .ritual .stat .l{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#b6a98f}
+  .platter{aspect-ratio:1;border-radius:50%;background:
+      radial-gradient(circle at 50% 45%,#f3e9d9 0 42%,#e8dcc6 42% 47%,transparent 47%),
+      conic-gradient(from 0deg,var(--rust),var(--gold),var(--olive),var(--rust));
+    display:flex;align-items:center;justify-content:center;animation:spin 26s linear infinite}
+  .platter span{font-family:'Helvetica Neue',Arial,sans-serif;text-transform:uppercase;letter-spacing:.2em;
+    font-size:13px;color:var(--ink)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* notes */
+  .notes blockquote{max-width:760px;margin:0 auto;font-size:22px;font-style:italic;text-align:center;color:#43392f}
+  .notes .src{display:block;margin-top:18px;font-family:'Helvetica Neue',Arial,sans-serif;font-style:normal;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--olive)}
+  /* footer */
+  footer{background:var(--cream);border-top:1px solid var(--line);text-align:center;
+    padding:46px 24px;color:var(--soft);font-size:14px}
+  footer .brand{display:block;margin-bottom:10px}
+  @media(max-width:760px){
+    nav{display:none}.hero h1{font-size:44px}.ritual .inner{grid-template-columns:1fr}
+    .platter{max-width:280px;margin:0 auto}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">The Sunday Table</div>
+    <nav>
+      <a href="#recipes">Recipes</a>
+      <a href="#ritual">The Ritual</a>
+      <a href="#notes">From the Kitchen</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="eyebrow">Cooper family kitchen, Fairmount</div>
+  <h1>The Sunday Table</h1>
+  <p>Recipes written down before they are lost. Barbara's hand, a Philadelphia rowhouse, and a standing reservation for six every Sunday at three.</p>
+  <a class="btn" href="#recipes">Open the recipe box</a>
+</div>
+
+<section id="recipes">
+  <div class="sec-head">
+    <h2>The Recipes</h2>
+    <div class="rule"></div>
+    <p>Four dishes that anchor the week. Tap a card to read the method.</p>
+  </div>
+  <div class="filters">
+    <button class="active" data-f="all">All</button>
+    <button data-f="main">Mains</button>
+    <button data-f="breakfast">Breakfast</button>
+    <button data-f="heritage">Barbara's</button>
+  </div>
+  <div class="grid" id="grid">
+
+    <article class="card" data-cat="heritage main">
+      <div class="top"><span class="tag">Barbara's recipe</span>
+        <h3>Macaroni and Cheese</h3>
+        <div class="meta">Serves 8, or 4 with leftovers fought over on Monday</div></div>
+      <div class="body">
+        <h4>You will need</h4>
+        <ul>
+          <li>1 pound elbow macaroni</li>
+          <li>4 tablespoons butter and 4 tablespoons flour</li>
+          <li>3 cups warm whole milk</li>
+          <li>1 pound sharp cheddar plus a handful of grated gruyere</li>
+          <li>1 teaspoon dry mustard, salt, a grate of nutmeg</li>
+          <li>Buttered breadcrumbs for the top</li>
+        </ul>
+        <h4>Method</h4>
+        <p class="method">Cook the macaroni two minutes short of the box. Melt the butter, whisk in the flour and cook one minute, then pour in the warm milk slowly. Off the heat, add the cheddar and gruyere, the dry mustard, salt, and nutmeg. Fold in the pasta, top with buttered breadcrumbs, and bake at 375 for thirty minutes until the edges blister.</p>
+      </div>
+      <button class="expand">Read the method</button>
+    </article>
+
+    <article class="card" data-cat="main">
+      <div class="top"><span class="tag">Sunday main</span>
+        <h3>Sunday Pot Roast</h3>
+        <div class="meta">Three pounds of chuck, salted the night before</div></div>
+      <div class="body">
+        <h4>You will need</h4>
+        <ul>
+          <li>3 pound chuck roast, salted overnight</li>
+          <li>Onions, carrots, celery, garlic</li>
+          <li>1 bay leaf</li>
+          <li>2 cups beef stock and a splash of red wine</li>
+        </ul>
+        <h4>Method</h4>
+        <p class="method">Sear the roast hard in a Dutch oven, then build the braise on the onions, carrots, celery, garlic, bay leaf, stock, and wine. Lid on, 300 degrees, three hours, until a fork twists out clean. Rest before slicing against the grain.</p>
+      </div>
+      <button class="expand">Read the method</button>
+    </article>
+
+    <article class="card" data-cat="main">
+      <div class="top"><span class="tag">Weeknight main</span>
+        <h3>Meatloaf, the honest version</h3>
+        <div class="meta">Do not overwork the meat or it turns to rubber</div></div>
+      <div class="body">
+        <h4>You will need</h4>
+        <ul>
+          <li>2 pounds ground chuck</li>
+          <li>1 egg and three quarters cup breadcrumbs soaked in milk</li>
+          <li>Grated onion, Worcestershire, salt</li>
+          <li>Glaze of ketchup, brown sugar, and a little cider vinegar</li>
+        </ul>
+        <h4>Method</h4>
+        <p class="method">Mix gently, shape, and glaze. Bake at 350 for one hour. The glaze should set to a lacquer and the loaf should slice clean without falling apart.</p>
+      </div>
+      <button class="expand">Read the method</button>
+    </article>
+
+    <article class="card" data-cat="breakfast">
+      <div class="top"><span class="tag">Saturday morning</span>
+        <h3>Buttermilk Pancakes</h3>
+        <div class="meta">Tyler gets chocolate chips, Emily insists on none touching</div></div>
+      <div class="body">
+        <h4>You will need</h4>
+        <ul>
+          <li>2 cups flour, 2 tablespoons sugar</li>
+          <li>2 teaspoons baking powder, half teaspoon salt</li>
+          <li>2 cups buttermilk, 2 eggs</li>
+          <li>3 tablespoons melted butter</li>
+        </ul>
+        <h4>Method</h4>
+        <p class="method">Whisk the dry, then the wet, and bring them together with a light hand. Rest the batter ten minutes. Ladle onto a medium griddle and flip when the bubbles hold.</p>
+      </div>
+      <button class="expand">Read the method</button>
+    </article>
+
+  </div>
+</section>
+
+<div class="ritual" id="ritual">
+  <div class="inner">
+    <div>
+      <h2>Sunday at three o'clock</h2>
+      <p>Barbara comes over from Rittenhouse and brings dessert from the Market Street food hall. Sarah opens the wine, the kids set the table badly, and the kitchen holds the whole family until the light goes. It is the one block on the calendar that never moves.</p>
+      <div class="stats">
+        <div class="stat"><div class="n">6</div><div class="l">at the table</div></div>
+        <div class="stat"><div class="n">52</div><div class="l">Sundays a year</div></div>
+        <div class="stat"><div class="n">3hr</div><div class="l">for the roast</div></div>
+      </div>
+    </div>
+    <div class="platter"><span>Sunday</span></div>
+  </div>
+</div>
+
+<section class="notes" id="notes">
+  <div class="sec-head">
+    <h2>From the Kitchen</h2>
+    <div class="rule"></div>
+  </div>
+  <blockquote>
+    A recipe is just a memory you can repeat. Write the good ones down while the people who taught them to you can still correct your measurements.
+    <span class="src">Jason Cooper, Fairmount</span>
+  </blockquote>
+</section>
+
+<footer>
+  <span class="brand">The Sunday Table</span>
+  Cooper family recipes, Fairmount, Philadelphia. Kept by hand and cooked on a gas range that earns its keep.
+</footer>
+
+<script>
+  // scroll reveal
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('show'); } });
+  },{threshold:.15});
+  document.querySelectorAll('.card').forEach(function(c,i){
+    c.style.transitionDelay=(i*0.08)+'s'; io.observe(c);
+  });
+  setTimeout(function(){document.querySelectorAll('.card').forEach(function(c){c.classList.add('show')})},1400);
+  // expand
+  document.querySelectorAll('.expand').forEach(function(b){
+    b.addEventListener('click',function(){
+      var card=b.closest('.card'); card.classList.toggle('open');
+      b.textContent=card.classList.contains('open')?'Close':'Read the method';
+    });
+  });
+  // filter
+  document.querySelectorAll('.filters button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filters button').forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      var f=b.dataset.f;
+      document.querySelectorAll('.card').forEach(function(c){
+        var ok=(f==='all')||c.dataset.cat.indexOf(f)>-1;
+        c.style.display=ok?'':'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

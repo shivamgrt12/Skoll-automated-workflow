@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riverwalk Log</title>
+<style>
+  :root{
+    --bg:#f2f6f5; --ink:#14312e; --card:#ffffff; --line:#dbe7e3;
+    --water:#2f7d8a; --leaf:#4f8f5a; --sun:#e0a437; --clay:#c0603f; --deep:#1c4d55;
+    --muted:#5d7370;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  header{background:linear-gradient(120deg,var(--deep),var(--water));color:#eef7f6;padding:20px 0}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.5px}
+  .brand svg{width:28px;height:28px}
+  header nav a{color:#cfe6e3;text-decoration:none;margin-left:22px;font-size:.85rem;transition:.2s}
+  header nav a:hover{color:#fff}
+  @media(max-width:720px){header nav{display:none}}
+
+  .intro{padding:44px 0 10px}
+  .intro h1{font-size:2.5rem;font-weight:800;letter-spacing:-.5px}
+  .intro h1 span{color:var(--water)}
+  .intro p{color:var(--muted);max-width:60ch;margin-top:8px}
+  .stamp{display:inline-block;margin-top:14px;background:#e5efe9;color:var(--deep);border:1px solid var(--line);padding:6px 14px;border-radius:20px;font-size:.82rem}
+
+  .row{display:grid;gap:18px;margin-top:26px}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(20,49,46,.04)}
+  .kpi .top{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.82rem}
+  .kpi .top svg{width:18px;height:18px}
+  .kpi .v{font-size:2.3rem;font-weight:800;margin-top:6px;line-height:1}
+  .kpi .u{font-size:.9rem;color:var(--muted);font-weight:400}
+  .kpi .delta{font-size:.8rem;margin-top:6px;font-weight:600}
+  .up{color:var(--leaf)} .down{color:var(--clay)}
+
+  .two{grid-template-columns:1.6fr 1fr}
+  @media(max-width:820px){.two{grid-template-columns:1fr}}
+  .card h3{font-size:1.1rem;margin-bottom:4px}
+  .card .cap{color:var(--muted);font-size:.85rem;margin-bottom:18px}
+
+  .chart{width:100%;height:auto;display:block;overflow:visible}
+  .gridline{stroke:var(--line);stroke-width:1}
+  .axis{fill:var(--muted);font-size:10px;font-family:'Segoe UI',sans-serif}
+  .area{fill:url(#g1);opacity:.85}
+  .linep{fill:none;stroke:var(--water);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.8s ease forwards .3s}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .pt{fill:#fff;stroke:var(--water);stroke-width:2;opacity:0;animation:pop .4s ease forwards}
+  @keyframes pop{to{opacity:1}}
+
+  .ring2{transform:rotate(-90deg)}
+  .center-num{font-size:1.6rem;font-weight:800;fill:var(--deep);font-family:'Segoe UI',sans-serif}
+  .center-lab{fill:var(--muted);font-size:.62rem;font-family:'Segoe UI',sans-serif}
+
+  .bar{margin:15px 0}
+  .bar .l{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px}
+  .bar .l b{color:var(--deep)}
+  .track{height:12px;background:#e7efeb;border-radius:20px;overflow:hidden}
+  .fx{height:100%;width:0;border-radius:20px;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+
+  .a1c{display:flex;align-items:flex-end;gap:18px;height:150px;padding:10px 4px 0}
+  .a1c .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:flex-end;height:100%}
+  .a1c .bar2{width:100%;max-width:56px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--leaf),#6fae78);transition:height 1.2s ease;height:0}
+  .a1c .col small{color:var(--muted);font-size:.76rem}
+  .a1c .col b{color:var(--deep);font-size:.9rem}
+  .thresh{font-size:.78rem;color:var(--clay);margin-top:8px}
+
+  .week{grid-template-columns:repeat(7,1fr);gap:10px}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center}
+  .day .dn{font-size:.72rem;color:var(--muted)}
+  .day .ico{margin:8px auto 0;width:22px;height:22px;color:var(--water)}
+  @media(max-width:720px){.week{grid-template-columns:repeat(4,1fr)}}
+
+  .rev{opacity:0;transform:translateY(20px);transition:.7s}
+  .rev.in{opacity:1;transform:none}
+
+  footer{margin-top:40px;padding:34px 0;color:var(--muted);border-top:1px solid var(--line);font-size:.86rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#eef7f6" stroke-width="1.7"><path d="M3 12c3 0 3-3 6-3s3 3 6 3 3-3 6-3"/><path d="M3 17c3 0 3-3 6-3s3 3 6 3 3-3 6-3"/></svg>
+      RIVERWALK LOG
+    </div>
+    <nav>
+      <a href="#walks">Walks</a>
+      <a href="#health">Health</a>
+      <a href="#a1c">A1c Trend</a>
+      <a href="#week">Weekly Rhythm</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Morning walks, <span>February 2026</span></h1>
+    <p>A quiet record of the daily loop along the Naperville Riverwalk, kept mostly to prove to Dr. Ivers, and to myself, that the habit holds. Out by 6:45, home before the coffee goes cold.</p>
+    <div class="stamp">28 walks logged, 52.4 miles, one gout flare weathered</div>
+  </div>
+
+  <div class="row kpis">
+    <div class="card kpi rev">
+      <div class="top"><svg viewBox="0 0 24 24" fill="none" stroke="#5d7370" stroke-width="1.7"><path d="M13 4v6l4 2"/><circle cx="12" cy="12" r="9"/></svg>Avg pace</div>
+      <div class="v" data-count="20.1" data-dec="1">0<span class="u"> min/mi</span></div>
+      <div class="delta up">steady, knees permitting</div>
+    </div>
+    <div class="card kpi rev">
+      <div class="top"><svg viewBox="0 0 24 24" fill="none" stroke="#5d7370" stroke-width="1.7"><path d="M4 20l6-14 4 9 3-5 3 10"/></svg>Longest walk</div>
+      <div class="v" data-count="2.2" data-dec="1">0<span class="u"> mi</span></div>
+      <div class="delta up">Riverwalk plus the beach spur</div>
+    </div>
+    <div class="card kpi rev">
+      <div class="top"><svg viewBox="0 0 24 24" fill="none" stroke="#5d7370" stroke-width="1.7"><path d="M12 2v20M2 12h20"/></svg>Weekly average</div>
+      <div class="v" data-count="13.1" data-dec="1">0<span class="u"> mi</span></div>
+      <div class="delta up">above the 12 mile goal</div>
+    </div>
+    <div class="card kpi rev">
+      <div class="top"><svg viewBox="0 0 24 24" fill="none" stroke="#5d7370" stroke-width="1.7"><path d="M20 6L9 17l-5-5"/></svg>Days out</div>
+      <div class="v" data-count="28">0<span class="u"> / 28</span></div>
+      <div class="delta up">missed only the flare days</div>
+    </div>
+  </div>
+
+  <div class="row two" id="walks">
+    <div class="card rev">
+      <h3>Daily distance</h3>
+      <div class="cap">Miles per morning walk. The dip early in the month is the gout flare, right big toe, five days off.</div>
+      <svg class="chart" viewBox="0 0 640 240" id="line" role="img" aria-label="Daily walk distance chart">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7d8a" stop-opacity=".35"/><stop offset="1" stop-color="#2f7d8a" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="card rev">
+      <h3>Medication adherence</h3>
+      <div class="cap">The morning routine, tracked. Allopurinol does not get skipped.</div>
+      <div style="display:flex;justify-content:center;margin:6px 0 14px">
+        <svg width="150" height="150" viewBox="0 0 150 150"><g class="ring2" transform="translate(0,0)"><circle cx="75" cy="75" r="58" fill="none" stroke="#e7efeb" stroke-width="16"/><circle id="adh" cx="75" cy="75" r="58" fill="none" stroke="#4f8f5a" stroke-width="16" stroke-linecap="round" stroke-dasharray="364" stroke-dashoffset="364"/></g>
+          <text x="75" y="72" text-anchor="middle" class="center-num">98%</text><text x="75" y="90" text-anchor="middle" class="center-lab">ON SCHEDULE</text></svg>
+      </div>
+      <div class="bar"><div class="l"><span>Allopurinol, 300 mg</span><b>28/28</b></div><div class="track"><div class="fx" style="background:var(--leaf)" data-w="100"></div></div></div>
+      <div class="bar"><div class="l"><span>Vitamin D3 and fish oil</span><b>27/28</b></div><div class="track"><div class="fx" style="background:var(--water)" data-w="96"></div></div></div>
+      <div class="bar"><div class="l"><span>Water goal, 8 glasses</span><b>24/28</b></div><div class="track"><div class="fx" style="background:var(--sun)" data-w="86"></div></div></div>
+    </div>
+  </div>
+
+  <div class="row two" id="a1c">
+    <div class="card rev">
+      <h3>A1c trend</h3>
+      <div class="cap">Managed with diet and walking, no medication. Dr. Ivers said to stay the course.</div>
+      <div class="a1c" id="a1cChart">
+        <div class="col"><b>5.8%</b><div class="bar2" data-h="88"></div><small>2024, diagnosed</small></div>
+        <div class="col"><b>5.8%</b><div class="bar2" data-h="88"></div><small>Apr 2025</small></div>
+        <div class="col"><b>5.7%</b><div class="bar2" data-h="72"></div><small>Oct 2026</small></div>
+        <div class="col"><b>Goal</b><div class="bar2" style="background:linear-gradient(180deg,#9db8ad,#b8ccc2)" data-h="40"></div><small>under 5.7%</small></div>
+      </div>
+      <div class="thresh">Prediabetes range begins at 5.7 percent. The line is moving the right way.</div>
+    </div>
+    <div class="card rev">
+      <h3>The month in one glance</h3>
+      <div class="cap">Totals that keep the doctor, and the daughter, at ease.</div>
+      <div class="bar"><div class="l"><span>Miles walked vs goal, 52.4 / 48</span><b>109%</b></div><div class="track"><div class="fx" style="background:var(--water)" data-w="100"></div></div></div>
+      <div class="bar"><div class="l"><span>Class attendance, YMCA 55+</span><b>7/8</b></div><div class="track"><div class="fx" style="background:var(--leaf)" data-w="88"></div></div></div>
+      <div class="bar"><div class="l"><span>Low purine meals logged</span><b>93%</b></div><div class="track"><div class="fx" style="background:var(--sun)" data-w="93"></div></div></div>
+      <div class="bar"><div class="l"><span>Nights, 7 hours sleep</span><b>81%</b></div><div class="track"><div class="fx" style="background:var(--clay)" data-w="81"></div></div></div>
+    </div>
+  </div>
+
+  <div id="week" style="margin-top:34px">
+    <h3 style="font-size:1.1rem">Weekly rhythm</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">The frame the week hangs on. Walk every morning; the rest fills in around it.</p>
+    <div class="row week">
+      <div class="day rev"><div class="dn">Mon</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg><div style="font-size:.72rem;margin-top:6px">Walk</div></div>
+      <div class="day rev"><div class="dn">Tue</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v18M18 3v18M6 8h12M6 14h12"/></svg><div style="font-size:.72rem;margin-top:6px">YMCA, coffee with Ed</div></div>
+      <div class="day rev"><div class="dn">Wed</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21C7 17 4 13 4 9a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 4-3 8-8 12z"/></svg><div style="font-size:.72rem;margin-top:6px">Dinner, Janet</div></div>
+      <div class="day rev"><div class="dn">Thu</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5l8 4 8-4v14l-8-4z"/></svg><div style="font-size:.72rem;margin-top:6px">Historical Society</div></div>
+      <div class="day rev"><div class="dn">Fri</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div style="font-size:.72rem;margin-top:6px">Workbench</div></div>
+      <div class="day rev"><div class="dn">Sat</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 15l4-8 4 6 3-4 5 6"/></svg><div style="font-size:.72rem;margin-top:6px">Outing, Janet</div></div>
+      <div class="day rev"><div class="dn">Sun</div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><div style="font-size:.72rem;margin-top:6px">Call Tom, dinner at Meg's</div></div>
+    </div>
+  </div>
+
+  <footer>
+    Kept for myself, and for the two appointments a year that ask about it. Walking data logged each morning; A1c from the lab; medication from the schedule on the fridge. Naperville, Illinois.
+  </footer>
+</div>
+
+<script>
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');
+    e.target.querySelectorAll('.fx').forEach(f=>f.style.width=f.dataset.w+'%');
+    e.target.querySelectorAll('.v[data-count]').forEach(cnt);io.unobserve(e.target);}})},{threshold:.3});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+  function cnt(el){const t=+el.dataset.count,dec=+(el.dataset.dec||0),d=1200,s=performance.now();const u=el.querySelector('.u');const uh=u?u.outerHTML:'';
+    (function f(n){const p=Math.min(1,(n-s)/d);const val=(p*t).toFixed(dec);el.innerHTML=val+uh;p<1?requestAnimationFrame(f):(el.innerHTML=t.toFixed(dec)+uh);})(s);}
+
+  // line chart data: Feb walk distances (subset of daily loops)
+  const d=[1.9,2.1,1.6,1.4,1.7,2.0,2.1,1.8,2.2,2.0,1.9,2.1,2.0,1.8,2.2,2.0,1.9,2.1];
+  (function(){const svg=document.getElementById('line');const W=640,H=240,pl=34,pr=12,pt=16,pb=26;
+    const max=2.4,min=1.2;const x=i=>pl+i*(W-pl-pr)/(d.length-1);const y=v=>pt+(H-pt-pb)*(1-(v-min)/(max-min));
+    [1.2,1.6,2.0,2.4].forEach(g=>{const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',pl);ln.setAttribute('x2',W-pr);ln.setAttribute('y1',y(g));ln.setAttribute('y2',y(g));ln.setAttribute('class','gridline');svg.appendChild(ln);
+      const tx=document.createElementNS('http://www.w3.org/2000/svg','text');tx.setAttribute('x',4);tx.setAttribute('y',y(g)+3);tx.setAttribute('class','axis');tx.textContent=g.toFixed(1);svg.appendChild(tx);});
+    let path='M '+x(0)+' '+y(d[0]);d.forEach((v,i)=>{if(i)path+=' L '+x(i)+' '+y(v);});
+    const area=document.createElementNS('http://www.w3.org/2000/svg','path');area.setAttribute('d',path+' L '+x(d.length-1)+' '+(H-pb)+' L '+x(0)+' '+(H-pb)+' Z');area.setAttribute('class','area');svg.appendChild(area);
+    const lp=document.createElementNS('http://www.w3.org/2000/svg','path');lp.setAttribute('d',path);lp.setAttribute('class','linep');svg.appendChild(lp);
+    d.forEach((v,i)=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',x(i));c.setAttribute('cy',y(v));c.setAttribute('r',3.2);c.setAttribute('class','pt');c.style.animationDelay=(0.6+i*0.06)+'s';svg.appendChild(c);});
+    ['Feb 1','Feb 28'].forEach((t,i)=>{const tx=document.createElementNS('http://www.w3.org/2000/svg','text');tx.setAttribute('x',i?W-pr:pl);tx.setAttribute('y',H-8);tx.setAttribute('text-anchor',i?'end':'start');tx.setAttribute('class','axis');tx.textContent=t;svg.appendChild(tx);});
+  })();
+
+  // adherence ring
+  const io2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+    document.getElementById('adh').style.transition='stroke-dashoffset 1.4s ease';document.getElementById('adh').setAttribute('stroke-dashoffset',364*0.02);
+    document.querySelectorAll('#a1cChart .bar2').forEach(b=>b.style.height=b.dataset.h+'%');io2.disconnect();}})},{threshold:.3});
+  io2.observe(document.getElementById('a1c'));
+</script>
+</body>
+</html>

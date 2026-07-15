@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Site Safety Inspection, Lisa Reyes</title>
+<style>
+  :root {
+    --navy:   #1A2B4A;
+    --orange: #F47B20;
+    --steel:  #4A5C6A;
+    --light:  #F2F4F7;
+    --white:  #FFFFFF;
+    --green:  #227A3C;
+    --red:    #C03020;
+    --yellow: #FFC000;
+    --midgrey:#8A9AA8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--light);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── header ── */
+  header {
+    background: var(--navy);
+    border-bottom: 4px solid var(--orange);
+    padding: 0;
+  }
+  .header-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-left .co { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); }
+  .header-left h1  { font-size: 20px; font-weight: 700; color: var(--white); margin-top: 3px; }
+  .header-left .sub { font-size: 12px; color: var(--midgrey); margin-top: 3px; }
+  .header-right { text-align: right; }
+  .osha-badge {
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── layout ── */
+  .page { max-width: 980px; margin: 0 auto; padding: 28px 24px; }
+
+  /* ── section ── */
+  .form-section { background: var(--white); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 22px; overflow: hidden; }
+  .section-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header .sec-icon { font-size: 16px; }
+  .section-header .sec-title { font-size: 13px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+  .section-header .sec-num { margin-left: auto; font-size: 11px; color: var(--orange); font-weight: 700; }
+  .section-body { padding: 18px 20px; }
+
+  /* ── job info grid ── */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .info-field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--midgrey); margin-bottom: 5px; }
+  .info-field input, .info-field select, .info-field textarea {
+    width: 100%;
+    border: 1.5px solid #dce2e8;
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--navy);
+    background: var(--white);
+    font-family: inherit;
+    transition: border-color .2s;
+  }
+  .info-field input:focus, .info-field select:focus, .info-field textarea:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(244,123,32,.15);
+  }
+  .info-field textarea { resize: vertical; min-height: 70px; }
+  .info-field.span2 { grid-column: span 2; }
+  @media (max-width: 600px) { .info-field.span2 { grid-column: span 1; } }
+
+  /* ── checklist ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 700px) { .check-grid { grid-template-columns: 1fr; } }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--light);
+    border-right: 1px solid var(--light);
+    font-size: 13px;
+    transition: background .15s;
+  }
+  .check-item:hover { background: #fef9f4; }
+  .check-item:nth-child(even) { border-right: none; }
+  .check-options { display: flex; gap: 6px; flex-shrink: 0; }
+  .check-options label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .check-options input[type="radio"] { display: none; }
+  .check-options .radio-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #dce2e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .check-options input[type="radio"]:checked + .radio-btn {
+    border-color: currentColor;
+    background: currentColor;
+    color: #fff;
+  }
+  .check-options label.ok    { color: var(--green); }
+  .check-options label.fail  { color: var(--red); }
+  .check-options label.na    { color: var(--midgrey); }
+  .check-options label.ok   .radio-btn { border-color: var(--green); }
+  .check-options label.fail .radio-btn { border-color: var(--red); }
+  .check-options label.na   .radio-btn { border-color: var(--midgrey); }
+  .check-text { flex: 1; padding-top: 6px; color: var(--navy); line-height: 1.4; }
+  .check-text .ref { font-size: 10px; color: var(--midgrey); margin-top: 2px; }
+
+  /* ── incident table ── */
+  .incident-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .incident-table th {
+    background: var(--navy); color: var(--white);
+    text-align: left; padding: 9px 12px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: .7px;
+  }
+  .incident-table td { padding: 8px 12px; border-bottom: 1px solid var(--light); }
+  .incident-table input { border: none; border-bottom: 1.5px solid #dce2e8; width: 100%; padding: 4px 0; font-size: 12px; background: transparent; }
+  .incident-table input:focus { outline: none; border-bottom-color: var(--orange); }
+
+  /* ── signature strip ── */
+  .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 20px; }
+  @media (max-width: 600px) { .sig-row { grid-template-columns: 1fr; } }
+  .sig-block label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--midgrey); display: block; margin-bottom: 8px; }
+  .sig-block .sig-line { border-bottom: 2px solid var(--navy); height: 40px; margin-bottom: 6px; }
+  .sig-block .sig-meta { font-size: 11px; color: var(--midgrey); }
+
+  /* ── submit bar ── */
+  .submit-bar {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .submit-bar .status-msg { font-size: 13px; color: var(--steel); }
+  .btn-group { display: flex; gap: 10px; }
+  .btn {
+    padding: 10px 24px;
+    border-radius: 5px;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn-primary { background: var(--orange); color: var(--white); }
+  .btn-secondary { background: var(--light); color: var(--navy); border: 1.5px solid #dce2e8; }
+  .btn-danger { background: var(--red); color: var(--white); }
+
+  /* ── alert banner ── */
+  .alert {
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .alert-warn { background: #fff3cd; border-left: 4px solid var(--yellow); color: #664d00; }
+  .alert-info { background: #dce8f7; border-left: 4px solid var(--navy); color: var(--navy); }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* ── score display ── */
+  .score-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--light);
+  }
+  .score-card { text-align: center; }
+  .score-card .sc-val { font-size: 26px; font-weight: 800; color: var(--navy); }
+  .score-card .sc-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--midgrey); margin-top: 2px; }
+
+  footer {
+    background: var(--navy);
+    color: var(--midgrey);
+    text-align: center;
+    font-size: 11px;
+    padding: 14px;
+    border-top: 3px solid var(--orange);
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="co">Turner Construction &nbsp;·&nbsp; Newark Regional Office</div>
+      <h1>Daily Site Safety Inspection Form</h1>
+      <div class="sub">OSHA 29 CFR 1926 Compliance &nbsp;·&nbsp; Laborers' Local 472</div>
+    </div>
+    <div class="header-right">
+      <div class="osha-badge">⚠ OSHA 30 Certified</div>
+      <div style="font-size:11px; color:var(--midgrey); margin-top:6px;">Form Rev. 2.1 &nbsp;·&nbsp; Oct 2026</div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="alert alert-warn">
+    <div class="alert-icon">⚠</div>
+    <div>
+      <strong>Stop-Work Authority:</strong> Any crew member may call a stop-work for an unsafe condition without prior approval.
+      Report all near-misses and incidents to <strong>Lisa Reyes</strong> immediately. OSHA 8-hour verbal reporting rule applies to serious injuries.
+    </div>
+  </div>
+
+  <!-- Section 1, Job Info -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">📋</span>
+      <span class="sec-title">Job Information</span>
+      <span class="sec-num">Section 1</span>
+    </div>
+    <div class="section-body">
+      <div class="info-grid">
+        <div class="info-field">
+          <label>Project Name</label>
+          <select>
+            <option selected>Harrison 24-Unit Residential Build</option>
+            <option>Downtown Newark Retail Renovation</option>
+          </select>
+        </div>
+        <div class="info-field">
+          <label>Site Address</label>
+          <input type="text" value="330 Bergen Ave, Harrison, NJ">
+        </div>
+        <div class="info-field">
+          <label>Inspection Date</label>
+          <input type="date" value="2026-10-01">
+        </div>
+        <div class="info-field">
+          <label>Inspection Time</label>
+          <input type="time" value="06:00">
+        </div>
+        <div class="info-field">
+          <label>Foreman / Inspector</label>
+          <input type="text" value="Lisa Reyes">
+        </div>
+        <div class="info-field">
+          <label>Crew Lead</label>
+          <input type="text" value="Hector Vega">
+        </div>
+        <div class="info-field">
+          <label>Active Crew Count</label>
+          <input type="number" value="18" min="1">
+        </div>
+        <div class="info-field">
+          <label>Current Phase</label>
+          <select>
+            <option selected>Drywall &amp; Interior Finishing</option>
+            <option>MEP Rough-In</option>
+            <option>Framing</option>
+            <option>Concrete Pour</option>
+            <option>Foundation</option>
+            <option>Punch-List</option>
+          </select>
+        </div>
+        <div class="info-field">
+          <label>Weather Conditions</label>
+          <select>
+            <option selected>Clear / Dry, Full operations</option>
+            <option>Overcast, Full operations</option>
+            <option>Light rain, Monitor footing traction</option>
+            <option>Heavy rain, Restricted operations</option>
+            <option>Below 40°F, Heat blankets required</option>
+            <option>Wind &gt;25 mph, Elevated work restricted</option>
+            <option>Snow / Ice, Stop-work assessed</option>
+          </select>
+        </div>
+        <div class="info-field">
+          <label>Temperature (°F)</label>
+          <input type="number" value="58" min="-20" max="120">
+        </div>
+        <div class="info-field span2">
+          <label>Special Conditions / Notes for Today</label>
+          <textarea placeholder="Enter any site-specific notes, active deliveries, subcontractors on site, inspectors expected…">City framing inspection at 9:00 AM. Inspector: NJ Div of Building Safety. Ironbound Electric on site for sign-off prep.</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2, Fall Protection -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">🪝</span>
+      <span class="sec-title">Fall Protection &amp; Elevated Work</span>
+      <span class="sec-num">Section 2 &nbsp;·&nbsp; 29 CFR 1926.502</span>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp1" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp1" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp1" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            All workers above 6 ft elevation are wearing full-body harness with secured lanyard
+            <div class="ref">§1926.502(d)</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp2" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp2" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp2" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            Guardrails installed at all open-sided floor edges &gt;6 ft (42 in. top rail, 21 in. mid rail)
+            <div class="ref">§1926.502(b)</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp3" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp3" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp3" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            Floor holes and openings covered, marked, and secured against displacement
+            <div class="ref">§1926.502(j)</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp4" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp4" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp4" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            Ladder extends at least 3 ft above the landing point; secured top and bottom
+            <div class="ref">§1926.1053(b)(1)</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp5" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp5" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp5" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            Scaffolding erected on solid base; cross-braced; access ladder in place
+            <div class="ref">§1926.451</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="fp6" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="fp6" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="fp6" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">
+            Personal fall arrest anchor points rated 5,000 lb minimum; inspected this week
+            <div class="ref">§1926.502(d)(15)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3, PPE -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">🦺</span>
+      <span class="sec-title">Personal Protective Equipment</span>
+      <span class="sec-num">Section 3 &nbsp;·&nbsp; 29 CFR 1926.95</span>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe1" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe1" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe1" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">All workers wearing ANSI Z89.1 hard hats, no cracks or damage observed</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe2" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe2" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe2" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">High-visibility ANSI/ISEA 107 Class 2 vests worn in delivery and equipment zones</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe3" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe3" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe3" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Steel-toed boots (ASTM F2413), no open-toed footwear observed on site</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe4" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe4" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe4" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Hearing protection available and used near power tools and equipment (&gt;85 dB)</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe5" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe5" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe5" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Safety glasses / goggles worn during cutting, grinding, and overhead work</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="ppe6" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="ppe6" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="ppe6" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Respiratory protection (N95+) used during drywall dust and grinder operations</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4, Site Conditions -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">🏗️</span>
+      <span class="sec-title">Site Conditions &amp; Housekeeping</span>
+      <span class="sec-num">Section 4 &nbsp;·&nbsp; 29 CFR 1926.25</span>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc1" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc1" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc1" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Walking / working surfaces clear of debris, cords, and tripping hazards</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc2" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc2" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc2" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Waste and scrap materials removed daily; dumpster accessible and not overflowing</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc3" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc3" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc3" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Emergency exits and egress routes clearly marked and unobstructed</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc4" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc4" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc4" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Extension cords are rated for outdoor/construction use; no spliced or damaged cords</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc5" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc5" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc5" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">GFCI protection in use on all 120V temporary power circuits</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="sc6" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="sc6" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="sc6" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Site perimeter fencing and public exclusion barrier intact</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5, Emergency & First Aid -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">🚑</span>
+      <span class="sec-title">Emergency Preparedness &amp; First Aid</span>
+      <span class="sec-num">Section 5 &nbsp;·&nbsp; 29 CFR 1926.50</span>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em1" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em1" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em1" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">First-aid kit fully stocked and located at site trailer, verified today</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em2" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em2" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em2" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Eyewash station operational and within 10 sec travel of chemical / concrete work areas</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em3" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em3" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em3" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Emergency contact list posted at trailer: 911, L. Reyes, T. Rizzi 973-555-0412, H. Vega 908-555-0378</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em4" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em4" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em4" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Fire extinguisher (2A:10BC minimum) accessible within 100 ft of all work areas</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em5" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em5" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em5" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">Nearest hospital route posted: University Hospital, 150 Bergen St, Newark, 4.2 mi</div>
+        </div>
+
+        <div class="check-item">
+          <div class="check-options">
+            <label class="ok"><input type="radio" name="em6" value="ok"><div class="radio-btn">✓</div>OK</label>
+            <label class="fail"><input type="radio" name="em6" value="fail"><div class="radio-btn">✗</div>FAIL</label>
+            <label class="na"><input type="radio" name="em6" value="na"><div class="radio-btn">·</div>N/A</label>
+          </div>
+          <div class="check-text">OSHA 300 injury log current and accessible on site</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6, Deficiencies Observed -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">⚠️</span>
+      <span class="sec-title">Deficiencies Observed &amp; Corrective Actions</span>
+      <span class="sec-num">Section 6</span>
+    </div>
+    <div class="section-body">
+      <table class="incident-table">
+        <thead>
+          <tr>
+            <th style="width:50px;">#</th>
+            <th>Description of Hazard / Deficiency</th>
+            <th style="width:130px;">Location on Site</th>
+            <th style="width:130px;">Corrective Action</th>
+            <th style="width:100px;">Resolved By</th>
+            <th style="width:90px;">Target Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><input type="text" placeholder="Describe deficiency…"></td>
+            <td><input type="text" placeholder="Unit / floor / area"></td>
+            <td><input type="text" placeholder="Action taken"></td>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="date"></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><input type="text" placeholder="Describe deficiency…"></td>
+            <td><input type="text" placeholder="Unit / floor / area"></td>
+            <td><input type="text" placeholder="Action taken"></td>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="date"></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><input type="text" placeholder="Describe deficiency…"></td>
+            <td><input type="text" placeholder="Unit / floor / area"></td>
+            <td><input type="text" placeholder="Action taken"></td>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="date"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- score summary -->
+    <div class="score-strip">
+      <div class="score-card">
+        <div class="sc-val" id="score-ok" style="color:var(--green)">·</div>
+        <div class="sc-label">Items OK</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" id="score-fail" style="color:var(--red)">·</div>
+        <div class="sc-label">Failures</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" id="score-na" style="color:var(--midgrey)">·</div>
+        <div class="sc-label">N/A</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" id="score-total" style="color:var(--navy)">·</div>
+        <div class="sc-label">Total Checked</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7, Foreman Notes -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">📝</span>
+      <span class="sec-title">Foreman Notes</span>
+      <span class="sec-num">Section 7</span>
+    </div>
+    <div class="section-body">
+      <div class="info-field">
+        <label>General observations, crew notes, delivery issues, anything not captured above</label>
+        <textarea rows="4" placeholder="e.g. Hector coordinating with Eastern NJ Mechanical on Units 22-24 punch items. City inspector arriving at 9 AM. No incidents to report."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signatures -->
+  <div class="form-section">
+    <div class="section-header">
+      <span class="sec-icon">✍️</span>
+      <span class="sec-title">Signatures</span>
+      <span class="sec-num">Section 8</span>
+    </div>
+    <div class="sig-row">
+      <div class="sig-block">
+        <label>Foreman Signature</label>
+        <div class="sig-line"></div>
+        <div class="sig-meta">Lisa Reyes &nbsp;·&nbsp; Construction Foreman &nbsp;·&nbsp; OSHA 30 Cert. 2006</div>
+      </div>
+      <div class="sig-block">
+        <label>Crew Lead Acknowledgement</label>
+        <div class="sig-line"></div>
+        <div class="sig-meta">Hector Vega &nbsp;·&nbsp; Crew Lead &nbsp;·&nbsp; Date: __________________</div>
+      </div>
+      <div class="sig-block">
+        <label>Superintendent Review (if deficiency)</label>
+        <div class="sig-line"></div>
+        <div class="sig-meta">Tony Rizzi &nbsp;·&nbsp; Superintendent &nbsp;·&nbsp; Date: __________________</div>
+      </div>
+      <div class="sig-block">
+        <label>Inspection Date &amp; Time Completed</label>
+        <div style="margin-top:8px;">
+          <input type="datetime-local" style="border:1.5px solid #dce2e8; border-radius:5px; padding:8px 10px; font-size:13px; width:100%;" value="2026-10-01T06:45">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit bar -->
+  <div class="submit-bar">
+    <div class="status-msg" id="form-status">Complete all sections, then save or print this report.</div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+      <button class="btn btn-danger" id="btn-flag" onclick="flagStop()">🛑 Flag Stop-Work</button>
+      <button class="btn btn-primary" onclick="submitForm()">✔ Submit Inspection</button>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<footer>
+  Turner Construction &nbsp;·&nbsp; Harrison 24-Unit Residential Build &nbsp;·&nbsp; OSHA 29 CFR 1926 &nbsp;·&nbsp;
+  Laborers' Local 472 &nbsp;·&nbsp; Foreman: Lisa Reyes &nbsp;·&nbsp; Form Rev. 2.1 Oct 2026
+</footer>
+
+<script>
+  // live score counter
+  function updateScore() {
+    const ok   = document.querySelectorAll('input[type="radio"][value="ok"]:checked').length;
+    const fail = document.querySelectorAll('input[type="radio"][value="fail"]:checked').length;
+    const na   = document.querySelectorAll('input[type="radio"][value="na"]:checked').length;
+    document.getElementById('score-ok').textContent   = ok;
+    document.getElementById('score-fail').textContent = fail;
+    document.getElementById('score-na').textContent   = na;
+    document.getElementById('score-total').textContent = ok + fail + na;
+    if (fail > 0) {
+      document.getElementById('form-status').style.color = 'var(--red)';
+      document.getElementById('form-status').textContent =
+        fail + ' failure(s) recorded, corrective actions required before shift continues.';
+    } else {
+      document.getElementById('form-status').style.color = 'var(--steel)';
+      document.getElementById('form-status').textContent =
+        'Complete all sections, then save or print this report.';
+    }
+  }
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.addEventListener('change', updateScore));
+
+  function submitForm() {
+    const fail = document.querySelectorAll('input[type="radio"][value="fail"]:checked').length;
+    if (fail > 0) {
+      alert('⚠  ' + fail + ' failure(s) recorded.\nEnsure corrective actions are documented in Section 6 before submitting.\nSuperintendent Tony Rizzi must review failures.');
+    } else {
+      document.getElementById('form-status').textContent = '✔  Inspection submitted. Copy saved to Drive.';
+      document.getElementById('form-status').style.color = 'var(--green)';
+    }
+  }
+
+  function flagStop() {
+    const confirmed = confirm(
+      '🛑 STOP-WORK FLAG\n\n' +
+      'This will record a stop-work order and alert Tony Rizzi (973-555-0412).\n\n' +
+      'Confirm stop-work flag?'
+    );
+    if (confirmed) {
+      document.getElementById('form-status').textContent = '🛑 STOP-WORK FLAGGED, Notify Tony Rizzi immediately: 973-555-0412';
+      document.getElementById('form-status').style.color = 'var(--red)';
+      document.getElementById('btn-flag').style.background = '#7a0000';
+    }
+  }
+</script>
+
+</body>
+</html>
