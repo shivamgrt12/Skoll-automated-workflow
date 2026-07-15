@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seasonal Sourcing Board</title>
+<style>
+  :root{--bg:#faf7f0;--ink:#2a2620;--card:#ffffff;--olive:#5b6b3a;--rust:#b5612f;--blue:#3f6079;--gold:#c2962f;
+    --line:#e7e0d2;--mut:#8a8270}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Trebuchet MS','Segoe UI',sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--olive);color:#fdfbf4;padding:30px 28px}
+  header .wrap{max-width:1100px;margin:0 auto}
+  header h1{font-size:1.8rem;letter-spacing:.02em}
+  header p{opacity:.9;margin-top:6px;max-width:60ch}
+  .bar{background:#516032;color:#fdfbf4}
+  .bar .wrap{max-width:1100px;margin:0 auto;padding:14px 28px;display:flex;gap:22px;flex-wrap:wrap}
+  .bar .kpi b{font-size:1.3rem;color:var(--gold)}
+  .bar .kpi span{display:block;font-size:.75rem;opacity:.85}
+  main{max-width:1100px;margin:0 auto;padding:26px 28px 60px}
+  .toolbar{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;align-items:center}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 16px;border-radius:20px;cursor:pointer;
+    font-size:.88rem;transition:all .2s}
+  .chip:hover{border-color:var(--olive)}
+  .chip.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+  .srlabel{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  #search{padding:9px 16px;border:1px solid var(--line);border-radius:20px;font-family:inherit;font-size:.9rem;min-width:200px}
+  #search:focus{outline:2px solid var(--olive)}
+  .count{color:var(--mut);font-size:.85rem;margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
+    box-shadow:0 6px 16px rgba(42,38,32,.06);transition:transform .3s, box-shadow .3s;animation:pop .4s ease}
+  .card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(42,38,32,.12)}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+  .card .tag{display:inline-block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;padding:3px 10px;
+    border-radius:12px;color:#fff;margin-bottom:10px}
+  .t-produce{background:var(--olive)} .t-dairy{background:var(--gold)} .t-fish{background:var(--blue)}
+  .card h3{font-size:1.15rem;margin-bottom:4px}
+  .card .vendor{color:var(--rust);font-size:.85rem;font-weight:bold;margin-bottom:10px}
+  .card .meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mut);border-top:1px dashed var(--line);
+    padding-top:10px;margin-top:10px}
+  .card .price{color:var(--ink);font-weight:bold}
+  .card .note{font-size:.82rem;color:var(--mut);margin-top:8px;font-style:italic}
+  .season{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-top:34px}
+  .season h2{font-size:1.2rem;margin-bottom:16px}
+  .seasongrid{display:grid;grid-template-columns:120px repeat(4,1fr);gap:6px;font-size:.78rem}
+  .seasongrid .h{font-weight:bold;color:var(--mut);text-align:center;padding-bottom:6px}
+  .seasongrid .name{display:flex;align-items:center;color:var(--ink)}
+  .cell{height:26px;border-radius:6px;background:#eee9dc}
+  .cell.act{background:var(--olive)}
+  .empty{text-align:center;color:var(--mut);padding:40px;grid-column:1/-1}
+  footer{background:var(--ink);color:#cfc9ba;text-align:center;padding:22px;font-size:.82rem}
+  footer a{color:var(--gold);text-decoration:none}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}.seasongrid{grid-template-columns:90px repeat(4,1fr);font-size:.68rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Seasonal Sourcing Board</h1>
+  <p>My running list of who has what, when, and at what price. Planning tool for the Harborview line and the Rootstock menu.</p>
+</div></header>
+<div class="bar"><div class="wrap">
+  <div class="kpi"><b>3</b><span>core farm partners</span></div>
+  <div class="kpi"><b>Monthly</b><span>Hudson Valley runs</span></div>
+  <div class="kpi"><b>70%</b><span>target direct spend</span></div>
+  <div class="kpi"><b>Fall</b><span>current season</span></div>
+</div></div>
+
+<main>
+  <div class="toolbar">
+    <div class="filters" id="cat">
+      <button class="chip on" data-f="all">All</button>
+      <button class="chip" data-f="produce">Produce</button>
+      <button class="chip" data-f="dairy">Dairy</button>
+      <button class="chip" data-f="fish">Fish</button>
+    </div>
+    <label for="search" class="srlabel">Search ingredient or farm</label>
+    <input id="search" type="text" aria-label="Search ingredient or farm">
+  </div>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+
+  <div class="season">
+    <h2>When it is at its best</h2>
+    <div class="seasongrid">
+      <div class="h"></div><div class="h">Winter</div><div class="h">Spring</div><div class="h">Summer</div><div class="h">Fall</div>
+      <div class="name">Chicories</div><div class="cell act"></div><div class="cell"></div><div class="cell"></div><div class="cell act"></div>
+      <div class="name">Celery root</div><div class="cell act"></div><div class="cell"></div><div class="cell"></div><div class="cell act"></div>
+      <div class="name">Heirloom tomato</div><div class="cell"></div><div class="cell"></div><div class="cell act"></div><div class="cell"></div>
+      <div class="name">Apples</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell act"></div>
+      <div class="name">Diver scallops</div><div class="cell act"></div><div class="cell act"></div><div class="cell act"></div><div class="cell act"></div>
+      <div class="name">Burrata</div><div class="cell act"></div><div class="cell act"></div><div class="cell act"></div><div class="cell act"></div>
+    </div>
+  </div>
+</main>
+
+<footer>Maintained by Cynthia Thornton. Prices are indicative and confirmed with each farm by phone. <a href="mailto:cynthia.thornton@Finthesiss.ai">cynthia.thornton@Finthesiss.ai</a></footer>
+
+<script>
+  const items=[
+    {n:"Mixed chicories",v:"Greenfield Farm Market",c:"produce",r:"Hudson Valley",p:"$38 / case",note:"Radicchio, escarole, frisee."},
+    {n:"Celery root",v:"Greenfield Farm Market",c:"produce",r:"Hudson Valley",p:"$1.80 / lb",note:"For the scallop puree."},
+    {n:"Honeycrisp apples",v:"Greenfield Farm Market",c:"produce",r:"Hudson Valley",p:"$2.40 / lb",note:"Brunoise garnish, holds well."},
+    {n:"Fingerling potatoes",v:"Greenfield Farm Market",c:"produce",r:"Hudson Valley",p:"$1.95 / lb",note:"Roast whole."},
+    {n:"Heirloom carrots",v:"Greenfield Farm Market",c:"produce",r:"Hudson Valley",p:"$2.25 / lb",note:"Sweetest after first frost."},
+    {n:"Cultured butter",v:"Fontana Creamery",c:"dairy",r:"Red Hook",p:"$11 / lb",note:"The good butter, non-negotiable."},
+    {n:"Fresh ricotta",v:"Fontana Creamery",c:"dairy",r:"Red Hook",p:"$8.50 / lb",note:"Made to order, 48h notice."},
+    {n:"Aged provolone",v:"Fontana Creamery",c:"dairy",r:"Red Hook",p:"$14 / lb",note:"18 month, grate over pasta."},
+    {n:"Burrata",v:"Fontana Creamery",c:"dairy",r:"Red Hook",p:"$12.50 / lb",note:"Order day-of service only."},
+    {n:"Diver scallops U10",v:"Fulton Fish Market",c:"fish",r:"NYC",p:"$24 / lb",note:"Dry-pack only, call by 2 AM."},
+    {n:"Day-boat cod",v:"Fulton Fish Market",c:"fish",r:"NYC",p:"$13.50 / lb",note:"Ask what came in."},
+    {n:"Black sea bass",v:"Fulton Fish Market",c:"fish",r:"NYC",p:"$16 / lb",note:"Whole, scaled."}
+  ];
+  let filter="all", q="";
+  const grid=document.getElementById('grid'), count=document.getElementById('count');
+  function render(){
+    const list=items.filter(i=>(filter==="all"||i.c===filter) &&
+      (i.n.toLowerCase().includes(q)||i.v.toLowerCase().includes(q)));
+    grid.innerHTML = list.length? list.map(i=>`
+      <div class="card">
+        <span class="tag t-${i.c}">${i.c}</span>
+        <h3>${i.n}</h3>
+        <div class="vendor">${i.v}</div>
+        <div class="note">${i.note}</div>
+        <div class="meta"><span>${i.r}</span><span class="price">${i.p}</span></div>
+      </div>`).join('') : '<div class="empty">Nothing matches that yet. Try another search.</div>';
+    count.textContent=list.length+" of "+items.length+" ingredients shown";
+  }
+  document.getElementById('cat').addEventListener('click',e=>{
+    if(!e.target.dataset.f)return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    e.target.classList.add('on'); filter=e.target.dataset.f; render();
+  });
+  document.getElementById('search').addEventListener('input',e=>{q=e.target.value.toLowerCase().trim();render();});
+  render();
+</script>
+</body>
+</html>

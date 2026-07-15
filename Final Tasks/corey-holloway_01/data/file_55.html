@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ride Log Dashboard</title>
+<style>
+  :root{
+    --bg:#fff7ed; --ink:#431407; --card:#ffffff; --orange:#ea580c; --amber:#f59e0b;
+    --green:#15803d; --sub:#9a3412; --line:#fed7aa; --shadow:0 10px 30px rgba(67,20,7,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{position:sticky;top:0;z-index:20;background:rgba(234,88,12,.97);color:#fff;
+    padding:14px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .ring{width:26px;height:26px;border:4px solid #fff;border-top-color:var(--amber);border-radius:50%;
+    animation:spin 3.5s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  nav a{color:#ffedd5;text-decoration:none;margin-left:22px;font-size:.92rem;font-weight:600;transition:color .2s}
+  nav a:hover{color:#fff}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+  .hero{margin:18px 0 26px}
+  .hero h1{font-size:2rem;margin-bottom:6px}
+  .hero p{color:var(--sub);font-size:1rem}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+  .kpi{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);
+    position:relative;overflow:hidden;opacity:0;transform:translateY(14px);animation:rise .6s ease forwards}
+  .kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.16s}.kpi:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .v{font-size:1.9rem;font-weight:800;color:var(--orange)}
+  .kpi .l{font-size:.8rem;color:var(--sub);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+  .kpi .bar{position:absolute;left:0;top:0;height:5px;width:100%;background:var(--amber)}
+  .panel{background:var(--card);border-radius:18px;padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
+  .panel h2{font-size:1.2rem;margin-bottom:4px}
+  .panel .cap{color:var(--sub);font-size:.88rem;margin-bottom:16px}
+  .filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  .filters button{border:0;background:var(--line);color:var(--sub);padding:9px 16px;border-radius:999px;
+    font-weight:700;cursor:pointer;font-size:.85rem;transition:all .2s}
+  .filters button:hover{transform:translateY(-2px)}
+  .filters button.active{background:var(--orange);color:#fff;box-shadow:0 6px 16px rgba(234,88,12,.35)}
+  svg{width:100%;height:auto;display:block}
+  .bargrid line{stroke:#f1e3d4;stroke-width:1}
+  .barlabel{font-size:11px;fill:var(--sub)}
+  .twocol{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+  .routes{list-style:none}
+  .routes li{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);
+    opacity:0;animation:rise .5s ease forwards}
+  .routes li span.r{font-weight:700}
+  .routes li span.d{color:var(--sub)}
+  footer{background:#431407;color:#ffedd5;text-align:center;padding:26px 20px;font-size:.85rem}
+  footer strong{color:#fff}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="ring"></span> Ride Log</div>
+  <nav>
+    <a href="#summary">Summary</a>
+    <a href="#volume">Volume</a>
+    <a href="#routes">Routes</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <section class="hero" id="summary">
+    <h1>Training Dashboard</h1>
+    <p>A rolling view of the last training block on the American River and Folsom Lake routes.</p>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi"><div class="bar"></div><div class="v" data-count="612" data-suffix=" mi">0</div><div class="l">Miles this block</div></div>
+    <div class="kpi"><div class="bar"></div><div class="v" data-count="24" data-suffix="">0</div><div class="l">Rides logged</div></div>
+    <div class="kpi"><div class="bar"></div><div class="v" data-count="18400" data-suffix=" ft">0</div><div class="l">Total climbing</div></div>
+    <div class="kpi"><div class="bar"></div><div class="v" data-count="17" data-suffix=" mph">0</div><div class="l">Average speed</div></div>
+  </section>
+
+  <section class="panel" id="volume">
+    <h2>Weekly Volume</h2>
+    <div class="cap">Switch the metric to compare across the block.</div>
+    <div class="filters" id="metricFilters">
+      <button class="active" data-metric="miles">Miles</button>
+      <button data-metric="climb">Climbing</button>
+      <button data-metric="hours">Hours</button>
+    </div>
+    <svg id="chart" viewBox="0 0 720 300" role="img" aria-label="Weekly volume chart"></svg>
+  </section>
+
+  <section class="twocol">
+    <div class="panel" id="routes">
+      <h2>Recent Routes</h2>
+      <div class="cap">Most ridden segments this block.</div>
+      <ul class="routes" id="routeList"></ul>
+    </div>
+    <div class="panel">
+      <h2>Time in Zone</h2>
+      <div class="cap">Where the hours went.</div>
+      <svg id="donut" viewBox="0 0 220 220" role="img" aria-label="Time in zone donut chart"></svg>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <strong>Corey Holloway</strong> &middot; Personal cycling log &middot; Folsom, California<br>
+  Tracked for training load only. Updated January 2026.
+</footer>
+
+<script>
+  // animated count-up for KPI cards
+  function countUp(el){
+    var target=+el.dataset.count, suffix=el.dataset.suffix||"", start=null, dur=1100;
+    function step(ts){
+      if(!start) start=ts;
+      var p=Math.min((ts-start)/dur,1);
+      var val=Math.floor(p*target*(2-p)); // ease-out
+      el.textContent=val.toLocaleString()+suffix;
+      if(p<1) requestAnimationFrame(step); else el.textContent=target.toLocaleString()+suffix;
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('.kpi .v').forEach(countUp);
+
+  // weekly volume data
+  var weeks=['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6'];
+  var data={miles:[95,110,120,80,135,150],climb:[2800,3300,3600,2100,4200,4800],hours:[6.5,7.4,8.1,5.2,9.0,10.1]};
+  var colors={miles:'#ea580c',climb:'#f59e0b',hours:'#15803d'};
+  var current='miles';
+
+  function drawBars(metric){
+    var vals=data[metric], max=Math.max.apply(null,vals);
+    var W=720,H=300,pad=40,bw=70,gap=(W-pad*2-bw*vals.length)/(vals.length-1);
+    var svg='';
+    for(var g=0;g<=4;g++){var y=pad+ (H-pad*2)*g/4; svg+='<line class="bargrid" x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'"/>';}
+    vals.forEach(function(v,i){
+      var bh=(H-pad*2)*(v/max);
+      var x=pad+i*(bw+gap), y=H-pad-bh;
+      svg+='<rect x="'+x+'" y="'+(H-pad)+'" width="'+bw+'" height="0" rx="8" fill="'+colors[metric]+'">'
+         +'<animate attributeName="height" from="0" to="'+bh+'" dur="0.7s" fill="freeze" begin="'+(i*0.06)+'s"/>'
+         +'<animate attributeName="y" from="'+(H-pad)+'" to="'+y+'" dur="0.7s" fill="freeze" begin="'+(i*0.06)+'s"/></rect>';
+      svg+='<text class="barlabel" x="'+(x+bw/2)+'" y="'+(H-pad+18)+'" text-anchor="middle">'+weeks[i]+'</text>';
+      svg+='<text class="barlabel" x="'+(x+bw/2)+'" y="'+(y-8)+'" text-anchor="middle" font-weight="700" fill="'+colors[metric]+'">'+v.toLocaleString()+'</text>';
+    });
+    document.getElementById('chart').innerHTML=svg;
+  }
+  drawBars(current);
+
+  document.getElementById('metricFilters').addEventListener('click',function(e){
+    if(e.target.tagName!=='BUTTON')return;
+    this.querySelectorAll('button').forEach(function(b){b.classList.remove('active')});
+    e.target.classList.add('active');
+    current=e.target.dataset.metric;
+    drawBars(current);
+  });
+
+  // routes list
+  var routes=[['American River Parkway South','78.6 mi'],['Folsom Lake Loop','61.0 mi'],
+    ['Green Valley climb','48.7 mi'],['Lake Natoma circuit','50.2 mi'],['Salmon Falls out and back','72.1 mi']];
+  var rl=document.getElementById('routeList');
+  routes.forEach(function(r,i){
+    var li=document.createElement('li');
+    li.style.animationDelay=(i*0.07)+'s';
+    li.innerHTML='<span class="r">'+r[0]+'</span><span class="d">'+r[1]+'</span>';
+    rl.appendChild(li);
+  });
+
+  // donut chart
+  var zones=[['Endurance',58,'#ea580c'],['Tempo',20,'#f59e0b'],['Threshold',12,'#15803d'],['Recovery',10,'#fed7aa']];
+  (function(){
+    var cx=110,cy=110,r=78,circ=2*Math.PI*r,off=0,svg='';
+    zones.forEach(function(z){
+      var len=circ*z[1]/100;
+      svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+z[2]+'" stroke-width="26" '
+        +'stroke-dasharray="'+len+' '+(circ-len)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 '+cx+' '+cy+')">'
+        +'<animate attributeName="stroke-dasharray" from="0 '+circ+'" to="'+len+' '+(circ-len)+'" dur="0.9s" fill="freeze"/></circle>';
+      off+=len;
+    });
+    svg+='<text x="110" y="104" text-anchor="middle" font-size="26" font-weight="800" fill="#431407">29</text>';
+    svg+='<text x="110" y="126" text-anchor="middle" font-size="12" fill="#9a3412">hours</text>';
+    document.getElementById('donut').innerHTML=svg;
+  })();
+</script>
+</body>
+</html>

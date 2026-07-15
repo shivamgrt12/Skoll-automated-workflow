@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow-out Hall A Monitor</title>
+<style>
+  :root{--bg:#12141a;--panel:#1b2029;--panel2:#222936;--cyan:#36c9c9;--lime:#8bd450;
+    --amber:#e7a63c;--red:#e25b5b;--light:#e8ecf0;--grey:#8a94a0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--light)}
+  header.app{padding:22px 26px;background:linear-gradient(120deg,#11161f,#1d2530);
+    border-bottom:2px solid var(--cyan);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center}
+  header.app h1{font-size:24px;font-weight:600}
+  header.app h1 span{color:var(--cyan)}
+  header.app .who{color:var(--grey);font-size:13px;text-align:right}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;padding:18px 26px;background:var(--panel2)}
+  .controls label{font-size:13px;color:var(--grey);display:flex;flex-direction:column;gap:5px}
+  select,input[type=range]{background:var(--panel);color:var(--light);border:1px solid #313a47;
+    border-radius:7px;padding:8px 10px;font-size:14px;font-family:inherit}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:20px;
+    background:var(--panel);font-size:13px}
+  .dot{width:10px;height:10px;border-radius:50%;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  main{padding:22px 26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .tile{background:var(--panel);border-radius:14px;padding:20px;border-top:4px solid var(--cyan);
+    transition:transform .2s}
+  .tile:hover{transform:translateY(-4px)}
+  .tile .k{font-size:13px;color:var(--grey);text-transform:uppercase;letter-spacing:1px}
+  .tile .v{font-size:38px;font-weight:700;margin:6px 0}
+  .tile .band{font-size:12px;color:var(--grey)}
+  .chartwrap{grid-column:1/-1;background:var(--panel);border-radius:14px;padding:20px}
+  .chartwrap h2{font-size:18px;margin-bottom:6px}
+  .chartwrap p{color:var(--grey);font-size:13px;margin-bottom:12px}
+  canvas{width:100%;height:260px;display:block}
+  footer.app{padding:22px 26px;color:var(--grey);font-size:13px;border-top:1px solid #2a323e;text-align:center}
+  footer.app b{color:var(--cyan)}
+  .ok{background:var(--lime)}.warn{background:var(--amber)}.bad{background:var(--red)}
+  @media(max-width:560px){.tile .v{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>Grow-out Hall <span>A</span> Monitor</h1>
+  <div class="who">Bayshore Sustainable Aquaculture<br>Anthony Cross &middot; readings at 05:00 Central</div>
+</header>
+<div class="controls">
+  <label>Tank
+    <select id="tank">
+      <option value="0">Tank 1</option>
+      <option value="1">Tank 2</option>
+      <option value="2">Tank 3</option>
+    </select>
+  </label>
+  <label>Window
+    <select id="win">
+      <option value="14">Last 14 days</option>
+      <option value="7">Last 7 days</option>
+      <option value="30" selected>Full month, January 2026</option>
+    </select>
+  </label>
+  <label>Day in view: <b id="dayLabel">31</b>
+    <input type="range" id="day" min="1" max="31" value="31">
+  </label>
+  <span class="pill" id="statusPill"><span class="dot ok"></span><span id="statusTxt">All bands nominal</span></span>
+</div>
+<main>
+  <div class="tile" style="border-top-color:var(--cyan)">
+    <div class="k">Temperature</div><div class="v" id="t_temp">0</div><div class="band">target 28 to 30 C</div>
+  </div>
+  <div class="tile" style="border-top-color:var(--lime)">
+    <div class="k">Dissolved oxygen</div><div class="v" id="t_do">0</div><div class="band">target 6.0 to 7.5 mg/L</div>
+  </div>
+  <div class="tile" style="border-top-color:var(--amber)">
+    <div class="k">pH</div><div class="v" id="t_ph">0</div><div class="band">target 7.6 to 8.2</div>
+  </div>
+  <div class="tile" style="border-top-color:#7aa0ff">
+    <div class="k">Salinity</div><div class="v" id="t_sal">0</div><div class="band">target 17 to 21 ppt</div>
+  </div>
+  <div class="chartwrap">
+    <h2>Temperature trend</h2>
+    <p>Dawn reading across the selected window. Action point above 31 C.</p>
+    <canvas id="lineC" width="900" height="260"></canvas>
+  </div>
+  <div class="chartwrap">
+    <h2>Latest reading versus band</h2>
+    <p>How the selected day sits inside each target band.</p>
+    <canvas id="barC" width="900" height="260"></canvas>
+  </div>
+</main>
+<footer class="app">
+  <p><b>Bayshore Sustainable Aquaculture</b> &middot; Grow-out Hall A &middot; Clear Lake Shores, Texas</p>
+  <p>Copyright 2026 &middot; Anthony Cross &middot; anthony.cross@Greenridertech.co</p>
+</footer>
+<script>
+  // Synthetic but plausible January 2026 series per tank (31 days)
+  function gen(seed){
+    var a=[],x=seed;
+    for(var i=0;i<31;i++){
+      x=(x*9301+49297)%233280; var r=x/233280;
+      a.push({
+        temp:+(28.5+r*1.6).toFixed(1),
+        ox:+(5.6+r*1.6).toFixed(1),
+        ph:+(7.65+r*0.55).toFixed(2),
+        sal:+(17.5+r*3.5).toFixed(1)
+      });
+    }
+    return a;
+  }
+  var data=[gen(11),gen(29),gen(53)];
+  var tank=0, dayIdx=30, winSize=30;
+
+  function cur(){return data[tank][dayIdx];}
+
+  function setTiles(){
+    var c=cur();
+    document.getElementById('t_temp').textContent=c.temp+' C';
+    document.getElementById('t_do').textContent=c.ox+' mg/L';
+    document.getElementById('t_ph').textContent=c.ph;
+    document.getElementById('t_sal').textContent=c.sal+' ppt';
+    var ok=c.temp<=30.0&&c.temp>=28&&c.ox>=6&&c.ph>=7.6&&c.ph<=8.2&&c.sal>=17&&c.sal<=21;
+    var warn=c.temp>30||c.ox<6||c.ph<7.6;
+    var pill=document.getElementById('statusPill'),dot=pill.querySelector('.dot'),
+        txt=document.getElementById('statusTxt');
+    dot.className='dot '+(ok?'ok':(warn?'warn':'bad'));
+    txt.textContent=ok?'All bands nominal':(warn?'Watch a parameter':'Action point');
+  }
+
+  function drawLine(){
+    var cv=document.getElementById('lineC'),x=cv.getContext('2d'),W=cv.width,H=cv.height;
+    x.clearRect(0,0,W,H);
+    var start=Math.max(0,dayIdx-winSize+1),pts=data[tank].slice(start,dayIdx+1).map(function(d){return d.temp;});
+    var lo=27.5,hi=31.5,pad=40;
+    x.strokeStyle='#2c3543';x.lineWidth=1;
+    for(var g=0;g<=4;g++){var yy=pad+(H-2*pad)*g/4;x.beginPath();x.moveTo(pad,yy);x.lineTo(W-10,yy);x.stroke();
+      x.fillStyle='#8a94a0';x.font='12px Segoe UI';x.fillText((hi-(hi-lo)*g/4).toFixed(1),4,yy+4);}
+    // action line at 31
+    var ay=pad+(H-2*pad)*(hi-31)/(hi-lo);
+    x.strokeStyle='#e25b5b';x.setLineDash([5,4]);x.beginPath();x.moveTo(pad,ay);x.lineTo(W-10,ay);x.stroke();x.setLineDash([]);
+    x.beginPath();x.strokeStyle='#36c9c9';x.lineWidth=2.5;
+    pts.forEach(function(v,i){
+      var px=pad+(W-pad-10)*(pts.length<2?0:i/(pts.length-1));
+      var py=pad+(H-2*pad)*(hi-v)/(hi-lo);
+      if(i===0)x.moveTo(px,py);else x.lineTo(px,py);
+    });
+    x.stroke();
+    x.fillStyle='#8bd450';
+    pts.forEach(function(v,i){
+      var px=pad+(W-pad-10)*(pts.length<2?0:i/(pts.length-1));
+      var py=pad+(H-2*pad)*(hi-v)/(hi-lo);
+      x.beginPath();x.arc(px,py,3,0,7);x.fill();
+    });
+  }
+
+  function drawBar(){
+    var cv=document.getElementById('barC'),x=cv.getContext('2d'),W=cv.width,H=cv.height;
+    x.clearRect(0,0,W,H);
+    var c=cur();
+    var rows=[
+      {n:'Temp',v:c.temp,lo:28,hi:30,col:'#36c9c9'},
+      {n:'Oxygen',v:c.ox,lo:6,hi:7.5,col:'#8bd450'},
+      {n:'pH',v:c.ph,lo:7.6,hi:8.2,col:'#e7a63c'},
+      {n:'Salinity',v:c.sal,lo:17,hi:21,col:'#7aa0ff'}
+    ];
+    var bw=140,gap=60,base=H-40,top=30;
+    rows.forEach(function(r,i){
+      var bx=50+i*(bw+gap);
+      var frac=(r.v-r.lo)/(r.hi-r.lo); if(frac<0)frac=0; if(frac>1.15)frac=1.15;
+      var bh=(base-top)*Math.min(frac,1.1);
+      // band shade
+      x.fillStyle='rgba(255,255,255,.06)';x.fillRect(bx,top,bw,base-top);
+      x.fillStyle=r.col;x.fillRect(bx,base-bh,bw,bh);
+      x.fillStyle='#e8ecf0';x.font='14px Segoe UI';x.textAlign='center';
+      x.fillText(r.v,bx+bw/2,base-bh-8);
+      x.fillStyle='#8a94a0';x.fillText(r.n,bx+bw/2,base+20);
+      x.textAlign='left';
+    });
+  }
+
+  function refresh(){setTiles();drawLine();drawBar();}
+
+  document.getElementById('tank').addEventListener('change',function(e){tank=+e.target.value;refresh();});
+  document.getElementById('win').addEventListener('change',function(e){winSize=+e.target.value;refresh();});
+  document.getElementById('day').addEventListener('input',function(e){
+    dayIdx=+e.target.value-1;document.getElementById('dayLabel').textContent=e.target.value;refresh();
+  });
+  refresh();
+</script>
+</body>
+</html>

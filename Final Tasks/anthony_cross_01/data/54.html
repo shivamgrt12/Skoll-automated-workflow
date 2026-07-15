@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Order Form</title>
+<style>
+  :root{--bg:#eaf6ef;--teal:#127a6e;--deep:#0c4a44;--green:#2e9e5b;--lime:#9ad15b;
+    --ink:#16271f;--paper:#ffffff;--soft:#d7ece1;--warn:#c0492f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Trebuchet MS',Verdana,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header.f{background:linear-gradient(135deg,var(--deep),var(--teal));color:#eafaf2;padding:34px 26px}
+  header.f .wrap{max-width:860px;margin:0 auto}
+  header.f h1{font-size:30px;animation:drop .7s ease both}
+  header.f p{color:#bfe6d6;margin-top:6px}
+  @keyframes drop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+  main{max-width:860px;margin:26px auto;padding:0 26px 50px}
+  form{background:var(--paper);border-radius:14px;padding:26px;box-shadow:0 6px 18px rgba(12,74,68,.12)}
+  fieldset{border:1px solid var(--soft);border-radius:10px;padding:18px;margin-bottom:22px}
+  legend{color:var(--teal);font-weight:bold;padding:0 8px;font-size:16px}
+  label{display:block;font-size:14px;margin:12px 0 5px;color:var(--deep);font-weight:bold}
+  input,select,textarea{width:100%;padding:11px;border:1px solid #c4ddd0;border-radius:8px;
+    font-family:inherit;font-size:15px;transition:border .2s,box-shadow .2s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(46,158,91,.18)}
+  .two{display:flex;gap:16px;flex-wrap:wrap}
+  .two>div{flex:1;min-width:200px}
+  .line{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;padding:12px;border-radius:8px;background:#f4fbf7;margin-bottom:10px}
+  .line>div{flex:1;min-width:120px}
+  .err{color:var(--warn);font-size:13px;margin-top:4px;display:none}
+  .err.show{display:block}
+  .totals{background:var(--deep);color:#eafaf2;border-radius:10px;padding:18px;margin-top:10px}
+  .totals .grand{font-size:26px;font-weight:bold;color:var(--lime)}
+  button{background:var(--green);color:#fff;border:none;padding:14px 26px;border-radius:9px;
+    font-size:16px;font-family:inherit;cursor:pointer;transition:transform .15s,background .2s}
+  button:hover{background:var(--teal);transform:translateY(-2px)}
+  .ok{background:#e3f6ea;border:1px solid var(--green);color:var(--deep);border-radius:10px;
+    padding:16px;margin-top:18px;display:none;animation:pop .4s ease both}
+  .ok.show{display:block}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  footer.f{background:var(--deep);color:#bfe6d6;text-align:center;padding:24px;font-size:13px}
+  footer.f a{color:var(--lime);text-decoration:none}
+  @media(max-width:560px){header.f h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="f">
+  <div class="wrap">
+    <h1>Weekly Order Form</h1>
+    <p>Bayshore Sustainable Aquaculture &middot; confirm counts by Friday afternoon for Saturday delivery before ten</p>
+  </div>
+</header>
+<main>
+  <form id="orderForm" novalidate>
+    <fieldset>
+      <legend>Account</legend>
+      <div class="two">
+        <div>
+          <label for="acct">Restaurant account</label>
+          <select id="acct">
+            <option value="">Choose an account</option>
+            <option>The Boathouse</option>
+            <option>Bayou Reef Kitchen</option>
+            <option>Pelican Station Oyster Bar</option>
+            <option>Strand House Raw Bar</option>
+            <option>Clear Creek Fish Co.</option>
+          </select>
+          <div class="err" id="e_acct">Pick the account placing the order.</div>
+        </div>
+        <div>
+          <label for="email">Confirmation email</label>
+          <input type="text" id="email">
+          <div class="err" id="e_email">Enter a valid email so the confirmation lands.</div>
+        </div>
+      </div>
+      <label for="day">Delivery Saturday</label>
+      <select id="day">
+        <option>Saturday, February 14, 2026</option>
+        <option>Saturday, February 21, 2026</option>
+        <option>Saturday, February 28, 2026</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
+      <legend>Order Lines</legend>
+      <div class="line">
+        <div><label>Select oysters, each at 0.85</label><input type="number" id="q_sel" min="0" value="0"></div>
+        <div><label>Standard oysters, each at 0.62</label><input type="number" id="q_std" min="0" value="0"></div>
+      </div>
+      <div class="line">
+        <div><label>Shrimp pounds, 16 to 20 count, at 11.50</label><input type="number" id="q_shr" min="0" value="0"></div>
+        <div><label>Note for the order</label><input type="text" id="note"></div>
+      </div>
+      <div class="err" id="e_qty">Enter at least one item before you send.</div>
+      <div class="totals">
+        <div>Select oysters: <span id="t_sel">0.00</span></div>
+        <div>Standard oysters: <span id="t_std">0.00</span></div>
+        <div>Shrimp: <span id="t_shr">0.00</span></div>
+        <div style="margin-top:8px">Order total: <span class="grand" id="t_grand">0.00</span></div>
+      </div>
+    </fieldset>
+
+    <button type="submit">Send order to Bayshore</button>
+    <div class="ok" id="okBox"></div>
+  </form>
+</main>
+<footer class="f">
+  <p>Bayshore Sustainable Aquaculture, LLC &middot; Anthony Cross, Operations &middot; Clear Lake Shores, Texas</p>
+  <p>Copyright 2026 &middot; <a href="mailto:anthony.cross@Greenridertech.co">anthony.cross@Greenridertech.co</a></p>
+</footer>
+<script>
+  var P={sel:0.85,std:0.62,shr:11.50};
+  function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)||v<0?0:v;}
+  function money(n){return n.toFixed(2);}
+  function recalc(){
+    var s=num('q_sel')*P.sel, d=num('q_std')*P.std, h=num('q_shr')*P.shr;
+    document.getElementById('t_sel').textContent=money(s);
+    document.getElementById('t_std').textContent=money(d);
+    document.getElementById('t_shr').textContent=money(h);
+    document.getElementById('t_grand').textContent=money(s+d+h);
+    return s+d+h;
+  }
+  ['q_sel','q_std','q_shr'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',recalc);
+  });
+  recalc();
+
+  function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+
+  document.getElementById('orderForm').addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var ok=true;
+    var acct=document.getElementById('acct').value;
+    var email=document.getElementById('email').value.trim();
+    var qty=num('q_sel')+num('q_std')+num('q_shr');
+    document.getElementById('e_acct').classList.toggle('show',!acct); if(!acct)ok=false;
+    document.getElementById('e_email').classList.toggle('show',!validEmail(email)); if(!validEmail(email))ok=false;
+    document.getElementById('e_qty').classList.toggle('show',qty<=0); if(qty<=0)ok=false;
+    var box=document.getElementById('okBox');
+    if(ok){
+      var total=recalc();
+      box.innerHTML='Order received for <b>'+acct+'</b>. Total of '+money(total)+
+        ' held for '+document.getElementById('day').value+'. A confirmation will go to '+email+
+        '. Counts lock Friday afternoon.';
+      box.classList.add('show');
+      box.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }else{
+      box.classList.remove('show');
+    }
+  });
+</script>
+</body>
+</html>

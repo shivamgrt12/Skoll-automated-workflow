@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasting Menu Builder</title>
+<style>
+  :root{--bg:#1a1416;--panel:#241a1d;--line:#3a2a2f;--wine:#7e2c44;--blush:#c98aa0;--gold:#caa24c;--cream:#f3e9e3;--mut:#a98f97}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Georgia,serif;background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+  header{padding:26px 28px;border-bottom:1px solid var(--line);text-align:center}
+  header h1{font-size:1.7rem;letter-spacing:.05em}
+  header h1 b{color:var(--gold)}
+  header p{color:var(--mut);margin-top:6px;font-size:.95rem}
+  main{flex:1;max-width:1080px;margin:0 auto;padding:26px;display:grid;grid-template-columns:1.5fr 1fr;gap:26px;width:100%}
+  .col h2{font-size:1.15rem;margin-bottom:6px}
+  .col .sub{color:var(--mut);font-size:.85rem;margin-bottom:18px}
+  .toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .btn{background:var(--panel);border:1px solid var(--line);color:var(--mut);padding:7px 14px;border-radius:18px;cursor:pointer;font-family:inherit;font-size:.82rem;transition:all .2s}
+  .btn.on,.btn:hover{border-color:var(--gold);color:var(--gold)}
+  .dish{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px;
+    display:flex;justify-content:space-between;align-items:center;gap:14px;cursor:pointer;transition:all .25s}
+  .dish:hover{border-color:var(--wine)}
+  .dish.sel{border-color:var(--gold);background:#2c2024;box-shadow:0 6px 18px rgba(126,44,68,.25)}
+  .dish .info h3{font-size:1.05rem}
+  .dish .info .course{font-size:.72rem;color:var(--blush);text-transform:uppercase;letter-spacing:.08em}
+  .dish .info p{font-size:.82rem;color:var(--mut);margin-top:4px}
+  .dish .right{text-align:right;white-space:nowrap}
+  .dish .right .cost{color:var(--gold);font-weight:bold}
+  .dish .right .add{font-size:.75rem;color:var(--mut);margin-top:4px}
+  .dish.sel .add{color:var(--gold)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;position:sticky;top:20px}
+  .big{font-size:2.6rem;font-weight:bold;color:var(--gold);text-align:center;transition:all .4s}
+  .biglab{text-align:center;color:var(--mut);font-size:.82rem;margin-bottom:20px}
+  .meter{background:var(--bg);border-radius:8px;height:16px;overflow:hidden;margin:6px 0 4px}
+  .meter .fill{height:100%;width:0;border-radius:8px;transition:width .6s ease, background .4s}
+  .line-item{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+  .line-item:last-child{border:none}
+  .line-item .k{color:var(--mut)}
+  .selected-list{margin-top:18px;min-height:30px}
+  .selected-list .si{font-size:.85rem;padding:6px 0;color:var(--blush);border-bottom:1px dashed var(--line)}
+  .selected-list .none{color:var(--mut);font-style:italic;font-size:.85rem}
+  .save{width:100%;background:var(--wine);color:#fff;border:none;padding:13px;border-radius:10px;font-family:inherit;font-size:1rem;cursor:pointer;margin-top:18px;transition:background .25s}
+  .save:hover{background:#9a3a56}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#2a1a1a;
+    padding:14px 26px;border-radius:30px;font-weight:bold;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:all .4s}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  footer{text-align:center;color:var(--mut);font-size:.8rem;padding:20px;border-top:1px solid var(--line)}
+  @media(max-width:840px){main{grid-template-columns:1fr}.panel{position:static}}
+</style>
+</head>
+<body>
+<header>
+  <h1>ROOTSTOCK <b>Tasting Menu Builder</b></h1>
+  <p>A working tool for designing the five-course progression. Pick dishes, watch the cost and pricing update.</p>
+</header>
+
+<main>
+  <div class="col">
+    <h2>Candidate dishes</h2>
+    <div class="sub">From the home test kitchen log. Tap to add or remove from the tasting.</div>
+    <div class="toolbar" id="filters">
+      <button class="btn on" data-f="all">All courses</button>
+      <button class="btn" data-f="Opener">Openers</button>
+      <button class="btn" data-f="Pasta">Pasta</button>
+      <button class="btn" data-f="Main">Mains</button>
+      <button class="btn" data-f="Sweet">Sweet</button>
+    </div>
+    <div id="dishes"></div>
+  </div>
+
+  <div class="col">
+    <div class="panel">
+      <h2>Menu summary</h2>
+      <div class="sub">Five courses recommended at 95 dollars.</div>
+      <div class="big" id="price">$0</div>
+      <div class="biglab">suggested tasting price</div>
+
+      <div class="line-item"><span class="k">Courses selected</span><span id="ncount">0</span></div>
+      <div class="line-item"><span class="k">Total plate cost</span><span id="cost">$0.00</span></div>
+      <div class="line-item"><span class="k">Food cost</span><span id="fc">0%</span></div>
+
+      <div style="margin-top:14px">
+        <div class="sub" style="margin:0 0 4px">Food cost vs 30 percent target</div>
+        <div class="meter"><div class="fill" id="fcbar"></div></div>
+      </div>
+
+      <div class="selected-list" id="sel"></div>
+      <button class="save" onclick="saveMenu()">Save this menu</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<footer>Private development tool. Plate costs reconcile to the weekly specials sheet and the home R&D log.</footer>
+
+<script>
+  const dishes=[
+    {n:"House cultured butter and sourdough",course:"Opener",g:"Opener",cost:1.10,note:"82 percent hydration, two day culture"},
+    {n:"Roasted chicory salad",course:"Opener",g:"Opener",cost:4.10,note:"Honey-lacto carrots, ricotta, hazelnut"},
+    {n:"Celery root veloute",course:"Opener",g:"Opener",cost:2.80,note:"Brown butter, toasted seed"},
+    {n:"Hand-rolled pappardelle",course:"Pasta",g:"Pasta",cost:7.20,note:"Short rib ragu, aged provolone"},
+    {n:"Egg-yolk tasting pasta",course:"Pasta",g:"Pasta",cost:6.40,note:"Rolled in house on the day"},
+    {n:"Seared diver scallops",course:"Main",g:"Main",cost:9.85,note:"Celery root, brown butter, cider gastrique"},
+    {n:"Braised short rib",course:"Main",g:"Main",cost:8.30,note:"Sunday-stew base, root vegetables"},
+    {n:"Day-boat cod, brown butter",course:"Main",g:"Main",cost:7.10,note:"Whatever came in fresh"},
+    {n:"Olive oil cake",course:"Sweet",g:"Sweet",cost:2.20,note:"Whipped cream, late-season fruit"},
+    {n:"Bread, butter, honey",course:"Sweet",g:"Sweet",cost:1.80,note:"The simplest finish"}
+  ];
+  const PRICE=95, TARGET=0.30;
+  let filter="all";
+  const wrap=document.getElementById('dishes');
+  function paint(){
+    wrap.innerHTML=dishes.filter(d=>filter==="all"||d.g===filter).map((d)=>{
+      const idx=dishes.indexOf(d);
+      return `<div class="dish ${d.sel?'sel':''}" onclick="toggle(${idx})">
+        <div class="info"><div class="course">${d.course}</div><h3>${d.n}</h3><p>${d.note}</p></div>
+        <div class="right"><div class="cost">$${d.cost.toFixed(2)}</div><div class="add">${d.sel?'remove':'add'}</div></div>
+      </div>`;
+    }).join('');
+  }
+  function update(){
+    const sel=dishes.filter(d=>d.sel);
+    const cost=sel.reduce((a,d)=>a+d.cost,0);
+    const fc=cost/PRICE;
+    document.getElementById('ncount').textContent=sel.length;
+    document.getElementById('price').textContent='$'+(sel.length?PRICE:0);
+    document.getElementById('cost').textContent='$'+cost.toFixed(2);
+    document.getElementById('fc').textContent=(fc*100).toFixed(1)+'%';
+    const bar=document.getElementById('fcbar');
+    bar.style.width=Math.min(fc/0.45*100,100)+'%';
+    bar.style.background = fc>TARGET ? '#c9714c' : '#4ea27a';
+    const box=document.getElementById('sel');
+    box.innerHTML = sel.length ? sel.map(d=>`<div class="si">${d.course}: ${d.n}</div>`).join('')
+      : '<div class="none">No dishes selected yet. Aim for five courses.</div>';
+  }
+  function toggle(i){dishes[i].sel=!dishes[i].sel;paint();update();}
+  function saveMenu(){
+    const n=dishes.filter(d=>d.sel).length;
+    const t=document.getElementById('toast');
+    t.textContent = n===0 ? 'Add a few dishes first.' :
+      (n===5 ? 'Five courses saved. This one is ready to test.' : 'Saved a '+n+' course draft.');
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600);
+  }
+  document.getElementById('filters').addEventListener('click',e=>{
+    if(!e.target.dataset.f)return;
+    document.querySelectorAll('.btn').forEach(b=>b.classList.remove('on'));
+    e.target.classList.add('on');filter=e.target.dataset.f;paint();
+  });
+  paint();update();
+</script>
+</body>
+</html>
