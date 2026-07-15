@@ -37,8 +37,9 @@ Read each item, score `PASS` / `FAIL` / `N-A`, and write a one-line reason. Same
 
 ### Verdict rule
 
-- Any `FAIL` in **C-context**, Sections **G, H, J, K**, or any `FAIL` on originality (E) => overall **FAIL** (blocking).
-- Any `FAIL` in Sections **A, B, F, I** => overall **REVIEW** (fix strongly advised, author may justify).
+- Any `FAIL` in **C-context**, Sections **G, H, J, K**, item **A3**, or any `FAIL` on originality (E) => overall **FAIL** (blocking).
+- Any `FAIL` in Sections **A (except A3), B, F, I** => overall **REVIEW** (fix strongly advised, author may justify).
+- **A3 is blocking (client requirement).** A prompt that reads as a pile of unrelated small asks instead of one coherent owned job is a hard FAIL, mirroring J4. A3 and J4 are the two views of the same client-flagged defect and BOTH block.
 - Combine with `prompt_qc.py`: if the script reports `FAIL`, the whole artifact is `FAIL` regardless of this rubric.
 - All clear on both => **PASS**.
 
@@ -64,11 +65,12 @@ Score these:
 - **C11a (item 11) No restated context.** The prompt does not restate anything the agent could read for itself from its own files, inbox, calendar, or records. It states the intent, not a recap of data the agent already holds.
 - **C11b (item 11) No do-it-yourself instructions.** The prompt does not tell the agent to do work it should decide on its own (no dictated approach it could infer). It names WHAT is wanted, never narrates HOW to look or where to look.
 - **C11c (item 15) No file paths.** No explicit file path anywhere (the script hard-fails obvious ones, you catch the subtle ones the regex missed). The persona never dictates where a file lives.
+- **C11d (item 21) No explicit date or year.** No literal year, numeric date, or month-name date anywhere (the script hard-fails the common forms, you catch the subtle ones the regex missed, such as an unusual written-out year). The model must infer which year and date are meant from its own context. Relative timing (today, tomorrow, next Tuesday, this quarter) and a lone month or weekday name with no number are allowed.
 
 ### A. Domain and Framing
 - **A1 (item 1) Single domain.** Sits in exactly one domain (Enterprise / Personal / Professional-Prosumer), not a blur of several.
 - **A2 (item 2) Outcome-led.** Opens on the outcome the person wants, not a preamble or throat-clearing.
-- **A3 (item 3) One owned job.** Reads as one coherent owned job, not a pile of unrelated small asks.
+- **A3 (item 3) One owned job (BLOCKING).** Reads as one coherent owned job, not a pile of unrelated small asks. A FAIL here is a hard FAIL (blocking), not REVIEW: too many unrelated asks stapled together to inflate model failure is a client-flagged defect. This is the framing view of the same problem J4 checks at the difficulty-source level.
 
 ### B. Difficulty Visible in the Text
 - **B1 (item 4) Many parallel surfaces.** Points at many independent surfaces / workstreams at once, forcing parallel work, not one linear task.
@@ -186,8 +188,8 @@ TOP FIXES:
 | `prompt_qc.py` | This rubric | Overall |
 |----------------|-------------|---------|
 | FAIL | any | **FAIL** (fix forbidden content first, then re-review) |
-| PASS | FAIL in C-context, G/H/J/K, or E-originality | **FAIL** |
-| PASS | FAIL in A/B/F/I only | **REVIEW** (author may justify) |
+| PASS | FAIL in C-context, G/H/J/K, A3, or E-originality | **FAIL** |
+| PASS | FAIL in A (except A3) / B / F / I only | **REVIEW** (author may justify) |
 | PASS | PASS | **PASS -- clears to bundle creation** |
 
 Nothing moves to bundle creation while any blocking FAIL stands.
