@@ -20,6 +20,12 @@ Perfect. Locking that in for October and November and probably December.
 Ava, 2026-09-14 09:24
 Sounds good. I will pencil in Sun Mon Tue and Wed Thu Fri on the rotation. Anything you throw at me works.
 
+Kerry, 2026-09-14 09:25
+Even the mid November stretch? I always worry about the week of the seventeenth for some reason.
+
+Ava, 2026-09-14 09:25
+Yes, Tuesday the seventeenth included, put me down for it. Nothing on my calendar that week right now. I am your girl straight through November.
+
 Kerry, 2026-09-14 09:26
 Rate stays 120 per overnight, I Venmo weekly. If a holiday lands on a shift I will give you a heads up early so you can plan school around it.
 
