@@ -111,8 +111,8 @@
 - **UPS** (`ups-api`): Tracking for vendor deliveries to the practice, including printer supplies, sample medications, and marketing collateral.
 
 #### Web, Engineering & Analytics Observer
-- **GitHub** (`github-api`): Read-only. Watching Oliver's open-source projects so she knows what to ask him about on Sunday calls.
-- **GitLab** (`gitlab-api`): Read-only on a research repo a former Nova student maintains; Karen is listed as faculty advisor.
+- **GitHub** (`github-api`): Watching Oliver's open-source projects so she knows what to ask him about on Sunday calls.
+- **GitLab** (`gitlab-api`): A research repo a former Nova student maintains; Karen is listed as faculty advisor.
 - **Sentry** (`sentry-api`): Error monitoring on the speaking site. Page Karen only if the site is fully down.
 - **Datadog** (`datadog-api`): Uptime and basic infrastructure monitoring for the site. Read-only dashboards.
 - **PagerDuty** (`pagerduty-api`): On-call alerts for the speaking site go to the website vendor first; Karen is paged only on total outage.
