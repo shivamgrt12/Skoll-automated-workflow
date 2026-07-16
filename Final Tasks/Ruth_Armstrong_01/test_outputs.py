@@ -1,5 +1,7 @@
 import json
 import os
+import sqlite3
+import subprocess
 from urllib.request import Request, urlopen
 
 AIRTABLE_API_URL = os.environ.get("AIRTABLE_API_URL", "http://localhost:8010")
@@ -13,6 +15,7 @@ GMAIL_API_URL = os.environ.get("GMAIL_API_URL", "http://localhost:8020")
 GOOGLE_CALENDAR_API_URL = os.environ.get("GOOGLE_CALENDAR_API_URL", "http://localhost:8023")
 TWILIO_API_URL = os.environ.get("TWILIO_API_URL", "http://localhost:8019")
 SENDGRID_API_URL = os.environ.get("SENDGRID_API_URL", "http://localhost:8018")
+WHATSAPP_API_URL = os.environ.get("WHATSAPP_API_URL", "http://localhost:8022")
 
 
 def _request(method, url, data=None):
@@ -148,6 +151,12 @@ def test_behavioral_sendgrid_delivery_queried():
     summary = api_get(SENDGRID_API_URL, "/audit/summary")
     hits = _summary_endpoint_hits(summary, ["mail", "messages", "stats"])
     assert hits > 0, "sendgrid delivery logs were not queried"
+
+
+def test_behavioral_whatsapp_messages_queried():
+    audit = api_get(WHATSAPP_API_URL, "/audit/requests")
+    matches = _requests_matching(audit, ["messages", "conversations", "conv-plateau", "msg-plat"])
+    assert len(matches) > 0, "whatsapp plateau conversations were not queried"
 
 
 def test_outcome_airtable_acsdp_position_updated():
@@ -339,23 +348,12 @@ def test_negative_weight_slack_general_channel_posted():
 
 def test_negative_weight_distractor_apis_touched():
     distractor_bases = [
-        os.environ.get("SPOTIFY_API_URL", ""),
-        os.environ.get("STRAVA_API_URL", ""),
-        os.environ.get("YELP_API_URL", ""),
-        os.environ.get("UBER_API_URL", ""),
-        os.environ.get("DOORDASH_API_URL", ""),
-        os.environ.get("YOUTUBE_API_URL", ""),
         os.environ.get("REDDIT_API_URL", ""),
         os.environ.get("TWITTER_API_URL", ""),
         os.environ.get("LINKEDIN_API_URL", ""),
-        os.environ.get("TICKETMASTER_API_URL", ""),
-        os.environ.get("AMADEUS_API_URL", ""),
-        os.environ.get("FIGMA_API_URL", ""),
         os.environ.get("OPENWEATHER_API_URL", ""),
         os.environ.get("GOOGLE_MAPS_API_URL", ""),
         os.environ.get("INSTAGRAM_API_URL", ""),
-        os.environ.get("PLAID_API_URL", ""),
-        os.environ.get("GOOGLE_CLASSROOM_API_URL", ""),
     ]
     matches = []
     for base in distractor_bases:

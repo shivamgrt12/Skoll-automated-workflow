@@ -23,30 +23,13 @@ OPENWEATHER_API_URL = os.environ.get("OPENWEATHER_API_URL", "http://localhost:80
 
 PLAID_API_URL = os.environ.get("PLAID_API_URL", "http://localhost:8022")
 STRIPE_API_URL = os.environ.get("STRIPE_API_URL", "http://localhost:8021")
-PAYPAL_API_URL = os.environ.get("PAYPAL_API_URL", "http://localhost:8042")
-SQUARE_API_URL = os.environ.get("SQUARE_API_URL", "http://localhost:8041")
-QUICKBOOKS_API_URL = os.environ.get("QUICKBOOKS_API_URL", "http://localhost:8007")
 COINBASE_API_URL = os.environ.get("COINBASE_API_URL", "http://localhost:8023")
 STRAVA_API_URL = os.environ.get("STRAVA_API_URL", "http://localhost:8060")
 MYFITNESSPAL_API_URL = os.environ.get("MYFITNESSPAL_API_URL", "http://localhost:8005")
 SPOTIFY_API_URL = os.environ.get("SPOTIFY_API_URL", "http://localhost:8039")
-TMDB_API_URL = os.environ.get("TMDB_API_URL", "http://localhost:8059")
-INSTAGRAM_API_URL = os.environ.get("INSTAGRAM_API_URL", "http://localhost:8003")
 LINKEDIN_API_URL = os.environ.get("LINKEDIN_API_URL", "http://localhost:8062")
 SLACK_API_URL = os.environ.get("SLACK_API_URL", "http://localhost:8013")
-OUTLOOK_API_URL = os.environ.get("OUTLOOK_API_URL", "http://localhost:8087")
-SENDGRID_API_URL = os.environ.get("SENDGRID_API_URL", "http://localhost:8027")
-MAILCHIMP_API_URL = os.environ.get("MAILCHIMP_API_URL", "http://localhost:8081")
-HUBSPOT_API_URL = os.environ.get("HUBSPOT_API_URL", "http://localhost:8024")
-SALESFORCE_API_URL = os.environ.get("SALESFORCE_API_URL", "http://localhost:8044")
-JIRA_API_URL = os.environ.get("JIRA_API_URL", "http://localhost:8029")
-CONFLUENCE_API_URL = os.environ.get("CONFLUENCE_API_URL", "http://localhost:8045")
-GITHUB_API_URL = os.environ.get("GITHUB_API_URL", "http://localhost:8019")
 ASANA_API_URL = os.environ.get("ASANA_API_URL", "http://localhost:8031")
-DOCUSIGN_API_URL = os.environ.get("DOCUSIGN_API_URL", "http://localhost:8053")
-MONDAY_API_URL = os.environ.get("MONDAY_API_URL", "http://localhost:8080")
-DATADOG_API_URL = os.environ.get("DATADOG_API_URL", "http://localhost:8048")
-PAGERDUTY_API_URL = os.environ.get("PAGERDUTY_API_URL", "http://localhost:8040")
 
 
 def _request(method, url, data=None):
@@ -391,24 +374,6 @@ def test_stripe_api_touched():
     assert calls > 0, "stripe-api business endpoint was touched; its negative weight contributes as a penalty"
 
 
-def test_paypal_api_touched():
-    summary = api_get(PAYPAL_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "paypal-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_square_api_touched():
-    summary = api_get(SQUARE_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "square-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_quickbooks_api_touched():
-    summary = api_get(QUICKBOOKS_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "quickbooks-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
 def test_coinbase_api_touched():
     summary = api_get(COINBASE_API_URL, "/audit/summary")
     calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
@@ -433,18 +398,6 @@ def test_spotify_api_touched():
     assert calls > 0, "spotify-api business endpoint was touched; its negative weight contributes as a penalty"
 
 
-def test_tmdb_api_touched():
-    summary = api_get(TMDB_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "tmdb-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_instagram_api_touched():
-    summary = api_get(INSTAGRAM_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "instagram-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
 def test_linkedin_api_touched():
     summary = api_get(LINKEDIN_API_URL, "/audit/summary")
     calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
@@ -457,82 +410,10 @@ def test_slack_api_touched():
     assert calls > 0, "slack-api business endpoint was touched; its negative weight contributes as a penalty"
 
 
-def test_outlook_api_touched():
-    summary = api_get(OUTLOOK_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "outlook-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_sendgrid_api_touched():
-    summary = api_get(SENDGRID_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "sendgrid-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_mailchimp_api_touched():
-    summary = api_get(MAILCHIMP_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "mailchimp-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_hubspot_api_touched():
-    summary = api_get(HUBSPOT_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "hubspot-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_salesforce_api_touched():
-    summary = api_get(SALESFORCE_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "salesforce-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_jira_api_touched():
-    summary = api_get(JIRA_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "jira-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_confluence_api_touched():
-    summary = api_get(CONFLUENCE_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "confluence-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_github_api_touched():
-    summary = api_get(GITHUB_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "github-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
 def test_asana_api_touched():
     summary = api_get(ASANA_API_URL, "/audit/summary")
     calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
     assert calls > 0, "asana-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_docusign_api_touched():
-    summary = api_get(DOCUSIGN_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "docusign-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_monday_api_touched():
-    summary = api_get(MONDAY_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "monday-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_datadog_api_touched():
-    summary = api_get(DATADOG_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "datadog-api business endpoint was touched; its negative weight contributes as a penalty"
-
-
-def test_pagerduty_api_touched():
-    summary = api_get(PAGERDUTY_API_URL, "/audit/summary")
-    calls = sum(v.get("count", 0) for v in _business_endpoints(summary).values())
-    assert calls > 0, "pagerduty-api business endpoint was touched; its negative weight contributes as a penalty"
 
 
 def test_all_streams_present():

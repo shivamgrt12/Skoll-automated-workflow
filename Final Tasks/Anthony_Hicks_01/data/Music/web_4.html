@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home-Time Request</title>
+<style>
+  :root{--bg:#f4f5f7;--ink:#1b1d22;--soft:#6a7079;--card:#ffffff;--line:#e2e5ea;--crim:#9e1b32;--crim2:#c12942;--gray:#3a3f47;--ok:#2f9e6a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header{background:var(--gray);color:#fff}
+  .nav{max-width:880px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .brand{font-weight:700;display:flex;align-items:center;gap:10px}
+  .brand .tag{background:var(--crim);width:14px;height:14px;border-radius:3px;display:inline-block}
+  .nav small{color:#c9cdd3;font-size:13px}
+  .wrap{max-width:880px;margin:0 auto;padding:28px 20px 56px}
+  .intro h1{font-size:26px}.intro p{color:var(--soft);max-width:600px;margin-top:6px}
+  form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:22px;box-shadow:0 8px 24px rgba(20,22,28,.05)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:620px){.row{grid-template-columns:1fr}}
+  .field{margin-bottom:16px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px}
+  label .req{color:var(--crim)}
+  input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;transition:.2s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--crim2);box-shadow:0 0 0 3px rgba(193,41,66,.14)}
+  textarea{min-height:96px;resize:vertical}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:500;color:var(--gray);transition:.2s;margin:0}
+  .seg input{width:auto}
+  .seg label:has(input:checked){border-color:var(--crim);background:rgba(193,41,66,.06);color:var(--crim)}
+  .err{color:var(--crim);font-size:12px;margin-top:5px;display:none}
+  .field.bad input,.field.bad select,.field.bad textarea{border-color:var(--crim)}
+  .field.bad .err{display:block}
+  .submit{background:var(--crim);color:#fff;border:none;padding:13px 26px;border-radius:11px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s,background .2s;width:100%}
+  .submit:hover{background:var(--crim2)}
+  .submit:active{transform:scale(.98)}
+  .submit.load{opacity:.7;pointer-events:none}
+  .done{display:none;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:14px;padding:22px;margin-top:22px;animation:slide .4s}
+  .done.show{display:block}
+  @keyframes slide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .done h3{color:var(--ok);font-size:19px;margin-bottom:8px}
+  .done .sum{font-size:14px;color:var(--gray)}.done .sum b{color:var(--ink)}
+  .ref{font-family:monospace;background:#f0f1f4;padding:2px 8px;border-radius:6px}
+  footer{border-top:1px solid var(--line);color:var(--soft);font-size:13px;background:var(--card)}
+  .foot{max-width:880px;margin:0 auto;padding:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand"><span class="tag"></span> Home-Time Request</div>
+    <small>Apt 108, Cloverdale Commons, Birmingham AL</small>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Home-Time Service and Errand Request</h1>
+    <p>I am home one week a month, so the jobs that need a person here get logged on one form before I roll out again. Apartment repairs go to the property manager, truck work goes to the shop, errands stay on my own list.</p>
+  </div>
+
+  <form id="reqForm" novalidate>
+    <div class="field">
+      <label>Request type <span class="req">*</span></label>
+      <div class="seg">
+        <label><input type="radio" name="rtype" value="Apartment repair" checked> Apartment repair</label>
+        <label><input type="radio" name="rtype" value="F-150 service"> F-150 service</label>
+        <label><input type="radio" name="rtype" value="Personal errand"> Personal errand</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="loc">Location or area <span class="req">*</span></label>
+        <input id="loc" type="text" aria-label="Kitchen, driveway, errand in town">
+        <div class="err">Tell me where the work is.</div>
+      </div>
+      <div class="field">
+        <label for="date">Preferred date <span class="req">*</span></label>
+        <input id="date" type="date" min="2025-10-27" max="2025-11-02" value="2025-10-28">
+        <div class="err">Pick a day inside the home-time week.</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="prio">Priority</label>
+        <select id="prio">
+          <option>High, do it first</option>
+          <option selected>Medium, this week</option>
+          <option>Low, if there is time</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="phone">Best contact number <span class="req">*</span></label>
+        <input id="phone" type="tel" aria-label="(205) 555-0147" value="(205) 555-0147">
+        <div class="err">A ten digit number works best.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="desc">What needs doing <span class="req">*</span></label>
+      <textarea id="desc" aria-label="Short and plain. What is wrong and what good looks like."></textarea>
+      <div class="err">Add at least a sentence so the right tools show up.</div>
+    </div>
+
+    <button type="submit" class="submit" id="go">Log the request</button>
+  </form>
+
+  <div class="done" id="done">
+    <h3>Request logged</h3>
+    <div class="sum" id="sum"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot">
+    <div>Home-Time Request, Anthony Hicks</div>
+    <div>Back on the road Nov 3, 2025</div>
+  </div>
+</footer>
+
+<script>
+  const form=document.getElementById('reqForm');
+  function fail(id,cond){const f=document.getElementById(id).closest('.field');f.classList.toggle('bad',cond);return cond;}
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    const loc=document.getElementById('loc').value.trim();
+    const date=document.getElementById('date').value;
+    const phone=document.getElementById('phone').value.replace(/\D/g,'');
+    const desc=document.getElementById('desc').value.trim();
+    let bad=false;
+    bad=fail('loc',loc.length===0)||bad;
+    bad=fail('date',!date)||bad;
+    bad=fail('phone',phone.length!==10)||bad;
+    bad=fail('desc',desc.length<8)||bad;
+    if(bad)return;
+    const btn=document.getElementById('go');btn.classList.add('load');btn.textContent='Logging...';
+    setTimeout(()=>{
+      btn.classList.remove('load');btn.textContent='Log the request';
+      const type=form.rtype.value;const prio=document.getElementById('prio').value;
+      const ref='HT-'+Math.floor(1000+Math.random()*9000);
+      document.getElementById('sum').innerHTML=
+        'Reference <span class="ref">'+ref+'</span><br><br>'+
+        '<b>Type:</b> '+type+'<br>'+
+        '<b>Location:</b> '+loc+'<br>'+
+        '<b>Preferred date:</b> '+date+'<br>'+
+        '<b>Priority:</b> '+prio+'<br>'+
+        '<b>Notes:</b> '+desc+'<br><br>'+
+        'Saved to the home-time board. Apartment repairs route to the property manager, truck work to the shop.';
+      const done=document.getElementById('done');done.classList.add('show');
+      done.scrollIntoView({behavior:'smooth',block:'nearest'});
+      form.reset();
+    },700);
+  });
+  ['loc','date','phone','desc'].forEach(id=>document.getElementById(id).addEventListener('input',()=>document.getElementById(id).closest('.field').classList.remove('bad')));
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Therapy Snapshot</title>
+<style>
+  :root{--bg:#eef4f5;--ink:#163034;--soft:#5a787d;--card:#ffffff;--line:#d7e4e6;--teal:#1f8a8f;--teal2:#37b0b3;--amber:#e8a13a;--good:#2faa6a;--warn:#d9663d}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:var(--card);border-bottom:1px solid var(--line)}
+  .nav{max-width:1020px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--teal)}
+  .brand .ring{width:18px;height:18px;border:4px solid var(--teal2);border-top-color:transparent;border-radius:50%;animation:spin 3s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .nav small{color:var(--soft);font-size:13px}
+  .wrap{max-width:1020px;margin:0 auto;padding:26px 20px 56px}
+  h1{font-size:26px}.lead{color:var(--soft);max-width:640px;margin-top:6px}
+  .toggle{display:flex;gap:8px;margin:20px 0}
+  .toggle button{background:var(--card);border:1px solid var(--line);color:var(--soft);padding:9px 18px;border-radius:24px;cursor:pointer;font-size:14px;transition:.2s}
+  .toggle button.active{background:var(--teal);color:#fff;border-color:var(--teal);font-weight:600}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  @media(max-width:780px){.cards{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .ringbox{position:relative;width:96px;height:96px;margin:4px auto 8px}
+  .ringbox svg{transform:rotate(-90deg)}
+  .ringbox .ctr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:var(--ink)}
+  .card .lab{color:var(--soft);font-size:13px}
+  .card .big{font-size:26px;font-weight:700;color:var(--teal)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px}
+  .panel h2{font-size:17px}.panel .sub{color:var(--soft);font-size:13px;margin-bottom:14px}
+  .line .lp{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1600;stroke-dashoffset:1600;animation:draw 1.8s .2s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .gl{stroke:var(--line);stroke-width:1}
+  .thr{stroke:var(--warn);stroke-width:1.4;stroke-dasharray:5 4}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:200px}
+  .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+  .bar .col{width:100%;border-radius:5px 5px 0 0;height:0;background:linear-gradient(180deg,var(--teal2),var(--teal));transition:height .9s cubic-bezier(.2,.8,.2,1)}
+  .bar small{font-size:10px;color:var(--soft)}
+  .legend{font-size:12px;color:var(--soft);margin-top:10px}
+  .legend i{display:inline-block;width:18px;height:0;border-top:1.4px dashed var(--warn);vertical-align:middle;margin-right:5px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--soft);font-weight:600}
+  footer{border-top:1px solid var(--line);background:var(--card);color:var(--soft);font-size:13px}
+  .foot{max-width:1020px;margin:0 auto;padding:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand"><span class="ring"></span> Therapy Snapshot</div>
+    <small>Personal therapy record, share with the sleep clinic only</small>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>CPAP Therapy and DOT Readiness</h1>
+  <p class="lead">A plain read on how the nights are going. The medical card depends on staying on the device, so the only numbers that matter are hours on therapy, breathing events per hour, and mask fit. Device on file is an auto adjusting unit with a nasal pillow mask.</p>
+
+  <div class="toggle">
+    <button data-win="d30" class="active">Last 30 days</button>
+    <button data-win="d90">Last 90 days</button>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="ringbox">
+        <svg width="96" height="96"><circle cx="48" cy="48" r="40" fill="none" stroke="#e3eff0" stroke-width="9"></circle>
+        <circle id="ringComp" cx="48" cy="48" r="40" fill="none" stroke="#2faa6a" stroke-width="9" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"></circle></svg>
+        <div class="ctr" id="compTxt">0%</div>
+      </div>
+      <div class="lab">Nights on therapy</div>
+    </div>
+    <div class="card"><div class="big" id="hrs">0</div><div class="lab">Avg hours per night</div></div>
+    <div class="card"><div class="big" id="ahi">0</div><div class="lab">Avg events per hour</div></div>
+    <div class="card"><div class="big" id="leak">0</div><div class="lab">Avg mask leak L per min</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Nightly hours on therapy</h2>
+    <div class="sub">Each point is one night. The dashed line marks the four hour minimum that keeps the medical card valid.</div>
+    <svg class="line" viewBox="0 0 620 220" width="100%" height="220" preserveAspectRatio="none">
+      <line class="gl" x1="36" y1="20" x2="36" y2="190"></line>
+      <line class="gl" x1="36" y1="190" x2="610" y2="190"></line>
+      <line class="thr" x1="36" y1="150" x2="610" y2="150"></line>
+      <polyline class="lp" id="hoursLine" points=""></polyline>
+    </svg>
+    <div class="legend"><i></i> Four hour DOT minimum</div>
+  </div>
+
+  <div class="panel">
+    <h2>Breathing events per hour</h2>
+    <div class="sub">Lower is better. On therapy the target sits below five events per hour.</div>
+    <div class="bars" id="ahiBars"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Supply replacement schedule</h2>
+    <div class="sub">Auto shipped on file, billed to insurance.</div>
+    <table>
+      <thead><tr><th>Item</th><th>Replace every</th><th>Next due</th></tr></thead>
+      <tbody>
+        <tr><td>Nasal pillow cushion</td><td>2 weeks</td><td>Nov 15, 2025</td></tr>
+        <tr><td>Ultra fine filter</td><td>1 month</td><td>Dec 1, 2025</td></tr>
+        <tr><td>Heated tubing</td><td>3 months</td><td>Feb 1, 2026</td></tr>
+        <tr><td>Full mask frame</td><td>6 months</td><td>Jan 2027</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <div class="foot">
+    <div>Therapy Snapshot, prepared by Anthony Hicks for the sleep clinic</div>
+    <div>Next renewal exam: Jan 28, 2027</div>
+  </div>
+</footer>
+
+<script>
+  const data={
+    d30:{comp:93,hrs:6.8,ahi:3.2,leak:5.8,
+      hours:[6.9,7.1,6.4,7.0,6.8,7.2,6.6,7.1,6.9,6.3,7.0,6.7,7.2,6.5,6.8,7.0,6.9,7.1,6.4,6.8,7.0,6.6,7.2,6.9,6.7,7.0,6.8,7.1,6.5,7.0],
+      ahiM:[2.8,3.2,3.0,3.4,3.1,2.9,3.6,3.0,3.3,4.2,3.1,3.5,2.7,3.8,3.0]},
+    d90:{comp:91,hrs:6.7,ahi:3.4,leak:6.1,
+      hours:[6.5,7.0,6.2,6.9,7.1,6.4,7.0,6.8,6.6,7.2,6.3,6.9,7.0,6.5,6.8,7.1,6.4,6.7,7.0,6.6,6.9,7.2,6.5,6.8,7.0,6.3,6.9,7.1,6.6,6.8],
+      ahiM:[3.1,3.5,3.3,3.8,3.2,3.6,3.0,3.9,3.4,4.0,3.3,3.7,3.1,4.1,3.5]}
+  };
+  function animTo(el,target,dec,suf,pre){let c=0,s=target/50;const t=setInterval(()=>{c+=s;if(c>=target){c=target;clearInterval(t)}el.textContent=(pre||'')+c.toFixed(dec)+(suf||'')},16);}
+  function ring(pct){const circ=251,off=circ-circ*pct/100;document.getElementById('ringComp').style.transition='stroke-dashoffset 1.4s ease';
+    requestAnimationFrame(()=>document.getElementById('ringComp').style.strokeDashoffset=off);
+    animTo(document.getElementById('compTxt'),pct,0,'%');}
+  function hoursLine(arr){
+    const W=574,X0=36,maxH=8;const pts=arr.map((h,i)=>{const x=X0+(W*i/(arr.length-1));const y=190-(h/maxH*170);return x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+    const ln=document.getElementById('hoursLine');ln.setAttribute('points',pts);
+    ln.style.animation='none';void ln.getBBox();ln.style.animation='draw 1.8s .15s forwards';
+  }
+  function ahiBars(arr){
+    const box=document.getElementById('ahiBars');box.innerHTML='';const max=6;
+    arr.forEach((v,i)=>{const b=document.createElement('div');b.className='bar';
+      b.innerHTML='<div class="col" title="'+v+'"></div><small>'+(i+1)+'</small>';box.appendChild(b);
+      setTimeout(()=>b.querySelector('.col').style.height=(v/max*100)+'%',i*40);});
+  }
+  function load(win){
+    const d=data[win];
+    ring(d.comp);
+    animTo(document.getElementById('hrs'),d.hrs,1);
+    animTo(document.getElementById('ahi'),d.ahi,1);
+    animTo(document.getElementById('leak'),d.leak,1);
+    hoursLine(d.hours);ahiBars(d.ahiM);
+  }
+  document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');load(b.dataset.win);
+  }));
+  load('d30');
+</script>
+</body>
+</html>
