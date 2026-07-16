@@ -16,7 +16,7 @@
 - **Notion** (`notion-api`): Angela shares the Smoky Mountains family-trip planning page Chad opens when Norma asks.
 - **Obsidian** (`obsidian-api`): Stashes workshop project sketches Chad describes out loud for birdhouses, shelves, and small tables.
 - **Airtable** (`airtable-api`): Tracks the First Baptist usher rota Pastor Whitlow shares; confirms first and third Sundays.
-- **DocuSign** (`docusign-api`): Routes Medicare reauthorization forms quarterly and the home and auto insurance renewals Chad signs.
+- **DocuSign** (`docusign-api`): Routes Medicare reauthorization forms quarterly and the home and auto insurance renewals Chad signs; also carries the First Baptist usher serving-covenant envelopes Pastor Whitlow sends the reserve ushers each year, so Chad can see who has signed on for Christmas Eve and who is still pending.
 - **Calendly** (`calendly-api`): Books Dr. Cartwright's annual physical from the Lakeview availability page once Chad gives approval.
 - **Typeform** (`typeform-api`): Collects AARP and Kentucky Farm Bureau member surveys Chad fills in over morning coffee.
 - **Google Classroom** (`google-classroom-api`): Pulls the grandsons' assignments Angela shares from her Louisville middle-school teacher account weekly.

@@ -125,6 +125,29 @@ def write_count(base_url):
     return total
 
 
+def _posted_bodies(base_url):
+    try:
+        audit = api_get(base_url, "/audit/requests")
+    except Exception:
+        return ""
+    entries = audit.get("requests", []) if isinstance(audit, dict) else []
+    parts = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        method = str(entry.get("method", "")).upper()
+        if method not in ("POST", "PUT", "PATCH"):
+            continue
+        path = str(entry.get("path", ""))
+        if "/audit" in path or "/health" in path:
+            continue
+        body = entry.get("request_body")
+        if body is None:
+            continue
+        parts.append(json.dumps(body) if not isinstance(body, str) else body)
+    return " ".join(parts).lower()
+
+
 def test_plaid_accounts_read():
     # Plaid mirrors the real API: reads are POST (e.g. POST /accounts/get,
     # POST /accounts/balance/get), so count those specific read paths.
@@ -217,6 +240,11 @@ def test_deliverable_saved_notion_or_obsidian():
     assert total > 0, "no page or note created in notion or obsidian for the saved deliverables"
 
 
+def test_both_reckoning_and_readiness_artifacts_saved():
+    total = write_count(NOTION_API_URL) + write_count(OBSIDIAN_API_URL)
+    assert total >= 2, f"expected two saved artifacts (money reckoning + retirement-and-housing readiness), got {total} write(s)"
+
+
 def test_distractor_apis_touched():
     distractors = [
         ("alpaca-api", ALPACA_API_URL),
@@ -239,3 +267,27 @@ def test_distractor_apis_touched():
         if count > 0:
             touched.append(name)
     assert len(touched) > 0, f"Distractor APIs touched: {sorted(touched)}"
+
+
+def test_gmail_read():
+    hits = read_count(GMAIL_API_URL)
+    assert hits > 0, "gmail was not queried for schedule or disclosure context"
+
+
+def test_google_calendar_read():
+    hits = read_count(GOOGLE_CALENDAR_API_URL)
+    assert hits > 0, "google calendar was not queried for schedule context"
+
+
+def test_saved_artifact_body_mentions_retirement():
+    body_text = _posted_bodies(NOTION_API_URL) + " " + _posted_bodies(OBSIDIAN_API_URL)
+    signals = ("retire", "sixty", "age 60", "age 58", "fifty-eight")
+    hit = next((s for s in signals if s in body_text), None)
+    assert hit is not None, "no retirement horizon content found in saved notion or obsidian artifacts"
+
+
+def test_saved_artifact_body_mentions_reconciled_source():
+    body_text = _posted_bodies(NOTION_API_URL) + " " + _posted_bodies(OBSIDIAN_API_URL)
+    signals = ("plaid", "quickbooks", "vanguard", "coinbase", "kraken", "binance", "xero")
+    hit = next((s for s in signals if s in body_text), None)
+    assert hit is not None, "no source attribution found in saved notion or obsidian artifacts"
