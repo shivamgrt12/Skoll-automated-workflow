@@ -1,0 +1,827 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerald Ellison  -  Writes & Plays</title>
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --parchment: #ede5d4;
+      --dark-brown: #2c1a0e;
+      --medium-brown: #5c3d2e;
+      --amber: #c8821a;
+      --rust: #a84c1a;
+      --sage: #6b7c6b;
+      --charcoal: #3a3530;
+      --gold: #d4a820;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Georgia', serif;
+      background-color: var(--cream);
+      color: var(--dark-brown);
+      line-height: 1.7;
+    }
+
+    /* ─── HEADER / NAV ─── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--dark-brown);
+      border-bottom: 3px solid var(--amber);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      color: var(--cream);
+      font-size: 1.25rem;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .logo span { color: var(--amber); }
+    nav { display: flex; gap: 2rem; }
+    nav a {
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    nav a:hover { opacity: 1; color: var(--amber); }
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+    .hamburger { width: 24px; height: 2px; background: var(--cream); display: block; position: relative; }
+    .hamburger::before, .hamburger::after {
+      content: ''; position: absolute; width: 24px; height: 2px;
+      background: var(--cream); left: 0;
+    }
+    .hamburger::before { top: -7px; }
+    .hamburger::after { top: 7px; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      background: linear-gradient(160deg, var(--dark-brown) 0%, var(--medium-brown) 60%, var(--amber) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .hero-eyebrow {
+      color: var(--gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-name {
+      color: var(--cream);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: bold;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-name em { color: var(--amber); font-style: normal; }
+    .hero-tagline {
+      color: var(--parchment);
+      font-size: 1.15rem;
+      font-style: italic;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-buttons {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .btn {
+      padding: 0.75rem 2rem;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-family: 'Georgia', serif;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+    .btn-primary { background: var(--amber); color: var(--dark-brown); font-weight: bold; }
+    .btn-outline { background: transparent; color: var(--cream); border: 2px solid var(--cream); }
+    .btn-outline:hover { background: var(--cream); color: var(--dark-brown); }
+
+    .scroll-arrow {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      color: var(--parchment); font-size: 1.5rem; animation: bounce 2s infinite;
+    }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      color: var(--dark-brown);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .section-line {
+      width: 60px; height: 3px;
+      background: var(--amber);
+      margin-bottom: 2.5rem;
+    }
+    .section-title-center { text-align: center; }
+    .section-line-center { margin: 0 auto 2.5rem; }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--parchment); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text p { margin-bottom: 1.2rem; color: var(--charcoal); }
+    .about-facts { list-style: none; margin-top: 1.5rem; }
+    .about-facts li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+    .fact-label { font-weight: bold; color: var(--amber); min-width: 100px; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .about-sidebar { background: var(--dark-brown); padding: 2rem; border-radius: 4px; }
+    .sidebar-title { color: var(--amber); font-size: 1.1rem; margin-bottom: 1.2rem; }
+    .skill-item { margin-bottom: 1.2rem; }
+    .skill-label { color: var(--cream); font-size: 0.85rem; display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+    .skill-bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), var(--gold));
+      border-radius: 3px;
+      width: 0;
+      transition: width 1.2s ease;
+    }
+    .skill-fill.animate { width: var(--w); }
+
+    /* ─── MUSIC ─── */
+    #music { background: var(--cream); }
+    .music-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .music-card {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .music-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+    .music-card-header {
+      padding: 1.25rem 1.5rem;
+      background: var(--dark-brown);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .music-icon {
+      width: 40px; height: 40px;
+      background: var(--amber);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .music-card-title { color: var(--cream); font-size: 1rem; font-weight: bold; }
+    .music-card-sub { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+    .music-card-body { padding: 1.5rem; }
+    .music-card-body p { color: var(--charcoal); font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .tag {
+      display: inline-block;
+      background: var(--parchment);
+      color: var(--medium-brown);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      margin: 0.15rem;
+    }
+
+    /* ─── UPCOMING GIGS ─── */
+    #gigs { background: var(--dark-brown); }
+    #gigs .section-title { color: var(--cream); }
+    #gigs .section-label { color: var(--gold); }
+    .gig-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .gig-table th {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.08);
+      color: var(--gold);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .gig-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      color: var(--parchment);
+      font-size: 0.95rem;
+    }
+    .gig-table tr:hover td { background: rgba(255,255,255,0.04); }
+    .gig-badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .badge-paid { background: rgba(200,130,26,0.2); color: var(--amber); border: 1px solid var(--amber); }
+    .badge-church { background: rgba(107,124,107,0.2); color: #9eb89e; border: 1px solid #6b7c6b; }
+    .badge-festival { background: rgba(168,76,26,0.2); color: #e09070; border: 1px solid var(--rust); }
+
+    /* ─── WRITING ─── */
+    #writing { background: var(--parchment); }
+    .writing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .poem-card {
+      background: var(--cream);
+      padding: 2rem;
+      border-left: 4px solid var(--amber);
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .poem-card:hover { border-color: var(--rust); box-shadow: 4px 4px 20px rgba(0,0,0,0.08); }
+    .poem-card blockquote {
+      font-style: italic;
+      color: var(--charcoal);
+      font-size: 1rem;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+    .poem-meta { font-size: 0.8rem; color: var(--sage); display: flex; justify-content: space-between; }
+    .poem-quote { font-size: 2rem; color: var(--amber); line-height: 1; margin-bottom: 0.75rem; }
+    .essay-card {
+      background: white;
+      padding: 1.5rem;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 4px;
+    }
+    .essay-title { font-size: 1.05rem; color: var(--dark-brown); margin-bottom: 0.5rem; }
+    .essay-excerpt { font-size: 0.9rem; color: var(--charcoal); font-style: italic; margin-bottom: 1rem; }
+    .read-more {
+      color: var(--amber);
+      font-size: 0.85rem;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .read-more:hover { color: var(--rust); }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--cream); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .contact-info p { color: var(--charcoal); margin-bottom: 1.2rem; }
+    .contact-links { list-style: none; margin-top: 1.5rem; }
+    .contact-links li { margin-bottom: 0.75rem; }
+    .contact-links a {
+      color: var(--medium-brown);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+    .contact-links a:hover { color: var(--amber); }
+    .contact-link-icon { width: 20px; text-align: center; }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.85rem; color: var(--medium-brown); letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 0.75rem;
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: 3px;
+      font-family: 'Georgia', serif;
+      font-size: 0.95rem;
+      background: white;
+      color: var(--dark-brown);
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--amber);
+    }
+    .form-group textarea { min-height: 120px; resize: vertical; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--dark-brown);
+      border-top: 3px solid var(--amber);
+      padding: 3rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+    .footer-brand .logo { font-size: 1.4rem; display: block; margin-bottom: 1rem; }
+    .footer-brand p { color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.7; }
+    .footer-col h4 { color: var(--amber); font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.5rem; }
+    .footer-col ul li a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--amber); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 2rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.8rem;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-8px); }
+    }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { display: none; }
+      .nav-toggle { display: block; }
+      nav.open { display: flex; flex-direction: column; gap: 0; position: fixed; top: 64px; left: 0; right: 0; background: var(--dark-brown); padding: 1rem 2rem; }
+      .about-grid, .contact-grid, .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="#hero" class="logo">Gerald<span>.</span>Ellison</a>
+  <nav id="main-nav">
+    <a href="#about">About</a>
+    <a href="#music">Music</a>
+    <a href="#gigs">Gigs</a>
+    <a href="#writing">Writing</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button class="nav-toggle" onclick="document.getElementById('main-nav').classList.toggle('open')" aria-label="Toggle menu">
+    <span class="hamburger"></span>
+  </button>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Columbus, Ohio · Bluegrass · Words</p>
+    <h1 class="hero-name">Gerald <em>Ellison</em></h1>
+    <p class="hero-tagline">"I write the things I can't put on the fiddle, and I play the things I can't put into words."</p>
+    <div class="hero-buttons">
+      <a href="#music" class="btn btn-primary">Hear the Music</a>
+      <a href="#writing" class="btn btn-outline">Read the Words</a>
+    </div>
+  </div>
+  <div class="scroll-arrow">↓</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p class="section-label">Who I Am</p>
+        <h2 class="section-title">Fiddle, mandolin, and a notes app full of unfinished poems.</h2>
+        <div class="section-line"></div>
+        <p>I'm a senior at Ridgewood High School on Columbus's west side  -  first fiddle and student director of The Ridgewood Ramblers, oldest of four, and the guy who will happily talk your ear off about Alison Krauss or Cormac McCarthy depending on the hour.</p>
+        <p>Bluegrass is not a hobby for me. It's an inheritance  -  handed down from Grandpa Walter in Harlan County, Kentucky, through a hundred Camry trips south on I-75 and a thousand hours of practice in a bunk-bed bedroom. The music comes first.</p>
+        <p>I also write. Short poems in the iPhone notes app, music essays, half-finished songs. This site is where some of that finds daylight.</p>
+        <ul class="about-facts">
+          <li><span class="fact-label">Hometown</span> Columbus, Ohio (west side)</li>
+          <li><span class="fact-label">Roots</span> Harlan County, Kentucky</li>
+          <li><span class="fact-label">Instruments</span> Fiddle, Mandolin</li>
+          <li><span class="fact-label">Ensemble</span> The Ridgewood Ramblers (Student Director)</li>
+          <li><span class="fact-label">Reading</span> Educated by Tara Westover</li>
+          <li><span class="fact-label">Influences</span> Alison Krauss, Chris Thile, Tyler Childers</li>
+        </ul>
+      </div>
+      <div class="about-sidebar reveal">
+        <h3 class="sidebar-title">Skills & Craft</h3>
+        <div class="skill-item">
+          <div class="skill-label"><span>Fiddle</span><span>Competition Level</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 95%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Mandolin</span><span>Confident Second</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 78%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Music Direction</span><span>14-member Ensemble</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Songwriting</span><span>In Progress, Always</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 70%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Essay & Poetry</span><span>AP Lit, Personal Work</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 80%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Brisket & Dry Rub</span><span>Grandma Dorothy's Recipe</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 92%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MUSIC -->
+<section id="music">
+  <div class="container">
+    <p class="section-label reveal">What I Play</p>
+    <h2 class="section-title reveal">The Music</h2>
+    <div class="section-line reveal"></div>
+    <div class="music-grid">
+      <div class="music-card reveal">
+        <div class="music-card-header">
+          <div class="music-icon">♪</div>
+          <div>
+            <div class="music-card-title">The Ridgewood Ramblers</div>
+            <div class="music-card-sub">Student Director · First Fiddle</div>
+          </div>
+        </div>
+        <div class="music-card-body">
+          <p>Fourteen-member bluegrass ensemble at Ridgewood High School, Columbus. Three fiddles, two banjos, mandolin, upright bass, two guitars, five vocalists. We rehearse Monday, Wednesday, and Friday  -  and on Saturday mornings when the competition calendar says so.</p>
+          <p>Finished second at regionals last year. Coming for first this spring.</p>
+          <div>
+            <span class="tag">Bluegrass</span>
+            <span class="tag">Appalachian Folk</span>
+            <span class="tag">Competition Ensemble</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="music-card reveal">
+        <div class="music-card-header">
+          <div class="music-icon">♫</div>
+          <div>
+            <div class="music-card-title">Original Compositions</div>
+            <div class="music-card-sub">Fiddle, Mandolin, Voice</div>
+          </div>
+        </div>
+        <div class="music-card-body">
+          <p>Original pieces written for the fiddle, a few for mandolin, and a handful with lyrics I keep mostly to myself. Influences run from Alison Krauss's bow work to Wendell Berry's sense of place to the way Grandpa Walter played a G chord when he thought no one was listening.</p>
+          <p>Select pieces are part of my Lakemont College audition portfolio.</p>
+          <div>
+            <span class="tag">Fiddle</span>
+            <span class="tag">Mandolin</span>
+            <span class="tag">Original Work</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="music-card reveal">
+        <div class="music-card-header">
+          <div class="music-icon">🎻</div>
+          <div>
+            <div class="music-card-title">Harlan County Roots</div>
+            <div class="music-card-sub">The Inheritance</div>
+          </div>
+        </div>
+        <div class="music-card-body">
+          <p>I've been playing fiddle since I was seven. My grandfather, Walter Ellison, handed me a bow on a Kentucky back porch and said the only rule was not to stop. I haven't. The Camry trips south on I-75 are my favorite version of being alive.</p>
+          <p>This music is not a costume. It is where I come from.</p>
+          <div>
+            <span class="tag">Appalachian Tradition</span>
+            <span class="tag">Harlan County, KY</span>
+            <span class="tag">Family Heritage</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="music-card reveal">
+        <div class="music-card-header">
+          <div class="music-icon">📻</div>
+          <div>
+            <div class="music-card-title">What I'm Listening To</div>
+            <div class="music-card-sub">Influences & Obsessions</div>
+          </div>
+        </div>
+        <div class="music-card-body">
+          <p>Alison Krauss. Ricky Skaggs. Chris Thile. Nickel Creek. Tyler Childers. Zach Bryan. Kendrick Lamar on late nights. Itzhak Perlman when I need to hear what the fiddle can actually do. Hilary Hahn when I need to hear it do something different.</p>
+          <p>O Brother Where Art Thou on repeat in the Camry. Always.</p>
+          <div>
+            <span class="tag">Bluegrass</span>
+            <span class="tag">Classical Violin</span>
+            <span class="tag">Americana</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UPCOMING GIGS -->
+<section id="gigs">
+  <div class="container">
+    <p class="section-label reveal">Where We'll Be</p>
+    <h2 class="section-title reveal">Upcoming Performances</h2>
+    <div class="section-line reveal"></div>
+    <table class="gig-table reveal">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Event</th>
+          <th>Venue</th>
+          <th>Notes</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Oct 26, 2026</td>
+          <td>Maple Grove Farmers Market</td>
+          <td>Maple Grove, Columbus</td>
+          <td>Afternoon load-in, full Ramblers set</td>
+          <td><span class="gig-badge badge-paid">Paid Booking</span></td>
+        </tr>
+        <tr>
+          <td>Dec 6, 2026</td>
+          <td>First Methodist Christmas Program</td>
+          <td>First Methodist Columbus</td>
+          <td>Evening service, holiday repertoire</td>
+          <td><span class="gig-badge badge-church">Church</span></td>
+        </tr>
+        <tr>
+          <td>Dec 20, 2026</td>
+          <td>Holiday Gig</td>
+          <td>TBD  -  coordinated Mr. Crawford</td>
+          <td>Payout split with Ramblers crew</td>
+          <td><span class="gig-badge badge-paid">Paid Booking</span></td>
+        </tr>
+        <tr>
+          <td>Feb 14, 2027</td>
+          <td>Sweetheart Dance Fiddle Set</td>
+          <td>Castellano Family Venue</td>
+          <td>Booked through Castellano family contact</td>
+          <td><span class="gig-badge badge-paid">Paid Booking</span></td>
+        </tr>
+        <tr>
+          <td>Mar 21, 2027</td>
+          <td>Spring Social Performance</td>
+          <td>Westside Senior Center</td>
+          <td>Afternoon set, community engagement</td>
+          <td><span class="gig-badge badge-church">Community</span></td>
+        </tr>
+        <tr>
+          <td>Apr 17, 2027</td>
+          <td>Appalachian Strings Festival</td>
+          <td>Downtown Columbus</td>
+          <td>Early afternoon slot, full Ramblers</td>
+          <td><span class="gig-badge badge-festival">Festival</span></td>
+        </tr>
+        <tr>
+          <td>Apr 18, 2027</td>
+          <td>Columbus Arts Festival</td>
+          <td>Columbus Recreation & Parks</td>
+          <td>Full day booking through Columbus Rec</td>
+          <td><span class="gig-badge badge-festival">Festival</span></td>
+        </tr>
+        <tr>
+          <td>May 8, 2027</td>
+          <td>State Fiddle Championship</td>
+          <td>Lakemont College Performing Arts Ctr</td>
+          <td>Ramblers + Gerald solo performance</td>
+          <td><span class="gig-badge badge-festival">Championship</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color: rgba(255,255,255,0.45); font-size:0.85rem; margin-top:1rem;">Booking inquiries: contact through the form below or via @gerald.ramblers on Social Media.</p>
+  </div>
+</section>
+
+<!-- WRITING -->
+<section id="writing">
+  <div class="container">
+    <p class="section-label reveal">Words on the Page</p>
+    <h2 class="section-title reveal">Writing</h2>
+    <div class="section-line reveal"></div>
+    <div class="writing-grid">
+      <div class="poem-card reveal">
+        <div class="poem-quote">"</div>
+        <blockquote>
+          The fiddle doesn't lie.<br>
+          It says what the jaw holds<br>
+          when the Kentucky accent<br>
+          comes back like weather,<br>
+          like gravity,<br>
+          like coming home.
+        </blockquote>
+        <div class="poem-meta"><span>Draft  -  Untitled / Nov 2026</span><span>Personal</span></div>
+      </div>
+
+      <div class="poem-card reveal">
+        <div class="poem-quote">"</div>
+        <blockquote>
+          Grandpa Walter played a G chord<br>
+          when he thought no one was listening.<br>
+          I was seven. I was always listening.<br>
+          That is the whole story.
+        </blockquote>
+        <div class="poem-meta"><span>Draft  -  For Walter / Oct 2026</span><span>Personal</span></div>
+      </div>
+
+      <div class="essay-card reveal">
+        <h3 class="essay-title">On Bluegrass and Belonging: Why the Music Is Not a Costume</h3>
+        <p class="essay-excerpt">"When people hear the fiddle and imagine overalls and a joke, they have already missed the music. What Grandpa Walter passed down wasn't a sound  -  it was a posture toward hard things..."</p>
+        <a href="#" class="read-more">Read Essay →</a>
+      </div>
+
+      <div class="essay-card reveal">
+        <h3 class="essay-title">What Steinbeck Got Right About Families Like Mine</h3>
+        <p class="essay-excerpt">"East of Eden is not a book about California. It's a book about what fathers pass to sons whether they mean to or not, and what sons do with what they receive. My AP Lit free-response question wrote itself..."</p>
+        <a href="#" class="read-more">Read Essay →</a>
+      </div>
+
+      <div class="essay-card reveal">
+        <h3 class="essay-title">The Camry Trips: A Love Letter to I-75 South</h3>
+        <p class="essay-excerpt">"I haven't been on an airplane. I don't need to. The four hours south through Cincinnati into Kentucky are my favorite version of leaving and my favorite version of coming home. The Music Streaming mix is the same every time..."</p>
+        <a href="#" class="read-more">Read Essay →</a>
+      </div>
+
+      <div class="poem-card reveal">
+        <div class="poem-quote">"</div>
+        <blockquote>
+          Emma reaches for the fiddle<br>
+          the way she reaches for everything:<br>
+          both hands, full trust,<br>
+          no plan for what comes next.<br>
+          I hold the bow steady<br>
+          so she doesn't have to.
+        </blockquote>
+        <div class="poem-meta"><span>Draft  -  For Emma / Feb 2027</span><span>Personal</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <p class="section-label">Get in Touch</p>
+        <h2 class="section-title">Contact</h2>
+        <div class="section-line"></div>
+        <p>For Ramblers booking inquiries, press or media, festival coordination, or just to talk about Alison Krauss  -  reach out. I check Gmail first, Social Media DMs second.</p>
+        <p>Response time: usually within a day or two during school weeks. During competition season, give me a little grace.</p>
+        <ul class="contact-links">
+          <li><a href="mailto:gerald.t.ellison@gmail.com"><span class="contact-link-icon">✉</span> gerald.t.ellison@gmail.com</a></li>
+          <li><a href="#"><span class="contact-link-icon">📷</span> @gerald.ramblers (Social Media)</a></li>
+          <li><a href="#"><span class="contact-link-icon">🎵</span> The Ridgewood Ramblers (YouTube)</a></li>
+          <li><a href="#"><span class="contact-link-icon">📍</span> Columbus, Ohio (west side)</a></li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <form class="contact-form" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" placeholder="Full name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject">
+              <option value="">Select a topic...</option>
+              <option value="booking">Ramblers Booking Inquiry</option>
+              <option value="music">Music / Collaboration</option>
+              <option value="writing">Writing / Press</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="What's on your mind?" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; font-size:0.9rem; padding:0.85rem;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#hero" class="logo">Gerald<span>.</span>Ellison</a>
+      <p>First fiddle. Student director. Writer. Columbus, Ohio by way of Harlan County, Kentucky. Playing the things words can't hold since age seven.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#music">Music</a></li>
+        <li><a href="#gigs">Upcoming Gigs</a></li>
+        <li><a href="#writing">Writing</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>The Ramblers</h4>
+      <ul>
+        <li><a href="#">Book a Performance</a></li>
+        <li><a href="#">About the Ensemble</a></li>
+        <li><a href="#">Social Media</a></li>
+        <li><a href="#">YouTube Channel</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Gerald Thomas Ellison · gerald-ellison-writes.com</span>
+    <span>Columbus, Ohio · Harlan County, Kentucky</span>
+  </div>
+</footer>
+
+<script>
+  // Intersection observer for reveal animations
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Skill bar animation
+  const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.skill-fill').forEach(bar => bar.classList.add('animate'));
+        skillObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.about-sidebar').forEach(el => skillObserver.observe(el));
+
+  // Smooth contact form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = 'Sent  -  thanks!';
+    btn.style.background = '#6b7c6b';
+    btn.disabled = true;
+  }
+</script>
+</body>
+</html>

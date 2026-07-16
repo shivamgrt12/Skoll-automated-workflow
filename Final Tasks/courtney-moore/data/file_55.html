@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Courtney Moore Nutrition Coaching</title>
+<style>
+  :root{
+    --teal:#0f766e; --teal-d:#0b554f; --mint:#14b8a6; --sand:#f4fffd;
+    --ink:#1f2933; --muted:#5b6b73; --line:#dce7e4; --card:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Corbel,system-ui,sans-serif;color:var(--ink);background:var(--sand);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+  .brand .dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--mint));display:inline-block}
+  .links{display:flex;gap:26px}
+  .links a{color:var(--muted);font-size:15px;font-weight:600;transition:color .2s}
+  .links a:hover{color:var(--teal)}
+  .btn{background:var(--teal);color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;border:0;cursor:pointer;font-size:15px;transition:transform .15s, background .2s}
+  .btn:hover{background:var(--teal-d);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+  .burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer}
+  .burger span{width:26px;height:3px;background:var(--teal);border-radius:2px}
+
+  .hero{position:relative;overflow:hidden;padding:90px 0 80px;background:radial-gradient(900px 400px at 80% -10%,#cdeee9,transparent),var(--sand)}
+  .hero h1{font-size:clamp(32px,5vw,52px);line-height:1.1;margin-bottom:18px}
+  .hero h1 span{color:var(--teal)}
+  .hero p{font-size:19px;color:var(--muted);max-width:560px;margin-bottom:30px}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .float{position:absolute;right:-40px;top:60px;width:430px;max-width:46vw;opacity:.95}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:64px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center}
+  .stat .n{font-size:34px;font-weight:800;color:var(--teal)}
+  .stat .l{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  section{padding:74px 0}
+  .eyebrow{color:var(--mint);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px}
+  h2{font-size:clamp(26px,3.6vw,38px);margin:8px 0 8px}
+  .lead{color:var(--muted);max-width:620px;margin-bottom:36px}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .svc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;transition:transform .2s, box-shadow .2s}
+  .svc:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(15,118,110,.12)}
+  .svc .ic{width:46px;height:46px;border-radius:12px;background:#e6f4f1;display:grid;place-items:center;margin-bottom:14px}
+  .svc h3{font-size:19px;margin-bottom:8px}
+  .svc p{color:var(--muted);font-size:15px}
+
+  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p}
+  .phase{position:relative;padding:26px 18px;border-top:3px solid var(--line)}
+  .phase.active{border-top-color:var(--teal)}
+  .phase:before{counter-increment:p;content:counter(p,decimal-leading-zero);font-weight:800;color:var(--mint);font-size:14px;letter-spacing:1px}
+  .phase h4{margin:6px 0;font-size:18px}
+  .phase p{color:var(--muted);font-size:14px}
+
+  .quote{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#eafff9;border-radius:22px;padding:46px;position:relative;min-height:200px}
+  .quote .q{font-size:21px;line-height:1.5;max-width:760px}
+  .quote .who{margin-top:18px;font-weight:700;color:#bff3e8}
+  .qnav{display:flex;gap:10px;margin-top:24px}
+  .qnav button{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:18px;cursor:pointer;transition:background .2s}
+  .qnav button:hover{background:rgba(255,255,255,.18)}
+
+  form{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;display:grid;gap:16px;max-width:560px}
+  label{font-weight:700;font-size:14px}
+  input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;margin-top:6px}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--mint);border-color:var(--mint)}
+  .err{color:#c0392b;font-size:13px;display:none}
+  .ok{display:none;background:#e6f7f2;border:1px solid var(--mint);color:var(--teal-d);padding:16px;border-radius:12px;font-weight:600}
+
+  footer{background:#0c2b28;color:#cfe7e2;padding:50px 0 26px}
+  .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  footer h5{color:#fff;margin-bottom:12px;font-size:16px}
+  footer a{color:#9fd6cc;display:block;margin-bottom:7px;font-size:14px}
+  .copy{border-top:1px solid rgba(255,255,255,.12);padding-top:18px;font-size:13px;color:#7fb3ab;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s, transform .7s}
+  .reveal.show{opacity:1;transform:none}
+
+  @media(max-width:860px){
+    .links,.nav-cta{display:none}
+    .burger{display:flex}
+    .links.open{display:flex;position:absolute;top:66px;left:0;right:0;background:#fff;flex-direction:column;padding:18px 22px;border-bottom:1px solid var(--line)}
+    .stats,.grid3,.phases,.fgrid{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    .float{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand"><span class="dot"></span> Courtney Moore Nutrition</div>
+      <div class="links" id="links">
+        <a href="#services">Coaching</a>
+        <a href="#approach">Approach</a>
+        <a href="#voices">Results</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button class="btn nav-cta" onclick="go('#contact')">Book a call</button>
+      <button class="burger" onclick="document.getElementById('links').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Registered Dietitian, Bowie Maryland</p>
+    <h1>Fuel the miles. <span>Run your best season.</span></h1>
+    <p>Personalized endurance nutrition for runners and triathletes who want to train hard, recover well, and reach the start line ready. Built around your life, your kitchen, and your goal race.</p>
+    <div class="cta">
+      <button class="btn" onclick="go('#contact')">Start coaching</button>
+      <button class="btn ghost" onclick="go('#approach')">See the method</button>
+    </div>
+    <svg class="float" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/></linearGradient></defs>
+      <circle cx="210" cy="150" r="120" fill="url(#g1)" opacity=".15"/>
+      <path d="M40 220 L110 150 L170 190 L250 90 L330 130" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="220" r="7" fill="#0f766e"/><circle cx="110" cy="150" r="7" fill="#0f766e"/>
+      <circle cx="170" cy="190" r="7" fill="#0f766e"/><circle cx="250" cy="90" r="7" fill="#14b8a6"/>
+      <circle cx="330" cy="130" r="9" fill="#14b8a6"/>
+    </svg>
+
+    <div class="stats">
+      <div class="stat reveal"><div class="n" data-count="10">0</div><div class="l">Athletes coached</div></div>
+      <div class="stat reveal"><div class="n" data-count="6">0</div><div class="l">Race distances</div></div>
+      <div class="stat reveal"><div class="n" data-count="92">0</div><div class="l">Percent adherence</div></div>
+      <div class="stat reveal"><div class="n" data-count="3">0</div><div class="l">Month minimum</div></div>
+    </div>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <p class="eyebrow">What you get</p>
+    <h2>Coaching that fits a busy training week</h2>
+    <p class="lead">Every plan starts with a long conversation about your schedule, your gut, and your goals. From there we build a fueling system you can actually keep.</p>
+    <div class="grid3">
+      <div class="svc reveal">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2"><path d="M4 19V5M4 12h12M16 9l4 3-4 3"/></svg></div>
+        <h3>Daily fueling plans</h3>
+        <p>Intake matched to your training load and body weight, with carbohydrate timing around your hardest sessions.</p>
+      </div>
+      <div class="svc reveal">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div>
+        <h3>Race week and race day</h3>
+        <p>Carbohydrate loading, hydration targets, and a fueling card you rehearse on long runs so nothing is a surprise.</p>
+      </div>
+      <div class="svc reveal">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2"><path d="M3 12h4l3 7 4-14 3 7h4"/></svg></div>
+        <h3>Monthly check ins</h3>
+        <p>We review the numbers, adjust the plan, and solve the real life obstacles between you and consistency.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="approach" style="background:#eef8f6">
+  <div class="wrap">
+    <p class="eyebrow">The method</p>
+    <h2>A four phase fueling model</h2>
+    <p class="lead">The same structure that carried my own training toward a sub three forty five marathon, adapted to your calendar. Tap a phase to focus it.</p>
+    <div class="phases" id="phases">
+      <div class="phase active" onclick="pick(this)"><h4>Base</h4><p>Set daily intake and build steady eating habits around easy volume.</p></div>
+      <div class="phase" onclick="pick(this)"><h4>Build</h4><p>Periodize carbohydrate around quality workouts and longer efforts.</p></div>
+      <div class="phase" onclick="pick(this)"><h4>Peak</h4><p>Sharpen race fueling, rehearse gels and fluids, train the gut.</p></div>
+      <div class="phase" onclick="pick(this)"><h4>Recover</h4><p>Protein and glycogen timing to bounce back between hard days.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="voices">
+  <div class="wrap">
+    <p class="eyebrow">In their words</p>
+    <h2>What athletes notice first</h2>
+    <div class="quote">
+      <div class="q" id="qtext">My long runs stopped falling apart at mile eighteen. The fueling card felt strange at first, then it just became routine and my legs thanked me.</div>
+      <div class="who" id="qwho">Marathon client, second season</div>
+      <div class="qnav">
+        <button onclick="rotate(-1)" aria-label="Previous">&#8249;</button>
+        <button onclick="rotate(1)" aria-label="Next">&#8250;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="background:#eef8f6">
+  <div class="wrap">
+    <p class="eyebrow">Get started</p>
+    <h2>Tell me about your goal race</h2>
+    <p class="lead">Send a few details and I will reply with whether coaching is the right fit and how we would begin.</p>
+    <form onsubmit="return submitForm(event)">
+      <div><label>Name</label><input id="f-name" type="text" placeholder="Your name"><div class="err" id="e-name">Please enter your name.</div></div>
+      <div><label>Email</label><input id="f-email" type="email" placeholder="you@email.com"><div class="err" id="e-email">Please enter a valid email.</div></div>
+      <div><label>Primary goal</label>
+        <select id="f-goal"><option>Performance</option><option>Finish a first race</option><option>Recovery and consistency</option><option>General health</option></select></div>
+      <div><label>Goal race and timeframe</label><textarea id="f-msg" rows="3" placeholder="For example, a fall marathon, hoping to break four hours"></textarea></div>
+      <button class="btn" type="submit">Send inquiry</button>
+      <div class="ok" id="ok">Thank you. Your note is ready to send and I reply within two business days.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <h5>Courtney Moore Nutrition Coaching</h5>
+        <p style="color:#9fd6cc;font-size:14px;max-width:340px">Endurance nutrition for runners and triathletes across the greater Washington region. Registered Dietitian with a master of science in clinical nutrition.</p>
+      </div>
+      <div>
+        <h5>Explore</h5>
+        <a href="#services">Coaching</a><a href="#approach">Approach</a><a href="#voices">Results</a><a href="#contact">Contact</a>
+      </div>
+      <div>
+        <h5>Reach out</h5>
+        <a href="#contact">hello@courtneymoorenutrition.com</a>
+        <a href="#contact">(240) 555-0119</a>
+        <a href="#contact">Bowie, Maryland</a>
+      </div>
+    </div>
+    <div class="copy">
+      <span>Member, Bowie Running Club</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function go(id){document.querySelector(id).scrollIntoView({behavior:"smooth"});document.getElementById('links').classList.remove('open');}
+  function pick(el){document.querySelectorAll('.phase').forEach(p=>p.classList.remove('active'));el.classList.add('active');}
+
+  var quotes=[
+    ["My long runs stopped falling apart at mile eighteen. The fueling card felt strange at first, then it just became routine and my legs thanked me.","Marathon client, second season"],
+    ["I used to bonk on every century ride. We trained my gut over six weeks and now I finish strong with energy to spare.","Triathlon client, half iron distance"],
+    ["The monthly check ins kept me honest. Small changes, brown rice over white, protein at every meal, added up fast.","Returning runner, first half marathon"]
+  ];
+  var qi=0;
+  function rotate(d){qi=(qi+d+quotes.length)%quotes.length;
+    document.getElementById('qtext').textContent=quotes[qi][0];
+    document.getElementById('qwho').textContent=quotes[qi][1];}
+
+  function submitForm(e){
+    e.preventDefault();
+    var ok=true;
+    var name=document.getElementById('f-name').value.trim();
+    var email=document.getElementById('f-email').value.trim();
+    show('e-name', !name); if(!name) ok=false;
+    var valid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    show('e-email', !valid); if(!valid) ok=false;
+    if(ok){document.getElementById('ok').style.display='block';e.target.reset();}
+    return false;
+  }
+  function show(id,on){document.getElementById(id).style.display=on?'block':'none';}
+
+  // scroll reveal
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('show');io.unobserve(en.target);}});},{threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  // animated counters
+  function runCounters(){
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var goal=+el.dataset.count, cur=0, step=Math.max(1,Math.round(goal/40));
+      var t=setInterval(function(){cur+=step;if(cur>=goal){cur=goal;clearInterval(t);}el.textContent=cur;},26);
+    });
+  }
+  var cio=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){runCounters();cio.disconnect();}});},{threshold:.4});
+  cio.observe(document.querySelector('.stats'));
+</script>
+</body>
+</html>

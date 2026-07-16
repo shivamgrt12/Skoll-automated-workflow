@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Easy Joints Kitchen</title>
+<style>
+  :root{
+    --bg:#fbf7f0;--card:#fff;--ink:#2b2620;--soft:#7a6f60;--green:#3f7d4f;--orange:#e07a36;
+    --line:#ece3d4;--shadow:0 12px 28px rgba(60,45,25,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Verdana",Arial,sans-serif;line-height:1.55}
+  header{background:linear-gradient(120deg,var(--green),#2f6e44);color:#fff;padding:34px 24px 26px}
+  .head-in{max-width:1080px;margin:0 auto}
+  header h1{margin:0;font-size:2rem;font-family:Georgia,serif}
+  header p{margin:6px 0 0;opacity:.9;max-width:640px}
+  .tools{max-width:1080px;margin:20px auto 0;padding:0 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:220px;position:relative}
+  .search input{width:100%;padding:13px 14px 13px 40px;border:1px solid var(--line);border-radius:30px;
+    font-size:.95rem;background:var(--card);color:var(--ink)}
+  .search input:focus{outline:2px solid var(--green);border-color:transparent}
+  .search span{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--soft)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--soft);border-radius:24px;
+    padding:9px 16px;cursor:pointer;font-size:.85rem;transition:all .18s ease}
+  .chip:hover{border-color:var(--green);color:var(--green)}
+  .chip.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+  main{max-width:1080px;margin:0 auto;padding:22px 24px 50px}
+  .count{color:var(--soft);font-size:.85rem;margin:6px 2px 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:20px}
+  .recipe{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:var(--shadow);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;
+    animation:rise .5s ease backwards}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .recipe:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(60,45,25,.16)}
+  .thumb{height:120px;display:grid;place-items:center;font-size:2.4rem;color:#fff}
+  .recipe .body{padding:16px}
+  .recipe h3{margin:0 0 4px;font-size:1.1rem;font-family:Georgia,serif}
+  .recipe .meta{color:var(--soft);font-size:.82rem;display:flex;gap:12px;margin-top:8px}
+  .tagrow{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .t{font-size:.72rem;background:#f3ecdd;color:var(--soft);padding:3px 9px;border-radius:12px}
+  .empty{text-align:center;color:var(--soft);padding:50px 0}
+  .overlay{position:fixed;inset:0;background:rgba(30,22,12,.55);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:60}
+  .overlay.show{display:flex;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--card);max-width:560px;width:100%;border-radius:18px;overflow:hidden;
+    max-height:88vh;display:flex;flex-direction:column;animation:pop .3s ease}
+  @keyframes pop{from{transform:scale(.94);opacity:.5}to{transform:none;opacity:1}}
+  .modal .top{padding:22px 24px;color:#fff}
+  .modal .top h2{margin:0;font-family:Georgia,serif;font-size:1.5rem}
+  .modal .inner{padding:20px 24px;overflow:auto}
+  .modal h4{margin:14px 0 6px;color:var(--green)}
+  .modal ul,.modal ol{margin:0;padding-left:20px}
+  .modal li{margin-bottom:5px}
+  .close{margin-left:auto;background:rgba(255,255,255,.2);border:0;color:#fff;width:34px;height:34px;
+    border-radius:50%;cursor:pointer;font-size:1.1rem}
+  .modal .top .row{display:flex;align-items:center}
+  footer{background:#2f2a22;color:#cdc4b4;text-align:center;padding:22px;font-size:.85rem}
+  @media(max-width:560px){.thumb{height:96px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-in">
+    <h1>The Easy Joints Kitchen</h1>
+    <p>My own collection of low effort, anti-inflammatory suppers. Built for stiff morning hands, a single cook, and leftovers that pull double duty.</p>
+  </div>
+</header>
+
+<div class="tools">
+  <div class="search">
+    <span>find</span>
+    <input id="q" type="search" aria-label="Search recipes by name or ingredient" autocomplete="off">
+  </div>
+  <div class="filters" id="filters">
+    <button class="chip active" data-f="all">All</button>
+    <button class="chip" data-f="fish">Fish</button>
+    <button class="chip" data-f="poultry">Poultry</button>
+    <button class="chip" data-f="meatless">Meatless</button>
+    <button class="chip" data-f="quick">Under 30 minutes</button>
+  </div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">No recipe matches that yet. Try another word.</div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="top" id="mtop">
+      <div class="row"><h2 id="mtitle"></h2><button class="close" id="closeBtn" aria-label="Close">x</button></div>
+      <div id="mmeta" style="opacity:.9;font-size:.85rem;margin-top:6px"></div>
+    </div>
+    <div class="inner">
+      <h4>What you need</h4>
+      <ul id="ming"></ul>
+      <h4>How it goes</h4>
+      <ol id="msteps"></ol>
+    </div>
+  </div>
+</div>
+
+<footer>Cooked and kept by John Martin, Murfreesboro, Tennessee. One pan, little chopping, and supper that is kind to the hands.</footer>
+
+<script>
+(function(){
+  var recipes=[
+    {n:"Sheet Pan Salmon and Sweet Potato",c:"fish",t:28,col:"#c75b3a",
+     tags:["fish","sheet pan","leftover lunch"],
+     ing:["Two salmon fillets, about six ounces each","One large sweet potato in half inch cubes","Two cups torn collard or kale","Two tablespoons olive oil","One lemon, half juiced","Garlic powder and smoked paprika"],
+     steps:["Heat the oven to 425 and line a sheet pan.","Toss the sweet potato with oil and spices, roast fifteen minutes.","Push aside, add the salmon, brush with oil and lemon.","Scatter the greens, roast twelve to fourteen more minutes.","Serve with lemon wedges, save a portion for lunch."]},
+    {n:"Roast Chicken and Winter Vegetables",c:"poultry",t:45,col:"#b9892f",
+     tags:["poultry","one pan"],
+     ing:["Two chicken breasts","Carrots, parsnip, and red onion","Two tablespoons olive oil","Thyme, salt, and pepper"],
+     steps:["Heat the oven to 400.","Toss the vegetables with oil and thyme.","Lay the chicken on top, season well.","Roast thirty five to forty minutes until cooked through.","Save a breast for a wrap the next day."]},
+    {n:"Lentil and Tomato Soup",c:"meatless",t:35,col:"#7d8a3a",
+     tags:["meatless","batch","freezes well"],
+     ing:["One cup dried lentils, rinsed","One can chopped tomatoes","Onion, carrot, and garlic","Olive oil and a bay leaf","Four cups water or low salt broth"],
+     steps:["Soften the onion, carrot, and garlic in oil.","Add lentils, tomatoes, bay leaf, and water.","Simmer twenty five minutes until the lentils are soft.","Season, then freeze half before it hits the table."]},
+    {n:"Sweet Potato and Bean Bowl",c:"meatless",t:20,col:"#3f7d4f",
+     tags:["meatless","quick","leftover friendly"],
+     ing:["Leftover roasted sweet potato","One can beans, rinsed","Cooked brown rice","Greens and a spoon of yogurt","Olive oil and a squeeze of lemon"],
+     steps:["Warm the rice, beans, and sweet potato.","Pile over a handful of greens.","Top with yogurt, oil, and lemon.","Eat warm, it keeps for the next lunch too."]},
+    {n:"Quick Salmon Cakes and Salad",c:"fish",t:22,col:"#c75b3a",
+     tags:["fish","quick"],
+     ing:["One can or leftover cooked salmon","One egg and a handful of oats","Lemon, parsley, and pepper","Mixed leaves and olive oil"],
+     steps:["Mix the salmon, egg, oats, and seasoning.","Shape into small cakes.","Pan sear a few minutes a side in a little oil.","Serve over dressed leaves."]},
+    {n:"Baked Chicken with Greens",c:"poultry",t:40,col:"#b9892f",
+     tags:["poultry","Sunday"],
+     ing:["Bone in chicken pieces","Collard greens and onion","Olive oil, garlic, and pepper","A splash of broth"],
+     steps:["Heat the oven to 375.","Season the chicken and lay over the onion.","Bake thirty minutes, add the greens and broth.","Bake ten more until the greens are tender."]},
+    {n:"Overnight Oats with Berries",c:"meatless",t:8,col:"#3f7d4f",
+     tags:["meatless","quick","make ahead"],
+     ing:["Half a cup rolled oats","Plain yogurt and a little water","Mixed berries","A few almonds"],
+     steps:["Stir the oats, yogurt, and water in a jar.","Top with berries and almonds.","Chill overnight.","Grab it on a stiff morning, no cooking at all."]},
+    {n:"Herb and White Bean Toast",c:"meatless",t:15,col:"#7d8a3a",
+     tags:["meatless","quick"],
+     ing:["One can white beans","Garlic, olive oil, and lemon","Fresh basil from the patio","Whole grain bread"],
+     steps:["Warm the beans with garlic and oil.","Mash lightly and brighten with lemon.","Pile onto toasted bread.","Tear basil over the top."]}
+  ];
+  var cat={fish:"#c75b3a",poultry:"#b9892f",meatless:"#3f7d4f"};
+  var grid=document.getElementById('grid'),count=document.getElementById('count'),empty=document.getElementById('empty');
+  var state={f:"all",q:""};
+  function matches(r){
+    var okF = state.f==="all" || r.c===state.f || (state.f==="quick" && r.t<30);
+    var okQ = !state.q || (r.n+" "+r.tags.join(" ")+" "+r.ing.join(" ")).toLowerCase().indexOf(state.q)>-1;
+    return okF && okQ;
+  }
+  function render(){
+    var list=recipes.filter(matches);
+    grid.innerHTML='';
+    list.forEach(function(r,i){
+      var d=document.createElement('div');d.className='recipe';d.style.animationDelay=(i*55)+'ms';
+      d.innerHTML='<div class="thumb" style="background:'+r.col+'">'+
+        (r.c==="fish"?"&#9685;":r.c==="poultry"?"&#9698;":"&#9826;")+'</div>'+
+        '<div class="body"><h3>'+r.n+'</h3>'+
+        '<div class="meta"><span>'+r.t+' minutes</span><span>'+r.ing.length+' things</span></div>'+
+        '<div class="tagrow">'+r.tags.map(function(t){return '<span class="t">'+t+'</span>';}).join('')+'</div></div>';
+      d.addEventListener('click',function(){openModal(r);});
+      grid.appendChild(d);
+    });
+    count.textContent=list.length+(list.length===1?" recipe":" recipes")+" in view";
+    empty.style.display=list.length?"none":"block";
+  }
+  function openModal(r){
+    document.getElementById('mtitle').textContent=r.n;
+    document.getElementById('mtop').style.background="linear-gradient(120deg,"+r.col+",#2f2a22)";
+    document.getElementById('mmeta').textContent=r.t+" minutes, serves one with leftovers";
+    document.getElementById('ming').innerHTML=r.ing.map(function(x){return '<li>'+x+'</li>';}).join('');
+    document.getElementById('msteps').innerHTML=r.steps.map(function(x){return '<li>'+x+'</li>';}).join('');
+    document.getElementById('overlay').classList.add('show');
+  }
+  function closeModal(){document.getElementById('overlay').classList.remove('show');}
+  document.getElementById('closeBtn').addEventListener('click',closeModal);
+  document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  document.addEventListener('keydown',function(e){if(e.key==="Escape")closeModal();});
+  document.querySelectorAll('#filters .chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('#filters .chip').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');state.f=b.dataset.f;render();
+    });
+  });
+  document.getElementById('q').addEventListener('input',function(){state.q=this.value.trim().toLowerCase();render();});
+  render();
+})();
+</script>
+</body>
+</html>

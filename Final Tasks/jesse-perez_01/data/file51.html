@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perez Textile Conservation - Jamaica Plain, Boston</title>
+  <style>
+    :root {
+      --clay: #8B5E3C;
+      --sand: #C9A87C;
+      --linen: #F2EDE4;
+      --charcoal: #2C2C2C;
+      --warm-white: #FAF8F4;
+      --muted: #6B6459;
+      --accent: #4A6741;
+      --gold: #B08840;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--charcoal);
+      background: var(--warm-white);
+      line-height: 1.75;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(250, 248, 244, 0.96);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(139, 94, 60, 0.15);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-brand {
+      font-size: 1rem; font-weight: normal; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--clay);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--clay); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #2a1f14 0%, #3d2d1e 45%, #5a3e28 100%);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 10% 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(ellipse at 70% 40%, rgba(176, 136, 64, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(74, 103, 65, 0.10) 0%, transparent 50%);
+    }
+    .hero-eyebrow {
+      font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--sand); margin-bottom: 1.5rem; opacity: 0.85;
+    }
+    .hero-title {
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      color: var(--linen);
+      font-weight: normal;
+      line-height: 1.18;
+      max-width: 740px;
+      margin-bottom: 1.8rem;
+      position: relative;
+    }
+    .hero-title em {
+      font-style: normal; color: var(--sand);
+    }
+    .hero-subtitle {
+      font-size: 1.05rem; color: rgba(242, 237, 228, 0.75);
+      max-width: 520px; margin-bottom: 2.8rem; line-height: 1.8;
+    }
+    .btn {
+      display: inline-block; padding: 0.75rem 2rem;
+      background: transparent; border: 1px solid var(--sand);
+      color: var(--sand); text-decoration: none;
+      font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: all 0.25s; cursor: pointer;
+    }
+    .btn:hover { background: var(--sand); color: #2a1f14; }
+    .btn-solid {
+      background: var(--clay); border-color: var(--clay);
+      color: var(--warm-white); margin-left: 1rem;
+    }
+    .btn-solid:hover { background: #7a5232; border-color: #7a5232; color: var(--warm-white); }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: rgba(242, 237, 228, 0.45); font-size: 0.72rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    .hero-scroll::after {
+      content: ''; display: block; width: 1px; height: 40px;
+      background: rgba(242, 237, 228, 0.3);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 0.8; transform: scaleY(1.3); }
+    }
+
+    /* SECTION BASE */
+    section { padding: 96px 10%; }
+    .section-label {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--clay); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: normal; color: var(--charcoal);
+      margin-bottom: 1.5rem; line-height: 1.25;
+    }
+    .section-body {
+      font-size: 1rem; color: var(--muted); max-width: 640px; line-height: 1.85;
+    }
+    .divider {
+      width: 48px; height: 2px; background: var(--sand);
+      margin: 1.5rem 0;
+    }
+
+    /* ABOUT */
+    .about { background: var(--linen); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start; margin-top: 3.5rem;
+    }
+    .about-detail {
+      border-left: 3px solid var(--sand); padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .about-detail h4 {
+      font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--clay); margin-bottom: 0.35rem; font-weight: normal;
+    }
+    .about-detail p { font-size: 0.95rem; color: var(--muted); }
+    .credentials { margin-top: 2rem; }
+    .credentials li {
+      list-style: none; padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(139, 94, 60, 0.12);
+      font-size: 0.9rem; color: var(--muted);
+      display: flex; gap: 1rem; align-items: baseline;
+    }
+    .cred-year {
+      min-width: 48px; font-size: 0.78rem;
+      color: var(--clay); font-style: italic;
+    }
+
+    /* SPECIALIZATIONS */
+    .specializations { background: var(--warm-white); }
+    .spec-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2rem; margin-top: 3.5rem;
+    }
+    .spec-card {
+      padding: 2rem; border: 1px solid rgba(139, 94, 60, 0.18);
+      transition: border-color 0.25s, transform 0.25s;
+      background: var(--warm-white);
+    }
+    .spec-card:hover { border-color: var(--clay); transform: translateY(-3px); }
+    .spec-icon {
+      width: 40px; height: 40px; margin-bottom: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--linen); border-radius: 0;
+    }
+    .spec-icon svg { width: 22px; height: 22px; stroke: var(--clay); fill: none; }
+    .spec-card h3 {
+      font-size: 1rem; font-weight: normal; color: var(--charcoal);
+      margin-bottom: 0.75rem;
+    }
+    .spec-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.75; }
+
+    /* SERVICES */
+    .services { background: #2a1f14; }
+    .services .section-label { color: var(--sand); }
+    .services .section-title { color: var(--linen); }
+    .services .divider { background: var(--clay); }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 0; margin-top: 3.5rem;
+      border: 1px solid rgba(201, 168, 124, 0.2);
+    }
+    .service-item {
+      padding: 2rem 2.5rem;
+      border-bottom: 1px solid rgba(201, 168, 124, 0.15);
+      border-right: 1px solid rgba(201, 168, 124, 0.15);
+    }
+    .service-item:nth-child(even) { border-right: none; }
+    .service-item:nth-last-child(-n+2) { border-bottom: none; }
+    .service-num {
+      font-size: 0.7rem; color: var(--sand); letter-spacing: 0.15em;
+      margin-bottom: 0.75rem; opacity: 0.6;
+    }
+    .service-item h3 {
+      font-size: 1.05rem; font-weight: normal;
+      color: var(--linen); margin-bottom: 0.6rem;
+    }
+    .service-item p { font-size: 0.88rem; color: rgba(242, 237, 228, 0.6); line-height: 1.75; }
+
+    /* ACTIVE PROJECTS */
+    .projects { background: var(--linen); }
+    .project-list { margin-top: 3rem; }
+    .project-entry {
+      display: grid; grid-template-columns: 120px 1fr auto;
+      gap: 2rem; align-items: start;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(139, 94, 60, 0.15);
+    }
+    .project-code { font-size: 0.75rem; color: var(--clay); letter-spacing: 0.1em; font-style: italic; }
+    .project-info h3 { font-size: 1rem; font-weight: normal; color: var(--charcoal); margin-bottom: 0.4rem; }
+    .project-info p { font-size: 0.88rem; color: var(--muted); }
+    .project-status {
+      display: inline-block; padding: 0.25rem 0.75rem;
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      border: 1px solid; white-space: nowrap; align-self: start;
+    }
+    .status-active { color: var(--accent); border-color: var(--accent); }
+    .status-survey { color: var(--gold); border-color: var(--gold); }
+
+    /* PROCESS */
+    .process { background: var(--warm-white); }
+    .process-steps {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem; margin-top: 3.5rem; counter-reset: step;
+    }
+    .process-step { position: relative; }
+    .process-step::before {
+      counter-increment: step;
+      content: counter(step, decimal-leading-zero);
+      display: block; font-size: 2.2rem; color: var(--sand);
+      opacity: 0.5; margin-bottom: 1rem; font-style: italic;
+    }
+    .process-step h3 {
+      font-size: 0.95rem; font-weight: normal; color: var(--charcoal);
+      margin-bottom: 0.5rem;
+    }
+    .process-step p { font-size: 0.85rem; color: var(--muted); line-height: 1.75; }
+
+    /* PHILOSOPHY */
+    .philosophy { background: var(--clay); }
+    .philosophy .section-label { color: rgba(242, 237, 228, 0.6); }
+    .philosophy .section-title { color: var(--linen); }
+    .philosophy-quote {
+      font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+      color: var(--linen); font-style: italic;
+      line-height: 1.5; max-width: 760px;
+      border-left: 4px solid var(--sand); padding-left: 2rem;
+      margin: 2.5rem 0;
+    }
+    .philosophy-body { font-size: 1rem; color: rgba(242, 237, 228, 0.75); max-width: 640px; line-height: 1.85; }
+
+    /* CONTACT */
+    .contact { background: var(--linen); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; margin-top: 3rem;
+    }
+    .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--clay);
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 0.7rem 1rem; border: 1px solid rgba(139, 94, 60, 0.25);
+      background: var(--warm-white); color: var(--charcoal);
+      font-family: Georgia, serif; font-size: 0.95rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--clay);
+    }
+    .form-group textarea { min-height: 130px; resize: vertical; }
+    .contact-info-item {
+      margin-bottom: 1.5rem;
+    }
+    .contact-info-item h4 {
+      font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--clay); margin-bottom: 0.4rem; font-weight: normal;
+    }
+    .contact-info-item p { font-size: 0.95rem; color: var(--muted); }
+    .availability {
+      margin-top: 2rem; padding: 1.5rem;
+      background: var(--warm-white); border-left: 3px solid var(--sand);
+    }
+    .availability h4 {
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--clay); margin-bottom: 0.5rem; font-weight: normal;
+    }
+    .availability p { font-size: 0.88rem; color: var(--muted); }
+
+    /* FOOTER */
+    footer {
+      background: #1c1410; padding: 3rem 10%;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-brand { font-size: 0.85rem; color: var(--sand); letter-spacing: 0.1em; }
+    .footer-nav { display: flex; gap: 2rem; list-style: none; }
+    .footer-nav a { color: rgba(242, 237, 228, 0.45); text-decoration: none; font-size: 0.78rem; }
+    .footer-nav a:hover { color: var(--sand); }
+    .footer-tagline { color: rgba(242, 237, 228, 0.3); font-size: 0.78rem; font-style: italic; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .spec-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .service-item { border-right: none; }
+      .process-steps { grid-template-columns: repeat(2, 1fr); }
+      .project-entry { grid-template-columns: 1fr; gap: 0.75rem; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 64px 6%; }
+      nav { padding: 0 6%; }
+      .hero { padding: 100px 6% 60px; }
+      .process-steps { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <a class="nav-brand" href="#">Perez Textile Conservation</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#specializations">Specializations</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-eyebrow">Independent Conservation Studio - Jamaica Plain, Boston</div>
+    <h1 class="hero-title">
+      Textile conservation rooted in<br/><em>restraint, precision,</em><br/>and the long view.
+    </h1>
+    <p class="hero-subtitle">
+      Serving museums, historical societies, and private collectors across New England since 2020.
+      Specialist in Latin American textiles, Ottoman embroideries, and American colonial-era samplers.
+    </p>
+    <div>
+      <a href="#services" class="btn">Our Services</a>
+      <a href="#contact" class="btn btn-solid">Request a Consultation</a>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-label">About the Studio</div>
+    <h2 class="section-title">A practice built on five years<br/>of independent studio work</h2>
+    <div class="divider"></div>
+    <div class="about-grid">
+      <div>
+        <p class="section-body">
+          Perez Textile Conservation is an independent studio based in Jamaica Plain, Boston.
+          The practice was founded in 2020 after six years at a major New York museum,
+          where Jesse Perez served as Associate Conservator of Textiles.
+        </p>
+        <p class="section-body" style="margin-top:1rem;">
+          The studio operates from a ground-floor space in Jamaica Plain,
+          equipped for fiber analysis, humidification, UV imaging, and archival mounting.
+          Every commission is led personally by Jesse from initial assessment through final documentation.
+        </p>
+        <p class="section-body" style="margin-top:1rem;">
+          Conservation work here follows a single guiding principle: intervene only as much as the object
+          genuinely requires, and always in a way that can be undone. The record of what was done
+          matters as much as the treatment itself.
+        </p>
+      </div>
+      <div>
+        <div class="credentials">
+          <ul>
+            <li><span class="cred-year">2014</span> M.A., Art Conservation (Textile), Winterthur/University of Delaware</li>
+            <li><span class="cred-year">2012</span> Post-graduate fellowship, major textile museum, Washington D.C.</li>
+            <li><span class="cred-year">2014-20</span> Associate Conservator, Textile Conservation, major New York museum</li>
+            <li><span class="cred-year">2020</span> Founded Perez Textile Conservation, Jamaica Plain</li>
+            <li><span class="cred-year">Active</span> Member, American Institute for Conservation</li>
+            <li><span class="cred-year">Active</span> Collaborating conservator, Museum of Fine Arts, Boston</li>
+            <li><span class="cred-year">Active</span> Collaborating conservator, Peabody Essex Museum, Salem</li>
+          </ul>
+        </div>
+        <div style="margin-top:2rem;">
+          <div class="about-detail">
+            <h4>Languages</h4>
+            <p>English, Spanish (fluent), Portuguese (conversational)</p>
+          </div>
+          <div class="about-detail">
+            <h4>Location</h4>
+            <p>47 Pond Street, Jamaica Plain, Boston, MA 02130</p>
+          </div>
+          <div class="about-detail">
+            <h4>Studio Hours</h4>
+            <p>Monday through Friday, 8:30 AM to 5:30 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIALIZATIONS -->
+  <section class="specializations" id="specializations">
+    <div class="section-label">Areas of Specialization</div>
+    <h2 class="section-title">Three areas of deep material<br/>and historical expertise</h2>
+    <div class="divider"></div>
+    <div class="spec-grid">
+      <div class="spec-card">
+        <div class="spec-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.4">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3>Latin American Textiles</h3>
+        <p>
+          Andean, Mesoamerican, and Mexican woven and embroidered textiles from pre-Columbian
+          through 19th century. Expertise in fiber identification, natural dye analysis, and
+          structural conservation of complex weave structures including tapestry, brocade, and
+          supplementary weft techniques. Reading both the material science and the cultural context.
+        </p>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.4">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
+            <path d="M2 12h20"/>
+          </svg>
+        </div>
+        <h3>Ottoman Embroideries</h3>
+        <p>
+          17th through 19th century Ottoman court and regional embroideries in silk, metallic thread,
+          and couched gold work on linen and cotton grounds. Active projects include an exhibition-grade
+          suite of six panels for a major Boston museum, with a December 2026 installation target.
+          Stabilization, mounting, and long-term storage expertise.
+        </p>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.4">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <h3>American Colonial Samplers</h3>
+        <p>
+          American needlework samplers and coverlets from 1720 through 1860. Currently conducting
+          a comprehensive condition survey of 22 samplers for a major New England maritime museum.
+          Full documentation, stabilization, and long-term storage consultation with institutional
+          care guidelines. Working familiarity with historical embroidery stitches and ground fabrics.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="section-label">What the Studio Offers</div>
+    <h2 class="section-title">Comprehensive care from first<br/>assessment through final documentation</h2>
+    <div class="divider"></div>
+    <div class="services-grid">
+      <div class="service-item">
+        <div class="service-num">01</div>
+        <h3>Condition Assessment</h3>
+        <p>Thorough examination of structure, fiber, dye, and environmental history.
+           Written report with photographic documentation, risk assessment,
+           and recommended treatment options with cost estimates.</p>
+      </div>
+      <div class="service-item">
+        <div class="service-num">02</div>
+        <h3>Stabilization and Structural Repair</h3>
+        <p>Warp and weft replacement, stitching consolidation, and structural support
+           using reversible, chemically stable materials. No cosmetic restoration.
+           All interventions are documented and reversible.</p>
+      </div>
+      <div class="service-item">
+        <div class="service-num">03</div>
+        <h3>Cleaning</h3>
+        <p>Surface cleaning and, where appropriate, aqueous or solvent cleaning
+           following dye stability testing. Conservative approach throughout:
+           no treatment that risks the original fiber or dye proceeds without client sign-off.</p>
+      </div>
+      <div class="service-item">
+        <div class="service-num">04</div>
+        <h3>Mounting and Framing</h3>
+        <p>Exhibition and storage mounts designed for long-term stability.
+           Linen-covered board systems, stitch-based attachment, and custom-built
+           frames appropriate to the object's weight, fragility, and display context.</p>
+      </div>
+      <div class="service-item">
+        <div class="service-num">05</div>
+        <h3>Environmental Consultation</h3>
+        <p>Storage environment assessment and recommendations for collections
+           in private, institutional, and transit settings. Temperature, humidity,
+           and light specifications provided in writing with monitoring protocols.</p>
+      </div>
+      <div class="service-item">
+        <div class="service-num">06</div>
+        <h3>Treatment Documentation</h3>
+        <p>Full written treatment records with high-resolution photography
+           at every treatment stage. Records are provided to the client in
+           accessible format and archived in the studio for reference.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTIVE PROJECTS -->
+  <section class="projects" id="projects">
+    <div class="section-label">Selected Active Commissions</div>
+    <h2 class="section-title">Three major institutional and<br/>private projects currently in progress</h2>
+    <div class="divider"></div>
+    <div class="project-list">
+      <div class="project-entry">
+        <div class="project-code">PTC-2024-031</div>
+        <div class="project-info">
+          <h3>Ottoman Embroidered Panel Suite</h3>
+          <p>
+            Six 17th and 18th century panels for the Museum of Fine Arts, Boston. Stabilization and mounting
+            phase underway in collaboration with the museum's senior textile conservator.
+            Exhibition target: December 2026.
+          </p>
+        </div>
+        <div class="project-status status-active">Active</div>
+      </div>
+      <div class="project-entry">
+        <div class="project-code">PTC-2025-008</div>
+        <div class="project-info">
+          <h3>American Sampler Collection - Peabody Essex Museum</h3>
+          <p>
+            Condition survey and treatment planning for 22 American samplers dating from 1750 to 1850,
+            Peabody Essex Museum, Salem. Survey phase complete; comprehensive report due January 2027.
+          </p>
+        </div>
+        <div class="project-status status-survey">Survey Complete</div>
+      </div>
+      <div class="project-entry">
+        <div class="project-code">PTC-2025-014</div>
+        <div class="project-info">
+          <h3>19th-Century Oaxacan Woven Textile - Private Commission</h3>
+          <p>
+            Handwoven wool textile from 19th-century Oaxaca, private collector via institutional referral.
+            Stitching consolidation in progress. Delivery November 2026.
+          </p>
+        </div>
+        <div class="project-status status-active">Active</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process">
+    <div class="section-label">How a Commission Works</div>
+    <h2 class="section-title">A clear, deliberate process<br/>from inquiry to delivery</h2>
+    <div class="divider"></div>
+    <div class="process-steps">
+      <div class="process-step">
+        <h3>Initial Inquiry</h3>
+        <p>Send a description and photographs through the contact form. A response
+           within two business days. No commitment required for initial review.</p>
+      </div>
+      <div class="process-step">
+        <h3>Condition Assessment</h3>
+        <p>Object arrives at the studio or is examined in situ. Written assessment
+           with photographs, findings, and proposed treatment options with cost ranges.</p>
+      </div>
+      <div class="process-step">
+        <h3>Treatment and Documentation</h3>
+        <p>Work proceeds only after the client approves the treatment proposal.
+           Each stage is photographed and recorded. Client updates at key milestones.</p>
+      </div>
+      <div class="process-step">
+        <h3>Delivery and Archive</h3>
+        <p>Object returned with a full written treatment record and high-resolution photographs.
+           Records are archived at the studio and available for future reference.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section class="philosophy">
+    <div class="section-label">Conservation Philosophy</div>
+    <div class="philosophy-quote">
+      "The standard for intervention is not whether we can improve an object's appearance -
+      it is whether we can do so in a way that respects what it already is,
+      and can be undone by whoever comes next."
+    </div>
+    <p class="philosophy-body">
+      Perez Textile Conservation works within the American Institute for Conservation's
+      Code of Ethics, with a particular emphasis on minimum intervention and reversibility.
+      Treatment proposals include options at different levels of intervention so that clients
+      can make informed decisions. Cosmetic restoration is not offered.
+    </p>
+    <p class="philosophy-body" style="margin-top:1rem;">
+      Documentation is treated as inseparable from the work itself. The treatment record
+      outlasts the conservator and the curator. It belongs to the object.
+    </p>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="section-label">Get in Touch</div>
+    <h2 class="section-title">Request a consultation or<br/>ask about the studio</h2>
+    <div class="divider"></div>
+    <div class="contact-grid">
+      <form class="contact-form">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Your name" />
+        </div>
+        <div class="form-group">
+          <label for="org">Institution or Collection</label>
+          <input type="text" id="org" placeholder="Museum, historical society, or private" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="type">Type of Inquiry</label>
+          <select id="type">
+            <option value="">Select...</option>
+            <option>Condition assessment</option>
+            <option>Active treatment commission</option>
+            <option>Storage and environmental consultation</option>
+            <option>Mounting and exhibition preparation</option>
+            <option>General question</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Description of Object and Inquiry</label>
+          <textarea id="message" placeholder="Describe the textile, its approximate age and condition, and what you are hoping to achieve..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-solid" style="width:fit-content;font-family:Georgia,serif;cursor:pointer;">
+          Send Inquiry
+        </button>
+      </form>
+      <div>
+        <div class="contact-info-item">
+          <h4>Studio Address</h4>
+          <p>47 Pond Street<br/>Jamaica Plain, Boston, MA 02130</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>Phone</h4>
+          <p>(617) 555-3800</p>
+        </div>
+        <div class="contact-info-item">
+          <h4>Email</h4>
+          <p>jesse.perez@Finthesiss.ai</p>
+        </div>
+        <div class="availability">
+          <h4>Current Availability</h4>
+          <p>
+            The studio is accepting new commissions for assessments beginning late 2026.
+            Institutional inquiries from museum partners are welcome at any time.
+            Response time for new inquiries is typically two business days.
+          </p>
+        </div>
+        <div style="margin-top:2rem;">
+          <div class="about-detail">
+            <h4>Geographic Reach</h4>
+            <p>Studio-based treatment in Jamaica Plain. On-site assessment available
+               throughout New England - Massachusetts, Connecticut, Rhode Island,
+               Vermont, and New Hampshire by arrangement.</p>
+          </div>
+          <div class="about-detail">
+            <h4>Working Languages</h4>
+            <p>English and Spanish. Correspondence in either language is welcome.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">Perez Textile Conservation - Jamaica Plain, Boston</div>
+    <ul class="footer-nav">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="footer-tagline">Conservation grounded in restraint.</div>
+  </footer>
+
+  <script>
+    // Smooth active-link highlighting
+    const sections = document.querySelectorAll('section[id]');
+    const links = document.querySelectorAll('.nav-links a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.style.color = '');
+          const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (active) active.style.color = 'var(--clay)';
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(s => observer.observe(s));
+
+    // Subtle entrance animation on scroll
+    const cards = document.querySelectorAll('.spec-card, .service-item, .process-step, .project-entry');
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach(c => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(18px)';
+      c.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      cardObserver.observe(c);
+    });
+
+    // Form submit handler
+    document.querySelector('.contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('button');
+      btn.textContent = 'Message Received';
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>

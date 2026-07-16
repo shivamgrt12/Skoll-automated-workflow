@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Console</title>
+<style>
+  :root{
+    --bg:#0f1417;--panel:#172025;--panel2:#1d282e;--line:#27343b;
+    --ink:#e6eef0;--muted:#8ea3ab;--teal:#1fb6a6;--steel:#3d7ea6;--amber:#e0a52e;--red:#d96a5a;--green:#56b877;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
+  header{background:linear-gradient(120deg,#13191d,#1c282e);border-bottom:3px solid var(--teal);
+    padding:20px 26px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:48px;height:48px;border-radius:12px;background:conic-gradient(from 220deg,var(--teal),var(--steel));
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#0f1417;font-size:18px}
+  header h1{font-size:19px;letter-spacing:.5px}
+  header .sub{color:var(--muted);font-size:12.5px}
+  .clock-mini{color:var(--muted);font-size:12px;text-align:right}
+  main{max-width:1120px;margin:0 auto;padding:22px 26px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:22px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-left:4px solid var(--teal);
+    opacity:0;transform:translateY(10px);animation:rise .5s forwards}
+  .kpi:nth-child(2){border-left-color:var(--steel);animation-delay:.07s}
+  .kpi:nth-child(3){border-left-color:var(--amber);animation-delay:.14s}
+  .kpi:nth-child(4){border-left-color:var(--green);animation-delay:.21s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .num{font-size:26px;font-weight:800}
+  .kpi .lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+  .row{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+  @media(max-width:820px){.row{grid-template-columns:1fr}}
+  .panel{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px}
+  .panel h2{font-size:14px;margin-bottom:3px}
+  .panel .hint{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .filters button{background:var(--panel);color:var(--muted);border:1px solid var(--line);padding:7px 14px;
+    border-radius:20px;cursor:pointer;font-size:12.5px;transition:all .18s}
+  .filters button:hover{color:var(--ink)}
+  .filters button.active{background:var(--teal);color:#0f1417;font-weight:700;border-color:var(--teal)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px}
+  tr.wo{transition:opacity .25s}
+  .tag{padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+  .t-closed{background:rgba(86,184,119,.16);color:var(--green)}
+  .t-parts{background:rgba(224,165,46,.16);color:var(--amber)}
+  .t-est{background:rgba(61,126,166,.18);color:#69acd6}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:20px 26px;text-align:center}
+  footer b{color:var(--teal)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">SP</div>
+    <div>
+      <h1>FIELD CONSOLE</h1>
+      <div class="sub">Senior Service Technician - residential and light commercial diagnostics</div>
+    </div>
+  </div>
+  <div class="clock-mini">Ashley Griffin - Summit Peak Heating and Cooling<br>Sierra Vista and Cochise County route</div>
+</header>
+
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="num" data-count="10">0</div><div class="lbl">Work orders this week</div></div>
+    <div class="kpi"><div class="num" data-count="1.6" data-dec="1">0</div><div class="lbl">Avg labor hours</div></div>
+    <div class="kpi"><div class="num" data-count="50">0</div><div class="lbl">Season OT hours</div></div>
+    <div class="kpi"><div class="num" data-count="0">0</div><div class="lbl">Callbacks</div></div>
+  </div>
+
+  <div class="row">
+    <div class="panel">
+      <h2>Work orders</h2>
+      <div class="hint">The diagnostics Dina routes to me first. Filter by status.</div>
+      <div class="filters" id="filters">
+        <button class="active" data-f="all">All</button>
+        <button data-f="closed">Closed</button>
+        <button data-f="parts">Parts ordered</button>
+        <button data-f="est">Estimate</button>
+      </div>
+      <table>
+        <thead><tr><th>WO</th><th>Customer</th><th>System</th><th>Diagnosis</th><th>Status</th></tr></thead>
+        <tbody id="woBody">
+          <tr class="wo" data-s="closed"><td>SP-44021</td><td>Reyes</td><td>Trane XR15</td><td>Failed run capacitor</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44022</td><td>Coronado Plaza</td><td>Carrier RTU 5T</td><td>Dirty flame sensor</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44031</td><td>Whitfield</td><td>Goodman 3T</td><td>Clogged evap coil</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44032</td><td>Dunlap</td><td>Lennox furnace</td><td>Cracked igniter</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44040</td><td>Buena HS</td><td>Bryant 7.5T</td><td>Shorted contactor</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44051</td><td>Marsh</td><td>Trane XR14</td><td>Low charge, schrader leak</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="parts"><td>SP-44052</td><td>Okafor</td><td>Rheem 4T</td><td>Failing blower motor bearing</td><td><span class="tag t-parts">Parts ordered</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44060</td><td>Sierra Suites</td><td>Carrier 10T</td><td>Stuck zone damper</td><td><span class="tag t-closed">Closed</span></td></tr>
+          <tr class="wo" data-s="est"><td>SP-44061</td><td>Pruitt</td><td>Goodman 2.5T</td><td>Seized compressor</td><td><span class="tag t-est">Estimate</span></td></tr>
+          <tr class="wo" data-s="closed"><td>SP-44070</td><td>Linwood</td><td>Day and Night 3T</td><td>Failed 24V transformer</td><td><span class="tag t-closed">Closed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>What broke</h2>
+      <div class="hint">Diagnosis mix this week.</div>
+      <svg viewBox="0 0 240 240" id="donut" role="img" aria-label="Diagnosis breakdown"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Peak season overtime</h2>
+    <div class="hint">May through September is the busy stretch. Overtime goes to Chloe's summer.</div>
+    <svg viewBox="0 0 700 200" id="otChart" role="img" aria-label="Overtime by week"></svg>
+  </div>
+</main>
+
+<footer>
+  Personal job dashboard for <b>Ashley Griffin</b> - EPA 608 Universal certified - twenty years in the trade
+</footer>
+
+<script>
+  // counters
+  document.querySelectorAll('.num[data-count]').forEach(function(el){
+    var t=parseFloat(el.dataset.count),dec=parseInt(el.dataset.dec||'0'),st=null;
+    function step(ts){if(!st)st=ts;var p=Math.min((ts-st)/1000,1);var v=t*(1-Math.pow(1-p,3));
+      el.textContent=dec?v.toFixed(dec):Math.round(v);if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  });
+  // filters
+  var fbtns=document.querySelectorAll('#filters button'),rows=document.querySelectorAll('.wo');
+  fbtns.forEach(function(b){b.addEventListener('click',function(){
+    fbtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    var f=b.dataset.f;
+    rows.forEach(function(r){
+      var show=(f==='all'||r.dataset.s===f);
+      r.style.display=show?'':'none';
+    });
+  });});
+  // donut chart
+  (function(){
+    var data=[{n:'Electrical',v:4,c:'#e0a52e'},{n:'Airflow / coil',v:2,c:'#1fb6a6'},
+              {n:'Refrigerant',v:2,c:'#3d7ea6'},{n:'Mechanical',v:2,c:'#d96a5a'}];
+    var total=data.reduce((a,b)=>a+b.v,0),cx=120,cy=120,r=82,rin=48,ang=-Math.PI/2,s='';
+    data.forEach(function(d){
+      var a2=ang+d.v/total*2*Math.PI;
+      var x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+      var xi1=cx+rin*Math.cos(a2),yi1=cy+rin*Math.sin(a2),xi2=cx+rin*Math.cos(ang),yi2=cy+rin*Math.sin(ang);
+      var large=(a2-ang)>Math.PI?1:0;
+      s+='<path d="M'+x1+' '+y1+' A'+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' L'+xi1+' '+yi1+
+         ' A'+rin+' '+rin+' 0 '+large+' 0 '+xi2+' '+yi2+' Z" fill="'+d.c+'" opacity="0">'+
+         '<animate attributeName="opacity" from="0" to="1" dur="0.5s" fill="freeze"/></path>';
+      ang=a2;
+    });
+    s+='<text x="120" y="116" text-anchor="middle" fill="#e6eef0" font-size="26" font-weight="800">10</text>';
+    s+='<text x="120" y="138" text-anchor="middle" fill="#8ea3ab" font-size="11">work orders</text>';
+    document.getElementById('donut').innerHTML=s;
+    document.getElementById('legend').innerHTML=data.map(d=>'<span><i style="background:'+d.c+'"></i>'+d.n+' ('+d.v+')</span>').join('');
+  })();
+  // OT bar chart
+  (function(){
+    var data=[{w:'5/9',v:4},{w:'5/23',v:6},{w:'6/6',v:5},{w:'6/20',v:8},{w:'7/11',v:7},{w:'7/25',v:5},{w:'8/8',v:6},{w:'8/22',v:9}];
+    var w=700,h=200,pad=34,max=10,gap=(w-2*pad)/data.length,bw=gap*0.55,s='';
+    for(var g=0;g<=5;g++){var gy=pad+g*((h-2*pad)/5);
+      s+='<line x1="'+pad+'" y1="'+gy+'" x2="'+(w-pad)+'" y2="'+gy+'" stroke="#27343b"/>';}
+    data.forEach(function(d,i){
+      var bh=d.v/max*(h-2*pad),bx=pad+i*gap+gap*0.22,by=h-pad-bh;
+      s+='<rect x="'+bx+'" y="'+(h-pad)+'" width="'+bw+'" height="0" rx="4" fill="url(#g)">'+
+         '<animate attributeName="height" from="0" to="'+bh+'" dur="0.7s" begin="'+(i*0.07)+'s" fill="freeze"/>'+
+         '<animate attributeName="y" from="'+(h-pad)+'" to="'+by+'" dur="0.7s" begin="'+(i*0.07)+'s" fill="freeze"/></rect>';
+      s+='<text x="'+(bx+bw/2)+'" y="'+(h-pad+16)+'" fill="#8ea3ab" font-size="11" text-anchor="middle">'+d.w+'</text>';
+      s+='<text x="'+(bx+bw/2)+'" y="'+(by-5)+'" fill="#e6eef0" font-size="11" text-anchor="middle">'+d.v+'</text>';
+    });
+    s='<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1fb6a6"/><stop offset="1" stop-color="#3d7ea6"/></linearGradient></defs>'+s;
+    document.getElementById('otChart').innerHTML=s;
+  })();
+</script>
+</body>
+</html>

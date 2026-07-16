@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coral Recovery Analysis, Wrightsville Sound</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Palatino Linotype",Palatino,Georgia,serif;background:#fbf4e6;color:#3a2f24;line-height:1.6}
+  header.rep{background:linear-gradient(120deg,#c2542f,#e0843f);color:#fff7ec;padding:40px 30px;border-bottom:6px solid #7a3d1d}
+  header.rep h1{font-size:2rem;margin-bottom:6px}
+  header.rep .sub{font-size:1rem;color:#ffe7cf}
+  header.rep .meta{margin-top:10px;font-size:.86rem;color:#ffd9b8}
+  .wrap{max-width:980px;margin:0 auto;padding:30px 24px}
+  section.block{background:#fff;border:1px solid #ecd9b8;border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 2px 10px rgba(122,61,29,.08)}
+  h2{color:#b14a26;font-size:1.3rem;margin-bottom:12px;border-left:5px solid #e0843f;padding-left:12px}
+  p{margin-bottom:12px}
+  .figcap{font-size:.82rem;color:#8a6f53;margin-top:8px;font-style:italic}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0;font-size:.84rem}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .swatch{width:14px;height:14px;border-radius:3px;display:inline-block}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:10px}
+  th,td{padding:9px 12px;border-bottom:1px solid #eaddc4;text-align:left}
+  th{background:#f6e6cc;color:#8a4523}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .pulse{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2e8b57;margin-right:6px;animation:beat 1.8s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+  .toggle{margin:12px 0}
+  .toggle button{background:#e0843f;color:#fff;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:.88rem;margin-right:8px;transition:background .25s}
+  .toggle button:hover{background:#c2542f}
+  footer.rep{background:#3a2f24;color:#f0e2cc;text-align:center;padding:26px;font-size:.84rem}
+  footer.rep a{color:#e0843f;text-decoration:none}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr}header.rep h1{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<header class="rep">
+  <h1>Coral Recovery Analysis</h1>
+  <div class="sub">Wrightsville Sound nearshore hard bottom, biweekly transect surveys</div>
+  <div class="meta">Prepared by Darren Mitchell Cash, advised by Professor Karen Whitfield, Oakridge University. Period October 2025 to February 2026.</div>
+</header>
+
+<div class="wrap">
+  <section class="block">
+    <h2>Summary</h2>
+    <p><span class="pulse"></span>Across the first twenty surveys at four sites, the healthy share of colonies rose at three of four sites as the water cooled from the 2024 warm water event. Bleached counts fell at all four sites between the October and February rounds. The deeper, clearer sites held more colonies overall, while the shallow sites added new recruits late in the winter.</p>
+  </section>
+
+  <section class="block">
+    <h2>Healthy share over time</h2>
+    <div class="legend">
+      <span><span class="swatch" style="background:#c2542f"></span>Masonboro Ledge</span>
+      <span><span class="swatch" style="background:#2e8b57"></span>Crystal Pier Reef</span>
+      <span><span class="swatch" style="background:#3b6ea5"></span>Five Mile Ledge</span>
+      <span><span class="swatch" style="background:#d4a017"></span>Liberty Rocks</span>
+    </div>
+    <svg id="lines" viewBox="0 0 640 300" width="100%" role="img" aria-label="Healthy share trend by site">
+      <line x1="50" y1="250" x2="620" y2="250" stroke="#bba37e" stroke-width="1"/>
+      <line x1="50" y1="40" x2="50" y2="250" stroke="#bba37e" stroke-width="1"/>
+      <text x="14" y="55" font-size="11" fill="#8a6f53">95</text>
+      <text x="14" y="150" font-size="11" fill="#8a6f53">80</text>
+      <text x="14" y="250" font-size="11" fill="#8a6f53">65</text>
+    </svg>
+    <div class="figcap">Figure 1. Mean healthy colony share by survey round, October 2025 through February 2026. Drawn from the shared survey base.</div>
+  </section>
+
+  <section class="block">
+    <h2>Bleached colony counts</h2>
+    <div class="toggle">
+      <button id="bToggle">Switch to recruits view</button>
+    </div>
+    <canvas id="bars" width="640" height="280" style="width:100%;border:1px solid #eaddc4;border-radius:8px;background:#fffdf7"></canvas>
+    <div class="figcap">Figure 2. Mean bleached colonies per transect by site, falling across the cool months. Toggle to see late winter recruits.</div>
+  </section>
+
+  <section class="block">
+    <h2>Site detail</h2>
+    <div class="grid2">
+      <div>
+        <table>
+          <thead><tr><th>Site</th><th>Depth ft</th><th>Surveys</th><th>Change</th></tr></thead>
+          <tbody>
+            <tr><td>Masonboro Ledge</td><td>42 to 45</td><td>6</td><td>+5.0</td></tr>
+            <tr><td>Crystal Pier Reef</td><td>36 to 38</td><td>6</td><td>+6.3</td></tr>
+            <tr><td>Five Mile Ledge</td><td>58 to 60</td><td>4</td><td>-1.5</td></tr>
+            <tr><td>Liberty Rocks</td><td>48</td><td>4</td><td>+10.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <p>Liberty Rocks, the coldest and siltiest of the four, showed the largest gain once the front systems pushed water temperatures down. Five Mile Ledge dipped slightly, which the next round of quadrat reshoots should clarify before the October 2026 analysis.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="rep">
+  <p>Darren Mitchell Cash, Marine Biology, Oakridge University Wilmington campus</p>
+  <p>Contact <a href="mailto:darren.cash@Greenridertech.co">darren.cash@Greenridertech.co</a>, Wilmington, North Carolina</p>
+  <p>Copyright 2026 Darren Mitchell Cash. Working analysis for the honors thesis, not for redistribution.</p>
+</footer>
+
+<script>
+  // SVG line chart
+  var svg=document.getElementById("lines");
+  var rounds=[0,1,2,3,4,5];
+  var series={
+    Masonboro:{c:"#c2542f",v:[85,82,86,88,89,90]},
+    Crystal:{c:"#2e8b57",v:[84.4,85,86.7,88,89,90.7]},
+    FiveMile:{c:"#3b6ea5",v:[90.6,84.6,88,89,89.5,89.1]},
+    Liberty:{c:"#d4a017",v:[71.4,74,77,80,81,82.1]}
+  };
+  function sx(i){return 50+i*(570/5)}
+  function sy(val){return 250-((val-65)/(95-65))*210}
+  Object.keys(series).forEach(function(k){
+    var s=series[k], d="";
+    s.v.forEach(function(val,i){ d+=(i===0?"M":"L")+sx(i)+" "+sy(val)+" "; });
+    var path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d",d); path.setAttribute("fill","none");
+    path.setAttribute("stroke",s.c); path.setAttribute("stroke-width","2.5");
+    svg.appendChild(path);
+    s.v.forEach(function(val,i){
+      var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx",sx(i)); c.setAttribute("cy",sy(val)); c.setAttribute("r","3.5");
+      c.setAttribute("fill",s.c); svg.appendChild(c);
+    });
+  });
+
+  // Canvas bars with toggle
+  var cv=document.getElementById("bars"), ctx=cv.getContext("2d");
+  var sites=["Masonboro","Crystal Pier","Five Mile","Liberty"];
+  var bleached=[7.7,5.5,5.8,8.5], recruits=[4,3,2,6];
+  var showBleached=true;
+  function drawBars(){
+    var vals=showBleached?bleached:recruits;
+    var color=showBleached?"#c2542f":"#2e8b57";
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var max=Math.max.apply(null,vals)+2, pad=50, w=(cv.width-pad*2)/vals.length, base=cv.height-40;
+    ctx.strokeStyle="#bba37e"; ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(cv.width-20,base); ctx.stroke();
+    vals.forEach(function(v,i){
+      var h=(v/max)*(base-30), x=pad+i*w+14, y=base-h;
+      ctx.fillStyle=color; ctx.fillRect(x,y,w-28,h);
+      ctx.fillStyle="#6a5232"; ctx.font="12px serif"; ctx.textAlign="center";
+      ctx.fillText(sites[i],x+(w-28)/2,base+18);
+      ctx.fillStyle="#3a2f24"; ctx.fillText(String(v),x+(w-28)/2,y-6);
+    });
+  }
+  document.getElementById("bToggle").addEventListener("click",function(){
+    showBleached=!showBleached;
+    this.textContent=showBleached?"Switch to recruits view":"Switch to bleached view";
+    drawBars();
+  });
+  drawBars();
+</script>
+</body>
+</html>

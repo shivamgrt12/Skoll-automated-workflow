@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Dashboard - Perez Textile Conservation</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #1a1612;
+      --surface: #242018;
+      --surface2: #2e2820;
+      --border: rgba(201, 168, 124, 0.14);
+      --sand: #C9A87C;
+      --clay: #8B5E3C;
+      --linen: #F2EDE4;
+      --accent-green: #5a7a52;
+      --accent-gold: #B08840;
+      --accent-red: #8B3A3A;
+      --muted: rgba(242, 237, 228, 0.5);
+      --text: rgba(242, 237, 228, 0.88);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-brand {
+      padding: 0 20px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .sidebar-brand .initials {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--clay);
+      color: var(--linen); font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px; font-weight: 600;
+    }
+    .sidebar-brand .name { font-size: 12px; color: var(--text); line-height: 1.4; }
+    .sidebar-brand .title { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .sidebar-nav { flex: 1; padding: 0 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 6px;
+      font-size: 12px; color: var(--muted);
+      cursor: pointer; transition: all 0.18s;
+      margin-bottom: 2px; border: none; background: none;
+      width: 100%; text-align: left;
+    }
+    .nav-item.active, .nav-item:hover {
+      background: rgba(201, 168, 124, 0.1);
+      color: var(--sand);
+    }
+    .nav-item .icon { width: 14px; opacity: 0.8; }
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 10px; color: var(--muted);
+    }
+    .status-dot {
+      display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent-green);
+      margin-right: 6px;
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 220px;
+      padding: 28px 32px;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 28px;
+    }
+    .topbar h1 { font-size: 18px; font-weight: 500; color: var(--linen); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .date-badge {
+      font-size: 11px; color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 20px;
+    }
+    .alert-badge {
+      background: rgba(139, 94, 60, 0.2);
+      border: 1px solid var(--clay);
+      color: var(--sand);
+      font-size: 11px; padding: 5px 12px;
+      border-radius: 20px; cursor: pointer;
+    }
+
+    /* STAT CARDS */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 20px;
+    }
+    .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .stat-value { font-size: 26px; color: var(--linen); font-weight: 300; margin-bottom: 4px; }
+    .stat-sub { font-size: 11px; color: var(--muted); }
+    .stat-badge {
+      display: inline-block; font-size: 10px; padding: 2px 7px;
+      border-radius: 3px; margin-left: 6px;
+    }
+    .badge-up { background: rgba(90, 122, 82, 0.25); color: #8ec885; }
+    .badge-warn { background: rgba(176, 136, 64, 0.25); color: var(--accent-gold); }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+    /* PANELS */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 20px;
+    }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 18px;
+    }
+    .panel-title { font-size: 13px; color: var(--linen); font-weight: 500; }
+    .panel-action { font-size: 11px; color: var(--clay); cursor: pointer; }
+    .chart-wrap { position: relative; }
+
+    /* PROJECT TABLE */
+    .proj-table { width: 100%; border-collapse: collapse; }
+    .proj-table th {
+      text-align: left; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted);
+      padding: 0 0 12px; border-bottom: 1px solid var(--border);
+    }
+    .proj-table td {
+      padding: 12px 0; border-bottom: 1px solid rgba(201, 168, 124, 0.07);
+      font-size: 12px;
+    }
+    .proj-table tr:last-child td { border-bottom: none; }
+    .proj-code { font-size: 10px; color: var(--clay); }
+    .proj-name { color: var(--text); font-size: 12px; }
+    .proj-client { color: var(--muted); font-size: 11px; }
+    .proj-bar-wrap { width: 100%; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; }
+    .proj-bar { height: 5px; border-radius: 3px; }
+    .status-pill {
+      display: inline-block; font-size: 10px; padding: 2px 8px;
+      border-radius: 10px; border: 1px solid;
+    }
+    .pill-active { color: #8ec885; border-color: rgba(90, 122, 82, 0.5); background: rgba(90, 122, 82, 0.1); }
+    .pill-survey { color: var(--accent-gold); border-color: rgba(176, 136, 64, 0.5); background: rgba(176, 136, 64, 0.1); }
+
+    /* ENV TABLE */
+    .env-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid rgba(201, 168, 124, 0.07);
+      font-size: 12px;
+    }
+    .env-row:last-child { border-bottom: none; }
+    .env-zone { color: var(--muted); font-size: 11px; }
+    .env-vals { display: flex; gap: 16px; text-align: right; }
+    .env-val { color: var(--linen); font-weight: 300; }
+    .env-label { font-size: 9px; color: var(--muted); display: block; }
+    .env-status {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; margin-left: 10px;
+    }
+    .env-ok { background: var(--accent-green); }
+    .env-warn { background: var(--accent-gold); }
+    .env-alert { background: var(--accent-red); }
+
+    /* DEADLINE LIST */
+    .deadline-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid rgba(201, 168, 124, 0.07);
+    }
+    .deadline-item:last-child { border-bottom: none; }
+    .dl-date {
+      min-width: 44px; text-align: center;
+      background: rgba(201, 168, 124, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 4px; padding: 4px 0;
+    }
+    .dl-month { font-size: 9px; text-transform: uppercase; color: var(--sand); display: block; }
+    .dl-day { font-size: 14px; color: var(--linen); font-weight: 300; line-height: 1; }
+    .dl-info { flex: 1; }
+    .dl-title { font-size: 12px; color: var(--text); }
+    .dl-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .dl-urgency { font-size: 10px; }
+    .urg-high { color: var(--accent-gold); }
+    .urg-med { color: var(--muted); }
+
+    /* FINANCIAL SUMMARY */
+    .fin-row {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 0;
+      border-bottom: 1px solid rgba(201, 168, 124, 0.07);
+      font-size: 12px;
+    }
+    .fin-row:last-child { border-bottom: none; }
+    .fin-label { color: var(--muted); }
+    .fin-val { color: var(--linen); font-weight: 300; }
+    .fin-val.positive { color: #8ec885; }
+    .fin-val.negative { color: #c88e8e; }
+
+    /* SECTION DIVIDERS */
+    .section-heading {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--muted); margin-bottom: 16px; margin-top: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-heading::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="initials">JP</div>
+      <div class="name">Jesse Perez</div>
+      <div class="title">Perez Textile Conservation</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active">
+        <span class="icon">&#9632;</span> Overview
+      </button>
+      <button class="nav-item">
+        <span class="icon">&#9711;</span> Projects
+      </button>
+      <button class="nav-item">
+        <span class="icon">&#9650;</span> Environment
+      </button>
+      <button class="nav-item">
+        <span class="icon">&#9724;</span> Finance
+      </button>
+      <button class="nav-item">
+        <span class="icon">&#9654;</span> Calendar
+      </button>
+      <button class="nav-item">
+        <span class="icon">&#9632;</span> Contacts
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="status-dot"></span>Studio systems online
+      <div style="margin-top:8px;font-size:10px;color:rgba(242,237,228,0.3);">Updated 2026-02-14 17:30</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <h1>Studio Overview</h1>
+      <div class="topbar-right">
+        <span class="date-badge">Friday, February 14, 2026</span>
+        <span class="alert-badge">1 Env Alert - Storage</span>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Active Projects</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub">2 museum, 1 private</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Feb Income (YTD)</div>
+        <div class="stat-value">$12,550</div>
+        <div class="stat-sub">Jan: $13,200 <span class="stat-badge badge-warn">-5%</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Samuel Hours (Feb)</div>
+        <div class="stat-value">28 h</div>
+        <div class="stat-sub">Target: 60 h/month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Storage RH</div>
+        <div class="stat-value" style="color: var(--accent-gold);">54%</div>
+        <div class="stat-sub">Setpoint 50%. Recovering <span class="stat-badge badge-warn">WARN</span></div>
+      </div>
+    </div>
+
+    <!-- PROJECTS + ENV -->
+    <div class="section-heading">Active Commissions</div>
+    <div class="grid-3" style="margin-bottom:24px;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Project Status</span>
+          <span class="panel-action">View all</span>
+        </div>
+        <table class="proj-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Progress</th>
+              <th>Due</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="proj-code">PTC-2024-031</div>
+                <div class="proj-name">Ottoman Panel Suite</div>
+                <div class="proj-client">MFA Boston</div>
+              </td>
+              <td style="min-width:80px;">
+                <div class="proj-bar-wrap">
+                  <div class="proj-bar" style="width:62%;background:var(--clay);"></div>
+                </div>
+                <div style="font-size:10px;color:var(--muted);margin-top:4px;">62%</div>
+              </td>
+              <td style="font-size:11px;color:var(--muted);">Dec 2026</td>
+              <td><span class="status-pill pill-active">Active</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="proj-code">PTC-2025-008</div>
+                <div class="proj-name">Sampler Survey</div>
+                <div class="proj-client">Peabody Essex Museum</div>
+              </td>
+              <td>
+                <div class="proj-bar-wrap">
+                  <div class="proj-bar" style="width:80%;background:var(--accent-gold);"></div>
+                </div>
+                <div style="font-size:10px;color:var(--muted);margin-top:4px;">80%</div>
+              </td>
+              <td style="font-size:11px;color:var(--muted);">Jan 2027</td>
+              <td><span class="status-pill pill-survey">Report Due</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="proj-code">PTC-2025-014</div>
+                <div class="proj-name">Oaxacan Textile</div>
+                <div class="proj-client">Private - Hartwell</div>
+              </td>
+              <td>
+                <div class="proj-bar-wrap">
+                  <div class="proj-bar" style="width:45%;background:var(--accent-green);"></div>
+                </div>
+                <div style="font-size:10px;color:var(--muted);margin-top:4px;">45%</div>
+              </td>
+              <td style="font-size:11px;color:var(--muted);">Nov 2026</td>
+              <td><span class="status-pill pill-active">Active</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Studio Environment</span>
+          <span class="panel-action">Full log</span>
+        </div>
+        <div>
+          <div class="env-row">
+            <div>
+              <div style="color:var(--text);font-size:12px;">Archival Storage</div>
+              <div class="env-zone">S-STOR-1</div>
+            </div>
+            <div class="env-vals">
+              <div><span class="env-label">Temp</span><span class="env-val">19.5 C</span></div>
+              <div><span class="env-label">RH</span><span class="env-val" style="color:var(--accent-gold);">54%</span></div>
+            </div>
+            <span class="env-status env-warn"></span>
+          </div>
+          <div class="env-row">
+            <div>
+              <div style="color:var(--text);font-size:12px;">Treatment Room</div>
+              <div class="env-zone">S-TRMT-1</div>
+            </div>
+            <div class="env-vals">
+              <div><span class="env-label">Temp</span><span class="env-val">20.7 C</span></div>
+              <div><span class="env-label">RH</span><span class="env-val">52%</span></div>
+            </div>
+            <span class="env-status env-ok"></span>
+          </div>
+          <div class="env-row">
+            <div>
+              <div style="color:var(--text);font-size:12px;">Humidification Chamber</div>
+              <div class="env-zone">S-CHMB-1</div>
+            </div>
+            <div class="env-vals">
+              <div><span class="env-label">Temp</span><span class="env-val">20.9 C</span></div>
+              <div><span class="env-label">RH</span><span class="env-val">68%</span></div>
+            </div>
+            <span class="env-status env-ok"></span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">LAST ALERT</div>
+          <div style="font-size:11px;color:var(--accent-gold);">
+            Feb 11, 02:14 - Storage RH peaked at 61%. Recovered to 54% by 08:00.
+            Cause: overnight humidifier runoff. No object contact.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="section-heading">Income and Environment Trends</div>
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Monthly Income - Last 12 Months (USD)</span>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="incomeChart"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Storage RH - February 2026</span>
+        </div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="rhChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEADLINES + FINANCE -->
+    <div class="section-heading">Upcoming and Finance</div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Upcoming Deadlines</span>
+        </div>
+        <div class="deadline-item">
+          <div class="dl-date"><span class="dl-month">Oct</span><span class="dl-day">17</span></div>
+          <div class="dl-info">
+            <div class="dl-title">Mexico trip planning deadline</div>
+            <div class="dl-sub">Flights and logistics for winter visit with Carmen</div>
+          </div>
+          <span class="dl-urgency urg-high">High</span>
+        </div>
+        <div class="deadline-item">
+          <div class="dl-date"><span class="dl-month">Nov</span><span class="dl-day">11</span></div>
+          <div class="dl-info">
+            <div class="dl-title">AIC Annual Meeting - Salt Lake City</div>
+            <div class="dl-sub">Presenting Nov 12 - reversible mounting techniques</div>
+          </div>
+          <span class="dl-urgency urg-high">High</span>
+        </div>
+        <div class="deadline-item">
+          <div class="dl-date"><span class="dl-month">Nov</span><span class="dl-day">20</span></div>
+          <div class="dl-info">
+            <div class="dl-title">Oaxacan textile delivery</div>
+            <div class="dl-sub">Final inspection with Dr. Amina Rashid</div>
+          </div>
+          <span class="dl-urgency urg-med">Mid</span>
+        </div>
+        <div class="deadline-item">
+          <div class="dl-date"><span class="dl-month">Dec</span><span class="dl-day">5</span></div>
+          <div class="dl-info">
+            <div class="dl-title">MFA Ottoman Suite exhibition opens</div>
+            <div class="dl-sub">Private preview - full suite must be mounted</div>
+          </div>
+          <span class="dl-urgency urg-high">High</span>
+        </div>
+        <div class="deadline-item">
+          <div class="dl-date"><span class="dl-month">Jan</span><span class="dl-day">15</span></div>
+          <div class="dl-info">
+            <div class="dl-title">Peabody Essex sampler report due</div>
+            <div class="dl-sub">Full condition survey - Claire Pemberton</div>
+          </div>
+          <span class="dl-urgency urg-high">High</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">February 2026 Financial Summary</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Conservation income (invoiced)</span>
+          <span class="fin-val positive">$10,050</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Workshop income</span>
+          <span class="fin-val positive">$450</span>
+        </div>
+        <div class="fin-row" style="border-bottom:1px solid rgba(201,168,124,0.2);padding-bottom:12px;margin-bottom:4px;">
+          <span class="fin-label">Consulting income</span>
+          <span class="fin-val positive">$2,050</span>
+        </div>
+        <div class="fin-row" style="font-weight:500;">
+          <span class="fin-label" style="color:var(--text);">Gross income</span>
+          <span class="fin-val positive" style="font-size:15px;">$12,550</span>
+        </div>
+        <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+        <div class="fin-row">
+          <span class="fin-label">Rent (studio + apartment)</span>
+          <span class="fin-val negative">-$2,400</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Samuel Okafor - hours</span>
+          <span class="fin-val negative">-$672</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Conservation supplies</span>
+          <span class="fin-val negative">-$404</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Health insurance</span>
+          <span class="fin-val negative">-$480</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Subscriptions</span>
+          <span class="fin-val negative">-$285</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Tax reserve (30%)</span>
+          <span class="fin-val negative">-$3,765</span>
+        </div>
+        <div class="fin-row">
+          <span class="fin-label">Savings transfer</span>
+          <span class="fin-val negative">-$600</span>
+        </div>
+        <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+        <div class="fin-row">
+          <span class="fin-label" style="color:var(--text);">Estimated net buffer</span>
+          <span class="fin-val positive" style="font-size:14px;">+$3,944</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // INCOME CHART
+    const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+    const income = [6400, 7200, 8100, 6900, 5800, 6200, 9400, 7800, 8200, 11500, 9800, 13200, 12550];
+    const ctxIncome = document.getElementById('incomeChart').getContext('2d');
+    new Chart(ctxIncome, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Income',
+          data: income,
+          backgroundColor: months.map((_, i) => i === income.length - 1 ? 'rgba(139,94,60,0.8)' : 'rgba(201,168,124,0.3)'),
+          borderColor: months.map((_, i) => i === income.length - 1 ? 'rgba(139,94,60,1)' : 'rgba(201,168,124,0.6)'),
+          borderWidth: 1,
+          borderRadius: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            ticks: { color: 'rgba(242,237,228,0.45)', font: { size: 10 }, callback: v => '$' + (v/1000).toFixed(0) + 'k' },
+            grid: { color: 'rgba(201,168,124,0.08)' },
+            border: { color: 'rgba(201,168,124,0.1)' }
+          },
+          x: {
+            ticks: { color: 'rgba(242,237,228,0.45)', font: { size: 10 } },
+            grid: { display: false },
+            border: { color: 'rgba(201,168,124,0.1)' }
+          }
+        }
+      }
+    });
+
+    // RH CHART
+    const rhDays = Array.from({length: 14}, (_, i) => `Feb ${i+1}`);
+    const rhData = [51, 48, 50, 52, 49, 51, 48, 50, 52, 49, 61, 54, 50, 52];
+    const ctxRH = document.getElementById('rhChart').getContext('2d');
+    new Chart(ctxRH, {
+      type: 'line',
+      data: {
+        labels: rhDays,
+        datasets: [{
+          label: 'RH %',
+          data: rhData,
+          borderColor: 'rgba(201, 168, 124, 0.8)',
+          backgroundColor: 'rgba(201, 168, 124, 0.08)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: rhData.map(v => v > 55 ? 5 : 2),
+          pointBackgroundColor: rhData.map(v => v > 55 ? '#B08840' : 'rgba(201,168,124,0.7)'),
+          borderWidth: 1.5,
+        }, {
+          label: 'Setpoint',
+          data: Array(14).fill(50),
+          borderColor: 'rgba(90, 122, 82, 0.4)',
+          borderDash: [4, 4],
+          borderWidth: 1,
+          pointRadius: 0,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, labels: { color: 'rgba(242,237,228,0.45)', font: { size: 10 }, boxWidth: 12 } }
+        },
+        scales: {
+          y: {
+            min: 42, max: 68,
+            ticks: { color: 'rgba(242,237,228,0.45)', font: { size: 10 }, callback: v => v + '%' },
+            grid: { color: 'rgba(201,168,124,0.08)' },
+            border: { color: 'rgba(201,168,124,0.1)' }
+          },
+          x: {
+            ticks: { color: 'rgba(242,237,228,0.45)', font: { size: 9 }, maxRotation: 45 },
+            grid: { display: false },
+            border: { color: 'rgba(201,168,124,0.1)' }
+          }
+        }
+      }
+    });
+
+    // Nav item click
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Studio OS — Jesse Page Photography</title>
+<meta name="description" content="Business operations dashboard for Jesse Page, freelance food photographer, Brooklyn." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#F6F1E8; --panel:#FFFDF8; --panel-2:#FBF6EC; --ink:#2A2420; --ink-soft:#6B6258;
+    --line:#E7DECF; --clay:#B5613A; --clay-d:#94492a; --sage:#6E7355; --honey:#D69A4E;
+    --plum:#7A4A52; --teal:#3F6E66; --good:#4F7A52; --warn:#C2853A; --bad:#B0503F;
+    --shadow:0 1px 2px rgba(42,36,32,.04),0 8px 24px rgba(42,36,32,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;line-height:1.45}
+  h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+  .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  /* Sidebar */
+  .sidebar{background:linear-gradient(180deg,#2C2622,#251f1b);color:#EFE7D9;
+    padding:26px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+  .brand{display:flex;align-items:center;gap:11px;padding:0 8px 18px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--clay),var(--honey));
+    display:grid;place-items:center;font-family:'Fraunces';font-weight:700;color:#fff;font-size:19px}
+  .brand b{font-family:'Fraunces';font-size:17px;display:block;line-height:1.1}
+  .brand span{font-size:11px;color:#bdae99;letter-spacing:.04em}
+  .nav-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.13em;color:#8d8270;margin:16px 10px 4px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#d9cfbe;
+    font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:.15s}
+  .nav a svg{width:18px;height:18px;opacity:.8}
+  .nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav a.active{background:linear-gradient(135deg,rgba(181,97,58,.9),rgba(214,154,78,.85));color:#fff;box-shadow:0 4px 14px rgba(181,97,58,.3)}
+  .nav a.active svg{opacity:1}
+  .side-foot{margin-top:auto;padding:12px;border-radius:12px;background:rgba(255,255,255,.05);font-size:12px;color:#c9bfad}
+  .side-foot b{color:#fff;font-family:'Inter';font-weight:600}
+  /* Main */
+  .main{padding:26px 30px 60px;max-width:1320px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .topbar .greet h1{font-size:25px}
+  .topbar .greet p{color:var(--ink-soft);font-size:13.5px;margin-top:2px}
+  .top-actions{display:flex;align-items:center;gap:10px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+    padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:500;box-shadow:var(--shadow)}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--good)}
+  .btn{background:var(--clay);color:#fff;border:none;padding:9px 16px;border-radius:10px;font-weight:600;
+    font-size:13px;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(181,97,58,.25);transition:.15s}
+  .btn:hover{background:var(--clay-d)}
+  .btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+  /* KPI cards */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-26px;top:-26px;width:80px;height:80px;border-radius:50%;opacity:.10}
+  .kpi.c1::after{background:var(--clay)} .kpi.c2::after{background:var(--sage)}
+  .kpi.c3::after{background:var(--honey)} .kpi.c4::after{background:var(--plum)}
+  .kpi .label{font-size:12px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .kpi .val{font-family:'Fraunces';font-size:30px;font-weight:600;margin:7px 0 3px;letter-spacing:-.02em}
+  .kpi .sub{font-size:12px;color:var(--ink-soft)}
+  .kpi .chg{font-weight:600}.chg.up{color:var(--good)}.chg.down{color:var(--bad)}
+  .kpi .bar{height:6px;border-radius:6px;background:var(--line);margin-top:11px;overflow:hidden}
+  .kpi .bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--clay),var(--honey))}
+  /* Grid panels */
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1.55fr 1fr}
+  .g-2b{grid-template-columns:1fr 1.4fr}
+  .g-3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+  .card-h h3{font-size:16.5px}
+  .card-h .sub{font-size:12px;color:var(--ink-soft);font-weight:500}
+  .seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .seg button{border:none;background:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--ink-soft);
+    padding:5px 10px;border-radius:7px;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--clay);box-shadow:var(--shadow)}
+  canvas{max-width:100%}
+  .chart-wrap{position:relative;height:248px}
+  .chart-wrap.sm{height:210px}
+  /* Tables */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);
+    font-weight:700;padding:8px 10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--panel-2)}
+  .tag{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+  .tag.green{background:#E7F0E4;color:#3f6a43}.tag.amber{background:#F8EBD3;color:#9a6a1f}
+  .tag.red{background:#F6E0D9;color:#9a402d}.tag.blue{background:#E0EAEC;color:#345f58}
+  .tag.gray{background:#ECE6DA;color:#6b6258}
+  .avatar{width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:12px;font-family:'Fraunces'}
+  .who{display:flex;align-items:center;gap:10px}
+  .who small{display:block;color:var(--ink-soft);font-size:11px;font-weight:500}
+  .who b{font-size:13px;font-weight:600}
+  .mini-bar{height:7px;background:var(--line);border-radius:7px;overflow:hidden;min-width:70px}
+  .mini-bar i{display:block;height:100%;border-radius:7px}
+  /* Pipeline kanban */
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .col{background:var(--panel-2);border:1px solid var(--line);border-radius:13px;padding:12px}
+  .col h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);display:flex;justify-content:space-between;margin-bottom:10px}
+  .col h4 span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11px}
+  .job{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;box-shadow:var(--shadow);cursor:grab}
+  .job:last-child{margin-bottom:0}
+  .job .t{font-weight:600;font-size:13px;margin-bottom:3px}
+  .job .m{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between;margin-top:7px}
+  .job .v{font-weight:700;color:var(--clay);font-family:'Fraunces'}
+  .strip{height:4px;border-radius:4px;margin:-2px -2px 9px;}
+  /* alerts */
+  .alerts{display:flex;flex-direction:column;gap:11px}
+  .alert{display:flex;gap:12px;padding:12px 13px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2)}
+  .alert .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;color:#fff;font-size:16px}
+  .alert b{font-size:13px}.alert p{font-size:12px;color:var(--ink-soft);margin-top:1px}
+  .views{display:none}.views.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .section-title{display:flex;align-items:baseline;gap:10px;margin:0 0 14px}
+  .section-title h2{font-size:21px}.section-title p{color:var(--ink-soft);font-size:13px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+  .legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .note{font-size:12px;color:var(--ink-soft);background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:12px}
+  .menu-toggle{display:none}
+  @media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}.g-2,.g-2b{grid-template-columns:1fr}.kanban{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}}
+  @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}.kpis{grid-template-columns:1fr}.g-3{grid-template-columns:1fr}.main{padding:18px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">JP</div>
+      <div><b>Studio&nbsp;OS</b><span>Jesse Page Photography</span></div>
+    </div>
+    <div class="nav-label">Workspace</div>
+    <nav class="nav" id="nav">
+      <a data-view="overview" class="active">📊&nbsp; Overview</a>
+      <a data-view="pipeline">🗂️&nbsp; Project Pipeline</a>
+      <a data-view="invoices">🧾&nbsp; Invoicing &amp; A/R</a>
+      <a data-view="content">📷&nbsp; Content &amp; Reach</a>
+    </nav>
+    <div class="nav-label">This Week</div>
+    <div style="font-size:12.5px;padding:0 10px;display:flex;flex-direction:column;gap:9px;color:#c9bfad">
+      <div>🗓️ <b style="color:#fff;font-weight:600">Tangerine</b> fall editorial · Oct 1</div>
+      <div>🥣 <b style="color:#fff;font-weight:600">Oatly</b> Oct content · Oct 3</div>
+      <div>🍽️ <b style="color:#fff;font-weight:600">Estrela</b> reshoot · Oct 10</div>
+    </div>
+    <div class="side-foot">
+      Next quarterly tax<br><b>Sep 15 · ~$5,500</b><br>
+      <span style="opacity:.7">Confirm with Ravi 72h ahead</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="greet">
+        <h1 id="hello">Morning, Jesse ☀️</h1>
+        <p id="dateline">Tuesday, September 8, 2026 · Williamsburg, Brooklyn</p>
+      </div>
+      <div class="top-actions">
+        <span class="pill"><span class="dot"></span> Stripe &amp; QuickBooks synced</span>
+        <button class="btn ghost" onclick="alert('Exporting the month-end summary to PDF…\\n(Demo dashboard — export stub.)')">Export</button>
+        <button class="btn" onclick="document.querySelector('[data-view=invoices]').click()">Send invoice batch</button>
+      </div>
+    </div>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <section class="views active" id="overview">
+      <div class="kpis">
+        <div class="kpi c1">
+          <div class="label">2026 Revenue (YTD)</div>
+          <div class="val">$71,400</div>
+          <div class="sub">of $110,000 target · <span class="chg up">▲ 18% vs '25 pace</span></div>
+          <div class="bar"><i style="width:65%"></i></div>
+        </div>
+        <div class="kpi c2">
+          <div class="label">Outstanding A/R</div>
+          <div class="val">$15,700</div>
+          <div class="sub">3 open invoices · <span class="chg down">1 over 30 days</span></div>
+          <div class="bar"><i style="width:34%;background:linear-gradient(90deg,var(--plum),var(--clay))"></i></div>
+        </div>
+        <div class="kpi c3">
+          <div class="label">Instagram Reach (28d)</div>
+          <div class="val">112.4K</div>
+          <div class="sub">48,200 followers · <span class="chg up">▲ 6.1% eng. rate</span></div>
+          <div class="bar"><i style="width:72%;background:linear-gradient(90deg,var(--honey),var(--clay))"></i></div>
+        </div>
+        <div class="kpi c4">
+          <div class="label">Tax Reserve</div>
+          <div class="val">$14,250</div>
+          <div class="sub">~$5,500 due Sep 15 · <span class="chg up">on track</span></div>
+          <div class="bar"><i style="width:58%;background:linear-gradient(90deg,var(--plum),var(--honey))"></i></div>
+        </div>
+      </div>
+
+      <div class="grid g-2" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-h">
+            <div><h3>Monthly Revenue</h3><div class="sub">Booked &amp; collected · 2026 vs 2025</div></div>
+            <div class="seg" id="revSeg">
+              <button class="on" data-r="2026">2026</button>
+              <button data-r="both">Compare</button>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="revChart"></canvas></div>
+          <div class="note">⚑ Cash-flow watch: <b>July</b> dipped to $4.2K between the Tangerine and cookbook invoices — the recurring soft month. Emergency fund covered the gap; no draw on the equipment fund.</div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Revenue by Stream</h3><div class="sub">YTD mix</div></div></div>
+          <div class="chart-wrap sm"><canvas id="mixChart"></canvas></div>
+          <div class="legend" id="mixLegend"></div>
+        </div>
+      </div>
+
+      <div class="grid g-2b" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-h"><div><h3>Action Queue</h3><div class="sub">Surfaced before you asked</div></div></div>
+          <div class="alerts">
+            <div class="alert"><div class="ic" style="background:var(--bad)">!</div>
+              <div><b>Costa Cookbooks invoice is 34 days out</b><p>INV-2905 · $12,000 · net-30 lapsed Sep 4. Draft a soft nudge to Beatriz?</p></div></div>
+            <div class="alert"><div class="ic" style="background:var(--honey)">$</div>
+              <div><b>Quarterly estimated tax due Sep 15</b><p>~$5,500. Confirm the figure with Ravi by Sep 12 (72h rule).</p></div></div>
+            <div class="alert"><div class="ic" style="background:var(--sage)">☀</div>
+              <div><b>Estrela reshoot — Oct 10, 9 AM call</b><p>South-facing room holds light till ~1 PM. Dairy-free craft service confirmed with Ana.</p></div></div>
+            <div class="alert"><div class="ic" style="background:var(--teal)">↗</div>
+              <div><b>Oatly retainer renews in Q4</b><p>Engagement up 11% on their grid. Strong moment to pitch the 2026 expansion deck.</p></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Upcoming Shoots &amp; Deadlines</h3><div class="sub">Next 30 days</div></div>
+            <button class="btn ghost" style="padding:6px 11px;font-size:12px">Calendar</button></div>
+          <table>
+            <thead><tr><th>Date</th><th>Engagement</th><th>Type</th><th>Status</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody>
+              <tr><td><b>Oct 1</b></td><td class="who"><span class="avatar" style="background:var(--clay)">T</span><div><b>Tangerine Magazine</b><small>Fall editorial · 8a–2p</small></div></td><td>Editorial</td><td><span class="tag amber">Confirming</span></td><td style="text-align:right;font-weight:700">$2,000</td></tr>
+              <tr><td><b>Oct 3</b></td><td class="who"><span class="avatar" style="background:var(--sage)">O</span><div><b>Oatly</b><small>2 posts + stories</small></div></td><td>Brand</td><td><span class="tag green">Queued</span></td><td style="text-align:right;font-weight:700">$1,500</td></tr>
+              <tr><td><b>Oct 10</b></td><td class="who"><span class="avatar" style="background:var(--plum)">E</span><div><b>Estrela</b><small>Seasonal menu · 9a–1p</small></div></td><td>Restaurant</td><td><span class="tag green">Booked</span></td><td style="text-align:right;font-weight:700">$1,400</td></tr>
+              <tr><td><b>Oct 31</b></td><td class="who"><span class="avatar" style="background:var(--honey)">N</span><div><b>Night Markets pilot</b><small>Flushing · personal/editorial</small></div></td><td>Personal</td><td><span class="tag blue">Scouting</span></td><td style="text-align:right;font-weight:700">—</td></tr>
+              <tr><td><b>Nov 1</b></td><td class="who"><span class="avatar" style="background:var(--sage)">O</span><div><b>Oatly</b><small>November content</small></div></td><td>Brand</td><td><span class="tag gray">Planned</span></td><td style="text-align:right;font-weight:700">$1,500</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid g-3">
+        <div class="card">
+          <div class="card-h"><div><h3>Top Clients</h3><div class="sub">YTD billings</div></div></div>
+          <div id="topClients"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Print Shop</h3><div class="sub">Etsy · passive income</div></div></div>
+          <div style="display:flex;align-items:baseline;gap:8px;margin:4px 0 2px"><span style="font-family:'Fraunces';font-size:30px;font-weight:600">$1,840</span><span class="chg up" style="font-size:13px">▲ 22%</span></div>
+          <div class="sub" style="color:var(--ink-soft);font-size:12.5px">YTD · 10 active listings · 133 favorites</div>
+          <div class="chart-wrap sm" style="height:150px;margin-top:8px"><canvas id="etsyChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Time Allocation</h3><div class="sub">Last 30 days</div></div></div>
+          <div class="chart-wrap sm" style="height:200px"><canvas id="timeChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PIPELINE ===================== -->
+    <section class="views" id="pipeline">
+      <div class="section-title"><h2>Project Pipeline</h2><p>11 live engagements · $34,800 weighted in flight</p></div>
+      <div class="kanban">
+        <div class="col"><h4>Inquiry <span>3</span></h4>
+          <div class="job"><div class="strip" style="background:var(--honey)"></div><div class="t">Hudson &amp; Vine — olive oil DTC</div><div style="font-size:11.5px;color:var(--ink-soft)">Spring catalogue, 12 SKUs</div><div class="m"><span>Brand</span><span class="v">~$3,000</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--honey)"></div><div class="t">Win Son — menu refresh</div><div style="font-size:11.5px;color:var(--ink-soft)">Half-day, 25 shots</div><div class="m"><span>Restaurant</span><span class="v">~$1,400</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--honey)"></div><div class="t">Savor Quarterly — winter feature</div><div style="font-size:11.5px;color:var(--ink-soft)">via Tomás</div><div class="m"><span>Editorial</span><span class="v">~$2,200</span></div></div>
+        </div>
+        <div class="col"><h4>Proposed <span>2</span></h4>
+          <div class="job"><div class="strip" style="background:var(--clay)"></div><div class="t">Edgewater — "Night Markets of NYC"</div><div style="font-size:11.5px;color:var(--ink-soft)">Photo essay, 6-page spread</div><div class="m"><span>Editorial</span><span class="v">~$4,500</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--clay)"></div><div class="t">Oatly — 2026 renewal expansion</div><div style="font-size:11.5px;color:var(--ink-soft)">Retainer + reels</div><div class="m"><span>Brand</span><span class="v">~$24,000/yr</span></div></div>
+        </div>
+        <div class="col"><h4>Booked <span>3</span></h4>
+          <div class="job"><div class="strip" style="background:var(--sage)"></div><div class="t">Tangerine — fall editorial</div><div style="font-size:11.5px;color:var(--ink-soft)">Oct 1 · location TBD</div><div class="m"><span>Editorial</span><span class="v">$2,000</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--sage)"></div><div class="t">Estrela — seasonal menu</div><div style="font-size:11.5px;color:var(--ink-soft)">Oct 10 · 9a–1p</div><div class="m"><span>Restaurant</span><span class="v">$1,400</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--sage)"></div><div class="t">Oatly — Oct + Nov content</div><div style="font-size:11.5px;color:var(--ink-soft)">Retainer</div><div class="m"><span>Brand</span><span class="v">$3,000</span></div></div>
+        </div>
+        <div class="col"><h4>Delivered <span>3</span></h4>
+          <div class="job"><div class="strip" style="background:var(--teal)"></div><div class="t">Kikkoman — summer campaign</div><div style="font-size:11.5px;color:var(--ink-soft)">Paid · INV-2904</div><div class="m"><span>Brand</span><span class="v">$1,200</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--teal)"></div><div class="t">Olmsted — menu reshoot</div><div style="font-size:11.5px;color:var(--ink-soft)">Paid · INV-2903</div><div class="m"><span>Restaurant</span><span class="v">$1,800</span></div></div>
+          <div class="job"><div class="strip" style="background:var(--teal)"></div><div class="t">Estrela cookbook — selects</div><div style="font-size:11.5px;color:var(--ink-soft)">Galleries via Pic-Time</div><div class="m"><span>Cookbook</span><span class="v">$8,000</span></div></div>
+        </div>
+      </div>
+
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card">
+          <div class="card-h"><div><h3>Pipeline by Stage</h3><div class="sub">Weighted value, USD</div></div></div>
+          <div class="chart-wrap"><canvas id="funnelChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Win Rate by Stream</h3><div class="sub">Trailing 12 months</div></div></div>
+          <div class="chart-wrap"><canvas id="winChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== INVOICES ===================== -->
+    <section class="views" id="invoices">
+      <div class="section-title"><h2>Invoicing &amp; Accounts Receivable</h2><p>Stripe ledger · monthly batch goes out the 1st</p></div>
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi c1"><div class="label">Collected YTD</div><div class="val">$71,400</div><div class="sub">23 paid invoices</div></div>
+        <div class="kpi c2"><div class="label">Open</div><div class="val">$15,700</div><div class="sub">3 invoices</div></div>
+        <div class="kpi c3"><div class="label">Overdue</div><div class="val">$12,000</div><div class="sub">1 invoice · 34 days</div></div>
+        <div class="kpi c4"><div class="label">Avg. days to pay</div><div class="val">19</div><div class="sub">Target ≤ 30</div></div>
+      </div>
+      <div class="grid g-2b" style="margin-top:16px">
+        <div class="card">
+          <div class="card-h"><div><h3>A/R Aging</h3><div class="sub">Open balance by bucket</div></div></div>
+          <div class="chart-wrap"><canvas id="agingChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Outstanding Invoices</h3><div class="sub">Live from Stripe</div></div>
+            <button class="btn" style="padding:6px 12px;font-size:12px" onclick="alert('Drafting a friendly net-30 reminder to Beatriz at Costa Cookbooks for INV-2905…\\n(Demo — draft saved to outbox.)')">Nudge overdue</button></div>
+          <table>
+            <thead><tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead>
+            <tbody>
+              <tr><td><b>INV-2905</b></td><td>Costa Cookbooks</td><td>Aug 5</td><td><span class="tag red">34d overdue</span></td><td style="text-align:right;font-weight:700">$12,000</td></tr>
+              <tr><td><b>INV-2906</b></td><td>Kikkoman USA</td><td>Aug 28</td><td><span class="tag amber">Open · net-30</span></td><td style="text-align:right;font-weight:700">$2,200</td></tr>
+              <tr><td><b>INV-2907</b></td><td>Two Hands</td><td>Sep 1</td><td><span class="tag amber">Open · net-30</span></td><td style="text-align:right;font-weight:700">$1,500</td></tr>
+              <tr><td><b>INV-2904</b></td><td>Kikkoman USA</td><td>Jul 30</td><td><span class="tag green">Paid Aug 9</span></td><td style="text-align:right;font-weight:700">$1,200</td></tr>
+              <tr><td><b>INV-2903</b></td><td>Olmsted</td><td>Jul 12</td><td><span class="tag green">Paid Jul 24</span></td><td style="text-align:right;font-weight:700">$1,800</td></tr>
+              <tr><td><b>INV-2902</b></td><td>Estrela</td><td>Jul 1</td><td><span class="tag green">Paid Jul 15</span></td><td style="text-align:right;font-weight:700">$1,500</td></tr>
+              <tr><td><b>INV-2900</b></td><td>Tangerine Magazine</td><td>Jun 14</td><td><span class="tag green">Paid Jun 28</span></td><td style="text-align:right;font-weight:700">$2,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-h"><div><h3>Income vs. Expenses</h3><div class="sub">Net cash flow · 2026</div></div>
+          <div class="legend" style="margin:0"><span><i style="background:var(--sage)"></i> Income</span><span><i style="background:var(--clay)"></i> Expenses</span><span><i style="background:var(--plum)"></i> Net</span></div></div>
+        <div class="chart-wrap"><canvas id="cashChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTENT ===================== -->
+    <section class="views" id="content">
+      <div class="section-title"><h2>Content &amp; Reach</h2><p>@jessepagephoto · the grid is the portfolio</p></div>
+      <div class="kpis">
+        <div class="kpi c3"><div class="label">Followers</div><div class="val">48,200</div><div class="sub"><span class="chg up">▲ 1,180</span> last 28 days</div><div class="bar"><i style="width:80%;background:linear-gradient(90deg,var(--honey),var(--clay))"></i></div></div>
+        <div class="kpi c1"><div class="label">Engagement Rate</div><div class="val">6.1%</div><div class="sub">vs 3.2% food-niche median</div><div class="bar"><i style="width:88%"></i></div></div>
+        <div class="kpi c2"><div class="label">Reach (28d)</div><div class="val">112.4K</div><div class="sub"><span class="chg up">▲ 14%</span></div><div class="bar"><i style="width:70%;background:linear-gradient(90deg,var(--sage),var(--honey))"></i></div></div>
+        <div class="kpi c4"><div class="label">Saves (28d)</div><div class="val">3,940</div><div class="sub">strongest signal for the niche</div><div class="bar"><i style="width:64%;background:linear-gradient(90deg,var(--plum),var(--clay))"></i></div></div>
+      </div>
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card">
+          <div class="card-h"><div><h3>Follower Growth</h3><div class="sub">Trailing 12 months</div></div></div>
+          <div class="chart-wrap"><canvas id="growthChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>What the Grid Rewards</h3><div class="sub">Avg. engagement by post type</div></div></div>
+          <div class="chart-wrap sm"><canvas id="postChart"></canvas></div>
+          <div class="note">Tight-crop, single-dish frames in warm side light outperform flat-lays 2.3×. The algorithm likes them; so does the portfolio.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-h"><div><h3>Top Posts · Last 28 Days</h3><div class="sub">Pulled from Instagram insights</div></div></div>
+        <table>
+          <thead><tr><th>Post</th><th>Posted</th><th>Reach</th><th>Saves</th><th>Engagement</th><th style="text-align:right">Eng. rate</th></tr></thead>
+          <tbody>
+            <tr><td><b>Ramen at Ivan — steam, slate, f/2.8</b></td><td>Dec 14</td><td>23,000</td><td>340</td><td><div class="mini-bar"><i style="width:95%;background:var(--clay)"></i></div></td><td style="text-align:right;font-weight:700">15.5%</td></tr>
+            <tr><td><b>Estrela pastéis — golden hour window</b></td><td>Dec 9</td><td>18,600</td><td>286</td><td><div class="mini-bar"><i style="width:74%;background:var(--honey)"></i></div></td><td style="text-align:right;font-weight:700">9.6%</td></tr>
+            <tr><td><b>Oat milk latte — Sweetleaf, top light</b></td><td>Dec 5</td><td>14,200</td><td>198</td><td><div class="mini-bar"><i style="width:58%;background:var(--sage)"></i></div></td><td style="text-align:right;font-weight:700">7.6%</td></tr>
+            <tr><td><b>Behind the scenes — tethered setup</b></td><td>Dec 2</td><td>9,400</td><td>98</td><td><div class="mini-bar"><i style="width:34%;background:var(--plum)"></i></div></td><td style="text-align:right;font-weight:700">6.1%</td></tr>
+            <tr><td><b>Dumplings in Flushing — overhead</b></td><td>Nov 27</td><td>7,000</td><td>42</td><td><div class="mini-bar"><i style="width:22%;background:var(--teal)"></i></div></td><td style="text-align:right;font-weight:700">5.2%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer style="margin-top:30px;color:var(--ink-soft);font-size:12px;text-align:center">
+      Studio OS — internal operations console · Figures sync from Stripe, QuickBooks, Instagram &amp; Etsy · Confidential to Jesse Page Photography
+    </footer>
+  </main>
+</div>
+
+<script>
+const C={clay:'#B5613A',sage:'#6E7355',honey:'#D69A4E',plum:'#7A4A52',teal:'#3F6E66',ink:'#2A2420',soft:'#6B6258',line:'#E7DECF'};
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.color=C.soft;
+Chart.defaults.font.size=12;
+const money=v=>'$'+v.toLocaleString();
+
+/* ---- View switching ---- */
+document.querySelectorAll('#nav a').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.querySelectorAll('#nav a').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    const v=a.dataset.view;
+    document.querySelectorAll('.views').forEach(s=>s.classList.toggle('active',s.id===v));
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(charts[v]) charts[v]();
+  });
+});
+
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const rev2026=[5200,6100,9800,8400,7200,11200,4200,6900,12200,0,0,0];
+const rev2025=[4100,5200,7400,6800,6100,9200,5400,5900,8800,9100,11800,12200];
+
+/* ---- Overview charts ---- */
+let revChartObj;
+function drawRev(mode){
+  const ctx=document.getElementById('revChart');
+  if(revChartObj) revChartObj.destroy();
+  const ds=[{label:'2026',data:rev2026,backgroundColor:C.clay,borderRadius:6,barPercentage:.7}];
+  if(mode==='both') ds.push({label:'2025',data:rev2025,backgroundColor:'#D9C4A8',borderRadius:6,barPercentage:.7});
+  revChartObj=new Chart(ctx,{type:'bar',data:{labels:months,datasets:ds},
+    options:{plugins:{legend:{display:mode==='both',position:'bottom'}},
+      scales:{y:{ticks:{callback:v=>'$'+v/1000+'k'},grid:{color:C.line}},x:{grid:{display:false}}}}});
+}
+document.querySelectorAll('#revSeg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#revSeg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');drawRev(b.dataset.r);
+}));
+
+const mixData={labels:['Editorial','Restaurant','Brand','Cookbook','Prints'],
+  vals:[24500,20800,16200,8000,1900],cols:[C.clay,C.sage,C.honey,C.plum,C.teal]};
+function drawMix(){
+  new Chart(document.getElementById('mixChart'),{type:'doughnut',
+    data:{labels:mixData.labels,datasets:[{data:mixData.vals,backgroundColor:mixData.cols,borderWidth:3,borderColor:'#FFFDF8'}]},
+    options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+money(c.raw)}}}}});
+  const tot=mixData.vals.reduce((a,b)=>a+b,0);
+  document.getElementById('mixLegend').innerHTML=mixData.labels.map((l,i)=>
+    `<span><i style="background:${mixData.cols[i]}"></i> ${l} · <b style="color:${C.ink}">${Math.round(mixData.vals[i]/tot*100)}%</b></span>`).join('');
+}
+function drawEtsy(){
+  new Chart(document.getElementById('etsyChart'),{type:'line',
+    data:{labels:months.slice(0,9),datasets:[{data:[120,180,150,210,240,260,190,230,260],
+      borderColor:C.teal,backgroundColor:'rgba(63,110,102,.12)',fill:true,tension:.4,pointRadius:0,borderWidth:2.5}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{display:false},x:{grid:{display:false}}}}});
+}
+function drawTime(){
+  new Chart(document.getElementById('timeChart'),{type:'polarArea',
+    data:{labels:['Shooting','Editing','Admin/Invoicing','Scouting','Content'],
+      datasets:[{data:[34,28,14,12,12],backgroundColor:[C.clay,C.honey,C.plum,C.sage,C.teal].map(c=>c+'cc'),borderWidth:1,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11}}}},scales:{r:{ticks:{display:false},grid:{color:C.line}}}}});
+}
+const clients=[['Estrela',9400,C.plum],['Tangerine Magazine',8200,C.clay],['Oatly',12000,C.sage],['Olmsted',5400,C.honey],['Kikkoman USA',4600,C.teal]];
+function drawTopClients(){
+  const max=Math.max(...clients.map(c=>c[1]));
+  document.getElementById('topClients').innerHTML=clients.map(c=>`
+    <div style="margin:10px 0">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+        <b>${c[0]}</b><span style="font-weight:700;font-family:'Fraunces'">${money(c[1])}</span></div>
+      <div class="mini-bar"><i style="width:${c[1]/max*100}%;background:${c[2]}"></i></div></div>`).join('');
+}
+
+/* ---- Pipeline charts ---- */
+function drawFunnel(){
+  new Chart(document.getElementById('funnelChart'),{type:'bar',
+    data:{labels:['Inquiry','Proposed','Booked','Delivered'],
+      datasets:[{data:[6600,30700,6400,11000],backgroundColor:[C.honey,C.clay,C.sage,C.teal],borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>'$'+v/1000+'k'},grid:{color:C.line}},y:{grid:{display:false}}}}});
+}
+function drawWin(){
+  new Chart(document.getElementById('winChart'),{type:'bar',
+    data:{labels:['Editorial','Restaurant','Brand','Cookbook'],
+      datasets:[{label:'Won',data:[72,84,61,50],backgroundColor:C.sage,borderRadius:5},
+                {label:'Lost',data:[28,16,39,50],backgroundColor:'#E0D3BF',borderRadius:5}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'%'},grid:{color:C.line}}}}});
+}
+
+/* ---- Invoice charts ---- */
+function drawAging(){
+  new Chart(document.getElementById('agingChart'),{type:'bar',
+    data:{labels:['Current','1–30d','31–60d','60d+'],
+      datasets:[{data:[3700,0,12000,0],backgroundColor:[C.sage,C.honey,C.clay,C.bad||'#B0503F'],borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v/1000+'k'},grid:{color:C.line}},x:{grid:{display:false}}}}});
+}
+function drawCash(){
+  new Chart(document.getElementById('cashChart'),{type:'bar',
+    data:{labels:months.slice(0,9),datasets:[
+      {label:'Income',data:rev2026.slice(0,9),backgroundColor:C.sage,borderRadius:5,order:2},
+      {label:'Expenses',data:[3574,3574,4100,3800,3574,4200,3574,3650,3900],backgroundColor:C.clay,borderRadius:5,order:2},
+      {label:'Net',type:'line',data:rev2026.slice(0,9).map((v,i)=>v-[3574,3574,4100,3800,3574,4200,3574,3650,3900][i]),
+        borderColor:C.plum,backgroundColor:C.plum,tension:.35,borderWidth:2.5,pointRadius:3,order:1}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v/1000+'k'},grid:{color:C.line}},x:{grid:{display:false}}}}});
+}
+
+/* ---- Content charts ---- */
+function drawGrowth(){
+  new Chart(document.getElementById('growthChart'),{type:'line',
+    data:{labels:months,datasets:[{label:'Followers',
+      data:[41200,42000,42900,43800,44500,45100,45600,46200,46900,47400,47800,48200],
+      borderColor:C.clay,backgroundColor:'rgba(181,97,58,.10)',fill:true,tension:.4,pointRadius:0,borderWidth:3}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v/1000+'k'},grid:{color:C.line}},x:{grid:{display:false}}}}});
+}
+function drawPost(){
+  new Chart(document.getElementById('postChart'),{type:'bar',
+    data:{labels:['Single dish','Carousel','Reel','BTS','Flat-lay'],
+      datasets:[{data:[3562,2480,4100,1453,1083],backgroundColor:[C.clay,C.honey,C.sage,C.plum,C.teal],borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{grid:{color:C.line}},x:{grid:{display:false}}}}});
+}
+
+/* lazy render per view */
+const charts={
+  overview:()=>{}, pipeline:()=>{drawFunnel();drawWin();charts.pipeline=()=>{};},
+  invoices:()=>{drawAging();drawCash();charts.invoices=()=>{};},
+  content:()=>{drawGrowth();drawPost();charts.content=()=>{};}
+};
+/* initial overview render */
+drawRev('2026');drawMix();drawEtsy();drawTime();drawTopClients();
+</script>
+</body>
+</html>

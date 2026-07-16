@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shoot Planner &amp; Quote Builder — Jesse Page Photography</title>
+<meta name="description" content="Interactive production planner and quote builder for food photography shoots — Jesse Page, Brooklyn." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F4EEE3; --paper:#FFFDF8; --panel:#FBF6EC; --ink:#28221D; --soft:#6A6055; --line:#E5DBCA;
+    --clay:#B05B36; --clay-d:#8c4527; --honey:#D49A4E; --sage:#6E7355; --plum:#7A4A52; --teal:#3E6A62;
+    --good:#4F7A52; --shadow:0 1px 2px rgba(40,34,29,.04),0 10px 30px rgba(40,34,29,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+  /* Top bar */
+  .topbar{background:linear-gradient(110deg,#2C2622,#3a312a);color:#F1E8D9;padding:16px 0}
+  .tb-in{max-width:1240px;margin:0 auto;padding:0 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .tb-in .brand{display:flex;align-items:center;gap:12px}
+  .tb-in .mark{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--clay),var(--honey));display:grid;place-items:center;font-family:'Fraunces';font-weight:700;color:#fff;font-size:18px}
+  .tb-in b{font-family:'Fraunces';font-size:18px;display:block;line-height:1.05}
+  .tb-in span.s{font-size:11.5px;color:#bdae99;letter-spacing:.03em}
+  .steps{display:flex;gap:7px;font-size:12px}
+  .steps i{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.12);display:inline-grid;place-items:center;font-style:normal;font-weight:700;margin-right:6px}
+  .steps b{display:flex;align-items:center;color:#d9cfbe;font-weight:500}
+  /* Layout */
+  .shell{max-width:1240px;margin:26px auto 60px;padding:0 26px;display:grid;grid-template-columns:1fr 430px;gap:24px;align-items:start}
+  .config{display:flex;flex-direction:column;gap:18px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .card-h{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;background:var(--panel)}
+  .card-h .n{width:27px;height:27px;border-radius:8px;background:var(--clay);color:#fff;display:grid;place-items:center;font-family:'Fraunces';font-weight:700;font-size:14px;flex:none}
+  .card-h h3{font-size:16px}.card-h p{font-size:12px;color:var(--soft)}
+  .card-b{padding:18px 20px}
+  /* form bits */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  label{font-size:12px;font-weight:600;display:block;margin-bottom:6px}
+  label .hint{color:var(--soft);font-weight:400}
+  input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-family:inherit;font-size:14px;color:var(--ink);transition:.15s}
+  input:focus,select:focus{outline:none;border-color:var(--clay);box-shadow:0 0 0 3px rgba(176,91,54,.12)}
+  /* package cards */
+  .pkgs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pkg{border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;transition:.15s;position:relative;background:var(--paper)}
+  .pkg:hover{border-color:var(--honey)}
+  .pkg.on{border-color:var(--clay);background:#fbf1ea;box-shadow:0 6px 18px rgba(176,91,54,.12)}
+  .pkg .ic{font-size:20px}
+  .pkg b{display:block;font-size:14px;margin:5px 0 2px;font-family:'Fraunces'}
+  .pkg span{font-size:11.5px;color:var(--soft);display:block}
+  .pkg .base{font-size:12.5px;color:var(--clay);font-weight:700;margin-top:6px}
+  .pkg.on::after{content:"✓";position:absolute;top:9px;right:11px;color:var(--clay);font-weight:800}
+  /* toggles / addons */
+  .addon{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;background:var(--paper);transition:.15s}
+  .addon:hover{background:var(--panel)}
+  .addon.on{border-color:var(--sage);background:#f1f3e9}
+  .addon .meta b{font-size:13.5px}.addon .meta p{font-size:11.5px;color:var(--soft)}
+  .addon .right{display:flex;align-items:center;gap:12px;flex:none}
+  .addon .price{font-size:13px;font-weight:700;color:var(--clay);font-family:'Fraunces'}
+  .switch{width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:.18s;flex:none}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.18s}
+  .switch.on{background:var(--sage)}.switch.on::after{left:20px}
+  .switch.clay.on{background:var(--clay)}
+  /* usage chips */
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{border:1.5px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;color:var(--soft);transition:.15s;background:var(--paper)}
+  .chip:hover{border-color:var(--honey)}
+  .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .chip small{font-weight:400;opacity:.7}
+  /* light meter */
+  .lightbox{display:flex;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:12px}
+  .light-dial{width:72px;height:72px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-family:'Fraunces';font-weight:700;font-size:13px;text-align:center;line-height:1.05;box-shadow:inset 0 0 0 4px rgba(255,255,255,.25)}
+  .lightbox .txt b{font-size:13.5px}.lightbox .txt p{font-size:12px;color:var(--soft)}
+  /* ===== Quote panel (sticky) ===== */
+  .quote{position:sticky;top:22px;display:flex;flex-direction:column;gap:16px}
+  .qcard{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .qhead{background:linear-gradient(135deg,#2C2622,#4a3a30);color:#F1E8D9;padding:18px 20px}
+  .qhead .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c6b89f}
+  .qhead .big{font-family:'Fraunces';font-size:38px;font-weight:600;letter-spacing:-.02em;margin:3px 0}
+  .qhead .big small{font-size:15px;color:#c6b89f;font-weight:400}
+  .qhead .meta{font-size:12.5px;color:#d9cfbe}
+  .lines{padding:8px 20px}
+  .line{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .line:last-child{border-bottom:none}
+  .line .d small{color:var(--soft);font-size:11.5px;display:block}
+  .line .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .line.muted .amt{color:var(--soft)}
+  .totals{padding:14px 20px;background:var(--panel);border-top:1px solid var(--line)}
+  .totals .t{display:flex;justify-content:space-between;font-size:13px;color:var(--soft);padding:3px 0}
+  .totals .grand{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .totals .grand b{font-family:'Fraunces';font-size:15px}
+  .totals .grand .v{font-family:'Fraunces';font-size:26px;font-weight:700;color:var(--clay)}
+  .qactions{padding:14px 20px;display:flex;gap:10px}
+  .btn{flex:1;background:var(--clay);color:#fff;border:none;padding:12px;border-radius:11px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit;transition:.15s}
+  .btn:hover{background:var(--clay-d)}
+  .btn.ghost{background:var(--paper);color:var(--ink);border:1px solid var(--line);flex:none;padding:12px 16px}
+  /* call sheet */
+  .callsheet{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .cs-h{padding:14px 18px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center}
+  .cs-h b{font-family:'Fraunces';font-size:15px}.cs-h .badge{font-size:10.5px;background:var(--ink);color:var(--paper);padding:3px 9px;border-radius:6px;letter-spacing:.08em}
+  .cs-b{padding:6px 18px 16px}
+  .cs-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+  .cs-row .k{color:var(--soft);font-weight:600}.cs-row .v{text-align:right;font-weight:600;max-width:62%}
+  .flag{margin-top:12px;background:#fbf1ea;border:1px solid #e7c7b4;color:var(--clay-d);border-radius:10px;padding:10px 12px;font-size:12.5px;display:flex;gap:9px}
+  .flag b{font-weight:700}
+  .shotlist{margin-top:12px}
+  .shotlist .sh{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dotted var(--line)}
+  .shotlist .sh b{font-weight:600}
+  .deliv{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .deliv span{font-size:11.5px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 9px}
+  .foot-note{font-size:11px;color:var(--soft);text-align:center;margin-top:6px}
+  .pill-note{font-size:11.5px;color:var(--soft);background:var(--panel);border:1px dashed var(--line);border-radius:9px;padding:9px 11px;margin-top:12px;display:flex;gap:8px}
+  @media print{.topbar,.config,.qactions,.no-print{display:none}.shell{grid-template-columns:1fr;margin:0}.quote{position:static}}
+  @media(max-width:980px){.shell{grid-template-columns:1fr}.quote{position:static}.steps{display:none}}
+  @media(max-width:560px){.grid2,.grid3,.pkgs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb-in">
+    <div class="brand">
+      <div class="mark">JP</div>
+      <div><b>Shoot Planner &amp; Quote Builder</b><span class="s">Jesse Page Photography · Studio OS tool</span></div>
+    </div>
+    <div class="steps">
+      <b><i>1</i> Configure</b><b><i>2</i> Quote</b><b><i>3</i> Call sheet</b>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- ============ CONFIG (inputs) ============ -->
+  <div class="config">
+    <!-- 1. Project -->
+    <div class="card">
+      <div class="card-h"><div class="n">1</div><div><h3>Project &amp; Client</h3><p>Who, what, and when</p></div></div>
+      <div class="card-b">
+        <div class="grid2">
+          <div><label>Client / brand</label><input id="client" value="Estrela" /></div>
+          <div><label>Shoot date</label><input id="date" type="date" value="2026-10-10" /></div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div><label>Location <span class="hint">/ venue</span></label><input id="loc" value="Estrela — Williamsburg" /></div>
+          <div><label>Call time</label><input id="call" type="time" value="09:00" /></div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div><label>Window orientation <span class="hint">(natural light)</span></label>
+            <select id="orient"><option value="south">South-facing</option><option value="east">East-facing</option><option value="west">West-facing</option><option value="north">North-facing</option><option value="studio">Studio / no window</option></select></div>
+          <div><label>Sourced via</label>
+            <select id="source"><option value="direct">Direct (no agent)</option><option value="agent">Agent — Tomás Herrera (15%)</option></select></div>
+        </div>
+        <div class="lightbox">
+          <div class="light-dial" id="lightDial" style="background:var(--clay)">—</div>
+          <div class="txt"><b id="lightTitle">Best light window</b><p id="lightDesc">Pick an orientation to read the room.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Package -->
+    <div class="card">
+      <div class="card-h"><div class="n">2</div><div><h3>Shoot Package</h3><p>Format sets the base rate &amp; deliverables</p></div></div>
+      <div class="card-b">
+        <div class="pkgs" id="pkgs">
+          <div class="pkg on" data-pkg="menu"><div class="ic">🍽️</div><b>Restaurant Menu</b><span>Half-day · 25 retouched selects</span><div class="base">from $1,200</div></div>
+          <div class="pkg" data-pkg="editorial"><div class="ic">📰</div><b>Editorial Day</b><span>Full day · story-driven</span><div class="base">from $1,800</div></div>
+          <div class="pkg" data-pkg="brand"><div class="ic">🥣</div><b>Brand Content</b><span>Per deliverable · usage-priced</span><div class="base">from $500</div></div>
+          <div class="pkg" data-pkg="cookbook"><div class="ic">📖</div><b>Cookbook</b><span>Multi-day production</span><div class="base">from $8,000</div></div>
+        </div>
+        <div class="grid2" style="margin-top:16px">
+          <div><label>Deliverables <span class="hint">(retouched selects)</span></label><input id="shots" type="number" min="1" value="25" /></div>
+          <div><label>Shoot length</label>
+            <select id="length"><option value="0.5">Half-day (≤4h)</option><option value="1">Full day (8h)</option><option value="2">2 days</option><option value="3">3 days</option></select></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Usage rights -->
+    <div class="card">
+      <div class="card-h"><div class="n">3</div><div><h3>Usage Rights</h3><p>Where the images run sets the multiplier</p></div></div>
+      <div class="card-b">
+        <div class="chips" id="usage">
+          <div class="chip on" data-u="social" data-m="0">Social &amp; web <small>· included</small></div>
+          <div class="chip" data-u="menu" data-m="150">Menu &amp; in-store <small>· +$150</small></div>
+          <div class="chip" data-u="print" data-m="400">Editorial print <small>· +$400</small></div>
+          <div class="chip" data-u="paid" data-m="900">Paid / national <small>· +$900</small></div>
+          <div class="chip" data-u="exclusive" data-m="1200">Buyout / exclusivity <small>· +$1,200</small></div>
+        </div>
+        <div class="pill-note">ℹ️ Usage stacks on top of the base rate. Buyout transfers broad rights for 12 months — priced accordingly.</div>
+      </div>
+    </div>
+
+    <!-- 4. Add-ons -->
+    <div class="card">
+      <div class="card-h"><div class="n">4</div><div><h3>Production Add-ons</h3><p>Crew, styling &amp; logistics</p></div></div>
+      <div class="card-b">
+        <div class="addon on" data-add="styling" data-price="350"><div class="meta"><b>Prop &amp; food styling</b><p>Surfaces, ceramics, linens from the prop kit</p></div><div class="right"><span class="price">$350</span><div class="switch on" data-toggle></div></div></div>
+        <div class="addon" data-add="assistant" data-price="300"><div class="meta"><b>Photo assistant — Jess Williams</b><p>Lighting, tethering &amp; on-set wrangling</p></div><div class="right"><span class="price">$300</span><div class="switch" data-toggle></div></div></div>
+        <div class="addon" data-add="studio" data-price="450"><div class="meta"><b>Day studio rental</b><p>When the venue light won't hold</p></div><div class="right"><span class="price">$450</span><div class="switch" data-toggle></div></div></div>
+        <div class="addon" data-add="retouch" data-price="240"><div class="meta"><b>Extended retouching</b><p>Composites &amp; heavy clean-up beyond standard</p></div><div class="right"><span class="price">$240</span><div class="switch" data-toggle></div></div></div>
+        <div class="addon" data-add="rush" data-price="500"><div class="meta"><b>Rush turnaround (48h)</b><p>Selects delivered inside two days</p></div><div class="right"><span class="price">$500</span><div class="switch" data-toggle></div></div></div>
+      </div>
+    </div>
+
+    <!-- 5. On-set -->
+    <div class="card">
+      <div class="card-h"><div class="n">5</div><div><h3>On-Set Logistics</h3><p>Catering &amp; travel</p></div></div>
+      <div class="card-b">
+        <div class="addon on" data-add="dairyfree" data-price="0" id="dairyAddon"><div class="meta"><b>Dairy-free craft service</b><p>Default on every Jesse Page call sheet · no charge</p></div><div class="right"><span class="price">incl.</span><div class="switch clay on" data-toggle data-lock></div></div></div>
+        <div class="grid2" style="margin-top:12px">
+          <div><label>Travel beyond NYC <span class="hint">(mi)</span></label><input id="travel" type="number" min="0" value="0" /></div>
+          <div><label>Crew meals (people)</label><input id="meals" type="number" min="0" value="2" /></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ QUOTE + CALL SHEET ============ -->
+  <div class="quote">
+    <div class="qcard">
+      <div class="qhead">
+        <div class="lbl">Estimated total</div>
+        <div class="big" id="grandHero">$0</div>
+        <div class="meta" id="heroMeta">Restaurant Menu · 25 selects</div>
+      </div>
+      <div class="lines" id="lineItems"></div>
+      <div class="totals">
+        <div class="t"><span>Subtotal</span><span id="subtotal">$0</span></div>
+        <div class="t" id="agentRow" style="display:none"><span>Agent commission (15%)</span><span id="agentFee">–$0</span></div>
+        <div class="t"><span>Est. sales tax (NYC 8.875%, services exempt)</span><span>$0</span></div>
+        <div class="grand"><b>Project total <small style="font-weight:400;color:var(--soft)">· net to studio</small></b><span class="v" id="grandTotal">$0</span></div>
+      </div>
+      <div class="qactions no-print">
+        <button class="btn" onclick="window.print()">Generate PDF estimate</button>
+        <button class="btn ghost" title="Reset" onclick="location.reload()">↺</button>
+      </div>
+    </div>
+
+    <!-- Call sheet -->
+    <div class="callsheet">
+      <div class="cs-h"><b>Production Call Sheet</b><span class="badge" id="csType">MENU</span></div>
+      <div class="cs-b">
+        <div class="cs-row"><span class="k">Client</span><span class="v" id="csClient">Estrela</span></div>
+        <div class="cs-row"><span class="k">Date</span><span class="v" id="csDate">Oct 10, 2026</span></div>
+        <div class="cs-row"><span class="k">Call time</span><span class="v" id="csCall">9:00 AM</span></div>
+        <div class="cs-row"><span class="k">Location</span><span class="v" id="csLoc">Estrela — Williamsburg</span></div>
+        <div class="cs-row"><span class="k">Best light window</span><span class="v" id="csLight">—</span></div>
+        <div class="cs-row"><span class="k">Crew</span><span class="v" id="csCrew">Jesse Page</span></div>
+        <div class="cs-row"><span class="k">Selects · turnaround</span><span class="v" id="csDeliv">25 · standard</span></div>
+
+        <div class="flag"><span>🥛</span><div><b>Dietary flag:</b> <span id="csDiet">Dairy-free craft service confirmed.</span> All on-set tasting plates dairy-free; photographer reads ingredients.</div></div>
+
+        <div class="shotlist">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin:4px 0 6px;font-weight:700">Shot list · by category</div>
+          <div class="sh"><b>Plating / hero dishes</b><span id="shHero">12</span></div>
+          <div class="sh"><b>Detail &amp; texture</b><span id="shDetail">8</span></div>
+          <div class="sh"><b>Ambiance / room</b><span id="shAmb">5</span></div>
+        </div>
+
+        <div class="deliv" id="csUsage"></div>
+        <div class="foot-note">Auto-generated from the planner · confirm crew &amp; catering 24h before the shoot day</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const fmt=v=>'$'+Math.round(v).toLocaleString();
+const state={
+  pkg:'menu', base:{menu:1200,editorial:1800,brand:500,cookbook:8000},
+  pkgLabel:{menu:'Restaurant Menu',editorial:'Editorial Day',brand:'Brand Content',cookbook:'Cookbook'},
+  usage:{social:0}, addons:{styling:350,dairyfree:0}, length:0.5
+};
+
+/* ---- package select ---- */
+document.querySelectorAll('#pkgs .pkg').forEach(p=>p.addEventListener('click',()=>{
+  document.querySelectorAll('#pkgs .pkg').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on'); state.pkg=p.dataset.pkg;
+  // sensible defaults per package
+  const presets={menu:[25,'0.5'],editorial:[15,'1'],brand:[6,'0.5'],cookbook:[60,'3']};
+  document.getElementById('shots').value=presets[state.pkg][0];
+  document.getElementById('length').value=presets[state.pkg][1];
+  calc();
+}));
+
+/* ---- usage chips ---- */
+document.querySelectorAll('#usage .chip').forEach(c=>c.addEventListener('click',()=>{
+  if(c.dataset.u==='social'){return;} // base, always on
+  c.classList.toggle('on'); calc();
+}));
+
+/* ---- addon switches ---- */
+document.querySelectorAll('.addon').forEach(a=>{
+  const sw=a.querySelector('[data-toggle]');
+  sw.addEventListener('click',()=>{
+    if(sw.hasAttribute('data-lock'))return;
+    sw.classList.toggle('on'); a.classList.toggle('on',sw.classList.contains('on')); calc();
+  });
+});
+
+/* ---- inputs ---- */
+['client','date','call','loc','orient','source','shots','length','travel','meals'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',calc);
+});
+
+/* ---- light reading ---- */
+const lightMap={
+  south:['ALL DAY','var(--clay)','South-facing — the prize','Holds warm light ~9 AM–2 PM. Best for plating heroes; diffuse the midday peak with a scrim.'],
+  east:['AM','var(--honey)','East-facing — morning glow','Soft directional light 7–10 AM. Shoot heroes early, details after the room warms.'],
+  west:['PM','var(--plum)','West-facing — golden hour','Best 3–6 PM. Schedule ambiance + drink shots late; expect long warm shadows.'],
+  north:['EVEN','var(--teal)','North-facing — even &amp; cool','Soft, shadowless all day. Flat but reliable; add a warming gel for earth tones.'],
+  studio:['LED','var(--sage)','Studio — controlled','No window dependency. Profoto B10s shape the light; you set golden hour.']
+};
+function readLight(){
+  const o=document.getElementById('orient').value, L=lightMap[o];
+  const dial=document.getElementById('lightDial');
+  dial.textContent=L[0].replace('&amp;','&'); dial.style.background=L[1];
+  document.getElementById('lightTitle').innerHTML=L[2];
+  document.getElementById('lightDesc').innerHTML=L[3];
+  document.getElementById('csLight').innerHTML=({south:'9 AM–2 PM (warm)',east:'7–10 AM (soft)',west:'3–6 PM (golden)',north:'All day (even)',studio:'Studio-controlled'})[o];
+}
+
+/* ---- main calc ---- */
+function calc(){
+  readLight();
+  const pkg=state.pkg;
+  const lenMult=parseFloat(document.getElementById('length').value);
+  const shots=Math.max(1,parseInt(document.getElementById('shots').value)||1);
+  let base=state.base[pkg];
+  // scale base by length for day-rate packages
+  if(pkg==='editorial') base=1800*lenMult;
+  if(pkg==='menu') base=1200*(lenMult<=0.5?1:lenMult*1.7);
+  if(pkg==='cookbook') base=8000*(lenMult>=3?1:lenMult/3*1.1);
+  if(pkg==='brand') base=Math.max(500, 500+(shots-1)*180);
+
+  const lines=[];
+  lines.push({d:state.pkgLabel[pkg],s:(pkg==='brand'?shots+' deliverables':lenMult<1?'Half-day':lenMult+'-day')+' · base rate',amt:base});
+
+  // usage
+  let usageTotal=0; const usageActive=[];
+  document.querySelectorAll('#usage .chip.on').forEach(c=>{
+    const m=parseInt(c.dataset.m)||0; usageActive.push(c.dataset.u);
+    if(m>0){usageTotal+=m; lines.push({d:'Usage — '+c.textContent.split('·')[0].trim(),s:'rights extension',amt:m});}
+  });
+
+  // addons
+  let addonTotal=0;
+  document.querySelectorAll('.addon.on').forEach(a=>{
+    const price=parseInt(a.dataset.price)||0;
+    if(price>0){addonTotal+=price; lines.push({d:a.querySelector('b').textContent,s:'add-on',amt:price});}
+  });
+
+  // travel + meals
+  const travel=parseInt(document.getElementById('travel').value)||0;
+  const meals=parseInt(document.getElementById('meals').value)||0;
+  let logistics=0;
+  if(travel>0){const t=Math.round(travel*0.7); logistics+=t; lines.push({d:'Travel',s:travel+' mi @ $0.70',amt:t});}
+  if(meals>0){const mcost=meals*18; logistics+=mcost; lines.push({d:'Crew meals (dairy-free)',s:meals+' × $18',amt:mcost});}
+
+  const subtotal=base+usageTotal+addonTotal+logistics;
+  let agentFee=0;
+  if(document.getElementById('source').value==='agent'){agentFee=subtotal*0.15;}
+  const grand=subtotal-agentFee;
+
+  // render lines
+  document.getElementById('lineItems').innerHTML=lines.map(l=>`
+    <div class="line"><div class="d">${l.d}<small>${l.s}</small></div><div class="amt">${fmt(l.amt)}</div></div>`).join('');
+  document.getElementById('subtotal').textContent=fmt(subtotal);
+  document.getElementById('grandTotal').textContent=fmt(grand);
+  document.getElementById('grandHero').textContent=fmt(grand);
+  document.getElementById('heroMeta').textContent=state.pkgLabel[pkg]+' · '+shots+' selects';
+  const agentRow=document.getElementById('agentRow');
+  if(agentFee>0){agentRow.style.display='flex'; document.getElementById('agentFee').textContent='–'+fmt(agentFee);}
+  else agentRow.style.display='none';
+
+  updateCallSheet(shots,usageActive);
+}
+
+/* ---- call sheet ---- */
+function updateCallSheet(shots,usageActive){
+  const $=id=>document.getElementById(id);
+  $('csClient').textContent=$('client').value||'—';
+  $('csType').textContent=state.pkg.toUpperCase();
+  const d=$('date').value? new Date($('date').value+'T00:00') : null;
+  $('csDate').textContent=d? d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+  const [h,m]=($('call').value||'09:00').split(':'); const hr=((+h+11)%12)+1; const ap=+h>=12?'PM':'AM';
+  $('csCall').textContent=`${hr}:${m} ${ap}`;
+  $('csLoc').textContent=$('loc').value||'—';
+  // crew
+  const crew=['Jesse Page (photographer)'];
+  if(document.querySelector('[data-add=assistant]').classList.contains('on'))crew.push('Jess Williams (assistant)');
+  if(document.querySelector('[data-add=styling]').classList.contains('on'))crew.push('+ styling');
+  $('csCrew').textContent=crew.join(', ');
+  // turnaround
+  const rush=document.querySelector('[data-add=rush]').classList.contains('on');
+  $('csDeliv').textContent=shots+' selects · '+(rush?'48h rush':'standard 5–7 day');
+  // shot list split
+  $('shHero').textContent=Math.round(shots*0.48);
+  $('shDetail').textContent=Math.round(shots*0.32);
+  $('shAmb').textContent=shots-Math.round(shots*0.48)-Math.round(shots*0.32);
+  // usage tags
+  const names={social:'Social & web',menu:'Menu & in-store',print:'Editorial print',paid:'Paid / national',exclusive:'Buyout (12mo)'};
+  $('csUsage').innerHTML=usageActive.map(u=>`<span>✓ ${names[u]}</span>`).join('');
+}
+
+calc();
+</script>
+</body>
+</html>

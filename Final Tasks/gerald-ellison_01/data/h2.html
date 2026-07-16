@@ -1,0 +1,852 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ridgewood Ramblers | Columbus, Ohio Bluegrass Ensemble</title>
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --green: #2D6A4F;
+    --amber: #E9943A;
+    --cream: #FAF7F0;
+    --gold: #C9A84C;
+    --text: #2C2C2C;
+    --light: #F5F0E8;
+    --shadow: rgba(27,42,74,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Georgia', serif; background: var(--cream); color: var(--text); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    background: rgba(27,42,74,0.97); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px; box-shadow: 0 2px 12px var(--shadow);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px; text-decoration: none;
+  }
+  .nav-logo {
+    width: 40px; height: 40px; background: var(--amber);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff; font-weight: bold;
+  }
+  .nav-title { color: #fff; font-size: 1.1rem; font-weight: bold; letter-spacing: 0.03em; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.9rem;
+    font-family: 'Arial', sans-serif; letter-spacing: 0.05em; text-transform: uppercase;
+    transition: color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--amber); border-bottom-color: var(--amber); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { width: 24px; height: 2px; background: #fff; transition: 0.3s; }
+  @media(max-width:768px){
+    .nav-links { display: none; flex-direction: column; position: fixed; top: 64px; left: 0;
+      width: 100%; background: var(--navy); padding: 24px 5%; gap: 16px; }
+    .nav-links.open { display: flex; }
+    .hamburger { display: flex; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--navy) 0%, #2d4a8a 40%, var(--green) 100%);
+    position: relative; overflow: hidden; text-align: center; padding: 0 5%;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+  .hero-badge {
+    display: inline-block; background: var(--amber); color: #fff;
+    padding: 6px 18px; border-radius: 20px; font-size: 0.8rem; letter-spacing: 0.1em;
+    text-transform: uppercase; font-family: 'Arial', sans-serif; margin-bottom: 20px;
+    animation: fadeDown 0.6s ease forwards;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5rem); color: #fff; line-height: 1.1;
+    margin-bottom: 16px; animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .hero h1 span { color: var(--amber); }
+  .hero p {
+    font-size: 1.2rem; color: rgba(255,255,255,0.8); max-width: 580px;
+    margin: 0 auto 32px; line-height: 1.7; animation: fadeUp 0.7s ease 0.4s both;
+    font-family: 'Arial', sans-serif;
+  }
+  .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.6s both; }
+  .btn {
+    padding: 14px 32px; border-radius: 4px; font-size: 0.95rem; font-weight: bold;
+    cursor: pointer; text-decoration: none; letter-spacing: 0.05em;
+    text-transform: uppercase; font-family: 'Arial', sans-serif; transition: all 0.2s;
+    display: inline-block;
+  }
+  .btn-primary { background: var(--amber); color: #fff; border: 2px solid var(--amber); }
+  .btn-primary:hover { background: #c47820; border-color: #c47820; transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+  .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+  .hero-stats {
+    display: flex; gap: 48px; justify-content: center; margin-top: 48px;
+    animation: fadeUp 0.7s ease 0.8s both;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 2.2rem; color: var(--amber); font-weight: bold; }
+  .hero-stat .lbl { font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Arial', sans-serif; }
+  .scroll-down {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+  .scroll-down span {
+    display: block; width: 24px; height: 24px; border-right: 2px solid rgba(255,255,255,0.5);
+    border-bottom: 2px solid rgba(255,255,255,0.5); transform: rotate(45deg);
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 5%; }
+  .section-label {
+    display: inline-block; color: var(--amber); font-size: 0.8rem; font-weight: bold;
+    letter-spacing: 0.15em; text-transform: uppercase; font-family: 'Arial', sans-serif;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--navy); margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1.05rem; color: #555; line-height: 1.7; max-width: 620px;
+    font-family: 'Arial', sans-serif;
+  }
+  .divider { width: 60px; height: 4px; background: var(--amber); margin: 16px 0 40px; }
+
+  /* ── ABOUT ── */
+  #about { background: var(--light); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+    max-width: 1100px; margin: 0 auto;
+  }
+  @media(max-width:768px){ .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .about-visual {
+    background: linear-gradient(135deg, var(--navy), var(--green));
+    border-radius: 12px; min-height: 360px; display: flex;
+    align-items: center; justify-content: center; position: relative; overflow: hidden;
+  }
+  .about-visual::after {
+    content: '🎻'; font-size: 100px; opacity: 0.15; position: absolute;
+    right: -20px; bottom: -20px;
+  }
+  .instrument-icons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; z-index: 1; }
+  .inst-chip {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; padding: 10px 18px; border-radius: 6px; font-size: 0.9rem;
+    font-family: 'Arial', sans-serif; backdrop-filter: blur(4px);
+  }
+  .about-facts { display: flex; gap: 24px; margin-top: 32px; flex-wrap: wrap; }
+  .fact-card {
+    flex: 1; min-width: 120px; background: #fff; border-radius: 8px; padding: 20px;
+    text-align: center; box-shadow: 0 2px 12px var(--shadow);
+  }
+  .fact-num { font-size: 1.8rem; font-weight: bold; color: var(--navy); }
+  .fact-lbl { font-size: 0.8rem; color: #777; font-family: 'Arial', sans-serif; margin-top: 4px; }
+
+  /* ── MEMBERS ── */
+  #members { background: var(--cream); }
+  .members-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .member-card {
+    background: #fff; border-radius: 10px; padding: 24px 16px; text-align: center;
+    box-shadow: 0 2px 12px var(--shadow); transition: all 0.25s;
+    border-top: 4px solid var(--navy);
+  }
+  .member-card:hover { transform: translateY(-6px); box-shadow: 0 8px 28px var(--shadow); border-top-color: var(--amber); }
+  .member-avatar {
+    width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--navy), var(--green));
+    margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; font-weight: bold;
+  }
+  .member-name { font-size: 1rem; font-weight: bold; color: var(--navy); margin-bottom: 4px; }
+  .member-role { font-size: 0.8rem; color: var(--amber); font-family: 'Arial', sans-serif;
+    text-transform: uppercase; letter-spacing: 0.08em; }
+  .member-badge {
+    display: inline-block; margin-top: 8px; background: var(--light);
+    color: var(--green); padding: 3px 10px; border-radius: 12px; font-size: 0.75rem;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* ── EVENTS ── */
+  #events { background: var(--navy); }
+  #events .section-title { color: #fff; }
+  #events .section-sub { color: rgba(255,255,255,0.7); }
+  #events .section-label { color: var(--amber); }
+  .events-list { max-width: 800px; margin: 0 auto; }
+  .event-item {
+    display: flex; align-items: flex-start; gap: 24px; padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1); animation: fadeUp 0.5s ease both;
+  }
+  .event-date-box {
+    background: var(--amber); color: #fff; text-align: center; min-width: 64px;
+    padding: 10px 8px; border-radius: 6px; flex-shrink: 0;
+  }
+  .event-month { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: 'Arial', sans-serif; }
+  .event-day { font-size: 1.8rem; font-weight: bold; line-height: 1; }
+  .event-info { flex: 1; }
+  .event-title { color: #fff; font-size: 1.1rem; margin-bottom: 4px; }
+  .event-venue { color: rgba(255,255,255,0.6); font-size: 0.9rem;
+    font-family: 'Arial', sans-serif; }
+  .event-tag {
+    display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.75rem; font-family: 'Arial', sans-serif; font-weight: bold;
+  }
+  .tag-performance { background: rgba(45,106,79,0.3); color: #6fcf97; }
+  .tag-competition { background: rgba(233,148,58,0.2); color: var(--amber); }
+  .tag-community { background: rgba(100,120,200,0.2); color: #a0b0ff; }
+
+  /* ── LISTEN ── */
+  #listen { background: var(--light); }
+  .tracks-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .track-card {
+    background: #fff; border-radius: 10px; padding: 20px; display: flex;
+    align-items: center; gap: 16px; box-shadow: 0 2px 12px var(--shadow);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .track-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
+  .track-play {
+    width: 48px; height: 48px; border-radius: 50%; background: var(--navy);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .track-card:hover .track-play { background: var(--amber); }
+  .track-play::after { content: '▶'; color: #fff; font-size: 1rem; margin-left: 3px; }
+  .track-info h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 2px; }
+  .track-info p { color: #888; font-size: 0.8rem; font-family: 'Arial', sans-serif; }
+  .track-duration { margin-left: auto; color: #aaa; font-size: 0.8rem; font-family: 'Arial', sans-serif; }
+  .track-bar {
+    width: 100%; height: 3px; background: var(--light); border-radius: 2px; margin-top: 10px;
+  }
+  .track-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--amber), var(--gold)); }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--cream); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+    max-width: 1000px; margin: 0 auto;
+  }
+  @media(max-width:768px){ .contact-grid { grid-template-columns: 1fr; } }
+  .contact-info-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+  .contact-icon {
+    width: 40px; height: 40px; background: var(--navy); color: #fff;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .contact-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--amber); font-family: 'Arial', sans-serif; margin-bottom: 2px; }
+  .contact-val { color: var(--navy); font-size: 0.95rem; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: bold; color: var(--navy);
+    margin-bottom: 6px; font-family: 'Arial', sans-serif; }
+  .form-group input, .form-group textarea {
+    width: 100%; padding: 12px 14px; border: 2px solid #ddd; border-radius: 6px;
+    font-size: 0.95rem; font-family: 'Georgia', serif; transition: border-color 0.2s;
+    background: #fff;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--navy);
+  }
+  .form-group textarea { height: 120px; resize: vertical; }
+  .btn-submit {
+    width: 100%; padding: 14px; background: var(--navy); color: #fff;
+    border: none; border-radius: 6px; font-size: 1rem; font-weight: bold;
+    cursor: pointer; transition: background 0.2s; font-family: 'Arial', sans-serif;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .btn-submit:hover { background: var(--amber); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0f1c30; color: rgba(255,255,255,0.7); padding: 48px 5% 24px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px;
+    max-width: 1100px; margin: 0 auto 40px;
+  }
+  @media(max-width:768px){ .footer-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .footer-brand h3 { color: #fff; font-size: 1.3rem; margin-bottom: 12px; }
+  .footer-brand p { font-size: 0.9rem; line-height: 1.7; font-family: 'Arial', sans-serif; }
+  .footer-col h4 { color: var(--amber); font-size: 0.85rem; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 16px; font-family: 'Arial', sans-serif; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 8px; }
+  .footer-col ul li a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.9rem;
+    font-family: 'Arial', sans-serif; transition: color 0.2s; }
+  .footer-col ul li a:hover { color: var(--amber); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: gap;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .footer-bottom p { font-size: 0.8rem; font-family: 'Arial', sans-serif; }
+  .social-links { display: flex; gap: 12px; }
+  .social-link {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.65);
+    text-decoration: none; font-size: 0.9rem; transition: all 0.2s;
+  }
+  .social-link:hover { background: var(--amber); border-color: var(--amber); color: #fff; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(10px);} }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+  <a href="#home" class="nav-brand">
+    <div class="nav-logo">R</div>
+    <span class="nav-title">Ridgewood Ramblers</span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#members">Members</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#listen">Listen</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-badge">Ridgewood High School · Columbus, Ohio</div>
+    <h1>The Ridgewood <span>Ramblers</span></h1>
+    <p>A fourteen-member bluegrass ensemble rooted in the Appalachian tradition. We carry the old songs forward.</p>
+    <div class="hero-buttons">
+      <a href="#events" class="btn btn-primary">Upcoming Shows</a>
+      <a href="#listen" class="btn btn-outline">Listen Now</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">14</div><div class="lbl">Members</div></div>
+      <div class="hero-stat"><div class="num">3+</div><div class="lbl">Years Active</div></div>
+      <div class="hero-stat"><div class="num">2nd</div><div class="lbl">Regionals 2025</div></div>
+      <div class="hero-stat"><div class="num">12+</div><div class="lbl">Annual Gigs</div></div>
+    </div>
+  </div>
+  <div class="scroll-down"><span></span></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <div class="section-label">Our Story</div>
+      <h2 class="section-title">Rooted in Tradition. Built in Columbus.</h2>
+      <div class="divider"></div>
+      <p class="section-sub">
+        The Ridgewood Ramblers are more than a school ensemble  -  we are a living bridge between the
+        Appalachian hollows and the streets of Columbus. Under the direction of Mr. David Crawford,
+        and led as student director by Gerald Ellison, the Ramblers have grown from a handful of
+        pickers into one of Ohio's most talked-about high school bluegrass programs.
+      </p>
+      <p class="section-sub" style="margin-top:16px;">
+        We play bluegrass the way it was meant to be played: tight harmonies, honest strings, and
+        no apologies for where the music comes from. Whether we're at a farmers market, a
+        championship stage, or your grandmother's church hall  -  we give every room everything we've got.
+      </p>
+      <div class="about-facts">
+        <div class="fact-card">
+          <div class="fact-num">3</div>
+          <div class="fact-lbl">Fiddles</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">2</div>
+          <div class="fact-lbl">Banjos</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">5</div>
+          <div class="fact-lbl">Vocalists</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-num">14</div>
+          <div class="fact-lbl">Total Members</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual reveal">
+      <div class="instrument-icons">
+        <div class="inst-chip">🎻 Fiddle × 3</div>
+        <div class="inst-chip">🪕 Banjo × 2</div>
+        <div class="inst-chip">🎸 Guitar × 2</div>
+        <div class="inst-chip">🎼 Mandolin × 1</div>
+        <div class="inst-chip">🎵 Upright Bass × 1</div>
+        <div class="inst-chip">🎤 Soprano</div>
+        <div class="inst-chip">🎤 Alto</div>
+        <div class="inst-chip">🎤 Tenor</div>
+        <div class="inst-chip">🎤 Bass</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section id="members">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div class="section-label reveal">The Ensemble</div>
+    <h2 class="section-title reveal">Meet the Ramblers</h2>
+    <div class="divider reveal"></div>
+    <div class="members-grid">
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#1B2A4A,#E9943A);">G</div>
+        <div class="member-name">Gerald Ellison</div>
+        <div class="member-role">First Fiddle</div>
+        <div class="member-badge">Student Director</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#2D6A4F,#1B2A4A);">S</div>
+        <div class="member-name">Sarah Henderson</div>
+        <div class="member-role">Banjo</div>
+        <div class="member-badge">Section Lead</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#5C3D2E,#2D6A4F);">J</div>
+        <div class="member-name">Jake Thompson</div>
+        <div class="member-role">Upright Bass</div>
+        <div class="member-badge">Ramblers Crew</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar">M</div>
+        <div class="member-name">Marcus Webb</div>
+        <div class="member-role">Second Fiddle</div>
+        <div class="member-badge">Junior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#4A1942,#2D6A4F);">L</div>
+        <div class="member-name">Lily Park</div>
+        <div class="member-role">Third Fiddle</div>
+        <div class="member-badge">Sophomore</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#1B2A4A,#5C3D2E);">C</div>
+        <div class="member-name">Cole Danforth</div>
+        <div class="member-role">Second Banjo</div>
+        <div class="member-badge">Junior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#2D6A4F,#4A1942);">R</div>
+        <div class="member-name">Rachel Simms</div>
+        <div class="member-role">Mandolin</div>
+        <div class="member-badge">Senior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#5C3D2E,#1B2A4A);">D</div>
+        <div class="member-name">Darius Cole</div>
+        <div class="member-role">Rhythm Guitar</div>
+        <div class="member-badge">Junior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#1B2A4A,#2D6A4F);">A</div>
+        <div class="member-name">Anna Liu</div>
+        <div class="member-role">Lead Guitar</div>
+        <div class="member-badge">Sophomore</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#C9A84C,#1B2A4A);">T</div>
+        <div class="member-name">Tess Whitmore</div>
+        <div class="member-role">Soprano Vocalist</div>
+        <div class="member-badge">Senior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#2D6A4F,#C9A84C);">P</div>
+        <div class="member-name">Priya Nair</div>
+        <div class="member-role">Alto Vocalist</div>
+        <div class="member-badge">Junior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#E9943A,#2D6A4F);">B</div>
+        <div class="member-name">Ben Okafor</div>
+        <div class="member-role">Tenor Vocalist</div>
+        <div class="member-badge">Senior</div>
+      </div>
+
+      <div class="member-card reveal">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#4A1942,#E9943A);">H</div>
+        <div class="member-name">Henry Graves</div>
+        <div class="member-role">Bass Vocalist</div>
+        <div class="member-badge">Junior</div>
+      </div>
+
+      <div class="member-card reveal" style="border-top-color:var(--green);">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#2D6A4F,#1B2A4A); font-size:1rem;">DC</div>
+        <div class="member-name">Mr. David Crawford</div>
+        <div class="member-role">Director</div>
+        <div class="member-badge">Faculty Advisor</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <div style="max-width:800px; margin:0 auto;">
+    <div class="section-label">2026 - 2027 Season</div>
+    <h2 class="section-title" style="color:#fff;">Upcoming Performances</h2>
+    <div class="divider"></div>
+    <div class="events-list">
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Oct</div>
+          <div class="event-day">26</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Maple Grove Farmers Market</div>
+          <div class="event-venue">Maple Grove, Columbus · Afternoon load-in</div>
+          <span class="event-tag tag-community">Community</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Dec</div>
+          <div class="event-day">6</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Christmas Program at First Methodist Columbus</div>
+          <div class="event-venue">First Methodist Columbus · Evening service</div>
+          <span class="event-tag tag-performance">Performance</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Dec</div>
+          <div class="event-day">20</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Holiday Gig  -  Private Booking</div>
+          <div class="event-venue">Columbus, OH · Payout split with crew</div>
+          <span class="event-tag tag-performance">Performance</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Feb</div>
+          <div class="event-day">14</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Sweetheart Dance Fiddle Set</div>
+          <div class="event-venue">Castellano Family Booking · Columbus, OH</div>
+          <span class="event-tag tag-performance">Performance</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Mar</div>
+          <div class="event-day">21</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Spring Social at Westside Senior Center</div>
+          <div class="event-venue">Westside Senior Center, Columbus · Afternoon set</div>
+          <span class="event-tag tag-community">Community</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Apr</div>
+          <div class="event-day">17</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Appalachian Strings Festival</div>
+          <div class="event-venue">Downtown Columbus · Early afternoon slot</div>
+          <span class="event-tag tag-performance">Performance</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box">
+          <div class="event-month">Apr</div>
+          <div class="event-day">18</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Columbus Arts Festival</div>
+          <div class="event-venue">Columbus Recreation &amp; Parks · Spring Festival</div>
+          <span class="event-tag tag-performance">Performance</span>
+        </div>
+      </div>
+
+      <div class="event-item reveal">
+        <div class="event-date-box" style="background:var(--green);">
+          <div class="event-month">May</div>
+          <div class="event-day">8</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Ohio State Fiddle Championship</div>
+          <div class="event-venue">Lakemont College Performing Arts Center · Gerald soloing</div>
+          <span class="event-tag tag-competition">Championship</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LISTEN -->
+<section id="listen">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div class="section-label reveal">Our Sound</div>
+    <h2 class="section-title reveal">Recent Recordings</h2>
+    <div class="divider reveal"></div>
+    <div class="tracks-grid">
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Harlan County Homecoming</h4>
+          <p>Original  -  G. Ellison</p>
+          <div class="track-bar"><div class="track-fill" style="width:65%;"></div></div>
+        </div>
+        <span class="track-duration">3:42</span>
+      </div>
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Old Crow Waltz</h4>
+          <p>Traditional, arr. Crawford</p>
+          <div class="track-bar"><div class="track-fill" style="width:30%;"></div></div>
+        </div>
+        <span class="track-duration">4:15</span>
+      </div>
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Columbus Reel No. 2</h4>
+          <p>The Ridgewood Ramblers</p>
+          <div class="track-bar"><div class="track-fill" style="width:80%;"></div></div>
+        </div>
+        <span class="track-duration">2:58</span>
+      </div>
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Grandpa Walter's Tune</h4>
+          <p>Original  -  G. Ellison</p>
+          <div class="track-bar"><div class="track-fill" style="width:10%;"></div></div>
+        </div>
+        <span class="track-duration">5:01</span>
+      </div>
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Apple Blossom (Live at Regionals)</h4>
+          <p>Traditional</p>
+          <div class="track-bar"><div class="track-fill" style="width:48%;"></div></div>
+        </div>
+        <span class="track-duration">3:27</span>
+      </div>
+
+      <div class="track-card reveal">
+        <div class="track-play"></div>
+        <div class="track-info">
+          <h4>Scioto Sunday</h4>
+          <p>Original  -  Crawford / Ellison</p>
+          <div class="track-bar"><div class="track-fill" style="width:20%;"></div></div>
+        </div>
+        <span class="track-duration">4:44</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div style="max-width:1000px; margin:0 auto;">
+    <div class="section-label reveal">Get In Touch</div>
+    <h2 class="section-title reveal">Book the Ramblers</h2>
+    <div class="divider reveal"></div>
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="contact-info-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Location</div>
+            <div class="contact-val">Columbus, Ohio · West Side</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">🎵</div>
+          <div>
+            <div class="contact-label">Director</div>
+            <div class="contact-val">Mr. David Crawford<br>crawford.strings@gmail.com</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📸</div>
+          <div>
+            <div class="contact-label">Social Media</div>
+            <div class="contact-val">@gerald.ramblers</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📅</div>
+          <div>
+            <div class="contact-label">Availability</div>
+            <div class="contact-val">Weekends · Evenings<br>Community &amp; Festival bookings welcome</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <form onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="jane@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Event Type</label>
+            <input type="text" placeholder="Festival, Wedding, Community Event...">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Tell us about your event, date, location, and any special requests..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Send Booking Inquiry</button>
+        </form>
+        <div id="form-success" style="display:none; background:var(--green); color:#fff; padding:16px; border-radius:6px; margin-top:12px; font-family:Arial,sans-serif;">
+          Thanks! We'll get back to you within 48 hours.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>The Ridgewood Ramblers</h3>
+      <p>A fourteen-member bluegrass ensemble from Ridgewood High School, Columbus, Ohio.
+      Directed by Mr. David Crawford, student-led by Gerald Ellison.
+      Rooted in the Appalachian tradition since our founding.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#members">Our Members</a></li>
+        <li><a href="#events">Upcoming Shows</a></li>
+        <li><a href="#listen">Listen</a></li>
+        <li><a href="#contact">Book Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Rehearsal</h4>
+      <ul>
+        <li><a href="#">Mon/Wed/Fri 3:30-5:30 PM</a></li>
+        <li><a href="#">Sat 9 AM-12 PM (Season)</a></li>
+        <li><a href="#">Ridgewood High Band Room</a></li>
+        <li><a href="#">Columbus, Ohio</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 The Ridgewood Ramblers · Ridgewood High School, Columbus, OH</p>
+    <div class="social-links">
+      <a href="#" class="social-link" title="Social Media">📸</a>
+      <a href="#" class="social-link" title="Music Streaming">🎵</a>
+      <a href="#" class="social-link" title="YouTube">▶</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Counter animation
+  function animateCounter(el, target) {
+    let current = 0;
+    const step = target / 40;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { el.textContent = target + (el.dataset.suffix || ''); clearInterval(timer); }
+      else { el.textContent = Math.floor(current) + (el.dataset.suffix || ''); }
+    }, 30);
+  }
+
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    nav.style.boxShadow = window.scrollY > 50 ? '0 4px 20px rgba(0,0,0,0.3)' : '0 2px 12px rgba(27,42,74,0.15)';
+  });
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-success').style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { document.getElementById('form-success').style.display = 'none'; }, 5000);
+  }
+</script>
+</body>
+</html>

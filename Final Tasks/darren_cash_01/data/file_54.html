@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shift and Survey Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:#0c1117;color:#cdd9e5}
+  header.bar{background:linear-gradient(90deg,#10212e,#16323f);padding:22px 26px;border-bottom:3px solid #2dd4bf;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+  header.bar h1{font-size:1.4rem;color:#e8f6f4}
+  header.bar .who{font-size:.84rem;color:#7fd1c4}
+  .tabs{display:flex;gap:6px;padding:18px 26px 0;flex-wrap:wrap}
+  .tabs button{background:#16222e;color:#9fb3c8;border:1px solid #233140;border-bottom:none;padding:10px 18px;border-radius:8px 8px 0 0;cursor:pointer;font-size:.9rem;transition:background .25s,color .25s}
+  .tabs button.active{background:#1d3a44;color:#2dd4bf;font-weight:bold}
+  .panel{display:none;padding:24px 26px;animation:fade .4s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{background:#13202b;border:1px solid #233140;border-radius:12px;padding:18px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-20px;top:-20px;width:70px;height:70px;border-radius:50%;background:rgba(45,212,191,.12)}
+  .kpi .v{font-size:1.7rem;color:#2dd4bf;font-weight:bold}
+  .kpi .k{font-size:.78rem;color:#8aa0b4;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  canvas{background:#0f1a23;border:1px solid #233140;border-radius:12px;width:100%;max-width:760px;display:block}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.88rem}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #1f2c38}
+  th{color:#2dd4bf;text-transform:uppercase;font-size:.74rem;letter-spacing:1px}
+  tr:hover td{background:#13202b}
+  .controls{margin:12px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .controls label{font-size:.85rem;color:#9fb3c8}
+  .controls select{background:#16222e;color:#cdd9e5;border:1px solid #233140;padding:8px 12px;border-radius:8px}
+  footer.bar{background:#0a0f14;border-top:1px solid #233140;padding:24px 26px;text-align:center;font-size:.82rem;color:#7c8da0}
+  footer.bar a{color:#2dd4bf;text-decoration:none}
+  @media (max-width:600px){header.bar h1{font-size:1.15rem}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div>
+    <h1>Shift and Survey Dashboard</h1>
+    <div class="who">Darren Mitchell Cash, Atlantic Reef Dive Co. and Whitfield coral survey</div>
+  </div>
+  <div class="who">Wilmington, North Carolina, updated February 2026</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="active" data-p="work">Dive shop</button>
+  <button data-p="survey">Coral survey</button>
+  <button data-p="hours">Hours chart</button>
+</div>
+
+<section class="panel active" id="work">
+  <div class="cards">
+    <div class="kpi"><div class="v">$1,308</div><div class="k">January earnings</div></div>
+    <div class="kpi"><div class="v">56</div><div class="k">Hours worked</div></div>
+    <div class="kpi"><div class="v">$18</div><div class="k">Per hour base</div></div>
+    <div class="kpi"><div class="v">$300</div><div class="k">Tips, January</div></div>
+  </div>
+  <p style="color:#9fb3c8;font-size:.9rem">Monthly take from the shop runs between $950 and $1,200 depending on the season, which works out to between $11,400 and $14,400 across a year. Wednesday, Friday, and Saturday mornings, with occasional Sundays in the visitor rush.</p>
+</section>
+
+<section class="panel" id="survey">
+  <div class="cards">
+    <div class="kpi"><div class="v">4</div><div class="k">Survey sites</div></div>
+    <div class="kpi"><div class="v">20</div><div class="k">Surveys logged</div></div>
+    <div class="kpi"><div class="v">87.6%</div><div class="k">Mean healthy</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Site</th><th>Surveys</th><th>First healthy %</th><th>Latest healthy %</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td>Masonboro Ledge</td><td>6</td><td>85.0</td><td>90.0</td><td>+5.0</td></tr>
+      <tr><td>Crystal Pier Reef</td><td>6</td><td>84.4</td><td>90.7</td><td>+6.3</td></tr>
+      <tr><td>Five Mile Ledge</td><td>4</td><td>90.6</td><td>89.1</td><td>-1.5</td></tr>
+      <tr><td>Liberty Rocks</td><td>4</td><td>71.4</td><td>82.1</td><td>+10.7</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="panel" id="hours">
+  <div class="controls">
+    <label for="metric">Show</label>
+    <select id="metric">
+      <option value="hours">Hours worked</option>
+      <option value="tips">Tips collected</option>
+      <option value="total">Day total</option>
+    </select>
+  </div>
+  <canvas id="chart" width="760" height="320"></canvas>
+</section>
+
+<footer class="bar">
+  <p>Darren Mitchell Cash, PADI Divemaster DM-22907, Marine Biology at Oakridge University</p>
+  <p>Contact <a href="mailto:darren.cash@Greenridertech.co">darren.cash@Greenridertech.co</a>, Wilmington, North Carolina</p>
+  <p>Copyright 2026 Darren Mitchell Cash. Personal tracking dashboard.</p>
+</footer>
+
+<script>
+  var tabs=document.querySelectorAll("#tabs button");
+  var panels=document.querySelectorAll(".panel");
+  tabs.forEach(function(b){
+    b.addEventListener("click",function(){
+      tabs.forEach(function(x){x.classList.remove("active")});
+      panels.forEach(function(p){p.classList.remove("active")});
+      b.classList.add("active");
+      document.getElementById(b.getAttribute("data-p")).classList.add("active");
+    });
+  });
+
+  var days=["07","09","10","14","16","17","21","23","24","28","30","31"];
+  var data={
+    hours:[6,6,6,6,6,6,4,6,4,0,6,0],
+    tips:[32,28,41,30,26,38,18,35,22,0,30,0],
+    total:[140,136,149,138,134,146,90,143,94,0,138,0]
+  };
+  var cv=document.getElementById("chart");
+  var ctx=cv.getContext("2d");
+  function draw(metric){
+    var vals=data[metric];
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var max=Math.max.apply(null,vals)||1;
+    var pad=40, w=(cv.width-pad*2)/vals.length, base=cv.height-30;
+    ctx.strokeStyle="#233140"; ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(cv.width-10,base); ctx.stroke();
+    vals.forEach(function(v,i){
+      var h=(v/max)*(base-30);
+      var x=pad+i*w+6, y=base-h;
+      ctx.fillStyle="#2dd4bf";
+      ctx.fillRect(x,y,w-12,h);
+      ctx.fillStyle="#7c8da0"; ctx.font="11px sans-serif"; ctx.textAlign="center";
+      ctx.fillText(days[i],x+(w-12)/2,base+16);
+      ctx.fillStyle="#cdd9e5";
+      if(v>0) ctx.fillText(String(v),x+(w-12)/2,y-5);
+    });
+  }
+  document.getElementById("metric").addEventListener("change",function(){draw(this.value)});
+  draw("hours");
+</script>
+</body>
+</html>

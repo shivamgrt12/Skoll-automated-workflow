@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 3 English, Life Skills Hub</title>
+<style>
+:root{
+  --ink:#1f2d3d; --teal:#0f6e7a; --teal-d:#0a4f58; --amber:#e8902a; --amber-d:#c9760f;
+  --paper:#f5f8f9; --card:#ffffff; --line:#dfe8ea; --mute:#5d7079; --good:#2f8f5b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",Tahoma,Verdana,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+a{color:inherit;text-decoration:none}
+header.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+  padding:14px 6vw;box-shadow:0 2px 14px rgba(15,110,122,.06)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.3px}
+.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--amber));
+  display:grid;place-items:center;color:#fff;font-weight:800}
+nav ul{display:flex;gap:26px;list-style:none}
+nav a{font-size:14px;color:var(--mute);font-weight:600;transition:color .2s}
+nav a:hover{color:var(--teal)}
+.btn{display:inline-block;padding:11px 22px;border-radius:30px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:transform .18s,box-shadow .18s}
+.btn.primary{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;box-shadow:0 8px 20px rgba(15,110,122,.28)}
+.btn.ghost{background:transparent;border:2px solid var(--teal);color:var(--teal)}
+.btn:hover{transform:translateY(-2px)}
+.hero{padding:84px 6vw 70px;background:
+  radial-gradient(900px 400px at 85% -10%,rgba(232,144,42,.16),transparent),
+  radial-gradient(700px 500px at -10% 30%,rgba(15,110,122,.12),transparent);
+  display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.kick{color:var(--amber-d);font-weight:800;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+.hero h1{font-size:46px;line-height:1.1;margin:14px 0 16px}
+.hero p.lead{font-size:18px;color:var(--mute);max-width:540px;margin-bottom:26px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+.facts{display:flex;gap:30px;margin-top:34px;flex-wrap:wrap}
+.facts div b{display:block;font-size:26px;color:var(--teal)}
+.facts div span{font-size:13px;color:var(--mute)}
+.herocard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;
+  box-shadow:0 30px 60px rgba(15,45,61,.12)}
+.herocard h3{font-size:15px;color:var(--mute);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.cls{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.cls:last-child{border:none}
+.cls b{color:var(--teal-d)}
+section{padding:66px 6vw}
+.sec-h{text-align:center;max-width:680px;margin:0 auto 44px}
+.sec-h h2{font-size:32px;margin-bottom:10px}
+.sec-h p{color:var(--mute)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+.reveal.show{opacity:1;transform:none}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+.tab{padding:10px 20px;border-radius:24px;background:#fff;border:1px solid var(--line);color:var(--mute);
+  font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
+.tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.mod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;transition:transform .2s,box-shadow .2s}
+.mod:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(15,45,61,.12)}
+.mod .ic{width:46px;height:46px;border-radius:12px;background:#eaf4f5;color:var(--teal);display:grid;place-items:center;font-size:22px;margin-bottom:14px}
+.mod h4{font-size:18px;margin-bottom:8px}
+.mod p{font-size:14px;color:var(--mute);margin-bottom:12px}
+.mod .ph{font-size:13px;background:#fbf2e3;color:var(--amber-d);border-radius:8px;padding:8px 10px;font-style:italic}
+.flashwrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;margin-top:10px}
+.flash{perspective:1200px;height:230px;cursor:pointer}
+.flash-inner{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.flash.flip .flash-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;display:grid;place-items:center;
+  text-align:center;padding:26px;box-shadow:0 16px 40px rgba(15,45,61,.14)}
+.front{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff}
+.front .term{font-size:30px;font-weight:800}
+.front small{display:block;margin-top:8px;opacity:.85}
+.back{background:#fff;border:1px solid var(--line);transform:rotateY(180deg);color:var(--ink)}
+.back .use{font-size:18px;font-weight:600}
+.back .ex{color:var(--mute);margin-top:10px;font-size:15px}
+.flashnav{display:flex;gap:10px;justify-content:center;margin-top:18px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--line);border:none;cursor:pointer}
+.dot.on{background:var(--amber)}
+.chartcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+.bars{display:flex;align-items:flex-end;gap:18px;height:240px;padding-top:10px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%}
+.bar .col{width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,var(--teal),var(--teal-d));
+  transition:height 1.2s cubic-bezier(.2,.8,.2,1);height:0}
+.bar small{font-size:12px;color:var(--mute);text-align:center}
+.bar b{font-size:13px;color:var(--teal-d)}
+.accord{max-width:780px;margin:0 auto}
+.ac{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.ac button{width:100%;text-align:left;padding:18px 22px;background:none;border:none;font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;justify-content:space-between;color:var(--ink)}
+.ac .body{max-height:0;overflow:hidden;transition:max-height .4s;padding:0 22px;color:var(--mute)}
+.ac .body p{padding:6px 0 20px}
+.ac.open .body{max-height:240px}
+.ac.open button .pm{transform:rotate(45deg)}
+.pm{transition:transform .3s;color:var(--amber)}
+.band{background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#fff;text-align:center;border-radius:22px;padding:50px 30px;margin:0 6vw}
+.band h2{font-size:30px;margin-bottom:12px}
+.band p{opacity:.9;max-width:620px;margin:0 auto 22px}
+footer{padding:50px 6vw 30px;color:var(--mute);font-size:14px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;border-top:1px solid var(--line);padding-top:30px}
+.fgrid h5{color:var(--ink);margin-bottom:10px;font-size:15px}
+.fgrid a{display:block;color:var(--mute);padding:3px 0}
+.copy{text-align:center;margin-top:30px;font-size:13px}
+@media(max-width:860px){.hero,.flashwrap{grid-template-columns:1fr}nav ul{display:none}.hero h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="brand"><div class="logo">E3</div> Level 3 English, Life Skills Hub</div>
+  <nav><ul>
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="#words">Word Practice</a></li>
+    <li><a href="#progress">Class Progress</a></li>
+    <li><a href="#faq">Questions</a></li>
+  </ul></nav>
+  <button class="btn primary" onclick="document.getElementById('join').scrollIntoView()">Office Hours</button>
+</header>
+
+<div class="hero">
+  <div>
+    <span class="kick">Montgomery College, Takoma Park Campus</span>
+    <h1>English you can use the next morning.</h1>
+    <p class="lead">A practice space for our Level 3 evening class. Real tasks for the doctor, the bank, a job, and the school office, built around the lives you already lead.</p>
+    <div class="cta">
+      <button class="btn primary" onclick="document.getElementById('modules').scrollIntoView()">Start a module</button>
+      <button class="btn ghost" onclick="document.getElementById('words').scrollIntoView()">Practice words</button>
+    </div>
+    <div class="facts">
+      <div><b>10</b><span>weekly themes</span></div>
+      <div><b>4</b><span>skills each night</span></div>
+      <div><b>6:30</b><span>Mon and Wed, PM</span></div>
+    </div>
+  </div>
+  <div class="herocard">
+    <h3>This Class at a Glance</h3>
+    <div class="cls"><span>Course</span><b>ESOL 0042, Level 3</b></div>
+    <div class="cls"><span>Meets</span><b>Mon and Wed, 6:30 to 8:30 PM</b></div>
+    <div class="cls"><span>Office hours</span><b>Wed, 5:45 to 6:25 PM</b></div>
+    <div class="cls"><span>Instructor</span><b>Ian Woodward</b></div>
+    <div class="cls"><span>Reminders</span><b>By text if you do not use email</b></div>
+  </div>
+</div>
+
+<section id="modules">
+  <div class="sec-h reveal"><h2>Life-skills modules</h2><p>Pick a situation. Each one gives you the words, a short practice, and one line to carry out the door.</p></div>
+  <div class="tabs reveal">
+    <button class="tab active" data-f="all">All</button>
+    <button class="tab" data-f="health">Health</button>
+    <button class="tab" data-f="money">Money and home</button>
+    <button class="tab" data-f="work">Work and school</button>
+  </div>
+  <div class="modules" id="modgrid"></div>
+</section>
+
+<section id="words" style="background:linear-gradient(180deg,#fff,var(--paper))">
+  <div class="sec-h reveal"><h2>Word practice, tap to flip</h2><p>Each card shows a phrase you will need. Tap it to see how and when to use it.</p></div>
+  <div class="flashwrap">
+    <div>
+      <div class="flash reveal" id="flash" onclick="this.classList.toggle('flip')">
+        <div class="flash-inner">
+          <div class="face front"><div><span class="term" id="ft">make an appointment</span><small>tap the card</small></div></div>
+          <div class="face back"><div><div class="use" id="fu"></div><div class="ex" id="fe"></div></div></div>
+        </div>
+      </div>
+      <div class="flashnav" id="dots"></div>
+    </div>
+    <div class="chartcard reveal">
+      <h3 style="color:var(--mute);text-transform:uppercase;font-size:13px;letter-spacing:1px;margin-bottom:8px">Why we drill numbers</h3>
+      <p style="color:var(--mute);font-size:15px">Saying a date of birth or a phone number out loud is harder than it looks under pressure. We slow it down, choral first, then in pairs, slow to fast, until it sounds natural and not memorized.</p>
+      <p style="margin-top:14px;font-size:15px;color:var(--teal-d);font-weight:600">For the stronger learners, like Mrs. Porter, the follow-up task is leaving a voicemail to reschedule.</p>
+    </div>
+  </div>
+</section>
+
+<section id="progress">
+  <div class="sec-h reveal"><h2>Class progress this term</h2><p>Attendance is steady and the room is finding its voice. Here is where the group stands across our first five weeks.</p></div>
+  <div class="chartcard reveal" style="max-width:880px;margin:0 auto">
+    <div class="bars" id="bars"></div>
+    <p style="text-align:center;color:var(--mute);margin-top:18px;font-size:14px">Students present, by week, out of ten enrolled</p>
+  </div>
+</section>
+
+<section id="faq" style="background:linear-gradient(180deg,var(--paper),#fff)">
+  <div class="sec-h reveal"><h2>Common questions</h2><p>If you cannot find your answer here, send a text and I will reply before class.</p></div>
+  <div class="accord" id="acc"></div>
+</section>
+
+<div class="band reveal" id="join">
+  <h2>Catch-up time is for you</h2>
+  <p>Office hours are open every Wednesday from 5:45 to 6:25 PM, right before class. Bring the form that scared you, the call you could not finish, or the word you keep losing. We will work it through together.</p>
+  <button class="btn" style="background:var(--amber);color:#fff" onclick="alert('Office hours: Wednesday 5:45 to 6:25 PM, before class. Text to confirm a slot.')">Reserve a slot</button>
+</div>
+
+<footer>
+  <div class="fgrid">
+    <div>
+      <h5>Level 3 English, Life Skills Hub</h5>
+      <p style="color:var(--mute)">A supplementary practice space for adult learners at Montgomery College, Takoma Park. Built and kept by your instructor.</p>
+    </div>
+    <div><h5>Class</h5><a href="#modules">Modules</a><a href="#words">Word practice</a><a href="#progress">Progress</a></div>
+    <div><h5>Get help</h5><a href="#join">Office hours</a><a href="#faq">Questions</a><a href="#">Free campus tutoring</a></div>
+    <div><h5>Reach me</h5><a href="#">ian.woodward@greenrider.co</a><a href="#">Reminders by text on request</a></div>
+  </div>
+  <div class="copy">Prepared by Ian Woodward, ESOL Adjunct Instructor. Materials posted outside the official gradebook. Respect and support among classmates is expected at all times.</div>
+</footer>
+
+<script>
+const modules=[
+ {c:"health",i:"+",t:"The doctor visit",d:"Make and confirm a visit, then describe a symptom with a clear timeline.",p:"I have had this pain for three days."},
+ {c:"health",i:"Rx",t:"Pharmacy and labels",d:"Read the label, understand how often, and repeat the plan back to confirm.",p:"So I should take it twice a day."},
+ {c:"money",i:"$",t:"Banking and money",d:"Open an account, read a statement, and say amounts and dates out loud with confidence.",p:"I would like to check my balance, please."},
+ {c:"money",i:"H",t:"Housing and utilities",d:"Read a bill, ask about a repair, and use the polite modal forms for a request.",p:"Could you fix the heating, please?"},
+ {c:"work",i:"W",t:"Job applications",d:"Fill in an application in the past tense and describe what you used to do.",p:"I worked as a cook for five years."},
+ {c:"work",i:"S",t:"School enrollment",d:"Enroll a child, complete the form, and ask the question words that get answers.",p:"Where do I sign for the bus?"}
+];
+const grid=document.getElementById('modgrid');
+function paint(f){grid.innerHTML="";modules.filter(m=>f==="all"||m.c===f).forEach(m=>{
+  const e=document.createElement('div');e.className="mod reveal show";
+  e.innerHTML=`<div class="ic">${m.i}</div><h4>${m.t}</h4><p>${m.d}</p><div class="ph">"${m.p}"</div>`;grid.appendChild(e);});}
+paint("all");
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');paint(t.dataset.f);});
+
+const cards=[
+ {t:"make an appointment",u:"Ask for a time to see a doctor.",e:"I would like to make an appointment for next week."},
+ {t:"date of birth",u:"Give your birth date clearly, month then day then year.",e:"My date of birth is the fifth of March."},
+ {t:"could you repeat that",u:"Ask politely for something to be said again.",e:"Could you repeat that, a little slower, please?"},
+ {t:"twice a day",u:"Say how often to take a medicine.",e:"The label says twice a day, with food."},
+ {t:"I need to reschedule",u:"Move an appointment to a new time.",e:"I need to reschedule my visit, I have to work."}
+];
+let ci=0;const ft=document.getElementById('ft'),fu=document.getElementById('fu'),fe=document.getElementById('fe'),flash=document.getElementById('flash'),dots=document.getElementById('dots');
+cards.forEach((_,k)=>{const b=document.createElement('button');b.className="dot"+(k===0?" on":"");b.onclick=()=>setCard(k);dots.appendChild(b);});
+function setCard(k){ci=k;flash.classList.remove('flip');ft.textContent=cards[k].t;fu.textContent=cards[k].u;fe.textContent=cards[k].e;
+  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('on',j===k));}
+setCard(0);
+setInterval(()=>{if(!flash.classList.contains('flip'))setCard((ci+1)%cards.length);},5200);
+
+const weeks=[{w:"Week 1",v:9},{w:"Week 2",v:8},{w:"Week 3",v:7},{w:"Week 4",v:9},{w:"Week 5",v:10}];
+const bars=document.getElementById('bars');
+weeks.forEach(d=>{const e=document.createElement('div');e.className="bar";
+  e.innerHTML=`<b>${d.v}</b><div class="col" data-h="${d.v*10}"></div><small>${d.w}</small>`;bars.appendChild(e);});
+
+const faqs=[
+ {q:"What if I miss a class?",a:"Send me a text before class if you can. Late tasks are accepted within one week with a brief note, no fuss."},
+ {q:"I do not have email. How do I get reminders?",a:"That is fine. I send appointment and homework reminders by text to students who do not use email."},
+ {q:"The forms are hard. Can I get help?",a:"Yes. We model every form on the board first, line by line, before you fill your own. Bring it to office hours too."},
+ {q:"Is there free tutoring?",a:"Yes, the campus learning center offers free tutoring. I can help you book a time that fits around work."}
+];
+const acc=document.getElementById('acc');
+faqs.forEach(f=>{const e=document.createElement('div');e.className="ac";
+  e.innerHTML=`<button>${f.q}<span class="pm">+</span></button><div class="body"><p>${f.a}</p></div>`;
+  e.querySelector('button').onclick=()=>e.classList.toggle('open');acc.appendChild(e);});
+
+const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('show');
+  if(en.target.id==='progress'||en.target.querySelector&&en.target.querySelector('.col')){}
+  io.unobserve(en.target);}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(r=>io.observe(r));
+const barIO=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){
+  document.querySelectorAll('.col').forEach(c=>c.style.height=c.dataset.h+"%");barIO.disconnect();}}),{threshold:.3});
+barIO.observe(document.getElementById('bars'));
+// safety net: never leave content hidden if scroll or observer does not fire
+window.addEventListener('load',()=>setTimeout(()=>{
+  document.querySelectorAll('.reveal').forEach(r=>r.classList.add('show'));
+  document.querySelectorAll('.col').forEach(c=>c.style.height=c.dataset.h+"%");
+},400));
+</script>
+</body>
+</html>

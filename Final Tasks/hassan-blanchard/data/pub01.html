@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight Craft Beats</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --accent: #7c5cbf;
+    --accent-light: #a07ee0;
+    --gold: #d4a843;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --border: #252535;
+    --teal: #4fd1c5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Arial', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+  }
+  .logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--accent-light); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.82rem;
+    letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .notify-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .notify-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    padding: 100px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 500px;
+    background: radial-gradient(ellipse, rgba(124,92,191,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: bold;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent-light) 50%, var(--teal) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .hero-ctas { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .cta-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 13px 32px;
+    border-radius: 28px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cta-primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,92,191,0.4); }
+  .cta-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 13px 32px;
+    border-radius: 28px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .cta-secondary:hover { border-color: var(--accent); color: var(--accent-light); }
+
+  /* WAVEFORM VISUAL */
+  .wave-bar { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 60px; margin: 48px auto 0; max-width: 300px; }
+  .wave-bar div {
+    width: 6px;
+    background: var(--accent);
+    border-radius: 4px;
+    opacity: 0.7;
+    animation: wave 1.4s ease-in-out infinite;
+  }
+  .wave-bar div:nth-child(1){height:24px;animation-delay:0s}
+  .wave-bar div:nth-child(2){height:38px;animation-delay:0.1s}
+  .wave-bar div:nth-child(3){height:52px;animation-delay:0.2s}
+  .wave-bar div:nth-child(4){height:44px;animation-delay:0.3s}
+  .wave-bar div:nth-child(5){height:58px;animation-delay:0.4s}
+  .wave-bar div:nth-child(6){height:34px;animation-delay:0.5s}
+  .wave-bar div:nth-child(7){height:48px;animation-delay:0.6s}
+  .wave-bar div:nth-child(8){height:42px;animation-delay:0.7s}
+  .wave-bar div:nth-child(9){height:56px;animation-delay:0.8s}
+  .wave-bar div:nth-child(10){height:30px;animation-delay:0.9s}
+  .wave-bar div:nth-child(11){height:46px;animation-delay:1.0s}
+  .wave-bar div:nth-child(12){height:26px;animation-delay:1.1s}
+  @keyframes wave { 0%,100%{transform:scaleY(0.5);opacity:0.4} 50%{transform:scaleY(1);opacity:1} }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+
+  .section-head { margin-bottom: 32px; }
+  .section-head h2 { font-size: 1.3rem; margin-bottom: 6px; }
+  .section-head p { color: var(--muted); font-size: 0.88rem; }
+  .eyebrow {
+    display: inline-block; color: var(--accent-light); font-size: 0.72rem;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  /* BEAT GRID */
+  .beat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+  .beat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+  .beat-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .beat-art {
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .beat-art.lofi { background: linear-gradient(135deg, #1a0f2e, #2d1b69, #0f2942); }
+  .beat-art.atl { background: linear-gradient(135deg, #0f1f0f, #1a4a1a, #0d2a3a); }
+  .beat-art.soul { background: linear-gradient(135deg, #2a0f0f, #5a1a1a, #3a1050); }
+  .beat-art.chill { background: linear-gradient(135deg, #0f1a2e, #1a2e4a, #0f2a2a); }
+  .art-emoji { font-size: 2.5rem; position: relative; z-index: 1; }
+  .art-orb {
+    position: absolute;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    opacity: 0.3;
+    filter: blur(30px);
+  }
+  .orb-purple { background: #7c5cbf; left: 20%; top: 30%; }
+  .orb-teal { background: #4fd1c5; right: 15%; bottom: 20%; }
+  .orb-gold { background: #d4a843; left: 10%; bottom: 30%; }
+  .coming-soon-ribbon {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: var(--gold);
+    color: #0a0a0f;
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .play-btn {
+    position: absolute;
+    bottom: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .play-btn:hover { background: var(--accent); }
+  .beat-info { padding: 16px 18px 20px; }
+  .beat-number { font-size: 0.7rem; color: var(--accent-light); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .beat-name { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
+  .beat-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .beat-tag {
+    font-size: 0.7rem; padding: 2px 10px; border-radius: 12px;
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .beat-footer { display: flex; align-items: center; justify-content: space-between; }
+  .beat-bpm { font-size: 0.78rem; color: var(--muted); }
+  .beat-price { font-size: 0.9rem; font-weight: bold; color: var(--gold); }
+
+  /* ABOUT BLOCK */
+  .about-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 40px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+  }
+  .about-icon {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+    filter: grayscale(0.2);
+  }
+  .about-text h2 { font-size: 1.3rem; margin-bottom: 14px; color: var(--accent-light); }
+  .about-text p { color: var(--muted); font-size: 0.9rem; line-height: 1.8; margin-bottom: 14px; }
+
+  /* NEWSLETTER */
+  .nl-section {
+    background: linear-gradient(135deg, #12001a, #1a0a2e, #0a1020);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 48px 40px;
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .nl-glow {
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 300px;
+    background: radial-gradient(ellipse, rgba(124,92,191,0.25) 0%, transparent 70%);
+  }
+  .nl-section h2 { font-size: 1.6rem; margin-bottom: 12px; position: relative; }
+  .nl-section p { color: var(--muted); margin-bottom: 28px; position: relative; }
+  .nl-form { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: relative; }
+  .nl-form input {
+    padding: 12px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    color: var(--text);
+    font-size: 0.9rem;
+    width: 280px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .nl-form input:focus { border-color: var(--accent); }
+  .nl-form button {
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .nl-form button:hover { background: var(--accent-light); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    background: var(--bg);
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand { font-size: 1rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+  .footer-brand span { color: var(--accent-light); }
+  .footer-copy { color: var(--muted); font-size: 0.78rem; }
+  .footer-social { display: flex; gap: 14px; }
+  .footer-social a {
+    color: var(--muted); text-decoration: none; font-size: 0.78rem;
+    transition: color 0.2s;
+  }
+  .footer-social a:hover { color: var(--accent-light); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    .nav-links { display: none; }
+    .about-block { padding: 28px 20px; }
+    .nl-section { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="logo">Midnight <span>Craft</span></div>
+    <div class="nav-links">
+      <a href="#">Beats</a>
+      <a href="#">About</a>
+      <a href="#">Licensing</a>
+      <a href="#">Contact</a>
+    </div>
+    <button class="notify-btn">Get Notified</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-tag">Atlanta - Lo-Fi - Boom Bap - Soul</div>
+  <h1>Music Made<br>Past Midnight</h1>
+  <p>Lo-fi beats and atmospheric instrumentals built in a dorm room between study sessions. Coming soon.</p>
+  <div class="hero-ctas">
+    <button class="cta-primary">Notify Me at Launch</button>
+    <button class="cta-secondary">Preview Catalog</button>
+  </div>
+  <div class="wave-bar">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+</section>
+
+<main>
+
+  <!-- BEAT CATALOG -->
+  <div class="section-head">
+    <div class="eyebrow">Preview Catalog</div>
+    <h2>Upcoming Releases</h2>
+    <p>These tracks are in final production. Full licensing and downloads open at launch.</p>
+  </div>
+
+  <div class="beat-grid">
+
+    <div class="beat-card">
+      <div class="beat-art lofi">
+        <div class="art-orb orb-purple"></div>
+        <div class="art-orb orb-teal"></div>
+        <div class="art-emoji">&#127758;</div>
+        <div class="coming-soon-ribbon">Preview</div>
+        <button class="play-btn">&#9654;</button>
+      </div>
+      <div class="beat-info">
+        <div class="beat-number">Beat 001</div>
+        <div class="beat-name">Late Library Session</div>
+        <div class="beat-tags">
+          <span class="beat-tag">Lo-Fi</span>
+          <span class="beat-tag">Study</span>
+          <span class="beat-tag">Mellow</span>
+        </div>
+        <div class="beat-footer">
+          <div class="beat-bpm">82 BPM</div>
+          <div class="beat-price">$25</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="beat-card">
+      <div class="beat-art atl">
+        <div class="art-orb orb-gold"></div>
+        <div class="art-orb orb-teal"></div>
+        <div class="art-emoji">&#127752;</div>
+        <div class="coming-soon-ribbon">Preview</div>
+        <button class="play-btn">&#9654;</button>
+      </div>
+      <div class="beat-info">
+        <div class="beat-number">Beat 002</div>
+        <div class="beat-name">West End 3 AM</div>
+        <div class="beat-tags">
+          <span class="beat-tag">Boom Bap</span>
+          <span class="beat-tag">ATL</span>
+          <span class="beat-tag">Gritty</span>
+        </div>
+        <div class="beat-footer">
+          <div class="beat-bpm">90 BPM</div>
+          <div class="beat-price">$30</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="beat-card">
+      <div class="beat-art soul">
+        <div class="art-orb orb-purple"></div>
+        <div class="art-orb orb-gold"></div>
+        <div class="art-emoji">&#127895;</div>
+        <div class="coming-soon-ribbon">Preview</div>
+        <button class="play-btn">&#9654;</button>
+      </div>
+      <div class="beat-info">
+        <div class="beat-number">Beat 003</div>
+        <div class="beat-name">Sunday Call</div>
+        <div class="beat-tags">
+          <span class="beat-tag">Soul</span>
+          <span class="beat-tag">R&amp;B</span>
+          <span class="beat-tag">Warm</span>
+        </div>
+        <div class="beat-footer">
+          <div class="beat-bpm">74 BPM</div>
+          <div class="beat-price">$28</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="beat-card">
+      <div class="beat-art chill">
+        <div class="art-orb orb-teal"></div>
+        <div class="art-orb orb-purple"></div>
+        <div class="art-emoji">&#128142;</div>
+        <div class="coming-soon-ribbon">Preview</div>
+        <button class="play-btn">&#9654;</button>
+      </div>
+      <div class="beat-info">
+        <div class="beat-number">Beat 004</div>
+        <div class="beat-name">Dorm Kitchen Midnight</div>
+        <div class="beat-tags">
+          <span class="beat-tag">Lo-Fi</span>
+          <span class="beat-tag">Atmospheric</span>
+          <span class="beat-tag">Chill</span>
+        </div>
+        <div class="beat-footer">
+          <div class="beat-bpm">78 BPM</div>
+          <div class="beat-price">$25</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-block">
+    <div class="about-icon">&#127911;</div>
+    <div class="about-text">
+      <h2>Built Between Study Sessions</h2>
+      <p>All of these beats were made on a laptop after 11 PM in a dorm room in Atlanta. The process is slow because school comes first. The catalog grows one track at a time, during the quiet hours when the communal kitchen is empty and the study playlist has been running for three hours.</p>
+      <p>These beats are not good enough to release yet. That is not modesty, that is just where things are. When they are ready, this page will be the first place they drop. Sign up below to get notified when that day comes.</p>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="nl-section">
+    <div class="nl-glow"></div>
+    <h2>Be First at Launch</h2>
+    <p>Drop your email and you will get a single message when the store opens. That is it.</p>
+    <form class="nl-form" onsubmit="return false;">
+      <input type="email" placeholder="your@email.com">
+      <button type="submit">NOTIFY ME</button>
+    </form>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Midnight <span>Craft</span></div>
+      <div class="footer-copy" style="margin-top:6px">Atlanta, Georgia. Made late at night.</div>
+    </div>
+    <div class="footer-social">
+      <a href="#">Licensing Info</a>
+      <a href="#">Contact</a>
+      <a href="#">FAQ</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

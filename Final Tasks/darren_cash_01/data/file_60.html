@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camera Fund Planner</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Trebuchet MS",Verdana,sans-serif;background:#eefaf2;color:#173a2c;line-height:1.55}
+  header.app{background:linear-gradient(135deg,#0f7a5a,#1fb585);color:#eafff6;padding:34px 26px;text-align:center}
+  header.app h1{font-size:1.9rem}
+  header.app p{margin-top:6px;color:#cdf2e4}
+  .shell{max-width:760px;margin:26px auto;padding:0 20px}
+  .panel{background:#fff;border:1px solid #cfe9dc;border-radius:14px;padding:26px;box-shadow:0 4px 14px rgba(15,122,90,.1);margin-bottom:22px}
+  h2{color:#0f7a5a;margin-bottom:14px;font-size:1.2rem}
+  .field{margin-bottom:16px}
+  label{display:block;font-size:.86rem;color:#37614f;margin-bottom:6px;font-weight:bold}
+  input{width:100%;padding:11px 12px;border:2px solid #cfe9dc;border-radius:9px;font-size:1rem;transition:border-color .25s}
+  input:focus{outline:none;border-color:#1fb585}
+  .err{color:#b3261e;font-size:.8rem;margin-top:4px;display:none}
+  button.go{background:#0f7a5a;color:#fff;border:none;padding:13px 22px;border-radius:10px;font-size:1rem;cursor:pointer;width:100%;transition:background .25s,transform .15s}
+  button.go:hover{background:#0c6249;transform:translateY(-1px)}
+  .result{margin-top:20px;padding:20px;border-radius:12px;background:#e7f7ef;border:1px dashed #1fb585;display:none;animation:pop .4s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .result .big{font-size:1.7rem;color:#0f7a5a;font-weight:bold}
+  .bar{height:20px;background:#d4ede2;border-radius:10px;overflow:hidden;margin:14px 0}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,#1fb585,#0f7a5a);width:0;transition:width 1s ease}
+  .note{font-size:.84rem;color:#4a6e5d;margin-top:10px}
+  footer.app{background:#0c3a2c;color:#cdf2e4;text-align:center;padding:24px;font-size:.83rem}
+  footer.app a{color:#7ff0c6;text-decoration:none}
+  @media (max-width:560px){header.app h1{font-size:1.45rem}.panel{padding:20px}}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>Camera Fund Planner</h1>
+  <p>Darren Mitchell Cash, mirrorless setup with underwater housing</p>
+</header>
+
+<div class="shell">
+  <div class="panel">
+    <h2>Where the fund stands</h2>
+    <p class="note">Current savings sit near $1,100 toward a $2,500 target for a mirrorless body and dive housing. Off-peak months tighten the margin, so the monthly amount put aside moves with the season. Set the numbers below to see how long the gap takes to close.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Run the numbers</h2>
+    <div class="field">
+      <label for="goal">Target cost (dollars)</label>
+      <input id="goal" type="number" value="2500" min="1">
+      <div class="err" id="goalErr">Enter a target above zero.</div>
+    </div>
+    <div class="field">
+      <label for="saved">Saved so far (dollars)</label>
+      <input id="saved" type="number" value="1100" min="0">
+      <div class="err" id="savedErr">Enter zero or more.</div>
+    </div>
+    <div class="field">
+      <label for="monthly">Set aside each month (dollars)</label>
+      <input id="monthly" type="number" value="80" min="1">
+      <div class="err" id="monthlyErr">Enter a monthly amount above zero.</div>
+    </div>
+    <button class="go" id="calc">Calculate timeline</button>
+
+    <div class="result" id="result">
+      <div>Months to reach the goal</div>
+      <div class="big" id="months">0</div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="note" id="detail"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="app">
+  <p>Darren Mitchell Cash, PADI Divemaster, Marine Biology at Oakridge University</p>
+  <p>Contact <a href="mailto:darren.cash@Greenridertech.co">darren.cash@Greenridertech.co</a>, Wilmington, North Carolina</p>
+  <p>Copyright 2026 Darren Mitchell Cash. Personal planning tool.</p>
+</footer>
+
+<script>
+  function num(id){return parseFloat(document.getElementById(id).value)}
+  function showErr(id,on){document.getElementById(id).style.display=on?"block":"none"}
+  document.getElementById("calc").addEventListener("click",function(){
+    var goal=num("goal"), saved=num("saved"), monthly=num("monthly");
+    var ok=true;
+    showErr("goalErr",false);showErr("savedErr",false);showErr("monthlyErr",false);
+    if(!(goal>0)){showErr("goalErr",true);ok=false}
+    if(!(saved>=0)){showErr("savedErr",true);ok=false}
+    if(!(monthly>0)){showErr("monthlyErr",true);ok=false}
+    if(!ok){document.getElementById("result").style.display="none";return}
+    var remaining=Math.max(goal-saved,0);
+    var months=remaining===0?0:Math.ceil(remaining/monthly);
+    var pct=Math.min(Math.round((saved/goal)*100),100);
+    document.getElementById("months").textContent=months;
+    var d="";
+    if(months===0){d="The fund already covers the target. Time to book the housing.";}
+    else{d="Remaining is $"+remaining.toFixed(0)+". At $"+monthly.toFixed(0)+" a month that closes in about "+months+" months. Current progress is "+pct+" percent of goal.";}
+    document.getElementById("detail").textContent=d;
+    document.getElementById("result").style.display="block";
+    setTimeout(function(){document.getElementById("fill").style.width=pct+"%"},60);
+  });
+</script>
+</body>
+</html>

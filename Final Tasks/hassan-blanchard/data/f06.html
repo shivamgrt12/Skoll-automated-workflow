@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cast Iron and Brown Rice</title>
+<style>
+  :root {
+    --warm-brown: #5c3d2e;
+    --tan: #d4a574;
+    --cream: #fdf6ec;
+    --green: #4a7c59;
+    --dark: #1a1a1a;
+    --text: #2c2c2c;
+    --border: #e8d5b7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--warm-brown);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .site-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--tan);
+    text-decoration: none;
+  }
+  nav a {
+    color: #ffffffcc;
+    text-decoration: none;
+    margin-left: 28px;
+    font-size: 0.92rem;
+    letter-spacing: 0.5px;
+    font-family: 'Arial', sans-serif;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--tan); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #3b2415 0%, #5c3d2e 50%, #4a7c59 100%);
+    color: #fff;
+    padding: 80px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 {
+    font-size: 2.8rem;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: #ffffffbb;
+    max-width: 560px;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .hero-btn {
+    display: inline-block;
+    background: var(--tan);
+    color: var(--warm-brown);
+    padding: 12px 32px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    transition: transform 0.2s, background 0.2s;
+    position: relative;
+  }
+  .hero-btn:hover { transform: translateY(-2px); background: #e8c08a; }
+
+  /* FEATURED BADGE */
+  .featured-bar {
+    background: var(--green);
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85rem;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  .section-title {
+    font-size: 1.6rem;
+    color: var(--warm-brown);
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--tan);
+    padding-bottom: 8px;
+  }
+  .section-sub {
+    color: #666;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+  }
+
+  /* RECIPE GRID */
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
+    margin-bottom: 60px;
+  }
+  .recipe-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+  .recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+  }
+  .card-img {
+    height: 170px;
+    background: linear-gradient(135deg, #8B5E3C, #c49a6c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+  }
+  .card-img.stew   { background: linear-gradient(135deg, #6b3a1f, #b5651d); }
+  .card-img.greens { background: linear-gradient(135deg, #2d5a27, #5a8a4e); }
+  .card-img.bread  { background: linear-gradient(135deg, #b8860b, #daa520); }
+  .card-img.chicken{ background: linear-gradient(135deg, #8b4513, #cd853f); }
+  .cost-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-family: 'Arial', sans-serif;
+  }
+  .card-body { padding: 18px 20px 22px; }
+  .card-tag {
+    display: inline-block;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-size: 0.72rem;
+    font-family: 'Arial', sans-serif;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .card-body h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--dark); }
+  .card-body p {
+    font-size: 0.88rem;
+    color: #666;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.5;
+  }
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 0.8rem;
+    font-family: 'Arial', sans-serif;
+    color: #888;
+  }
+  .read-btn {
+    display: inline-block;
+    margin-top: 14px;
+    background: var(--warm-brown);
+    color: #fff;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: 'Arial', sans-serif;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .read-btn:hover { background: #7a5040; }
+
+  /* TIPS SECTION */
+  .tips-section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 36px 40px;
+    margin-bottom: 60px;
+    border-left: 5px solid var(--green);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .tips-section h2 { color: var(--green); margin-bottom: 20px; }
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .tip-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tip-item h4 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: var(--warm-brown);
+  }
+  .tip-item p {
+    font-size: 0.82rem;
+    color: #666;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* ABOUT STRIP */
+  .about-strip {
+    background: var(--warm-brown);
+    color: #fff;
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .about-strip h2 { color: var(--tan); margin-bottom: 14px; font-size: 1.5rem; }
+  .about-strip p {
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    color: #ffffffcc;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* NEWSLETTER */
+  .newsletter {
+    background: var(--green);
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .newsletter h2 { color: #fff; margin-bottom: 10px; }
+  .newsletter p { color: #ffffffbb; font-family: 'Arial', sans-serif; font-size: 0.9rem; margin-bottom: 24px; }
+  .nl-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .nl-form input {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    width: 280px;
+    outline: none;
+  }
+  .nl-form button {
+    padding: 11px 28px;
+    background: var(--tan);
+    color: var(--warm-brown);
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .nl-form button:hover { background: #e8c08a; }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark);
+    color: #aaa;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.82rem;
+    padding: 32px 24px;
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .footer-brand { color: var(--tan); font-size: 1.1rem; font-family: 'Georgia', serif; font-weight: bold; }
+  .footer-tagline { color: #666; margin-top: 4px; }
+  .footer-links a {
+    color: #aaa;
+    text-decoration: none;
+    margin-right: 16px;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--tan); }
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 24px auto 0;
+    border-top: 1px solid #333;
+    padding-top: 16px;
+    text-align: center;
+    color: #555;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.9rem; }
+    nav { display: none; }
+    .tips-section { padding: 24px 20px; }
+    .about-strip, .newsletter { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="site-name" href="#">Cast Iron and Brown Rice</a>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Recipes</a>
+      <a href="#">Budget Tips</a>
+      <a href="#">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="featured-bar">FEATURED THIS WEEK: Oxtail Stew - the Sunday recipe worth chasing</div>
+
+<section class="hero">
+  <h1>Real Food on a Real Budget</h1>
+  <p>Southern comfort cooking from a dorm kitchen. Every recipe keeps the soul and cuts the cost. No compromises.</p>
+  <a class="hero-btn" href="#">BROWSE RECIPES</a>
+</section>
+
+<main class="main">
+
+  <h2 class="section-title">Featured Recipes</h2>
+  <p class="section-sub">Built from scratch. Tested in a communal kitchen at midnight. Cost per serving included on every card.</p>
+
+  <div class="recipe-grid">
+
+    <div class="recipe-card">
+      <div class="card-img stew">
+        <span>&#127858;</span>
+        <span class="cost-badge">~$4.20 / serving</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Weekend Cook</span>
+        <h3>Grandma's Oxtail Stew</h3>
+        <p>Two and a half hours of low heat, one pot, brown rice underneath. The version I am still chasing after two semesters.</p>
+        <div class="card-meta">
+          <span>Serves 3-4</span>
+          <span>3 hrs total</span>
+        </div>
+        <a class="read-btn" href="#">Read Recipe</a>
+      </div>
+    </div>
+
+    <div class="recipe-card">
+      <div class="card-img greens">
+        <span>&#127807;</span>
+        <span class="cost-badge">~$1.10 / serving</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Weeknight Staple</span>
+        <h3>Collard Greens with Turkey Bacon</h3>
+        <p>Lighter than the classic, cheaper too. Turkey bacon renders down into the pot and the greens go all the way tender.</p>
+        <div class="card-meta">
+          <span>Serves 4-5</span>
+          <span>55 min</span>
+        </div>
+        <a class="read-btn" href="#">Read Recipe</a>
+      </div>
+    </div>
+
+    <div class="recipe-card">
+      <div class="card-img bread">
+        <span>&#127843;</span>
+        <span class="cost-badge">~$0.40 / piece</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Quick Side</span>
+        <h3>Cornbread from Scratch</h3>
+        <p>A cast iron pan makes the difference. Brown and crispy on the edges, tender in the middle. Sunday does not feel right without it.</p>
+        <div class="card-meta">
+          <span>Serves 8</span>
+          <span>30 min</span>
+        </div>
+        <a class="read-btn" href="#">Read Recipe</a>
+      </div>
+    </div>
+
+    <div class="recipe-card">
+      <div class="card-img chicken">
+        <span>&#127831;</span>
+        <span class="cost-badge">~$1.30 / serving</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Meal Prep Core</span>
+        <h3>Baked Chicken Thighs</h3>
+        <p>Bone-in, budget-friendly. Season the night before and bake while you study. Pairs with everything all week.</p>
+        <div class="card-meta">
+          <span>Serves 4</span>
+          <span>1 hr 10 min</span>
+        </div>
+        <a class="read-btn" href="#">Read Recipe</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips-section">
+    <h2>Budget Kitchen Principles</h2>
+    <div class="tips-grid">
+      <div class="tip-item">
+        <span class="tip-icon">&#128722;</span>
+        <div>
+          <h4>Price-compare weekly</h4>
+          <p>Brown rice, chicken thighs, and collards are almost always cheaper at the discount grocer. Turkey bacon flips weekly - check both stores.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">&#129368;</span>
+        <div>
+          <h4>Freeze half, always</h4>
+          <p>Oxtail and chicken go on sale sporadically. Buy double, freeze half. The freezer is the real budget move.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">&#128336;</span>
+        <div>
+          <h4>Cook late, cook quiet</h4>
+          <p>The communal kitchen after 11 PM is empty and calm. Better focus, no crowds, and the smell of garlic simmering at midnight is worth it.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">&#127858;</span>
+        <div>
+          <h4>One pot, many meals</h4>
+          <p>A Sunday stew becomes Monday lunch, Tuesday dinner, Thursday leftover bowl. Cook once, eat four times.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-strip">
+    <h2>About This Blog</h2>
+    <p>Started as a way to write down Grandma's recipes before memory filled in the gaps. She never measures anything. These are best-guess reconstructions from cooking next to her for years, adapted for a dorm kitchen and a student's grocery budget. The recipes are hers. The budget notes are mine.</p>
+  </div>
+
+  <div class="newsletter">
+    <h2>New Recipe Alerts</h2>
+    <p>Drop your email and get notified when a new recipe posts. No spam, just food.</p>
+    <form class="nl-form" onsubmit="return false;">
+      <input type="email" placeholder="your email address">
+      <button type="submit">SUBSCRIBE</button>
+    </form>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Cast Iron and Brown Rice</div>
+      <div class="footer-tagline">Southern food on a student budget. Atlanta.</div>
+    </div>
+    <div class="footer-links">
+      <a href="#">Recipes</a>
+      <a href="#">Budget Tips</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    All recipes tested in a real dorm kitchen. Cost estimates based on current Atlanta-area grocery prices.
+  </div>
+</footer>
+
+</body>
+</html>

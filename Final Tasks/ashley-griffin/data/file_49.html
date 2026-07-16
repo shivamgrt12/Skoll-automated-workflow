@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custody Weekend Planner</title>
+<style>
+  :root{
+    --bg:#fbf6ee;--card:#ffffff;--ink:#2c2a26;--muted:#7a7468;--line:#e7ddcd;
+    --warm:#d4762a;--warm2:#e89b53;--teal:#2f8f83;--sky:#eaf3f1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  header{background:linear-gradient(135deg,#d4762a,#e89b53);color:#fff;padding:26px 28px;
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;
+    box-shadow:0 4px 18px rgba(212,118,42,.25)}
+  header h1{font-size:22px;letter-spacing:.3px}
+  header .sub{opacity:.92;font-size:13px;margin-top:3px}
+  .who{background:rgba(255,255,255,.18);padding:10px 16px;border-radius:30px;font-size:13px}
+  main{max-width:1040px;margin:0 auto;padding:24px 22px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
+    box-shadow:0 2px 10px rgba(44,42,38,.04);opacity:0;transform:translateY(14px);animation:rise .5s ease forwards}
+  .card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.2s}.card:nth-child(4){animation-delay:.3s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  h2{font-size:16px;color:var(--warm);margin-bottom:4px}
+  .hint{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .countdown{grid-column:1 / -1;text-align:center;background:linear-gradient(135deg,#2f8f83,#3aa99b);color:#fff}
+  .countdown h2{color:#fff}
+  .clock{display:flex;justify-content:center;gap:14px;margin:14px 0 6px;flex-wrap:wrap}
+  .unit{background:rgba(255,255,255,.16);border-radius:12px;padding:14px 18px;min-width:78px}
+  .unit b{display:block;font-size:30px;font-weight:800}
+  .unit span{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.85}
+  .leaveby{margin-top:10px;font-size:14px;opacity:.95}
+  ul.check{list-style:none}
+  ul.check li{display:flex;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px dashed var(--line);cursor:pointer;
+    transition:background .15s ease}
+  ul.check li:hover{background:var(--sky)}
+  .box{width:22px;height:22px;border:2px solid var(--teal);border-radius:6px;flex:0 0 auto;position:relative;transition:all .2s}
+  li.done .box{background:var(--teal)}
+  li.done .box::after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #fff;
+    border-width:0 3px 3px 0;transform:rotate(45deg)}
+  li.done .lbl{text-decoration:line-through;color:var(--muted)}
+  .lbl{font-size:14px}
+  .controls{display:flex;gap:10px;margin:14px 0 6px;flex-wrap:wrap}
+  button{border:none;border-radius:30px;padding:9px 18px;font-size:13px;cursor:pointer;font-weight:600;transition:transform .15s,box-shadow .15s}
+  button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+  .btn-primary{background:var(--warm);color:#fff}
+  .btn-ghost{background:#f1e9da;color:var(--warm)}
+  .progress{height:14px;background:#f1e9da;border-radius:20px;overflow:hidden;margin-top:8px}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),#54c2b3);transition:width .4s ease}
+  .pct{font-size:12px;color:var(--muted);margin-top:6px}
+  .plan{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+  .plan .ic{width:38px;height:38px;border-radius:10px;background:var(--sky);color:var(--teal);display:flex;
+    align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+  .plan b{font-size:14px}.plan p{font-size:12px;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px;border-top:1px solid var(--line);margin-top:8px}
+  footer b{color:var(--warm)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Custody Weekend Planner</h1>
+    <div class="sub">First and third weekends - Friday 5:00 PM pickup to Sunday 6:00 PM dropoff</div>
+  </div>
+  <div class="who">Chloe, age 8 - Tucson handoff at Amber's</div>
+</header>
+
+<main>
+  <div class="grid">
+    <div class="card countdown">
+      <h2>Next pickup</h2>
+      <div class="hint" style="color:rgba(255,255,255,.85)">Friday, October 2, 2026 - first weekend back on the normal schedule</div>
+      <div class="clock" id="clock">
+        <div class="unit"><b id="d">0</b><span>days</span></div>
+        <div class="unit"><b id="h">0</b><span>hours</span></div>
+        <div class="unit"><b id="m">0</b><span>min</span></div>
+        <div class="unit"><b id="s">0</b><span>sec</span></div>
+      </div>
+      <div class="leaveby">Leave 718 Yucca Drive by <b>3:30 PM</b> - 75 minute drive plus a buffer for I-10.</div>
+    </div>
+
+    <div class="card">
+      <h2>Pack the night before</h2>
+      <div class="hint">Tap an item when it is in the bag. The fox is not optional.</div>
+      <ul class="check" id="packList">
+        <li><span class="box"></span><span class="lbl">Booster seat buckle checked</span></li>
+        <li><span class="box"></span><span class="lbl">Pillow and the blue blanket</span></li>
+        <li><span class="box"></span><span class="lbl">Toothbrush and strawberry toothpaste</span></li>
+        <li><span class="box"></span><span class="lbl">Two changes of clothes plus pajamas</span></li>
+        <li><span class="box"></span><span class="lbl">Rain jacket for the monsoon</span></li>
+        <li><span class="box"></span><span class="lbl">Goldfish crackers and apple juice boxes</span></li>
+        <li><span class="box"></span><span class="lbl">Library book for the reading log</span></li>
+        <li><span class="box"></span><span class="lbl">Stuffed fox, do not forget the fox</span></li>
+      </ul>
+      <div class="controls">
+        <button class="btn-primary" id="checkAll">Mark all packed</button>
+        <button class="btn-ghost" id="reset">Reset</button>
+      </div>
+      <div class="progress"><i id="bar"></i></div>
+      <div class="pct" id="pct">0 of 8 packed</div>
+    </div>
+
+    <div class="card">
+      <h2>Saturday plan</h2>
+      <div class="hint">Depends on whether dispatch calls me in.</div>
+      <div class="plan"><div class="ic">AM</div><div><b>Pancakes with chocolate chips</b><p>Her request, every time.</p></div></div>
+      <div class="plan"><div class="ic">1</div><div><b>If no dispatch call: Parker Canyon</b><p>Drive out and try for trout.</p></div></div>
+      <div class="plan"><div class="ic">2</div><div><b>If Hank calls me in: Grandma Linda</b><p>Drop by 7:30 AM, she has her.</p></div></div>
+      <div class="plan"><div class="ic">PM</div><div><b>Pizza for dinner, her pick</b><p>One episode then bed by 8:30.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Before next visit</h2>
+      <div class="hint">Standing reminders.</div>
+      <ul class="check" id="remList">
+        <li><span class="box"></span><span class="lbl">Ask about the spring animal presentation at school</span></li>
+        <li><span class="box"></span><span class="lbl">Check if the soccer cleats still fit</span></li>
+        <li><span class="box"></span><span class="lbl">Fix the window latch in her room</span></li>
+        <li><span class="box"></span><span class="lbl">No dog talk yet, still thinking about summer</span></li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Private planner for <b>Ashley Griffin</b> - co-parenting logged through the family app - drives are 75 minutes each way
+</footer>
+
+<script>
+  // live countdown to Friday Oct 2 2026 5:00 PM (Arizona, UTC-7, no DST)
+  var target=new Date('2026-10-02T17:00:00-07:00').getTime();
+  function tick(){
+    var now=new Date().getTime(), diff=target-now;
+    if(diff<0)diff=0;
+    var d=Math.floor(diff/86400000), h=Math.floor(diff%86400000/3600000),
+        m=Math.floor(diff%3600000/60000), s=Math.floor(diff%60000/1000);
+    document.getElementById('d').textContent=d;
+    document.getElementById('h').textContent=h;
+    document.getElementById('m').textContent=m;
+    document.getElementById('s').textContent=s;
+  }
+  tick(); setInterval(tick,1000);
+
+  // packing checklist
+  var list=document.getElementById('packList'),
+      items=list.querySelectorAll('li'),
+      bar=document.getElementById('bar'), pct=document.getElementById('pct');
+  function update(){
+    var done=list.querySelectorAll('li.done').length, total=items.length;
+    bar.style.width=(done/total*100)+'%';
+    pct.textContent=done+' of '+total+' packed';
+  }
+  function toggle(li){ li.classList.toggle('done'); update(); }
+  items.forEach(function(li){ li.addEventListener('click',function(){toggle(li);}); });
+  document.getElementById('checkAll').addEventListener('click',function(){
+    items.forEach(li=>li.classList.add('done')); update();
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    items.forEach(li=>li.classList.remove('done')); update();
+  });
+  // reminder list also tappable
+  document.querySelectorAll('#remList li').forEach(function(li){
+    li.addEventListener('click',function(){li.classList.toggle('done');});
+  });
+  update();
+</script>
+</body>
+</html>

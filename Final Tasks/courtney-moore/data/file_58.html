@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moore Family Kitchen Planner</title>
+<style>
+  :root{--brick:#b4552d;--brick-d:#8f3f1f;--cream:#fbf3ea;--card:#fff;--ink:#33271f;
+        --muted:#8a7868;--line:#ecdfd2;--leaf:#5b8a4a;--berry:#9c3b5a;--sun:#d9a02b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Verdana,sans-serif;background:var(--cream);color:var(--ink)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  header{background:var(--brick);color:#fff5ee}
+  header .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:22px}
+  .logo{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800}
+  .logo .pot{width:34px;height:34px;border-radius:10px;background:#fff5ee33;display:grid;place-items:center;font-size:18px}
+  header .tag{font-size:13px;color:#f4d6c6}
+
+  .strip{background:var(--brick-d);color:#ffe9dd}
+  .strip .wrap{display:flex;gap:8px;flex-wrap:wrap;padding:10px 22px}
+  .strip button{background:transparent;border:1px solid #ffffff33;color:#ffe9dd;border-radius:22px;padding:7px 16px;font-weight:700;font-size:13px;cursor:pointer;transition:.15s}
+  .strip button.on{background:#fff5ee;color:var(--brick-d);border-color:#fff5ee}
+
+  main{padding:26px 0}
+  .lay{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}
+  .panel h2{font-size:19px;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+  .meal{display:flex;gap:14px;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;align-items:flex-start;transition:.18s}
+  .meal:hover{box-shadow:0 10px 24px rgba(180,85,45,.10);transform:translateY(-2px)}
+  .meal .when{min-width:78px;font-weight:800;color:var(--brick);font-size:14px}
+  .meal .body{flex:1}
+  .meal .name{font-weight:700;margin-bottom:3px}
+  .meal .desc{color:var(--muted);font-size:13.5px}
+  .badges{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+  .b-leaf{background:#e9f2e4;color:var(--leaf)}.b-sun{background:#fbefd4;color:#a9791a}
+  .b-berry{background:#f7e4ea;color:var(--berry)}.b-low{background:#e6eef7;color:#34618f}
+
+  .rules li{list-style:none;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;gap:10px;align-items:center}
+  .rules li:last-child{border-bottom:0}
+  .check{width:20px;height:20px;border-radius:6px;background:var(--leaf);display:grid;place-items:center;color:#fff;font-size:13px;flex:none}
+
+  svg text{fill:var(--muted);font-size:11px;font-family:Verdana,sans-serif}
+  .read-form{display:grid;gap:10px;margin-top:6px}
+  .read-form input{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit}
+  .read-form button{background:var(--brick);color:#fff;border:0;border-radius:10px;padding:11px;font-weight:700;cursor:pointer;transition:.15s}
+  .read-form button:hover{background:var(--brick-d)}
+  .toast{display:none;background:#e9f2e4;color:var(--leaf);border:1px solid var(--leaf);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:600}
+  .range{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+  .pill{background:#f6ece2;border-radius:12px;padding:10px 14px;font-size:13px}
+  .pill b{display:block;color:var(--brick);font-size:18px}
+
+  footer{background:#2c211a;color:#cdbcab;font-size:12.5px;padding:20px 0;margin-top:10px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:860px){.lay{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="logo"><span class="pot">&#127858;</span> Moore Family Kitchen</div>
+  <div class="tag">Sunday meal prep, glucose friendly, one happy table</div>
+</div></header>
+
+<div class="strip"><div class="wrap" id="days">
+  <button class="on" onclick="pick(0,this)">Monday</button>
+  <button onclick="pick(1,this)">Tuesday</button>
+  <button onclick="pick(2,this)">Wednesday</button>
+  <button onclick="pick(3,this)">Thursday</button>
+  <button onclick="pick(4,this)">Friday</button>
+  <button onclick="pick(5,this)">Saturday</button>
+  <button onclick="pick(6,this)">Sunday</button>
+</div></div>
+
+<main class="wrap">
+  <div class="lay">
+    <div>
+      <div class="panel">
+        <h2 id="dayTitle">Monday meals</h2>
+        <div class="sub">Planned around protein at every meal and low glycemic sides for Grandma Nancy.</div>
+        <div id="meals"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Grandma Nancy, fasting glucose</h2>
+        <div class="sub">Morning readings in milligrams per deciliter. Target fasting range 80 to 130.</div>
+        <svg id="gchart" viewBox="0 0 420 200" width="100%"></svg>
+        <div class="range"><span>Oct 1</span><span>Oct 11</span></div>
+        <div class="pillrow">
+          <div class="pill"><b>113</b>average</div>
+          <div class="pill"><b>103</b>lowest</div>
+          <div class="pill"><b>0</b>over range</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Log a reading</h2>
+        <div class="sub">Add this morning's fasting number.</div>
+        <form class="read-form" onsubmit="return logRead(event)">
+          <input id="r-val" type="number" placeholder="Reading, mg per dL" min="40" max="400">
+          <input id="r-note" type="text" placeholder="Note, for example before breakfast">
+          <button type="submit">Add reading</button>
+          <div class="toast" id="toast">Saved. Reading added to this week.</div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>House rules</h2>
+        <div class="sub">The steady habits that keep everyone well.</div>
+        <ul class="rules">
+          <li><span class="check">&#10003;</span> Brown rice always, never white rice</li>
+          <li><span class="check">&#10003;</span> Protein at every meal, never a plate alone</li>
+          <li><span class="check">&#10003;</span> No skipping meals, steady timing</li>
+          <li><span class="check">&#10003;</span> Low glycemic vegetables with dinner</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>A private family planner kept by Courtney Moore, Bowie Maryland.</span>
+  <span>Care coordinated with the family care team.</span>
+</div></footer>
+
+<script>
+  var week=[
+    [ // Monday
+      {w:"Breakfast",n:"Overnight oats with berries",d:"Rolled oats, chia, milk, topped with fruit",b:[["Low glycemic","b-low"]]},
+      {w:"Lunch",n:"Grain bowl with chicken",d:"Brown rice, greens, baked chicken, olive oil",b:[["Protein","b-berry"]]},
+      {w:"Dinner",n:"Baked chicken and collards",d:"Amy favorite, side of sweet potato",b:[["Amy pick","b-sun"],["Protein","b-berry"]]}
+    ],
+    [ // Tuesday
+      {w:"Breakfast",n:"Greek yogurt and oats",d:"High protein start before the school run",b:[["Protein","b-berry"]]},
+      {w:"Lunch",n:"Turkey and vegetable wrap",d:"Whole wheat, lean turkey, crunchy veg",b:[["Low glycemic","b-low"]]},
+      {w:"Dinner",n:"Salmon and brown rice",d:"Weekly fish meal, steamed broccoli",b:[["Heart smart","b-leaf"]]}
+    ],
+    [ // Wednesday
+      {w:"Breakfast",n:"Veggie egg scramble",d:"Eggs, spinach, peppers, whole grain toast",b:[["Protein","b-berry"]]},
+      {w:"Lunch",n:"Bean and greens soup",d:"Low glycemic, fiber rich, easy to reheat",b:[["Low glycemic","b-low"]]},
+      {w:"Dinner",n:"Kyle fried rice",d:"Brown rice, egg, vegetables, lean protein",b:[["Kyle pick","b-sun"]]}
+    ],
+    [ // Thursday
+      {w:"Breakfast",n:"Oatmeal with nut butter",d:"Warm, steady energy for a track morning",b:[["Low glycemic","b-low"]]},
+      {w:"Lunch",n:"Chicken and quinoa salad",d:"Make ahead from Sunday prep",b:[["Protein","b-berry"]]},
+      {w:"Dinner",n:"Tilapia and roasted vegetables",d:"Friday eve fish, light and bright",b:[["Heart smart","b-leaf"]]}
+    ],
+    [ // Friday
+      {w:"Breakfast",n:"Yogurt parfait",d:"Layered with oats and fruit",b:[["Protein","b-berry"]]},
+      {w:"Lunch",n:"Leftover grain bowl",d:"Repurpose midweek protein and rice",b:[["Low glycemic","b-low"]]},
+      {w:"Dinner",n:"Turkey chili",d:"Beans, tomato, mild spice, brown rice side",b:[["Protein","b-berry"]]}
+    ],
+    [ // Saturday
+      {w:"Breakfast",n:"Pre run toast and banana",d:"Light fuel before the long run",b:[["Low glycemic","b-low"]]},
+      {w:"Lunch",n:"Recovery plate",d:"Carbohydrate and protein after the long run",b:[["Protein","b-berry"]]},
+      {w:"Dinner",n:"Family comfort soup",d:"Big pot, everyone at the table",b:[["Heart smart","b-leaf"]]}
+    ],
+    [ // Sunday
+      {w:"Breakfast",n:"Modified biscuits and eggs",d:"Grandma Nancy approved, protein forward",b:[["Low glycemic","b-low"]]},
+      {w:"Lunch",n:"Church potluck plate",d:"Diabetic friendly option packed for Nancy",b:[["Protein","b-berry"]]},
+      {w:"Dinner",n:"Sunday prep tasting",d:"Plan and portion the week ahead",b:[["Prep day","b-sun"]]}
+    ]
+  ];
+  var labels=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  function pick(i,el){
+    document.querySelectorAll('#days button').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+    document.getElementById('dayTitle').textContent=labels[i]+" meals";
+    var box=document.getElementById('meals');box.innerHTML='';
+    week[i].forEach(function(m){
+      var bd=m.b.map(function(x){return '<span class="badge '+x[1]+'">'+x[0]+'</span>';}).join('');
+      box.innerHTML+='<div class="meal"><div class="when">'+m.w+'</div><div class="body"><div class="name">'+m.n+'</div><div class="desc">'+m.d+'</div><div class="badges">'+bd+'</div></div></div>';
+    });
+  }
+  pick(0,document.querySelector('#days button'));
+
+  // glucose chart
+  var glucose=[112,108,121,115,103,118,110,126,109,114,107];
+  var gdates=["1","2","3","4","5","6","7","8","9","10","11"];
+  function drawG(){
+    var svg=document.getElementById('gchart'),W=420,H=200,pad=28,n=glucose.length;
+    var mn=80,mx=150,sx=(W-pad*2)/(n-1);
+    function Y(v){return H-pad-((v-mn)/(mx-mn))*(H-pad*2);}
+    var h='';
+    // target band 80-130
+    var yb=Y(130),yb2=Y(80);
+    h+='<rect x="'+pad+'" y="'+yb+'" width="'+(W-pad*2)+'" height="'+(yb2-yb)+'" fill="#e9f2e4" opacity="0.6"/>';
+    [80,100,120,140].forEach(function(g){var y=Y(g);h+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#ecdfd2"/><text x="2" y="'+(y+4)+'">'+g+'</text>';});
+    var poly='';glucose.forEach(function(v,i){var x=pad+i*sx,y=Y(v);poly+=x.toFixed(1)+','+y.toFixed(1)+' ';});
+    h+='<polyline points="'+poly+'" fill="none" stroke="#b4552d" stroke-width="2.5" stroke-linejoin="round"><animate attributeName="stroke-dasharray" from="0 1500" to="1500 0" dur="1s" fill="freeze"/></polyline>';
+    glucose.forEach(function(v,i){var x=pad+i*sx,y=Y(v);
+      h+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="#8f3f1f"><title>Oct '+gdates[i]+', '+v+' mg per dL</title></circle>';});
+    svg.innerHTML=h;
+  }
+  drawG();
+
+  function logRead(e){
+    e.preventDefault();
+    var v=parseInt(document.getElementById('r-val').value,10);
+    if(!v||v<40||v>400){return false;}
+    glucose.push(v);gdates.push((gdates.length+ +gdates[0]).toString());
+    if(glucose.length>14){glucose.shift();gdates.shift();}
+    drawG();
+    var t=document.getElementById('toast');t.style.display='block';
+    setTimeout(function(){t.style.display='none';},2600);
+    e.target.reset();return false;
+  }
+</script>
+</body>
+</html>

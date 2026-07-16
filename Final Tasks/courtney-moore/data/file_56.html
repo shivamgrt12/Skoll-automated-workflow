@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marathon Training Dashboard</title>
+<style>
+  :root{--bg:#1c1c1e;--panel:#262629;--panel2:#2f2f33;--orange:#e07a1f;--orange-l:#f2b47e;
+        --text:#ececef;--muted:#9a9aa2;--line:#3a3a40;--good:#3fae6b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Trebuchet MS","Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  aside{background:#161617;border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:30px;font-size:17px}
+  .logo .b{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--orange),#c4621a)}
+  .navi a{display:flex;align-items:center;gap:11px;color:var(--muted);padding:11px 12px;border-radius:10px;font-weight:600;cursor:pointer;margin-bottom:4px;transition:.2s}
+  .navi a.on,.navi a:hover{background:var(--panel2);color:#fff}
+  .navi a .ic{width:9px;height:9px;border-radius:50%;background:var(--line)}
+  .navi a.on .ic{background:var(--orange)}
+  .who{position:absolute;bottom:24px;left:18px;right:18px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+  main{padding:26px 30px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:22px}
+  h1{font-size:26px}.sub{color:var(--muted);font-size:14px;margin-top:4px}
+  .countdown{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 20px;text-align:center}
+  .countdown .n{font-size:26px;font-weight:800;color:var(--orange)}
+  .countdown .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .card .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .card .v{font-size:30px;font-weight:800;margin-top:6px}
+  .card .v small{font-size:14px;color:var(--muted);font-weight:600}
+  .chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:8px}
+  .chip.up{background:rgba(63,174,107,.16);color:var(--good)}
+  .chip.flat{background:rgba(224,122,31,.16);color:var(--orange-l)}
+
+  .row{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:22px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+  .panel h3{font-size:16px;margin-bottom:4px}
+  .panel .hint{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .weeks{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .weeks button{background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+  .weeks button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+  .phase-row{margin:14px 0}
+  .phase-row .pl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .bar{height:11px;background:var(--panel2);border-radius:8px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--orange),var(--orange-l));width:0;transition:width 1.1s ease}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  td.r,th.r{text-align:right}
+  .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(224,122,31,.16);color:var(--orange-l)}
+
+  .tab{display:none}.tab.on{display:block}
+  footer{grid-column:1/-1;border-top:1px solid var(--line);padding:18px 30px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  svg text{fill:var(--muted);font-size:11px}
+  @media(max-width:880px){.app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.who{position:static;margin-top:8px}.cards{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo"><span class="b"></span> RunPlan</div>
+    <div class="navi">
+      <a class="on" onclick="tab('overview',this)"><span class="ic"></span> Overview</a>
+      <a onclick="tab('workouts',this)"><span class="ic"></span> Workouts</a>
+      <a onclick="tab('fuel',this)"><span class="ic"></span> Fueling</a>
+    </div>
+    <div class="who">Courtney Moore<br>Bowie Running Club<br>Goal: sub 3:45</div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1>Marathon Build, Final Block</h1>
+        <div class="sub">Target race, October 25, 2026. Finish goal 3:44:49 at an 8:35 per mile average.</div>
+      </div>
+      <div class="countdown"><div class="n" id="ctd">20</div><div class="l">days to race</div></div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="tab on" id="overview">
+      <div class="cards">
+        <div class="card"><div class="l">Weekly volume</div><div class="v" id="kv1">48 <small>mi</small></div><div class="chip up">on plan</div></div>
+        <div class="card"><div class="l">Longest run</div><div class="v">18 <small>mi</small></div><div class="chip up">peak hit</div></div>
+        <div class="card"><div class="l">Average pace</div><div class="v">8:42 <small>min</small></div><div class="chip up">trending down</div></div>
+        <div class="card"><div class="l">Resting heart rate</div><div class="v">52 <small>bpm</small></div><div class="chip flat">steady</div></div>
+      </div>
+
+      <div class="row">
+        <div class="panel">
+          <h3>Weekly mileage</h3>
+          <div class="hint">Sixteen week build into a two week taper. Hover a bar for the total.</div>
+          <svg id="milechart" viewBox="0 0 640 240" width="100%"></svg>
+        </div>
+        <div class="panel">
+          <h3>Training phases</h3>
+          <div class="hint">Progress through the plan.</div>
+          <div class="phase-row"><div class="pl"><span>Base</span><span>complete</span></div><div class="bar"><i data-w="100"></i></div></div>
+          <div class="phase-row"><div class="pl"><span>Build</span><span>complete</span></div><div class="bar"><i data-w="100"></i></div></div>
+          <div class="phase-row"><div class="pl"><span>Peak</span><span>90 percent</span></div><div class="bar"><i data-w="90"></i></div></div>
+          <div class="phase-row"><div class="pl"><span>Taper</span><span>starting</span></div><div class="bar"><i data-w="25"></i></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Pace trend on long runs</h3>
+        <div class="hint">Lower is faster. Steady improvement across the block.</div>
+        <svg id="pacechart" viewBox="0 0 640 220" width="100%"></svg>
+      </div>
+    </div>
+
+    <!-- WORKOUTS -->
+    <div class="tab" id="workouts">
+      <div class="panel">
+        <h3>Final block sessions</h3>
+        <div class="hint">Pick a week to filter the log.</div>
+        <div class="weeks" id="weekbtns">
+          <button class="on" onclick="wk('all',this)">All</button>
+          <button onclick="wk('1',this)">Week 1</button>
+          <button onclick="wk('2',this)">Week 2</button>
+          <button onclick="wk('3',this)">Race week</button>
+        </div>
+        <table>
+          <thead><tr><th>Date</th><th>Session</th><th class="r">Miles</th><th class="r">Pace</th><th>Note</th></tr></thead>
+          <tbody id="wbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FUEL -->
+    <div class="tab" id="fuel">
+      <div class="row">
+        <div class="panel">
+          <h3>Race day fueling card</h3>
+          <div class="hint">Rehearsed on long runs. Practiced, never new.</div>
+          <table>
+            <thead><tr><th>Time point</th><th>Fuel</th><th>Fluid</th></tr></thead>
+            <tbody>
+              <tr><td>Wake plus meal</td><td>Bagel, banana, nut butter</td><td>12 oz water</td></tr>
+              <tr><td>Start</td><td>One gel</td><td>Sip to thirst</td></tr>
+              <tr><td>Every 40 min</td><td>One gel</td><td>6 to 8 oz sport drink</td></tr>
+              <tr><td>Mile 18 to 20</td><td>Gel plus caffeine</td><td>Electrolyte</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>Hydration target</h3>
+          <div class="hint">Adjust up in heat.</div>
+          <div class="card" style="margin-bottom:12px"><div class="l">Fluid per hour</div><div class="v">16 to 20 <small>oz</small></div></div>
+          <div class="card"><div class="l">Carbohydrate per hour</div><div class="v">70 <small>g</small></div></div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <span>Personal training dashboard. Not medical advice.</span>
+      <span>Saturday long runs are sacred and protected.</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // ---- data ----
+  var miles=[26,30,34,38,33,42,46,40,48,44,50,46,52,38,30,24];
+  var pace=[9.2,9.1,9.0,8.95,8.85,8.8,8.7,8.62,8.58];
+  var paceWk=["W1","W3","W5","W7","W9","W11","W13","W15","Race"];
+  var log=[
+    {wk:"1",d:"Oct 6",s:"Track 8x800m",m:6.2,p:"7:10",n:"5:30am track"},
+    {wk:"1",d:"Oct 8",s:"Track 5x1mi",m:7.5,p:"7:15",n:"strong"},
+    {wk:"1",d:"Oct 10",s:"Long Run 18mi",m:18.0,p:"9:00",n:"sacred long run"},
+    {wk:"2",d:"Oct 13",s:"Track 6x800m",m:5.8,p:"7:05",n:"5:30am"},
+    {wk:"2",d:"Oct 15",s:"Track 4x1mi",m:6.8,p:"7:12",n:"good splits"},
+    {wk:"2",d:"Oct 17",s:"Taper Run 12mi",m:12.0,p:"9:00",n:"easy taper"},
+    {wk:"3",d:"Oct 19",s:"Easy Shakeout",m:4.0,p:"9:30",n:"recovery pace"},
+    {wk:"3",d:"Oct 21",s:"Race Pace Strides",m:3.0,p:"8:30",n:"pre race tune up"},
+    {wk:"3",d:"Oct 25",s:"Marathon RACE",m:26.2,p:"8:35",n:"race day"}
+  ];
+
+  function tab(id,el){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    document.querySelectorAll('.navi a').forEach(a=>a.classList.remove('on'));
+    el.classList.add('on');
+  }
+
+  // ---- mileage bar chart ----
+  (function(){
+    var svg=document.getElementById('milechart'),W=640,H=240,pad=30,n=miles.length;
+    var max=Math.max.apply(null,miles), bw=(W-pad*2)/n*0.66, gap=(W-pad*2)/n;
+    var ns="http://www.w3.org/2000/svg",h="";
+    for(var g=0;g<=max;g+=10){var y=H-pad-(g/max)*(H-pad*2);
+      h+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#3a3a40"/>';
+      h+='<text x="4" y="'+(y+4)+'">'+g+'</text>';}
+    miles.forEach(function(v,i){
+      var bh=(v/max)*(H-pad*2),x=pad+i*gap+ (gap-bw)/2,y=H-pad-bh;
+      var col=i>=14?'#f2b47e':'#e07a1f';
+      h+='<rect x="'+x.toFixed(1)+'" y="'+H+'" width="'+bw.toFixed(1)+'" height="0" rx="3" fill="'+col+'"><animate attributeName="height" to="'+bh.toFixed(1)+'" dur="0.8s" fill="freeze"/><animate attributeName="y" to="'+y.toFixed(1)+'" dur="0.8s" fill="freeze"/><title>'+v+' miles</title></rect>';
+    });
+    h+='<text x="'+pad+'" y="'+(H-8)+'">Wk 1</text><text x="'+(W-pad-30)+'" y="'+(H-8)+'">Wk 16</text>';
+    svg.innerHTML=h;
+  })();
+
+  // ---- pace line chart ----
+  (function(){
+    var svg=document.getElementById('pacechart'),W=640,H=220,pad=36,n=pace.length;
+    var mn=8.4,mx=9.3, sx=(W-pad*2)/(n-1);
+    function Y(v){return H-pad-((v-mn)/(mx-mn))*(H-pad*2);}
+    var h="",pts="";
+    for(var t=8.5;t<=9.2;t+=0.2){var y=Y(t);h+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#3a3a40"/><text x="2" y="'+(y+4)+'">'+t.toFixed(1)+'</text>';}
+    pace.forEach(function(v,i){var x=pad+i*sx,y=Y(v);pts+=x.toFixed(1)+','+y.toFixed(1)+' ';});
+    h+='<polyline points="'+pts+'" fill="none" stroke="#e07a1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dasharray" from="0 2000" to="2000 0" dur="1.1s" fill="freeze"/></polyline>';
+    pace.forEach(function(v,i){var x=pad+i*sx,y=Y(v);
+      h+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="#f2b47e"><title>'+v.toFixed(2)+' min per mile</title></circle>';
+      h+='<text x="'+(x-10).toFixed(1)+'" y="'+(H-10)+'">'+paceWk[i]+'</text>';});
+    svg.innerHTML=h;
+  })();
+
+  // ---- phase bars animate ----
+  setTimeout(function(){document.querySelectorAll('.bar i').forEach(function(b){b.style.width=b.dataset.w+'%';});},250);
+
+  // ---- workouts table + week filter ----
+  function renderLog(f){
+    var b=document.getElementById('wbody');b.innerHTML='';
+    log.filter(function(r){return f==='all'||r.wk===f;}).forEach(function(r){
+      var race=r.s.indexOf('RACE')>-1;
+      b.innerHTML+='<tr><td>'+r.d+'</td><td>'+r.s+(race?' <span class="tag">A race</span>':'')+'</td><td class="r">'+r.m.toFixed(1)+'</td><td class="r">'+r.p+'</td><td>'+r.n+'</td></tr>';
+    });
+  }
+  function wk(f,el){document.querySelectorAll('#weekbtns button').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderLog(f);}
+  renderLog('all');
+
+  // countdown count up animation
+  (function(){var el=document.getElementById('ctd'),g=20,c=0;var t=setInterval(function(){c++;el.textContent=c;if(c>=g)clearInterval(t);},40);})();
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranch Operations Board</title>
+<style>
+  :root{--bg:#11171c;--panel:#1b242c;--panel2:#222e38;--line:#2e3c48;--text:#e7edf2;
+    --dim:#8ea3b4;--amber:#d99a3a;--teal:#3aa6a0;--green:#5db075;--red:#c96a5a;--blue:#5b8fc7}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    padding:18px 26px;background:linear-gradient(90deg,#1b242c,#222e38);border-bottom:1px solid var(--line)}
+  header h1{font-size:1.25rem;font-weight:600}
+  header .meta{font-size:.82rem;color:var(--dim)}
+  header .clock{font-size:.8rem;color:var(--amber);border:1px solid var(--line);border-radius:18px;padding:6px 14px}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 22px 50px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--teal))}
+  .kpi .l{font-size:.74rem;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
+  .kpi .v{font-size:1.8rem;font-weight:700;margin-top:6px}
+  .kpi .d{font-size:.78rem;color:var(--dim);margin-top:2px}
+  .row2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-top:18px}
+  @media(max-width:780px){.row2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card h2{font-size:1rem;margin-bottom:4px}
+  .card .sub{font-size:.8rem;color:var(--dim);margin-bottom:14px}
+  .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:16px;
+    padding:6px 14px;font-size:.8rem;cursor:pointer;transition:.2s}
+  .filters button.on{background:var(--amber);color:#11171c;border-color:var(--amber);font-weight:600}
+  .job{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .job:last-child{border-bottom:none}
+  .job .name{font-weight:600;font-size:.95rem}
+  .job .tags{font-size:.74rem;color:var(--dim);margin-top:3px}
+  .chip{display:inline-block;border-radius:10px;padding:2px 8px;font-size:.7rem;margin-right:6px}
+  .chip.High{background:rgba(201,106,90,.2);color:#e89484}
+  .chip.Medium{background:rgba(217,154,58,.2);color:#e3b46e}
+  .chip.Low{background:rgba(93,176,117,.18);color:#7fc995}
+  .cost{font-size:1.05rem;font-weight:700;text-align:right;white-space:nowrap}
+  .bar{height:6px;border-radius:3px;background:var(--panel2);margin-top:8px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;border-radius:3px;background:var(--amber);transition:width 1s ease}
+  svg{width:100%;height:auto}
+  .legend{font-size:.78rem;color:var(--dim);margin-top:10px;display:flex;gap:16px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+  .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  footer{color:var(--dim);font-size:.78rem;text-align:center;padding:24px;border-top:1px solid var(--line);margin-top:30px}
+  .total-line{display:flex;justify-content:space-between;padding-top:14px;margin-top:6px;border-top:1px solid var(--line);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>McKay Ranch Operations Board</h1>
+    <div class="meta">1462 County Road 6WX, Cody, Wyoming &middot; no cattle, land retained</div>
+  </div>
+  <div class="clock">As of February 28, 2026</div>
+</header>
+
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi" style="--accent:var(--green)"><div class="l">Monthly income</div><div class="v">$6,817</div><div class="d">leases, Social Security, SEP-IRA</div></div>
+    <div class="kpi" style="--accent:var(--blue)"><div class="l">Monthly expenses</div><div class="v">$2,395</div><div class="d">tax, fuel, upkeep, household</div></div>
+    <div class="kpi" style="--accent:var(--teal)"><div class="l">Monthly net</div><div class="v">$4,422</div><div class="d">reserve toward repairs</div></div>
+    <div class="kpi" style="--accent:var(--amber)"><div class="l">Open repair backlog</div><div class="v">$18,120</div><div class="d">six jobs queued</div></div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <h2>Repair and Maintenance Backlog</h2>
+      <div class="sub">Filter by priority. Costs are quoted or priced, not yet committed.</div>
+      <div class="filters">
+        <button class="on" data-f="all">All</button>
+        <button data-f="High">High</button>
+        <button data-f="Medium">Medium</button>
+        <button data-f="Low">Low</button>
+      </div>
+      <div id="jobs"></div>
+      <div class="total-line"><span id="totLabel">Total, all jobs</span><span id="totVal">$18,120</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Where the Money Goes</h2>
+      <div class="sub">Monthly expense mix</div>
+      <div class="donut-wrap">
+        <svg id="donut" viewBox="0 0 160 160" width="160" height="160" aria-label="Expense donut chart"></svg>
+        <div class="legend" id="donutLegend" style="flex-direction:column"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2>Property Costs, Five Year Trend</h2>
+    <div class="sub">Property tax, insurance, and maintenance by year. Maintenance swings with the big jobs.</div>
+    <svg id="trend" viewBox="0 0 720 280" aria-label="Five year cost trend"></svg>
+    <div class="legend">
+      <span><i style="background:#5b8fc7"></i>Property tax</span>
+      <span><i style="background:#3aa6a0"></i>Insurance</span>
+      <span><i style="background:#d99a3a"></i>Maintenance</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Personal property record for Charles McKay. Figures reconcile with the income, expense, and backlog sheets. Held private.
+</footer>
+
+<script>
+  var SVGNS="http://www.w3.org/2000/svg";
+  function el(n,a){var e=document.createElementNS(SVGNS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  var jobs=[
+    {n:"Barn roof repair",p:"High",src:"Cody building supply",c:8000,w:"October 2026",s:"Quoted"},
+    {n:"South fence wire, 400 yards",p:"High",src:"Stockman's Supply",c:3500,w:"October 2026",s:"Materials priced"},
+    {n:"Well pump replacement, 320 ft",p:"High",src:"Basin Well and Pump",c:4850,w:"November 2026",s:"Three quotes gathered"},
+    {n:"Road grading, county road spur",p:"Medium",src:"Local contractor",c:1200,w:"October 2026",s:"Planned"},
+    {n:"Corral gate rebuild",p:"Low",src:"Stockman's Supply",c:350,w:"Spring 2027",s:"Open"},
+    {n:"Generator annual service",p:"Low",src:"Cody service tech",c:220,w:"October 2026",s:"Scheduled"}
+  ];
+  var filter="all";
+  function money(v){return "$"+v.toLocaleString("en-US");}
+  function renderJobs(){
+    var box=document.getElementById("jobs");box.innerHTML="";
+    var list=jobs.filter(function(j){return filter==="all"||j.p===filter;});
+    var tot=0;
+    list.forEach(function(j){
+      tot+=j.c;
+      var d=document.createElement("div");d.className="job";
+      d.innerHTML='<div><div class="name">'+j.n+'</div>'+
+        '<div class="tags"><span class="chip '+j.p+'">'+j.p+'</span>'+j.src+' &middot; '+j.s+' &middot; '+j.w+'</div></div>'+
+        '<div class="cost">'+money(j.c)+'</div>';
+      box.appendChild(d);
+    });
+    document.getElementById("totLabel").textContent= filter==="all"?"Total, all jobs":"Total, "+filter+" priority";
+    document.getElementById("totVal").textContent=money(tot);
+  }
+  document.querySelectorAll(".filters button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".filters button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");filter=b.dataset.f;renderJobs();
+    });
+  });
+  renderJobs();
+
+  // donut
+  var exp=[
+    {l:"Property tax",v:566.67,c:"#5b8fc7"},
+    {l:"Insurance",v:233.33,c:"#3aa6a0"},
+    {l:"Fuel",v:280,c:"#d99a3a"},
+    {l:"Utilities and internet",v:210,c:"#5db075"},
+    {l:"Maintenance reserve",v:500,c:"#c96a5a"},
+    {l:"Groceries and household",v:450,c:"#9d7bc7"},
+    {l:"Medications and health",v:95,c:"#c79a5b"},
+    {l:"Duke",v:60,c:"#7f99a8"}
+  ];
+  (function(){
+    var s=document.getElementById("donut"),cx=80,cy=80,r=58,sw=22;
+    var total=exp.reduce(function(a,b){return a+b.v;},0);
+    var a0=-90;
+    exp.forEach(function(e,i){
+      var frac=e.v/total,a1=a0+frac*360;
+      var rad0=a0*Math.PI/180,rad1=a1*Math.PI/180;
+      var large=(a1-a0)>180?1:0;
+      var x0=cx+r*Math.cos(rad0),y0=cy+r*Math.sin(rad0);
+      var x1=cx+r*Math.cos(rad1),y1=cy+r*Math.sin(rad1);
+      var p=el("path",{d:"M "+x0+" "+y0+" A "+r+" "+r+" 0 "+large+" 1 "+x1+" "+y1,
+        fill:"none",stroke:e.c,"stroke-width":sw});
+      var len=2*Math.PI*r;p.setAttribute("stroke-dasharray",len);p.setAttribute("stroke-dashoffset",len);
+      s.appendChild(p);
+      var seg=len*frac;
+      p.animate([{strokeDashoffset:len}],{duration:1});
+      p.style.strokeDasharray=seg+" "+(len-seg);
+      p.style.strokeDashoffset=0;
+      var t=el("title");t.textContent=e.l+": $"+e.v.toFixed(0);p.appendChild(t);
+      a0=a1;
+      var lg=document.getElementById("donutLegend");
+      var row=document.createElement("span");
+      row.innerHTML='<i style="background:'+e.c+'"></i>'+e.l+' &middot; $'+Math.round(e.v);
+      lg.appendChild(row);
+    });
+    s.appendChild(el("text",{x:cx,y:cy-2,"text-anchor":"middle","font-size":"15","font-weight":"700",fill:"#e7edf2"})).textContent="$2,395";
+    s.appendChild(el("text",{x:cx,y:cy+14,"text-anchor":"middle","font-size":"9",fill:"#8ea3b4"})).textContent="per month";
+  })();
+
+  // trend grouped bars
+  (function(){
+    var s=document.getElementById("trend");
+    var data=[
+      {y:"2021",tax:5900,ins:2400,mnt:7200},
+      {y:"2022",tax:6100,ins:2500,mnt:6400},
+      {y:"2023",tax:6300,ins:2600,mnt:9100},
+      {y:"2024",tax:6600,ins:2700,mnt:5300},
+      {y:"2025",tax:6800,ins:2800,mnt:8200}
+    ];
+    var W=720,H=280,m={l:50,r:20,t:20,b:40},n=data.length,max=10000;
+    var grp=(W-m.l-m.r)/n,bw=grp*0.22;
+    var base=H-m.b;
+    var y=function(v){return base-(v/max)*(H-m.t-m.b);};
+    for(var g=0;g<=5;g++){var gv=g*2000;
+      s.appendChild(el("line",{x1:m.l,y1:y(gv),x2:W-m.r,y2:y(gv),stroke:"#2e3c48"}));
+      s.appendChild(el("text",{x:m.l-8,y:y(gv)+4,"text-anchor":"end","font-size":"10",fill:"#8ea3b4"})).textContent=(gv/1000)+"k";
+    }
+    var cols=[["tax","#5b8fc7"],["ins","#3aa6a0"],["mnt","#d99a3a"]];
+    data.forEach(function(d,i){
+      var gx=m.l+i*grp+grp*0.12;
+      cols.forEach(function(cc,j){
+        var v=d[cc[0]],h=base-y(v);
+        var r=el("rect",{x:gx+j*bw,y:base,width:bw-3,height:0,rx:2,fill:cc[1]});
+        var t=el("title");t.textContent=d.y+" "+cc[0]+": $"+v;r.appendChild(t);
+        s.appendChild(r);
+        r.animate([{height:0,y:base},{height:h,y:y(v)}],{duration:700,delay:(i*3+j)*60,fill:"forwards",easing:"ease-out"});
+      });
+      s.appendChild(el("text",{x:gx+1.5*bw,y:base+18,"text-anchor":"middle","font-size":"11",fill:"#e7edf2"})).textContent=d.y;
+    });
+  })();
+</script>
+</body>
+</html>

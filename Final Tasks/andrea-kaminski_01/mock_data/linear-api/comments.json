@@ -1,0 +1,170 @@
+[
+  {
+    "id": "cmt-101-1",
+    "body": "WAL prototype is working in local dev. Starting integration with the dispatch loop this sprint. ETA for review-ready: June 18.",
+    "issueId": "BKD-101",
+    "userId": "user-droth",
+    "createdAt": "2025-12-05T10:00:00",
+    "updatedAt": "2025-12-05T10:00:00"
+  },
+  {
+    "id": "cmt-101-2",
+    "body": "Heads up - WAL file path is hardcoded in the prototype. Should be configurable via env var before review.",
+    "issueId": "BKD-101",
+    "userId": "user-schen",
+    "createdAt": "2025-12-05T11:30:00",
+    "updatedAt": "2025-12-05T11:30:00"
+  },
+  {
+    "id": "cmt-101-3",
+    "body": "Good catch - will make it configurable. Adding NANOQUEUE_WAL_PATH env var.",
+    "issueId": "BKD-101",
+    "userId": "user-droth",
+    "createdAt": "2025-12-05T12:00:00",
+    "updatedAt": "2025-12-05T12:00:00"
+  },
+  {
+    "id": "cmt-104-1",
+    "body": "Reproduced at 520 msg/s in staging load test. Adding mutex hold duration metric to isolate the window. PR up by EOD.",
+    "issueId": "BKD-104",
+    "userId": "user-droth",
+    "createdAt": "2025-11-09T14:00:00",
+    "updatedAt": "2025-11-09T14:00:00"
+  },
+  {
+    "id": "cmt-104-2",
+    "body": "PR #618 is up. Fixed by moving offset commit inside the mutex hold. Load test now clean at 800 msg/s. Requesting review.",
+    "issueId": "BKD-104",
+    "userId": "user-droth",
+    "createdAt": "2025-12-07T15:30:00",
+    "updatedAt": "2025-12-07T15:30:00"
+  },
+  {
+    "id": "cmt-104-3",
+    "body": "Reviewing now. Looks clean. One nit: the mutex name in the log line says old name. Minor but confusing. Otherwise LGTM.",
+    "issueId": "BKD-104",
+    "userId": "user-aalvarez",
+    "createdAt": "2025-12-08T09:00:00",
+    "updatedAt": "2025-12-08T09:00:00"
+  },
+  {
+    "id": "cmt-105-1",
+    "body": "PR #601 merged. GET /health now returns 503 with a dependency_status object when Redis ping fails. Staging green.",
+    "issueId": "BKD-105",
+    "userId": "user-schen",
+    "createdAt": "2025-11-27T14:30:00",
+    "updatedAt": "2025-11-27T14:30:00"
+  },
+  {
+    "id": "cmt-106-1",
+    "body": "PR #598 merged. event-router now exposes /metrics on :9102. Grafana dashboard updated with routed_events_total panel.",
+    "issueId": "BKD-106",
+    "userId": "user-priya-nq",
+    "createdAt": "2025-11-23T15:00:00",
+    "updatedAt": "2025-11-23T15:00:00"
+  },
+  {
+    "id": "cmt-106-2",
+    "body": "Dashboard looks great. The queue_depth counter is especially useful for autoscaling decisions. Nice work.",
+    "issueId": "BKD-106",
+    "userId": "user-droth",
+    "createdAt": "2025-11-23T17:00:00",
+    "updatedAt": "2025-11-23T17:00:00"
+  },
+  {
+    "id": "cmt-107-1",
+    "body": "Redis token store is working. Sessions survive pod restart now. Added TTL config via NANOQUEUE_TOKEN_TTL_SECONDS. Starting review.",
+    "issueId": "BKD-107",
+    "userId": "user-droth",
+    "createdAt": "2025-12-05T14:00:00",
+    "updatedAt": "2025-12-05T14:00:00"
+  },
+  {
+    "id": "cmt-112-1",
+    "body": "Root cause: routing rule loader in 3.3 expects `rules[]` array but 3.2 configmap used `routing_rules[]`. Migration script missing. Writing fix now.",
+    "issueId": "BKD-112",
+    "userId": "user-priya-nq",
+    "createdAt": "2025-12-02T10:30:00",
+    "updatedAt": "2025-12-02T10:30:00"
+  },
+  {
+    "id": "cmt-112-2",
+    "body": "Blocked on whether we add a migration job or a backwards-compatible loader. @daniel.roth can you weigh in?",
+    "issueId": "BKD-112",
+    "userId": "user-priya-nq",
+    "createdAt": "2025-12-04T11:00:00",
+    "updatedAt": "2025-12-04T11:00:00"
+  },
+  {
+    "id": "cmt-112-3",
+    "body": "Do backwards-compatible loader - read both key names, prefer `rules[]` if present. Simpler than a migration job and safe for staged rollout.",
+    "issueId": "BKD-112",
+    "userId": "user-droth",
+    "createdAt": "2025-12-05T09:00:00",
+    "updatedAt": "2025-12-05T09:00:00"
+  },
+  {
+    "id": "cmt-50-1",
+    "body": "Found it. Schema inference in ingestor/parser.go line 214 hits a type assertion panic when it encounters []interface{} in a nested field. Working on fix.",
+    "issueId": "DATA-50",
+    "userId": "user-droth",
+    "createdAt": "2025-12-03T10:00:00",
+    "updatedAt": "2025-12-03T10:00:00"
+  },
+  {
+    "id": "cmt-50-2",
+    "body": "Fix branch is data-50-nested-array-fix. Tests pass locally for Kubernetes event logs and application logs with nested tags arrays. PR up tomorrow.",
+    "issueId": "DATA-50",
+    "userId": "user-droth",
+    "createdAt": "2025-12-06T16:00:00",
+    "updatedAt": "2025-12-06T16:00:00"
+  },
+  {
+    "id": "cmt-53-1",
+    "body": "Compactor and retention config PR merged. Staging loki volume stopped growing. Will monitor production over next 48h then apply.",
+    "issueId": "DATA-53",
+    "userId": "user-mjohnson",
+    "createdAt": "2025-11-27T14:00:00",
+    "updatedAt": "2025-11-27T14:00:00"
+  },
+  {
+    "id": "cmt-53-2",
+    "body": "Production retention applied. Volume down 40% from peak. Closing.",
+    "issueId": "DATA-53",
+    "userId": "user-mjohnson",
+    "createdAt": "2025-11-29T13:30:00",
+    "updatedAt": "2025-11-29T13:30:00"
+  },
+  {
+    "id": "cmt-30-1",
+    "body": "ApplicationSets generator deployed. All three environments (staging, production, roth-sandbox) now managed from a single template. Spot-checked ArgoCD UI - all apps synced.",
+    "issueId": "PLAT-30",
+    "userId": "user-lpham",
+    "createdAt": "2025-11-07T15:30:00",
+    "updatedAt": "2025-11-07T15:30:00"
+  },
+  {
+    "id": "cmt-31-1",
+    "body": "node-worker-6 taint applied: NoSchedule. Reviewing kubelet logs now - /var/lib/containerd at 98% capacity. Likely containerd image cache growth.",
+    "issueId": "PLAT-31",
+    "userId": "user-tkowalski",
+    "createdAt": "2025-12-05T09:30:00",
+    "updatedAt": "2025-12-05T09:30:00"
+  },
+  {
+    "id": "cmt-31-2",
+    "body": "Ran crictl rmi --prune on node-worker-6. Freed 40GB. Re-watching disk usage. If stable by EOD tomorrow will remove taint.",
+    "issueId": "PLAT-31",
+    "userId": "user-tkowalski",
+    "createdAt": "2025-12-07T14:00:00",
+    "updatedAt": "2025-12-07T14:00:00"
+  },
+  {
+    "id": "cmt-33-1",
+    "body": "ExternalSecret resources deployed for DB creds and OAuth client secrets. All pods picking up secrets from AWS SM now. Manual Secret manifests deleted from repo.",
+    "issueId": "PLAT-33",
+    "userId": "user-lpham",
+    "createdAt": "2025-11-13T15:00:00",
+    "updatedAt": "2025-11-13T15:00:00"
+  }
+]

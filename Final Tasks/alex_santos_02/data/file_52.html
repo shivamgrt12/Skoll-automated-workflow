@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Alex Santos">
+<title>Salish Shores Outreach</title>
+<style>
+  :root{--ink:#2b3a36;--teal:#2b5566;--teal2:#3e7488;--coral:#e2673b;--coral2:#ee9270;
+    --cream:#fbf3e7;--sand:#f3e3cc;--paper:#ffffff;--muted:#6f6155}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  a{color:var(--coral);text-decoration:none}
+  header{position:sticky;top:0;z-index:30;background:var(--teal);color:#fff}
+  .bar{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem}
+  .dot{width:16px;height:16px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 4px rgba(226,103,59,.25)}
+  nav ul{display:flex;gap:20px;list-style:none}
+  nav a{color:#dff0f4;font-size:.95rem}
+  nav a:hover{color:#fff}
+  .menu-btn{display:none;background:transparent;border:1px solid #5f8392;color:#fff;border-radius:8px;padding:7px 11px;cursor:pointer}
+  .hero{position:relative;background:linear-gradient(160deg,var(--teal) 0%,var(--teal2) 60%,#5a93a3 100%);
+    color:#fff;padding:84px 24px 96px;overflow:hidden}
+  .hero .inner{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+  .hero h1{font-size:3rem;max-width:16ch;line-height:1.1;animation:rise .8s ease both}
+  .hero p{margin-top:16px;font-size:1.2rem;max-width:56ch;color:#e9f3f6;animation:rise .8s ease .12s both}
+  .cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;animation:rise .8s ease .24s both}
+  .btn{cursor:pointer;border:none;border-radius:999px;padding:14px 28px;font-size:1rem;font-weight:700;transition:transform .15s,box-shadow .2s}
+  .btn-primary{background:var(--coral);color:#fff}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(226,103,59,.4)}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4)}
+  .btn-ghost:hover{background:rgba(255,255,255,.22)}
+  .wave{position:absolute;left:0;bottom:-1px;width:100%;height:60px;display:block}
+  section{max-width:1100px;margin:0 auto;padding:64px 24px}
+  .section-title{font-size:2rem;color:var(--teal);margin-bottom:8px}
+  .lead{color:var(--muted);max-width:62ch;margin-bottom:34px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+  .feature{background:var(--paper);border-radius:16px;padding:26px;border:1px solid #ecd9bf;
+    transition:transform .25s,box-shadow .25s}
+  .feature:hover{transform:translateY(-6px);box-shadow:0 16px 34px rgba(43,85,102,.14)}
+  .feature .ic{width:46px;height:46px;border-radius:12px;background:var(--sand);display:flex;align-items:center;
+    justify-content:center;font-size:1.5rem;margin-bottom:14px}
+  .feature h3{color:var(--teal);margin-bottom:8px}
+  .stats{background:var(--teal);border-radius:20px;color:#fff;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:40px 24px;text-align:center}
+  .stat .num{font-size:2.6rem;font-weight:800;color:#ffd9c7}
+  .stat .lab{font-size:.95rem;color:#dff0f4}
+  .events{list-style:none}
+  .event{display:flex;gap:20px;align-items:flex-start;background:var(--paper);border-left:5px solid var(--coral);
+    border-radius:12px;padding:18px 22px;margin-bottom:14px}
+  .event .when{min-width:130px;font-weight:700;color:var(--teal)}
+  form{background:var(--paper);border-radius:18px;padding:30px;border:1px solid #ecd9bf;max-width:640px}
+  .field{margin-bottom:18px}
+  label{display:block;font-weight:600;margin-bottom:6px;font-size:.95rem}
+  input,select,textarea{width:100%;padding:12px 14px;border:1px solid #d8c4a6;border-radius:10px;
+    font-size:1rem;font-family:inherit;background:#fffdf9}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(226,103,59,.18)}
+  .err{color:#b23b1e;font-size:.85rem;margin-top:5px;display:none}
+  .ok-msg{display:none;background:#e6f3ec;border:1px solid #9ccdb0;color:#1f6b43;padding:14px 18px;border-radius:12px;margin-top:10px}
+  footer{background:var(--ink);color:#d9cfc4;padding:40px 24px;margin-top:40px}
+  .fwrap{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between}
+  footer h4{color:#fff;margin-bottom:8px}
+  footer a{color:var(--coral2)}
+  .fine{max-width:1100px;margin:22px auto 0;color:#988a7c;font-size:.85rem}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @media(max-width:720px){nav ul{display:none}.menu-btn{display:block}
+    nav.open ul{display:flex;flex-direction:column;position:absolute;right:24px;top:60px;background:var(--teal2);
+      padding:14px 18px;border-radius:12px}
+    .hero h1{font-size:2.1rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo"><span class="dot"></span> Salish Shores</div>
+    <nav id="nav">
+      <button class="menu-btn" id="menuBtn">Menu</button>
+      <ul>
+        <li><a href="#work">Our work</a></li>
+        <li><a href="#numbers">By the numbers</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#join">Get involved</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="inner">
+    <h1>The shoreline is full. You just have to look closer.</h1>
+    <p>A community outreach project of the Coastal Ecology Lab, helping the Salish Sea community read its own rocky shores and watch how a warming ocean is changing them.</p>
+    <div class="cta">
+      <button class="btn btn-primary" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join a shore walk</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})">See our work</button>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none"><path fill="#fbf3e7" d="M0,30 C240,60 480,0 720,20 C960,40 1200,60 1440,28 L1440,60 L0,60 Z"></path></svg>
+</div>
+
+<section id="work">
+  <h2 class="section-title">What we do</h2>
+  <p class="lead">We turn one lab's intertidal survey work into something a family at the visitor center can hold onto. No degree required, just curiosity and a low tide.</p>
+  <div class="grid3">
+    <div class="feature"><div class="ic">&#127759;</div><h3>Guided shore walks</h3><p>Free low tide walks at local beaches where you meet the mussels, sea stars, and snails that hold the rock together.</p></div>
+    <div class="feature"><div class="ic">&#128202;</div><h3>Citizen counts</h3><p>Simple, repeatable quadrat counts that anyone can learn, feeding real observations back to the survey record.</p></div>
+    <div class="feature"><div class="ic">&#127757;</div><h3>Plain language science</h3><p>Talks and species cards that explain what ocean warming is doing to the shore, without the jargon wall.</p></div>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="stats">
+    <div class="stat"><div class="num" data-target="8">0</div><div class="lab">survey shores tracked</div></div>
+    <div class="stat"><div class="num" data-target="3">0</div><div class="lab">focal warming sites</div></div>
+    <div class="stat"><div class="num" data-target="412">0</div><div class="lab">walkers hosted this year</div></div>
+    <div class="stat"><div class="num" data-target="25">0</div><div class="lab">grid points per quadrat</div></div>
+  </div>
+</section>
+
+<section id="events">
+  <h2 class="section-title">Upcoming at Pier 56</h2>
+  <p class="lead">All events are free and family friendly. Tide windows decide the timing, so check back before you come.</p>
+  <ul class="events">
+    <li class="event"><div class="when">October 17, 2026</div><div><strong>Low Tide Shore Walk</strong><br>Meet at the visitor center an hour before low water. Boots and curiosity, we bring the rest.</div></li>
+    <li class="event"><div class="when">November 7, 2026</div><div><strong>Life Between the Tides talk</strong><br>A short evening talk on what our surveys are seeing as summers warm, with time for questions.</div></li>
+    <li class="event"><div class="when">December 5, 2026</div><div><strong>Family Tide Pool Lab</strong><br>Hands on stations for kids, build your own quadrat and count along with us.</div></li>
+  </ul>
+</section>
+
+<section id="join">
+  <h2 class="section-title">Get involved</h2>
+  <p class="lead">Tell us how you would like to help. We will reach out with the next tide window that fits.</p>
+  <form id="joinForm" novalidate>
+    <div class="field">
+      <label for="nm">Your name</label>
+      <input id="nm" type="text">
+      <div class="err" id="errNm">Please add your name.</div>
+    </div>
+    <div class="field">
+      <label for="em">Email</label>
+      <input id="em" type="email">
+      <div class="err" id="errEm">Please enter a valid email.</div>
+    </div>
+    <div class="field">
+      <label for="role">How would you like to take part?</label>
+      <select id="role">
+        <option value="">Choose one</option>
+        <option>Join a guided shore walk</option>
+        <option>Help with citizen counts</option>
+        <option>Volunteer at the visitor center</option>
+        <option>Invite the talk to my group</option>
+      </select>
+      <div class="err" id="errRole">Please pick an option.</div>
+    </div>
+    <div class="field">
+      <label for="msg">Anything else? (optional)</label>
+      <textarea id="msg" rows="3"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Sign me up</button>
+    <div class="ok-msg" id="okMsg">Thank you. You are on the list, we will be in touch before the next low tide.</div>
+  </form>
+</section>
+
+<footer>
+  <div class="fwrap">
+    <div><h4>Salish Shores</h4><p>A Coastal Ecology Lab outreach project<br>Pier 56 Visitor Center, Tacoma WA</p></div>
+    <div><h4>Contact</h4><p>Alex Santos, project coordinator<br><a href="mailto:asantos@puget-sound-sci.edu">asantos@puget-sound-sci.edu</a></p></div>
+    <div><h4>Visit</h4><p>Walks run at low tide, year round.<br>Look, learn, and leave every animal at home.</p></div>
+  </div>
+  <p class="fine">Copyright 2026 Coastal Ecology Lab outreach. Please turn every rock back the way you found it.</p>
+</footer>
+
+<script>
+  document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('nav').classList.toggle('open');});
+  // animated counters
+  var counted=false;
+  function runCounters(){
+    if(counted)return; counted=true;
+    document.querySelectorAll('.num').forEach(function(el){
+      var target=+el.getAttribute('data-target'),cur=0,step=Math.max(1,Math.round(target/60));
+      var t=setInterval(function(){cur+=step; if(cur>=target){cur=target;clearInterval(t);} el.textContent=cur;},20);
+    });
+  }
+  var io=new IntersectionObserver(function(e){if(e[0].isIntersecting)runCounters();},{threshold:.4});
+  io.observe(document.getElementById('numbers'));
+  // form validation
+  function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+  document.getElementById('joinForm').addEventListener('submit',function(ev){
+    ev.preventDefault(); var ok=true;
+    var nm=document.getElementById('nm'),em=document.getElementById('em'),role=document.getElementById('role');
+    function show(id,on){document.getElementById(id).style.display=on?'block':'none';}
+    show('errNm',!nm.value.trim()); if(!nm.value.trim())ok=false;
+    show('errEm',!isEmail(em.value)); if(!isEmail(em.value))ok=false;
+    show('errRole',!role.value); if(!role.value)ok=false;
+    if(ok){this.reset(); document.getElementById('okMsg').style.display='block';}
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Equity Program - Volunteer Portal</title>
+<style>
+  :root {
+    --teal: #0f766e;
+    --teal-light: #ccfbf1;
+    --teal-dark: #0d4f48;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --navy: #0f2942;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Arial', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* HEADER */
+  header {
+    background: var(--teal-dark);
+    color: #fff;
+    padding: 0;
+  }
+  .header-top {
+    background: var(--navy);
+    text-align: center;
+    padding: 8px;
+    font-size: 0.78rem;
+    color: #ffffffbb;
+    letter-spacing: 0.5px;
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+  }
+  .logo-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .logo-text span { color: #5eead4; }
+  .nav-links { display: flex; gap: 22px; }
+  .nav-links a { color: #ffffffaa; text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: #5eead4; }
+  .logout-btn {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.22); }
+
+  /* HERO BANNER */
+  .banner {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, #0891b2 100%);
+    color: #fff;
+    padding: 44px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner::after {
+    content: '+';
+    position: absolute;
+    right: 60px; top: 20px;
+    font-size: 8rem;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+  }
+  .banner-inner { max-width: 1100px; margin: 0 auto; }
+  .banner h1 { font-size: 1.6rem; margin-bottom: 8px; }
+  .banner p { color: #ffffffcc; font-size: 0.9rem; }
+  .banner-meta {
+    display: flex;
+    gap: 28px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .meta-item { font-size: 0.82rem; }
+  .meta-label { color: #ffffffaa; }
+  .meta-val { font-weight: bold; }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* PROGRESS HERO CARD */
+  .progress-hero {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .donut-wrap { position: relative; flex-shrink: 0; }
+  .donut-svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .donut-track { fill: none; stroke: var(--bg); stroke-width: 12; }
+  .donut-fill { fill: none; stroke: var(--teal); stroke-width: 12; stroke-linecap: round;
+    stroke-dasharray: 339.29;
+    stroke-dashoffset: 237.5;
+    animation: drawDonut 1.8s ease forwards;
+  }
+  @keyframes drawDonut { from { stroke-dashoffset: 339.29; } to { stroke-dashoffset: 237.5; } }
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transform: none;
+  }
+  .donut-pct { font-size: 1.8rem; font-weight: bold; color: var(--teal); }
+  .donut-sub { font-size: 0.7rem; color: var(--muted); }
+  .progress-details { flex: 1; min-width: 220px; }
+  .progress-details h2 { font-size: 1.15rem; color: var(--teal-dark); margin-bottom: 16px; }
+  .hr-bars { display: flex; flex-direction: column; gap: 12px; }
+  .hr-bar-row { display: flex; align-items: center; gap: 12px; }
+  .hr-bar-label { font-size: 0.82rem; min-width: 90px; color: var(--text); }
+  .hr-bar { flex: 1; height: 8px; background: var(--bg); border-radius: 8px; overflow: hidden; }
+  .hr-bar-fill { height: 100%; border-radius: 8px; animation: fillBar 1.5s ease forwards; }
+  @keyframes fillBar { from { width: 0; } }
+  .hr-bar-num { font-size: 0.8rem; font-weight: bold; color: var(--teal); min-width: 40px; text-align: right; }
+
+  /* STAT CARDS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .stat-card.purple { border-left-color: var(--purple); }
+  .stat-card.orange { border-left-color: var(--orange); }
+  .stat-icon { font-size: 1.8rem; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--text); }
+
+  /* TWO COL */
+  .grid-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 22px; margin-bottom: 28px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card { background: var(--white); border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); overflow: hidden; }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h2 { font-size: 0.95rem; font-weight: bold; color: var(--teal-dark); }
+  .badge {
+    font-size: 0.72rem; padding: 3px 10px; border-radius: 12px; font-weight: bold;
+  }
+  .badge-teal { background: var(--teal-light); color: var(--teal); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); }
+
+  /* LOG TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--teal-dark); color: #fff; padding: 10px 14px; text-align: left; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f0fafa; }
+  .verified-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;
+  }
+  .pill-yes { background: var(--teal-light); color: var(--teal); }
+  .pill-pending { background: var(--orange-light); color: var(--orange); }
+
+  /* UPCOMING CLINICS */
+  .clinic-list { list-style: none; padding: 16px; }
+  .clinic-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .clinic-item:last-child { border-bottom: none; }
+  .clinic-dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--teal);
+    flex-shrink: 0; margin-top: 5px;
+  }
+  .clinic-dot.future { background: var(--purple); }
+  .clinic-date { font-size: 0.72rem; font-weight: bold; color: var(--teal); text-transform: uppercase; }
+  .clinic-name { font-size: 0.88rem; font-weight: bold; margin: 2px 0; }
+  .clinic-loc { font-size: 0.78rem; color: var(--muted); }
+  .clinic-hrs {
+    margin-left: auto; background: var(--teal-light); color: var(--teal);
+    padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;
+    white-space: nowrap; align-self: center;
+  }
+
+  /* GOAL SECTION */
+  .goal-section {
+    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+    border-radius: 12px;
+    padding: 28px 32px;
+    color: #fff;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .goal-section h2 { font-size: 1rem; color: #5eead4; margin-bottom: 6px; }
+  .goal-section p { font-size: 0.88rem; color: #ffffffcc; max-width: 500px; }
+  .goal-cta {
+    background: #5eead4;
+    color: var(--teal-dark);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .goal-cta:hover { background: #99f6e4; }
+
+  /* FOOTER */
+  footer {
+    background: var(--teal-dark);
+    color: #ffffff66;
+    text-align: center;
+    font-size: 0.78rem;
+    padding: 20px 24px;
+  }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-links a { color: #5eead4; text-decoration: none; margin-left: 14px; font-size: 0.78rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">Cedarbrook Health Equity Program - Volunteer Management System - Fall 2026</div>
+  <div class="nav-inner">
+    <div class="logo-text">Health <span>Equity</span> Program</div>
+    <div class="nav-links">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Log Hours</a>
+      <a href="#">Clinics</a>
+      <a href="#">Reports</a>
+    </div>
+    <button class="logout-btn">Sign Out</button>
+  </div>
+</header>
+
+<div class="banner">
+  <div class="banner-inner">
+    <h1>Welcome back, Hassan</h1>
+    <p>Hassan Blanchard - Pre-Nursing Track - Student ID 100482237</p>
+    <div class="banner-meta">
+      <div class="meta-item"><div class="meta-label">Program Status</div><div class="meta-val">Active</div></div>
+      <div class="meta-item"><div class="meta-label">Semester</div><div class="meta-val">Fall 2026</div></div>
+      <div class="meta-item"><div class="meta-label">Coordinator</div><div class="meta-val">Yolanda Reese</div></div>
+      <div class="meta-item"><div class="meta-label">Requirement</div><div class="meta-val">40 hrs / semester</div></div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- PROGRESS HERO -->
+  <div class="progress-hero">
+    <div class="donut-wrap">
+      <svg class="donut-svg" viewBox="0 0 120 120">
+        <circle class="donut-track" cx="60" cy="60" r="54"/>
+        <circle class="donut-fill" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="donut-center">
+        <div class="donut-pct">30%</div>
+        <div class="donut-sub">complete</div>
+      </div>
+    </div>
+    <div class="progress-details">
+      <h2>Semester Hours Progress</h2>
+      <div class="hr-bars">
+        <div class="hr-bar-row">
+          <div class="hr-bar-label">Completed</div>
+          <div class="hr-bar"><div class="hr-bar-fill" style="width:30%;background:var(--teal)"></div></div>
+          <div class="hr-bar-num">12 hrs</div>
+        </div>
+        <div class="hr-bar-row">
+          <div class="hr-bar-label">Remaining</div>
+          <div class="hr-bar"><div class="hr-bar-fill" style="width:70%;background:#e2e8f0"></div></div>
+          <div class="hr-bar-num">28 hrs</div>
+        </div>
+        <div class="hr-bar-row">
+          <div class="hr-bar-label">Requirement</div>
+          <div class="hr-bar"><div class="hr-bar-fill" style="width:100%;background:#0d9488"></div></div>
+          <div class="hr-bar-num">40 hrs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">&#9989;</div>
+      <div><div class="stat-label">Verified Hours</div><div class="stat-value">12.0</div></div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon">&#128197;</div>
+      <div><div class="stat-label">Clinics Attended</div><div class="stat-value">3</div></div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-icon">&#128203;</div>
+      <div><div class="stat-label">Remaining Hours</div><div class="stat-value">28.0</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">&#127919;</div>
+      <div><div class="stat-label">Check-in Deadline</div><div class="stat-value">Oct 17</div></div>
+    </div>
+  </div>
+
+  <!-- LOG + UPCOMING -->
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Service Log - Fall 2026</h2>
+        <span class="badge badge-teal">All Verified</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Site</th><th>Activity</th><th>Hours</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sep 13, 2025</td>
+            <td>West End Screening Clinic</td>
+            <td>BP checks and intake</td>
+            <td>4.0</td>
+            <td><span class="verified-pill pill-yes">&#10003; Verified</span></td>
+          </tr>
+          <tr>
+            <td>Oct 11, 2025</td>
+            <td>Mobile BP Event</td>
+            <td>Patient guidance and setup</td>
+            <td>4.0</td>
+            <td><span class="verified-pill pill-yes">&#10003; Verified</span></td>
+          </tr>
+          <tr>
+            <td>Nov 8, 2025</td>
+            <td>SW Atlanta Health Screening</td>
+            <td>Intake and translation help</td>
+            <td>4.0</td>
+            <td><span class="verified-pill pill-yes">&#10003; Verified</span></td>
+          </tr>
+          <tr>
+            <td>Oct 18, 2026</td>
+            <td>West End Screening Clinic</td>
+            <td>Intake and BP monitoring</td>
+            <td>4.0</td>
+            <td><span class="verified-pill pill-pending">Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Upcoming Clinics</h2>
+        <span class="badge badge-orange">3 Available</span>
+      </div>
+      <ul class="clinic-list">
+        <li class="clinic-item">
+          <div class="clinic-dot future"></div>
+          <div>
+            <div class="clinic-date">Oct 18, 2026</div>
+            <div class="clinic-name">West End Screening Clinic</div>
+            <div class="clinic-loc">West End Community Center, Atlanta</div>
+          </div>
+          <div class="clinic-hrs">4.0 hrs</div>
+        </li>
+        <li class="clinic-item">
+          <div class="clinic-dot future"></div>
+          <div>
+            <div class="clinic-date">Nov 15, 2026</div>
+            <div class="clinic-name">SW Atlanta Mobile Health Event</div>
+            <div class="clinic-loc">Cascade Road Community Park</div>
+          </div>
+          <div class="clinic-hrs">4.0 hrs</div>
+        </li>
+        <li class="clinic-item">
+          <div class="clinic-dot future"></div>
+          <div>
+            <div class="clinic-date">Dec 6, 2026</div>
+            <div class="clinic-name">Year-End Health Fair</div>
+            <div class="clinic-loc">Cedarbrook University Campus</div>
+          </div>
+          <div class="clinic-hrs">6.0 hrs</div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- GOAL STRIP -->
+  <div class="goal-section">
+    <div>
+      <h2>Semester Completion Goal</h2>
+      <p>Three more clinics this semester will bring total hours to 28. One additional session in early December will meet the 40-hour requirement for aid renewal and clinical track eligibility.</p>
+    </div>
+    <button class="goal-cta">Register for Next Clinic</button>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>Cedarbrook Health Equity Program - Volunteer Portal</span>
+    <div>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Contact Coordinator</a>
+      <a href="#">Help</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

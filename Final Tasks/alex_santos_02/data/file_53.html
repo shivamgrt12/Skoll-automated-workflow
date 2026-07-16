@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Alex Santos">
+<title>Intertidal Survey Dashboard</title>
+<style>
+  :root{--bg:#0f1c24;--panel:#162a35;--panel2:#1d3543;--cyan:#37b3c9;--aqua:#6fd0c5;
+    --amber:#e6b566;--text:#e7f1f4;--muted:#9bb4bf;--line:#27414f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  header{background:linear-gradient(120deg,#102935,#15384a);border-bottom:1px solid var(--line);padding:22px 26px}
+  .hwrap{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+  header h1{font-size:1.7rem}
+  header p{color:var(--muted);font-size:.95rem;margin-top:4px}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.82rem;color:var(--aqua)}
+  main{max-width:1180px;margin:0 auto;padding:26px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:24px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    opacity:0;transform:translateY(12px);animation:up .6s ease forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}
+  .card .v{font-size:2rem;font-weight:800;color:var(--cyan)}
+  .card .l{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:24px}
+  .panel h2{font-size:1.15rem;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:.88rem;margin-bottom:16px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .tog{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);
+    border-radius:999px;padding:9px 18px;font-size:.92rem;font-weight:600;transition:all .2s}
+  .tog:hover{border-color:var(--cyan)}
+  .tog.active{background:var(--cyan);border-color:var(--cyan);color:#06202a}
+  .charts{display:grid;grid-template-columns:1.3fr 1fr;gap:22px}
+  svg{width:100%;height:auto;display:block}
+  .bar{transition:height .5s cubic-bezier(.4,0,.2,1),y .5s cubic-bezier(.4,0,.2,1),fill .3s}
+  .axis{stroke:var(--line);stroke-width:1}
+  .gtxt{fill:var(--muted);font-size:11px}
+  .blab{fill:var(--text);font-size:11px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--aqua);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+  tbody tr:hover{background:var(--panel2)}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding:24px 26px;text-align:center}
+  @keyframes up{to{opacity:1;transform:none}}
+  @media(max-width:820px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div>
+      <h1>Intertidal Survey Dashboard</h1>
+      <p>Southern Puget Sound diversity gradient, eight shores, 2025 field season. Coastal Ecology Lab.</p>
+    </div>
+    <div class="pill">Analyst: Alex Santos &middot; built in R, served here</div>
+  </div>
+</header>
+
+<main>
+  <div class="cards">
+    <div class="card"><div class="v">8</div><div class="l">survey shores</div></div>
+    <div class="card"><div class="v">69</div><div class="l">quadrats counted</div></div>
+    <div class="card"><div class="v">0.21</div><div class="l">community variation from temperature (R squared)</div></div>
+    <div class="card"><div class="v">p = 0.018</div><div class="l">PERMANOVA significance</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Diversity by site</h2>
+    <div class="sub">Pick a metric. Bars are ordered from the coolest shore to the warmest, left to right.</div>
+    <div class="controls" id="controls">
+      <button class="tog active" data-k="shannon">Shannon H</button>
+      <button class="tog" data-k="simpson">Simpson D</button>
+      <button class="tog" data-k="evenness">Evenness J</button>
+      <button class="tog" data-k="richness">Species richness</button>
+    </div>
+    <div class="charts">
+      <div><svg id="barSvg" viewBox="0 0 640 360" role="img" aria-label="Bar chart of diversity by site"></svg></div>
+      <div><svg id="scatSvg" viewBox="0 0 420 360" role="img" aria-label="Scatter of metric against temperature"></svg>
+        <div class="sub" style="margin-top:6px">Selected metric against mean site temperature (degrees C). Warmer shores sit to the right.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Site table</h2>
+    <div class="sub">Mean water temperature rises down the list. Diversity falls with it.</div>
+    <table id="tbl">
+      <thead><tr><th>Site</th><th>Quadrats</th><th>Richness</th><th>Shannon H</th><th>Simpson D</th><th>Evenness J</th><th>Temp C</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>Coastal Ecology Lab &middot; data collected by A. Santos, Titlow Beach and seven companion shores &middot; figures regenerate from the locked survey database.</footer>
+
+<script>
+  var DATA=[
+    {site:"Penrose Point",q:9,richness:18,shannon:2.41,simpson:0.88,evenness:0.83,temp:11.2},
+    {site:"Salmon Beach",q:9,richness:17,shannon:2.33,simpson:0.86,evenness:0.82,temp:11.8},
+    {site:"Joemma Beach",q:8,richness:16,shannon:2.21,simpson:0.85,evenness:0.80,temp:12.4},
+    {site:"Days Island",q:9,richness:15,shannon:2.07,simpson:0.82,evenness:0.76,temp:13.1},
+    {site:"Dash Point",q:8,richness:14,shannon:1.95,simpson:0.79,evenness:0.74,temp:13.9},
+    {site:"Narrows Cove",q:9,richness:13,shannon:1.81,simpson:0.75,evenness:0.71,temp:14.6},
+    {site:"Titlow Beach",q:9,richness:12,shannon:1.72,simpson:0.73,evenness:0.69,temp:15.2},
+    {site:"Owen Beach",q:8,richness:11,shannon:1.62,simpson:0.71,evenness:0.68,temp:15.8}
+  ];
+  var META={shannon:{label:"Shannon H",max:2.6},simpson:{label:"Simpson D",max:1.0},
+            evenness:{label:"Evenness J",max:1.0},richness:{label:"Species richness",max:20}};
+  var current="shannon";
+  var SVGNS="http://www.w3.org/2000/svg";
+  function el(n,a){var e=document.createElementNS(SVGNS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+
+  function drawBars(){
+    var svg=document.getElementById("barSvg"); svg.innerHTML="";
+    var W=640,H=360,pad=46,base=H-40,top=24,m=META[current],max=m.max;
+    var bw=(W-pad-20)/DATA.length*0.62, gap=(W-pad-20)/DATA.length;
+    svg.appendChild(el("line",{x1:pad,y1:base,x2:W-10,y2:base,class:"axis"}));
+    [0,0.25,0.5,0.75,1].forEach(function(f){
+      var y=base-(base-top)*f;
+      svg.appendChild(el("line",{x1:pad,y1:y,x2:W-10,y2:y,stroke:"#1f3744","stroke-width":1}));
+      var t=el("text",{x:pad-8,y:y+4,class:"gtxt","text-anchor":"end"});t.textContent=(max*f).toFixed(max<=1?2:0);svg.appendChild(t);
+    });
+    DATA.forEach(function(d,i){
+      var v=d[current],h=(base-top)*(v/max),x=pad+10+i*gap;
+      var col=d.site==="Titlow Beach"?"#e6b566":"#37b3c9";
+      var r=el("rect",{x:x,y:base,width:bw,height:0,rx:4,fill:col,class:"bar"});
+      svg.appendChild(r);
+      requestAnimationFrame(function(){r.setAttribute("y",base-h);r.setAttribute("height",h);});
+      var lab=el("text",{x:x+bw/2,y:base+16,class:"gtxt","text-anchor":"middle"});
+      lab.textContent=d.site.split(" ")[0];svg.appendChild(lab);
+      var val=el("text",{x:x+bw/2,y:base-h-6,class:"blab","text-anchor":"middle"});
+      val.textContent=(max<=1?v.toFixed(2):v);svg.appendChild(val);
+    });
+  }
+  function drawScatter(){
+    var svg=document.getElementById("scatSvg"); svg.innerHTML="";
+    var W=420,H=360,pad=44,base=H-40,top=24,m=META[current],max=m.max;
+    var tmin=10.8,tmax=16.2;
+    svg.appendChild(el("line",{x1:pad,y1:base,x2:W-12,y2:base,class:"axis"}));
+    svg.appendChild(el("line",{x1:pad,y1:top,x2:pad,y2:base,class:"axis"}));
+    [11,12,13,14,15,16].forEach(function(t){
+      var x=pad+(W-pad-14)*((t-tmin)/(tmax-tmin));
+      var tx=el("text",{x:x,y:base+16,class:"gtxt","text-anchor":"middle"});tx.textContent=t;svg.appendChild(tx);
+    });
+    DATA.forEach(function(d){
+      var v=d[current];
+      var x=pad+(W-pad-14)*((d.temp-tmin)/(tmax-tmin));
+      var y=base-(base-top)*(v/max);
+      var col=d.site==="Titlow Beach"?"#e6b566":"#6fd0c5";
+      var c=el("circle",{cx:x,cy:y,r:0,fill:col,opacity:.92});
+      svg.appendChild(c);
+      c.style.transition="r .5s ease";requestAnimationFrame(function(){c.setAttribute("r",7);});
+      var tt=el("title");tt.textContent=d.site+": "+(max<=1?v.toFixed(2):v)+" at "+d.temp+" C";c.appendChild(tt);
+    });
+    var lx=el("text",{x:(W+pad)/2,y:H-6,class:"gtxt","text-anchor":"middle"});lx.textContent="mean temperature (C)";svg.appendChild(lx);
+  }
+  function buildTable(){
+    var tb=document.querySelector("#tbl tbody");tb.innerHTML="";
+    DATA.forEach(function(d){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+d.site+"</td><td>"+d.q+"</td><td>"+d.richness+"</td><td>"+d.shannon.toFixed(2)+
+        "</td><td>"+d.simpson.toFixed(2)+"</td><td>"+d.evenness.toFixed(2)+"</td><td>"+d.temp.toFixed(1)+"</td>";
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById("controls").addEventListener("click",function(e){
+    if(!e.target.classList.contains("tog"))return;
+    document.querySelectorAll(".tog").forEach(function(b){b.classList.remove("active");});
+    e.target.classList.add("active"); current=e.target.getAttribute("data-k");
+    drawBars();drawScatter();
+  });
+  buildTable();drawBars();drawScatter();
+</script>
+</body>
+</html>

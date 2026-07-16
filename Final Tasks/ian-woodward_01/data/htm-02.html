@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sligo Creek Log, a quiet dashboard</title>
+<style>
+:root{
+  --bg:#0e1822; --panel:#15212e; --panel2:#1b2a39; --line:#26384a;
+  --ink:#e8eef3; --mute:#93a6b6; --green:#5fcf8e; --green-d:#2f8f5b;
+  --leaf:#7ab86a; --water:#4aa6c4; --amber:#e7b65a; --rose:#e08a86;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:
+  radial-gradient(800px 500px at 90% -5%,rgba(95,207,142,.10),transparent),
+  radial-gradient(700px 500px at -5% 10%,rgba(74,166,196,.10),transparent),var(--bg);
+  color:var(--ink);line-height:1.6;min-height:100vh}
+header{position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:16px 6vw;background:rgba(14,24,34,.82);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:12px;align-items:center;font-weight:700}
+.leaf{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--leaf),var(--water));display:grid;place-items:center}
+nav{display:flex;gap:24px}
+nav a{color:var(--mute);text-decoration:none;font-size:14px;font-weight:600;transition:.2s}
+nav a:hover{color:var(--green)}
+.wrap{padding:46px 6vw 30px}
+.intro h1{font-size:40px;line-height:1.12;margin-bottom:10px}
+.intro p{color:var(--mute);max-width:600px}
+.filters{display:flex;gap:10px;margin:26px 0 8px;flex-wrap:wrap}
+.chip{padding:8px 16px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--mute);
+  font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.chip.on{background:var(--green-d);border-color:var(--green);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:18px 0 34px}
+.kpi{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+.kpi .tag{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
+.kpi .num{font-size:38px;font-weight:800;margin:6px 0 2px}
+.kpi .sub{font-size:13px;color:var(--green)}
+.kpi .spark{position:absolute;right:-6px;bottom:-6px;opacity:.25}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:22px}
+.card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:26px}
+.card h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--mute);margin-bottom:4px}
+.card h2{font-size:22px;margin-bottom:16px}
+.reveal{opacity:0;transform:translateY(24px);transition:.7s}
+.reveal.show{opacity:1;transform:none}
+.legend{display:flex;gap:18px;margin-top:12px;font-size:13px;color:var(--mute);flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.donutwrap{display:flex;align-items:center;gap:24px}
+.dlabel{font-size:14px;color:var(--mute)}
+.dlabel b{display:block;color:var(--ink);font-size:30px}
+.tbl{width:100%;border-collapse:collapse;margin-top:8px}
+.tbl th,.tbl td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:14px}
+.tbl th{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.tbl td b{color:var(--green)}
+.note{background:rgba(95,207,142,.08);border-left:3px solid var(--green);border-radius:10px;padding:16px 18px;color:var(--mute);font-size:14px;margin-top:20px}
+.support{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:14px}
+.scard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;transition:transform .2s}
+.scard:hover{transform:translateY(-5px)}
+.scard .ic{font-size:24px;margin-bottom:8px}
+.scard h4{font-size:16px;margin-bottom:6px}
+.scard p{font-size:13px;color:var(--mute)}
+footer{padding:40px 6vw;color:var(--mute);font-size:13px;border-top:1px solid var(--line);margin-top:40px;text-align:center}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}nav{display:none}.intro h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="leaf">~</div> Sligo Creek Log</div>
+  <nav>
+    <a href="#walks">Walks</a><a href="#health">Headache trend</a><a href="#supports">What helps</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="intro reveal show">
+    <h1>The weekend miles, kept honestly.</h1>
+    <p>A private dashboard for the two to three miles I walk in Sligo Creek Park, and the steady, quiet work of keeping the migraines and the iron in check. Not a fitness brag, just a way to see that the line keeps moving.</p>
+  </div>
+
+  <div class="filters reveal show">
+    <span class="chip on" data-r="all">All entries</span>
+    <span class="chip" data-r="solo">Solo</span>
+    <span class="chip" data-r="lucy">With Lucy</span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi reveal"><div class="tag">Miles logged</div><div class="num"><span class="count" data-to="21.5" data-dec="1">0</span></div><div class="sub">across eight weekend walks</div></div>
+    <div class="kpi reveal"><div class="tag">Time outside</div><div class="num"><span class="count" data-to="340">0</span> min</div><div class="sub">about five and a half hours</div></div>
+    <div class="kpi reveal"><div class="tag">Migraine days a month</div><div class="num"><span class="count" data-to="1">0</span></div><div class="sub">down from three to four</div></div>
+    <div class="kpi reveal"><div class="tag">Ferritin, ng per mL</div><div class="num"><span class="count" data-to="18">0</span></div><div class="sub">improving, was nine</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card reveal" id="walks">
+      <h3>Distance by walk</h3><h2>Miles in the creek valley</h2>
+      <svg id="line" viewBox="0 0 640 280" width="100%" height="280" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend"><span><i style="background:var(--leaf)"></i>Walk distance, miles</span><span><i style="background:var(--water)"></i>Minutes outside</span></div>
+    </div>
+    <div class="card reveal">
+      <h3>Preventive medicine</h3><h2>How the year holds together</h2>
+      <div class="donutwrap">
+        <svg id="donut" viewBox="0 0 120 120" width="150" height="150"></svg>
+        <div class="dlabel">Adherence this term<b id="dval">0%</b>Topiramate in the morning, Buspirone twice a day, iron with orange juice before the coffee.</div>
+      </div>
+      <div class="note">Iron is taken thirty minutes before coffee for absorption. Worst headache days are still Monday mornings and teaching nights, so those are the ones to protect with sleep and a real lunch.</div>
+    </div>
+  </div>
+
+  <div class="card reveal" id="health" style="margin-top:22px">
+    <h3>The log</h3><h2>Walk by walk</h2>
+    <table class="tbl"><thead><tr><th>Date</th><th>Place</th><th>Miles</th><th>Minutes</th><th>Company</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+    <p style="color:var(--mute);font-size:13px;margin-top:12px">Eight walks, 21.5 miles, 340 minutes. The pace is not the point. The point is going.</p>
+  </div>
+
+  <div id="supports" style="margin-top:40px">
+    <div class="card reveal" style="background:none;border:none;padding:0">
+      <h3 style="text-align:center">What actually helps</h3><h2 style="text-align:center;margin-bottom:6px">Four things that keep my head above water</h2>
+    </div>
+    <div class="support">
+      <div class="scard reveal"><div class="ic">+</div><h4>The walk</h4><p>Two to three miles on a weekend, solo or with Lucy. It steadies the sleep and the rest follows.</p></div>
+      <div class="scard reveal"><div class="ic">~</div><h4>The choir</h4><p>Thursday rehearsals and the Sunday loft. Singing in four parts empties the head better than sitting still.</p></div>
+      <div class="scard reveal"><div class="ic">@</div><h4>A call to Anne</h4><p>On a money week or a hard case week, the phone call does more than any app I ever tried.</p></div>
+      <div class="scard reveal"><div class="ic">=</div><h4>A real lunch</h4><p>Skipping meals is a trigger I know by heart. Protecting lunch on busy days is half the prevention.</p></div>
+    </div>
+  </div>
+</div>
+
+<footer>A private record kept for myself, reviewed before the annual with Dr. Osei and the neurology follow-up. Not medical advice, just the shape of a steady year. Silver Spring, Maryland.</footer>
+
+<script>
+const data=[
+ {d:"2026-01-04",p:"Sligo Creek Park",mi:2.4,mn:38,c:"solo",n:"cold and clear"},
+ {d:"2026-01-11",p:"Sligo Creek Park",mi:2.8,mn:44,c:"lucy",n:"with Lucy"},
+ {d:"2026-01-18",p:"Sligo Creek Park",mi:2.2,mn:35,c:"solo",n:"light snow"},
+ {d:"2026-02-01",p:"Sligo Creek Park",mi:3.0,mn:47,c:"lucy",n:"ducks at the bend"},
+ {d:"2026-02-15",p:"Sligo Creek Park",mi:2.6,mn:41,c:"solo",n:"clearing my head"},
+ {d:"2026-10-03",p:"Sligo Creek Park",mi:3.1,mn:49,c:"solo",n:"fall colors starting"},
+ {d:"2026-10-17",p:"Sligo Creek Park",mi:2.9,mn:46,c:"lucy",n:"after choir"},
+ {d:"2026-11-07",p:"Sligo Creek Park",mi:2.5,mn:40,c:"solo",n:"crisp morning"}
+];
+let filter="all";
+function rows(){const tb=document.getElementById('rows');tb.innerHTML="";
+  data.filter(d=>filter==="all"||d.c===filter).forEach(d=>{
+   const tr=document.createElement('tr');
+   tr.innerHTML=`<td>${d.d}</td><td>${d.p}</td><td><b>${d.mi.toFixed(1)}</b></td><td>${d.mn}</td><td>${d.c==='lucy'?'With Lucy':'Solo'}</td>`;
+   tb.appendChild(tr);});}
+rows();
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');filter=c.dataset.r;rows();drawLine();});
+
+function drawLine(){
+  const svg=document.getElementById('line');const W=640,H=280,pad=40;
+  const dd=data; // always full series for trend
+  const xs=(i)=>pad+ i*((W-2*pad)/(dd.length-1));
+  const miMax=3.4, mnMax=55;
+  const yMi=(v)=>H-pad-(v/miMax)*(H-2*pad);
+  const yMn=(v)=>H-pad-(v/mnMax)*(H-2*pad);
+  let grid="";
+  for(let g=0;g<=3;g++){const y=pad+g*((H-2*pad)/3);grid+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#26384a" stroke-width="1"/>`;}
+  const pMi=dd.map((d,i)=>`${xs(i)},${yMi(d.mi)}`).join(" ");
+  const pMn=dd.map((d,i)=>`${xs(i)},${yMn(d.mn)}`).join(" ");
+  const area=`${pad},${H-pad} `+pMi+` ${W-pad},${H-pad}`;
+  let dots=dd.map((d,i)=>`<circle cx="${xs(i)}" cy="${yMi(d.mi)}" r="4" fill="#7ab86a"/><text x="${xs(i)}" y="${yMi(d.mi)-10}" fill="#cfe3c8" font-size="10" text-anchor="middle">${d.mi.toFixed(1)}</text>`).join("");
+  let labs=dd.map((d,i)=>`<text x="${xs(i)}" y="${H-pad+18}" fill="#93a6b6" font-size="9" text-anchor="middle">${d.d.slice(5)}</text>`).join("");
+  svg.innerHTML=`${grid}
+   <polygon points="${area}" fill="rgba(122,184,106,.14)"/>
+   <polyline points="${pMn}" fill="none" stroke="#4aa6c4" stroke-width="2" stroke-dasharray="5 4" opacity=".8"/>
+   <polyline points="${pMi}" fill="none" stroke="#7ab86a" stroke-width="3" class="draw"/>
+   ${dots}${labs}`;
+  const pl=svg.querySelector('.draw');const len=pl.getTotalLength();
+  pl.style.strokeDasharray=len;pl.style.strokeDashoffset=len;
+  pl.getBoundingClientRect();pl.style.transition="stroke-dashoffset 1.6s ease";pl.style.strokeDashoffset=0;
+}
+
+function drawDonut(pct){
+  const svg=document.getElementById('donut');const r=46,c=2*Math.PI*r;
+  svg.innerHTML=`<circle cx="60" cy="60" r="${r}" fill="none" stroke="#26384a" stroke-width="12"/>
+   <circle cx="60" cy="60" r="${r}" fill="none" stroke="#5fcf8e" stroke-width="12" stroke-linecap="round"
+     stroke-dasharray="${c}" stroke-dashoffset="${c}" transform="rotate(-90 60 60)" class="dring"/>`;
+  const ring=svg.querySelector('.dring');
+  setTimeout(()=>{ring.style.transition="stroke-dashoffset 1.6s ease";ring.style.strokeDashoffset=c*(1-pct/100);},150);
+  let n=0;const dv=document.getElementById('dval');
+  const t=setInterval(()=>{n++;dv.textContent=n+"%";if(n>=pct)clearInterval(t);},18);
+}
+function counters(){document.querySelectorAll('.count').forEach(el=>{
+  const to=parseFloat(el.dataset.to),dec=parseInt(el.dataset.dec||"0");let n=0;const step=to/60;
+  const t=setInterval(()=>{n+=step;if(n>=to){n=to;clearInterval(t);}el.textContent=dec?n.toFixed(dec):Math.round(n);},20);});}
+
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(r=>io.observe(r));
+let charted=false;
+function runCharts(){if(charted)return;charted=true;counters();drawLine();drawDonut(94);}
+const once=new IntersectionObserver((es)=>{if(es[0].isIntersecting){runCharts();once.disconnect();}},{threshold:.2});
+once.observe(document.querySelector('.kpis'));
+// safety net: reveal all and run charts shortly after load regardless of scroll
+window.addEventListener('load',()=>setTimeout(()=>{
+  document.querySelectorAll('.reveal').forEach(r=>r.classList.add('show'));
+  runCharts();
+},450));
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 Benchmarking Report</title>
+<style>
+  :root{
+    --bg:#0e1626; --panel:#152238; --panel2:#1b2c47; --line:#25395a;
+    --ink:#e8eefb; --mut:#93a4c4; --steel:#4f8fe0; --sage:#57b98a;
+    --amber:#e0a94f; --clay:#d97a5a; --plum:#9a7bd0; --good:#57b98a; --bad:#d97a5a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:
+    radial-gradient(1100px 600px at 85% -10%,#1a2b49 0,transparent 60%),var(--bg);
+    color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  header.top{position:sticky;top:0;z-index:20;background:rgba(14,22,38,.82);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:26px;height:64px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.2px}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--steel),var(--plum));
+    display:grid;place-items:center}
+  .nav .links{margin-left:auto;display:flex;gap:22px}
+  .nav .links a{color:var(--mut);font-size:14px;font-weight:600;transition:color .2s}
+  .nav .links a:hover{color:var(--ink)}
+  .tag{font-size:11px;color:var(--mut);border:1px solid var(--line);padding:3px 9px;border-radius:20px}
+  .hero{padding:54px 0 30px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--steel);
+    font-weight:700;font-size:12px;letter-spacing:1.6px;text-transform:uppercase}
+  h1{font-size:40px;line-height:1.12;margin:14px 0 12px;letter-spacing:-.5px}
+  h1 span{color:var(--steel)}
+  .sub{color:var(--mut);max-width:640px;font-size:16px}
+  .meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;color:var(--mut);font-size:13px}
+  .meta b{color:var(--ink)}
+  section{padding:26px 0}
+  .stitle{display:flex;align-items:center;gap:11px;margin:6px 0 18px}
+  .stitle h2{font-size:20px;letter-spacing:-.2px}
+  .stitle .ic{color:var(--steel)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:15px;padding:18px 18px 16px;position:relative;overflow:hidden}
+  .kpi .lab{color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .kpi .val{font-size:30px;font-weight:800;margin-top:8px;letter-spacing:-.5px}
+  .kpi .dl{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:6px}
+  .up{color:var(--good)} .down{color:var(--bad)}
+  .kpi .spark{position:absolute;right:0;bottom:0;opacity:.5}
+  .grid2{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:16px;padding:20px}
+  .panel h3{font-size:15px;margin-bottom:4px}
+  .panel .hint{color:var(--mut);font-size:12px;margin-bottom:14px}
+  .bar-row{display:grid;grid-template-columns:120px 1fr 56px;align-items:center;gap:12px;margin:13px 0}
+  .bar-row .nm{font-size:13px;color:var(--ink);font-weight:600}
+  .track{height:14px;background:#0f1b30;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .fill{height:100%;width:0;border-radius:8px;transition:width 1.3s cubic-bezier(.2,.7,.2,1)}
+  .bar-row .pv{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:10px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
+  .p-good{background:rgba(87,185,138,.16);color:var(--good)}
+  .p-mid{background:rgba(224,169,79,.16);color:var(--amber)}
+  .p-bad{background:rgba(217,122,90,.16);color:var(--bad)}
+  .donut-wrap{display:flex;align-items:center;gap:18px}
+  .legend{display:flex;flex-direction:column;gap:9px;font-size:13px}
+  .legend .li{display:flex;align-items:center;gap:9px;color:var(--mut)}
+  .legend .sw{width:11px;height:11px;border-radius:3px}
+  .legend b{color:var(--ink)}
+  .timeline{position:relative;margin-left:8px;padding-left:24px;border-left:2px solid var(--line)}
+  .tl{position:relative;margin:0 0 18px}
+  .tl .dot{position:absolute;left:-31px;top:2px;width:14px;height:14px;border-radius:50%;
+    background:var(--steel);box-shadow:0 0 0 4px rgba(79,143,224,.18)}
+  .tl .d{color:var(--steel);font-size:12px;font-weight:700}
+  .tl .t{font-weight:600;margin-top:2px}
+  .tl .x{color:var(--mut);font-size:13px}
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line);margin-top:34px;padding:26px 0;color:var(--mut);font-size:13px}
+  footer .fl{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}
+    h1{font-size:30px}.nav .links{display:none}.bar-row{grid-template-columns:96px 1fr 48px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap nav">
+    <div class="brand">
+      <span class="logo">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M4 19V10M10 19V5M16 19v-6M22 19H2"/></svg>
+      </span>
+      Crestline Analytics
+    </div>
+    <nav class="links">
+      <a href="#summary">Summary</a>
+      <a href="#channels">Channels</a>
+      <a href="#accounts">Accounts</a>
+      <a href="#timeline">Timeline</a>
+    </nav>
+    <span class="tag">Q4 2026 &middot; Internal draft</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="eyebrow">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      B2B campaign benchmarking
+    </span>
+    <h1>Q4 Benchmarking <span>Report</span><br>across four mid market accounts</h1>
+    <p class="sub">A read of channel efficiency for the quarter, built to hand each client three decisions
+      they can act on before the new year. Prepared for internal review ahead of the client deliverable.</p>
+    <div class="meta">
+      <span>Owner <b>Andrea Kaminski</b>, Marketing Analyst</span>
+      <span>Internal review <b>November 10, 2026</b></span>
+      <span>Client deliverable due <b>November 20, 2026</b></span>
+    </div>
+  </div>
+
+  <section id="summary">
+    <div class="stitle">
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+      <h2>Quarter at a glance</h2>
+    </div>
+    <div class="kpis">
+      <div class="kpi reveal"><div class="lab">Total impressions</div>
+        <div class="val" data-count="1707000" data-fmt="int">0</div>
+        <div class="dl up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg> 11.4% vs Q3</div>
+        <svg class="spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,32 18,28 36,30 54,18 72,20 90,8" fill="none" stroke="#4f8fe0" stroke-width="2.4"/></svg>
+      </div>
+      <div class="kpi reveal"><div class="lab">Total conversions</div>
+        <div class="val" data-count="937" data-fmt="int">0</div>
+        <div class="dl up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg> 6.8% vs Q3</div>
+        <svg class="spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,30 18,26 36,27 54,22 72,16 90,12" fill="none" stroke="#57b98a" stroke-width="2.4"/></svg>
+      </div>
+      <div class="kpi reveal"><div class="lab">Blended cost per lead</div>
+        <div class="val">$<span data-count="48.9" data-fmt="dec">0</span></div>
+        <div class="dl down"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 9l-6 6-6-6"/></svg> 4.1% better</div>
+        <svg class="spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,10 18,16 36,14 54,22 72,20 90,28" fill="none" stroke="#e0a94f" stroke-width="2.4"/></svg>
+      </div>
+      <div class="kpi reveal"><div class="lab">Best channel CTR</div>
+        <div class="val"><span data-count="8.0" data-fmt="dec">0</span>%</div>
+        <div class="dl up">Account C, email</div>
+        <svg class="spark" width="90" height="40" viewBox="0 0 90 40"><polyline points="0,34 18,30 36,24 54,18 72,10 90,4" fill="none" stroke="#9a7bd0" stroke-width="2.4"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="channels">
+    <div class="grid2">
+      <div class="panel reveal">
+        <h3>Click through rate by account</h3>
+        <p class="hint">Email leads the quarter by a wide margin. Display is the drag.</p>
+        <div class="bars">
+          <div class="bar-row"><span class="nm">Account C</span><div class="track"><div class="fill" data-w="100" style="background:linear-gradient(90deg,#57b98a,#78d3a6)"></div></div><span class="pv">8.0%</span></div>
+          <div class="bar-row"><span class="nm">Account A</span><div class="track"><div class="fill" data-w="27.5" style="background:linear-gradient(90deg,#4f8fe0,#6fa6ea)"></div></div><span class="pv">2.2%</span></div>
+          <div class="bar-row"><span class="nm">Account D</span><div class="track"><div class="fill" data-w="21.3" style="background:linear-gradient(90deg,#9a7bd0,#b299de)"></div></div><span class="pv">1.7%</span></div>
+          <div class="bar-row"><span class="nm">Account B</span><div class="track"><div class="fill" data-w="10" style="background:linear-gradient(90deg,#d97a5a,#e69577)"></div></div><span class="pv">0.8%</span></div>
+        </div>
+      </div>
+      <div class="panel reveal">
+        <h3>Conversion share</h3>
+        <p class="hint">Where the 937 conversions came from.</p>
+        <div class="donut-wrap">
+          <svg width="150" height="150" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.915" fill="none" stroke="#0f1b30" stroke-width="7"/>
+            <circle class="seg" cx="21" cy="21" r="15.915" fill="none" stroke="#4f8fe0" stroke-width="7" stroke-dasharray="33.3 66.7" stroke-dashoffset="25"/>
+            <circle class="seg" cx="21" cy="21" r="15.915" fill="none" stroke="#57b98a" stroke-width="7" stroke-dasharray="24.3 75.7" stroke-dashoffset="91.7"/>
+            <circle class="seg" cx="21" cy="21" r="15.915" fill="none" stroke="#9a7bd0" stroke-width="7" stroke-dasharray="27.3 72.7" stroke-dashoffset="67.4"/>
+            <circle class="seg" cx="21" cy="21" r="15.915" fill="none" stroke="#d97a5a" stroke-width="7" stroke-dasharray="15.1 84.9" stroke-dashoffset="40.1"/>
+            <text x="21" y="20.5" text-anchor="middle" font-size="6.5" font-weight="700" fill="#e8eefb">937</text>
+            <text x="21" y="26" text-anchor="middle" font-size="2.8" fill="#93a4c4">leads</text>
+          </svg>
+          <div class="legend">
+            <div class="li"><span class="sw" style="background:#4f8fe0"></span><b>Account A</b> &nbsp;312 &middot; 33%</div>
+            <div class="li"><span class="sw" style="background:#9a7bd0"></span><b>Account D</b> &nbsp;256 &middot; 27%</div>
+            <div class="li"><span class="sw" style="background:#57b98a"></span><b>Account C</b> &nbsp;228 &middot; 24%</div>
+            <div class="li"><span class="sw" style="background:#d97a5a"></span><b>Account B</b> &nbsp;141 &middot; 15%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="accounts">
+    <div class="panel reveal">
+      <div class="stitle" style="margin-top:0">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg></span>
+        <h2 style="font-size:17px">Account detail</h2>
+      </div>
+      <table>
+        <thead><tr><th>Account</th><th>Channel</th><th class="n">Impressions</th><th class="n">Clicks</th><th class="n">CTR</th><th class="n">Conversions</th><th class="n">Cost per lead</th><th>Read</th></tr></thead>
+        <tbody>
+          <tr><td><b>Account A</b></td><td>Paid search</td><td class="n">420,000</td><td class="n">9,240</td><td class="n">2.2%</td><td class="n">312</td><td class="n">$48.10</td><td><span class="pill p-mid">Hold</span></td></tr>
+          <tr><td><b>Account B</b></td><td>Display</td><td class="n">680,000</td><td class="n">5,440</td><td class="n">0.8%</td><td class="n">141</td><td class="n">$72.40</td><td><span class="pill p-bad">Trim</span></td></tr>
+          <tr><td><b>Account C</b></td><td>Email</td><td class="n">95,000</td><td class="n">7,600</td><td class="n">8.0%</td><td class="n">228</td><td class="n">$19.90</td><td><span class="pill p-good">Scale</span></td></tr>
+          <tr><td><b>Account D</b></td><td>Paid social</td><td class="n">512,000</td><td class="n">8,704</td><td class="n">1.7%</td><td class="n">256</td><td class="n">$55.30</td><td><span class="pill p-mid">Hold</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <div class="stitle">
+      <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+      <h2>Delivery timeline</h2>
+    </div>
+    <div class="panel reveal">
+      <div class="timeline">
+        <div class="tl"><span class="dot"></span><div class="d">February 2026</div><div class="t">Data pull and QA scoped</div><div class="x">Tracking cleaned, duplicate conversions removed, metric frame agreed.</div></div>
+        <div class="tl"><span class="dot"></span><div class="d">October 2026</div><div class="t">Draft dashboards and benchmarks</div><div class="x">First pass of the four account reads against category median and internal target.</div></div>
+        <div class="tl"><span class="dot"></span><div class="d">November 10, 2026</div><div class="t">Internal review with Tom Hadley</div><div class="x">Sign off on the narrative, then raise the MBA sponsorship conversation.</div></div>
+        <div class="tl"><span class="dot" style="background:#57b98a;box-shadow:0 0 0 4px rgba(87,185,138,.18)"></span><div class="d">November 20, 2026</div><div class="t">Client deliverable due</div><div class="x">Hard deadline. Dashboard plus written read, one deck per account.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap fl">
+    <span>Crestline Analytics &middot; Columbus, OH &middot; Internal working draft</span>
+    <span>Prepared by Andrea Kaminski</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  },{threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  function animateBars(){document.querySelectorAll('.fill').forEach(function(f){f.style.width=f.dataset.w+'%';});}
+  function count(el){
+    var target=parseFloat(el.dataset.count), fmt=el.dataset.fmt, t0=null, dur=1300;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1); var e=1-Math.pow(1-p,3);
+      var v=target*e;
+      el.textContent = fmt==='int' ? Math.round(v).toLocaleString('en-US') : v.toFixed(1);
+      if(p<1) requestAnimationFrame(step);
+    } requestAnimationFrame(step);
+  }
+  var started=false;
+  function kick(){ if(started)return; started=true; animateBars();
+    document.querySelectorAll('[data-count]').forEach(count); }
+  var kio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)kick();});},{threshold:.1});
+  kio.observe(document.getElementById('summary'));
+  setTimeout(kick,600);
+})();
+</script>
+</body>
+</html>
