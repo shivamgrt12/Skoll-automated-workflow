@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recovery Tracker</title>
+<style>
+  :root{
+    --bg:#0f1417; --card:#171f24; --card2:#1d272d; --ink:#e8eef1; --mute:#8fa3ad;
+    --teal:#3fb6a8; --teal2:#5fd0c2; --amber:#e0a23c; --red:#d76b5f; --line:#26333a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#13191d,#0f1417);position:sticky;top:0;z-index:20}
+  .bar{height:72px;display:flex;align-items:center;justify-content:space-between}
+  .who{display:flex;align-items:center;gap:14px}
+  .av{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--teal2));
+    display:grid;place-items:center;font-weight:bold;color:#08110f}
+  .who b{display:block;font-size:16px}.who span{font-size:13px;color:var(--mute)}
+  .upd{font-size:13px;color:var(--mute)}
+
+  .tabs{display:flex;gap:8px;margin:26px 0 22px;flex-wrap:wrap}
+  .tab{font-size:14px;padding:10px 20px;border-radius:24px;border:1px solid var(--line);background:transparent;
+    color:var(--mute);cursor:pointer;transition:.2s}
+  .tab.on,.tab:hover{background:var(--card2);color:var(--ink);border-color:var(--teal)}
+
+  h2{font-size:22px;margin-bottom:4px}
+  .sub{color:var(--mute);font-size:14px;margin-bottom:22px}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .kpi .lbl{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mute)}
+  .kpi .big{font-size:32px;font-weight:700;margin:6px 0 2px}
+  .kpi .chg{font-size:13px}
+  .up{color:var(--teal2)}.down{color:var(--red)}.flat{color:var(--amber)}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:22px}
+  .panel h3{font-size:17px;margin-bottom:2px}
+  .panel .note{font-size:13px;color:var(--mute);margin-bottom:18px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+
+  svg{width:100%;height:auto;display:block}
+  .leg{display:flex;gap:18px;font-size:13px;color:var(--mute);margin-top:10px;flex-wrap:wrap}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--mute);text-transform:uppercase;font-size:12px;letter-spacing:1px}
+  .pill{font-size:12px;padding:3px 10px;border-radius:14px}
+  .pill.good{background:rgba(63,182,168,.16);color:var(--teal2)}
+  .pill.watch{background:rgba(224,162,60,.16);color:var(--amber)}
+
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .bar-row .nm{width:130px;font-size:14px;color:var(--mute)}
+  .track{flex:1;height:14px;background:var(--card2);border-radius:8px;overflow:hidden}
+  .fill{height:100%;border-radius:8px;width:0;transition:width 1.1s ease}
+  .bar-row .vv{width:70px;text-align:right;font-size:14px}
+
+  .hidden{display:none}
+  footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line);margin-top:14px;padding:22px 0;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:780px){.cards{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="who">
+      <div class="av">CF</div>
+      <div><b>Recovery Tracker</b><span>Charles Ferguson &bull; right knee and blood pressure</span></div>
+    </div>
+    <div class="upd">Updated February 17, 2026</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab on" data-t="knee">Knee rehab</button>
+    <button class="tab" data-t="bp">Blood pressure</button>
+    <button class="tab" data-t="walk">Walking</button>
+  </div>
+
+  <!-- KNEE -->
+  <section id="knee">
+    <h2>Right knee, conservative rehab</h2>
+    <p class="sub">Partial meniscus tear confirmed by imaging, December 2025. Twice-weekly therapy with Jake Rosen, home program daily.</p>
+    <div class="cards">
+      <div class="kpi"><div class="lbl">Knee flexion</div><div class="big" id="k1">110&deg;</div><div class="chg up">Up 18 degrees since start</div></div>
+      <div class="kpi"><div class="lbl">Single-leg stance</div><div class="big" id="k2">8s</div><div class="chg up">Up from 8 seconds</div></div>
+      <div class="kpi"><div class="lbl">Standing pain</div><div class="big">Mild</div><div class="chg up">Down from moderate</div></div>
+      <div class="kpi"><div class="lbl">Sessions logged</div><div class="big">5</div><div class="chg flat">Jan to Feb 2026</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Knee flexion progress</h3>
+      <div class="note">Degrees of flexion measured at each session. Goal line at 130 degrees.</div>
+      <svg viewBox="0 0 720 240" id="flexChart" role="img" aria-label="Knee flexion line chart"></svg>
+      <div class="leg"><span><span class="dot" style="background:var(--teal2)"></span>Measured flexion</span><span><span class="dot" style="background:var(--amber)"></span>Goal, 130 degrees</span></div>
+    </div>
+
+    <div class="panel">
+      <h3>Session log</h3>
+      <div class="note">Therapy notes from Crestwood Physical Therapy Associates.</div>
+      <table>
+        <thead><tr><th>Date</th><th>Focus</th><th>Note</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>January 13, 2026</td><td>Baseline</td><td>Reduced swelling after injection</td><td><span class="pill good">On plan</span></td></tr>
+          <tr><td>January 20, 2026</td><td>Range of motion</td><td>Flexion improving</td><td><span class="pill good">On plan</span></td></tr>
+          <tr><td>January 29, 2026</td><td>Balance</td><td>Added single-leg work</td><td><span class="pill good">On plan</span></td></tr>
+          <tr><td>February 5, 2026</td><td>Loading</td><td>Tolerating standing longer at work</td><td><span class="pill good">On plan</span></td></tr>
+          <tr><td>February 12, 2026</td><td>Strength</td><td>Less morning stiffness</td><td><span class="pill good">On plan</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BP -->
+  <section id="bp" class="hidden">
+    <h2>Blood pressure, morning log</h2>
+    <p class="sub">Logged at 5:30 AM before shift. Lisinopril 10mg taken with breakfast each day.</p>
+    <div class="cards">
+      <div class="kpi"><div class="lbl">Average systolic</div><div class="big">129</div><div class="chg flat">Borderline, watching</div></div>
+      <div class="kpi"><div class="lbl">Average diastolic</div><div class="big">82</div><div class="chg flat">Within range</div></div>
+      <div class="kpi"><div class="lbl">Average pulse</div><div class="big">70</div><div class="chg up">Resting, steady</div></div>
+      <div class="kpi"><div class="lbl">Days logged</div><div class="big">8</div><div class="chg flat">Early January</div></div>
+    </div>
+    <div class="panel">
+      <h3>Systolic and diastolic, by morning</h3>
+      <div class="note">Each reading taken at 5:30 AM. Shaded band marks the target range.</div>
+      <svg viewBox="0 0 720 260" id="bpChart" role="img" aria-label="Blood pressure chart"></svg>
+      <div class="leg"><span><span class="dot" style="background:var(--red)"></span>Systolic</span><span><span class="dot" style="background:var(--teal2)"></span>Diastolic</span><span><span class="dot" style="background:var(--amber)"></span>Pulse</span></div>
+    </div>
+  </section>
+
+  <!-- WALK -->
+  <section id="walk" class="hidden">
+    <h2>Post-therapy walking</h2>
+    <p class="sub">Short walks after each session, as the orthopedist recommended for meniscus recovery. Minutes per walk.</p>
+    <div class="cards">
+      <div class="kpi"><div class="lbl">Longest walk</div><div class="big">34m</div><div class="chg up">Up from 12 minutes</div></div>
+      <div class="kpi"><div class="lbl">Weekly total</div><div class="big">148m</div><div class="chg up">Trending up</div></div>
+      <div class="kpi"><div class="lbl">Walks logged</div><div class="big">12</div><div class="chg flat">Jan to Feb 2026</div></div>
+      <div class="kpi"><div class="lbl">Comfort</div><div class="big">Good</div><div class="chg up">No swelling after</div></div>
+    </div>
+    <div class="panel">
+      <h3>Walk length by week</h3>
+      <div class="note">Average minutes per walk, week over week. Bars animate on load.</div>
+      <div id="walkBars"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Personal health log, kept by Charles Ferguson. Shared only with named providers.</span>
+    <span>Referring physician: Dr. Alan Westbrook, Crestwood Orthopedic Center</span>
+  </footer>
+</div>
+
+<script>
+  // tabs
+  var tabs=document.querySelectorAll('.tab'),secs={knee:document.getElementById('knee'),bp:document.getElementById('bp'),walk:document.getElementById('walk')};
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.remove('on');});t.classList.add('on');
+    for(var k in secs)secs[k].classList.add('hidden');
+    secs[t.dataset.t].classList.remove('hidden');
+    if(t.dataset.t==='walk')drawBars();
+  });});
+
+  // helpers
+  function path(points){return points.map(function(p,i){return (i?'L':'M')+p[0]+' '+p[1];}).join(' ');}
+
+  // flexion line chart
+  (function(){
+    var data=[110,116,121,125,128];
+    var labels=['Jan 13','Jan 20','Jan 29','Feb 5','Feb 12'];
+    var W=720,H=240,pad=44, minY=100,maxY=135;
+    var svg=document.getElementById('flexChart');var s='';
+    function x(i){return pad+i*((W-pad*2)/(data.length-1));}
+    function y(v){return H-pad-((v-minY)/(maxY-minY))*(H-pad*2);}
+    // grid
+    for(var g=100;g<=135;g+=5){var yy=y(g);s+='<line x1="'+pad+'" y1="'+yy+'" x2="'+(W-pad)+'" y2="'+yy+'" stroke="#26333a" stroke-width="1"/>';
+      s+='<text x="'+(pad-8)+'" y="'+(yy+4)+'" fill="#8fa3ad" font-size="11" text-anchor="end">'+g+'</text>';}
+    // goal
+    s+='<line x1="'+pad+'" y1="'+y(130)+'" x2="'+(W-pad)+'" y2="'+y(130)+'" stroke="#e0a23c" stroke-width="2" stroke-dasharray="6 5"/>';
+    var pts=data.map(function(v,i){return [x(i),y(v)];});
+    s+='<path d="'+path(pts)+'" fill="none" stroke="#5fd0c2" stroke-width="3"/>';
+    // area
+    s+='<path d="'+path(pts)+' L '+x(data.length-1)+' '+(H-pad)+' L '+pad+' '+(H-pad)+' Z" fill="rgba(95,208,194,.12)"/>';
+    pts.forEach(function(p,i){s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#5fd0c2"/>';
+      s+='<text x="'+p[0]+'" y="'+(p[1]-12)+'" fill="#e8eef1" font-size="12" text-anchor="middle">'+data[i]+'</text>';
+      s+='<text x="'+p[0]+'" y="'+(H-pad+20)+'" fill="#8fa3ad" font-size="11" text-anchor="middle">'+labels[i]+'</text>';});
+    svg.innerHTML=s;
+  })();
+
+  // BP grouped bars
+  (function(){
+    var sys=[128,131,126,134,129,127,133,125],dia=[82,84,80,86,81,79,85,78],pul=[70,72,68,74,71,69,73,67];
+    var labels=['1/5','1/6','1/7','1/8','1/9','1/12','1/13','1/14'];
+    var W=720,H=260,pad=40,minY=60,maxY=140;
+    var svg=document.getElementById('bpChart');var s='';
+    function y(v){return H-pad-((v-minY)/(maxY-minY))*(H-pad*2);}
+    // target band 120-130 sys reference
+    s+='<rect x="'+pad+'" y="'+y(130)+'" width="'+(W-pad*2)+'" height="'+(y(120)-y(130))+'" fill="rgba(63,182,168,.10)"/>';
+    for(var g=60;g<=140;g+=20){var yy=y(g);s+='<line x1="'+pad+'" y1="'+yy+'" x2="'+(W-pad)+'" y2="'+yy+'" stroke="#26333a"/>';
+      s+='<text x="'+(pad-8)+'" y="'+(yy+4)+'" fill="#8fa3ad" font-size="11" text-anchor="end">'+g+'</text>';}
+    var n=sys.length,slot=(W-pad*2)/n,bw=slot/4;
+    for(var i=0;i<n;i++){
+      var cx=pad+i*slot+slot/2;
+      s+='<rect x="'+(cx-bw-1)+'" y="'+y(sys[i])+'" width="'+bw+'" height="'+((H-pad)-y(sys[i]))+'" rx="2" fill="#d76b5f"/>';
+      s+='<rect x="'+(cx+1)+'" y="'+y(dia[i])+'" width="'+bw+'" height="'+((H-pad)-y(dia[i]))+'" rx="2" fill="#5fd0c2"/>';
+      s+='<circle cx="'+cx+'" cy="'+y(pul[i])+'" r="3.5" fill="#e0a23c"/>';
+      s+='<text x="'+cx+'" y="'+(H-pad+18)+'" fill="#8fa3ad" font-size="11" text-anchor="middle">'+labels[i]+'</text>';
+    }
+    svg.innerHTML=s;
+  })();
+
+  // walking bars (animated)
+  var barsDrawn=false;
+  function drawBars(){
+    if(barsDrawn)return;barsDrawn=true;
+    var weeks=[['Week of Jan 5',12],['Week of Jan 12',18],['Week of Jan 19',24],['Week of Jan 26',28],['Week of Feb 2',31],['Week of Feb 9',34]];
+    var max=36,host=document.getElementById('walkBars');
+    weeks.forEach(function(w){
+      var row=document.createElement('div');row.className='bar-row';
+      row.innerHTML='<div class="nm">'+w[0]+'</div><div class="track"><div class="fill" style="background:linear-gradient(90deg,#3fb6a8,#5fd0c2)"></div></div><div class="vv">'+w[1]+' min</div>';
+      host.appendChild(row);
+      var f=row.querySelector('.fill');
+      setTimeout(function(){f.style.width=(w[1]/max*100)+'%';},60);
+    });
+  }
+
+  // animate knee KPI counters
+  function up(id,to,suf){var el=document.getElementById(id),n=Math.max(0,to-20);
+    var t=setInterval(function(){n++;if(n>=to){n=to;clearInterval(t);}el.innerHTML=n+suf;},40);}
+  window.addEventListener('load',function(){up('k1',128,'&deg;');up('k2',22,'s');});
+</script>
+</body>
+</html>

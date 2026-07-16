@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>American Majors Season Board</title>
+<style>
+  :root{
+    --bg:#f4f6f3; --ink:#1c2a1f; --green:#2f6b3c; --green2:#3f8a4d; --clay:#c0613a;
+    --gold:#d9a531; --card:#ffffff; --line:#dde5dc; --mute:#6c7c6e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Trebuchet MS','Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+
+  header{background:linear-gradient(120deg,var(--green),var(--green2));color:#fff;position:relative;overflow:hidden}
+  .seams{position:absolute;right:-40px;top:-40px;width:220px;height:220px;border:6px solid rgba(255,255,255,.12);
+    border-radius:50%}
+  .seams::after{content:"";position:absolute;inset:26px;border:6px solid rgba(255,255,255,.10);border-radius:50%}
+  .htop{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:bold;font-size:18px}
+  .ball{width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--clay);font-weight:bold}
+  .hnav{display:flex;gap:20px;font-size:14px}
+  .hnav button{background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;font-size:14px;
+    padding:6px 2px;border-bottom:2px solid transparent;transition:.2s}
+  .hnav button.on,.hnav button:hover{color:#fff;border-color:var(--gold)}
+  .hero{padding:30px 0 38px;position:relative}
+  .hero h1{font-size:30px;margin-bottom:6px}
+  .hero p{opacity:.92}
+
+  section{padding:34px 0}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-58px;position:relative;z-index:5}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+    box-shadow:0 6px 20px rgba(31,52,33,.08)}
+  .kpi .lbl{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mute)}
+  .kpi .big{font-size:30px;font-weight:bold;color:var(--green);margin-top:4px}
+
+  h2{font-size:21px;margin-bottom:3px}
+  .sub{color:var(--mute);font-size:14px;margin-bottom:20px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:22px;
+    box-shadow:0 4px 16px rgba(31,52,33,.05)}
+
+  .controls{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .controls button{font-size:13px;padding:8px 16px;border-radius:20px;border:1px solid var(--line);
+    background:transparent;cursor:pointer;color:var(--mute);transition:.2s}
+  .controls button.on{background:var(--green);color:#fff;border-color:var(--green)}
+
+  svg{width:100%;height:auto;display:block}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{background:#eef3ec;color:var(--green);text-transform:uppercase;font-size:12px;letter-spacing:1px;cursor:pointer;user-select:none}
+  th:hover{background:#e3ebe1}
+  tbody tr:hover{background:#f6faf5}
+  td.n,th.n{text-align:right}
+  .rec{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .rec .b{background:#eef3ec;border-radius:10px;padding:12px 18px;font-size:14px}
+  .rec .b b{color:var(--green);font-size:20px;display:block}
+
+  .hidden{display:none}
+  .games td .w{color:var(--green2);font-weight:bold}.games td .l{color:var(--clay);font-weight:bold}
+  footer{background:var(--ink);color:#c7d3c5;padding:30px 0;font-size:14px}
+  .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  @media(max-width:780px){.kpis{grid-template-columns:1fr 1fr}.hnav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="seams"></div>
+  <div class="wrap">
+    <div class="htop">
+      <div class="brand"><span class="ball">&#9918;</span> Crestwood American Majors</div>
+      <nav class="hnav">
+        <button class="on" data-v="hitting">Hitting</button>
+        <button data-v="games">Games</button>
+        <button data-v="roster">Roster</button>
+      </nav>
+    </div>
+    <div class="hero">
+      <h1>2025 Season Board</h1>
+      <p>Ages eleven and twelve &bull; Head coach Bill Hartman, assistant coach Charles Ferguson</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Team hits</div><div class="big" id="kh">0</div></div>
+    <div class="kpi"><div class="lbl">Runs scored</div><div class="big" id="kr">0</div></div>
+    <div class="kpi"><div class="lbl">RBIs</div><div class="big" id="kb">0</div></div>
+    <div class="kpi"><div class="lbl">Team average</div><div class="big" id="ka">.000</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- HITTING -->
+  <section id="hitting">
+    <div class="panel">
+      <h2>Hitting leaders</h2>
+      <div class="sub">Player totals across the spring season. Switch the metric to re-sort the chart.</div>
+      <div class="controls">
+        <button class="on" data-m="hits">Hits</button>
+        <button data-m="rbis">RBIs</button>
+        <button data-m="runs">Runs</button>
+      </div>
+      <svg viewBox="0 0 720 360" id="hitChart" role="img" aria-label="Hitting leaders bar chart"></svg>
+    </div>
+
+    <div class="panel">
+      <h2>Full hitting table</h2>
+      <div class="sub">Click any column header to sort.</div>
+      <table id="statTable">
+        <thead><tr>
+          <th data-k="name">Player</th><th class="n" data-k="g">G</th><th class="n" data-k="ab">AB</th>
+          <th class="n" data-k="h">H</th><th class="n" data-k="r">R</th><th class="n" data-k="rbi">RBI</th><th class="n" data-k="avg">AVG</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <section id="games" class="hidden">
+    <div class="panel">
+      <h2>Game results</h2>
+      <div class="sub">Final scores from the spring schedule.</div>
+      <div class="rec">
+        <div class="b"><b>4</b> Wins</div>
+        <div class="b"><b>2</b> Losses</div>
+        <div class="b"><b>6</b> Games</div>
+        <div class="b"><b>.667</b> Win rate</div>
+      </div>
+    </div>
+    <div class="panel games">
+      <table>
+        <thead><tr><th>Date</th><th>Opponent</th><th>Site</th><th>Result</th><th class="n">Score</th></tr></thead>
+        <tbody>
+          <tr><td>April 12, 2025</td><td>Maple Heights</td><td>Away</td><td><span class="w">Win</span></td><td class="n">8 to 5</td></tr>
+          <tr><td>April 26, 2025</td><td>Parma West</td><td>Home</td><td><span class="w">Win</span></td><td class="n">6 to 3</td></tr>
+          <tr><td>May 10, 2025</td><td>Brookpark</td><td>Away</td><td><span class="l">Loss</span></td><td class="n">4 to 7</td></tr>
+          <tr><td>May 17, 2025</td><td>Garfield</td><td>Home</td><td><span class="w">Win</span></td><td class="n">9 to 2</td></tr>
+          <tr><td>May 31, 2025</td><td>Maple Heights</td><td>Home</td><td><span class="l">Loss</span></td><td class="n">5 to 6</td></tr>
+          <tr><td>June 7, 2025</td><td>Brookpark</td><td>Away</td><td><span class="w">Win</span></td><td class="n">7 to 4</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ROSTER -->
+  <section id="roster" class="hidden">
+    <div class="panel">
+      <h2>Roster and contact</h2>
+      <div class="sub">Awards banquet recognizing every player is set for October 3, 2026.</div>
+      <table>
+        <thead><tr><th>ID</th><th>Player</th><th class="n">Games</th><th>Note</th></tr></thead>
+        <tbody id="rosterBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div style="height:20px"></div>
+</div>
+
+<footer>
+  <div class="wrap frow">
+    <span>Crestwood American Majors &bull; managed by the coaching staff</span>
+    <span>Coach contact: Charles Ferguson, (440) 555-0137</span>
+  </div>
+</footer>
+
+<script>
+  var players=[
+    {name:"Mason T",g:14,ab:41,h:15,r:12,rbi:14},
+    {name:"Jake R",g:14,ab:38,h:13,r:9,rbi:11},
+    {name:"Liam K",g:14,ab:39,h:12,r:10,rbi:9},
+    {name:"Aiden M",g:14,ab:37,h:11,r:9,rbi:10},
+    {name:"Owen P",g:13,ab:35,h:10,r:7,rbi:8},
+    {name:"Lucas H",g:13,ab:34,h:10,r:8,rbi:9},
+    {name:"Noah B",g:13,ab:33,h:9,r:8,rbi:7},
+    {name:"Cole D",g:12,ab:30,h:8,r:6,rbi:5},
+    {name:"Caleb W",g:12,ab:28,h:7,r:5,rbi:6},
+    {name:"Ethan S",g:11,ab:26,h:6,r:4,rbi:5}
+  ];
+  players.forEach(function(p){p.avg=(p.h/p.ab);});
+
+  // nav
+  var navs=document.querySelectorAll('.hnav button'),views={hitting:document.getElementById('hitting'),games:document.getElementById('games'),roster:document.getElementById('roster')};
+  navs.forEach(function(b){b.addEventListener('click',function(){
+    navs.forEach(function(x){x.classList.remove('on');});b.classList.add('on');
+    for(var k in views)views[k].classList.add('hidden');
+    views[b.dataset.v].classList.remove('hidden');
+  });});
+
+  // chart
+  var metric='hits';
+  var mcontrols=document.querySelectorAll('.controls button');
+  mcontrols.forEach(function(b){b.addEventListener('click',function(){
+    mcontrols.forEach(function(x){x.classList.remove('on');});b.classList.add('on');
+    metric=b.dataset.m;drawChart();
+  });});
+  function drawChart(){
+    var key=metric==='hits'?'h':metric==='rbis'?'rbi':'r';
+    var rows=players.slice().sort(function(a,b){return b[key]-a[key];});
+    var W=720,H=360,padL=70,padR=20,padT=10,padB=20;
+    var max=Math.max.apply(null,rows.map(function(r){return r[key];}));
+    var bh=(H-padT-padB)/rows.length, bar=bh*0.62;
+    var svg=document.getElementById('hitChart');var s='';
+    rows.forEach(function(r,i){
+      var y=padT+i*bh+(bh-bar)/2;
+      var w=(r[key]/max)*(W-padL-padR);
+      s+='<text x="'+(padL-10)+'" y="'+(y+bar/2+4)+'" fill="#1c2a1f" font-size="13" text-anchor="end">'+r.name+'</text>';
+      s+='<rect x="'+padL+'" y="'+y+'" width="0" height="'+bar+'" rx="5" fill="#3f8a4d"><animate attributeName="width" from="0" to="'+w+'" dur="0.8s" fill="freeze"/></rect>';
+      s+='<text x="'+(padL+w+8)+'" y="'+(y+bar/2+4)+'" fill="#2f6b3c" font-size="13" font-weight="bold">'+r[key]+'</text>';
+    });
+    svg.innerHTML=s;
+  }
+
+  // table
+  var sortKey='h',sortDir=-1;
+  function drawTable(){
+    var rows=players.slice().sort(function(a,b){
+      var va=a[sortKey],vb=b[sortKey];
+      if(typeof va==='string')return va.localeCompare(vb)*sortDir;
+      return (va-vb)*sortDir;
+    });
+    var tb=document.querySelector('#statTable tbody');tb.innerHTML='';
+    rows.forEach(function(p){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+p.name+'</td><td class="n">'+p.g+'</td><td class="n">'+p.ab+'</td><td class="n">'+p.h+
+        '</td><td class="n">'+p.r+'</td><td class="n">'+p.rbi+'</td><td class="n">'+p.avg.toFixed(3).replace(/^0/,'')+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.querySelectorAll('#statTable th').forEach(function(th){
+    th.addEventListener('click',function(){
+      var k=th.dataset.k;
+      if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==='name')?1:-1;}
+      drawTable();
+    });
+  });
+
+  // roster
+  (function(){
+    var tb=document.getElementById('rosterBody');
+    players.forEach(function(p,i){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>CM-'+String((i+3)*3).padStart(2,'0')+'</td><td>'+p.name+'</td><td class="n">'+p.g+'</td><td>Every player bats and fields</td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  // kpi counters
+  function up(id,to,fmt){var el=document.getElementById(id),n=Math.max(0,to-30);
+    var t=setInterval(function(){n++;if(n>=to){n=to;clearInterval(t);}el.textContent=fmt?fmt(n):n;},30);}
+  window.addEventListener('load',function(){
+    drawChart();drawTable();
+    up('kh',101);up('kr',78);up('kb',84);
+    document.getElementById('ka').textContent='.296';
+  });
+</script>
+</body>
+</html>

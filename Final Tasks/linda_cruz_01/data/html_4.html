@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Saturday Clinic</title>
+<style>
+  :root{
+    --terra:#c75b39;--terra2:#e0794f;--marig:#f3a83c;--green:#3f8f5e;--deep:#7a3322;
+    --cream:#fdf6ec;--card:#fff;--ink:#33231d;--mute:#7a655c;--line:#ecdfca;--teal:#2a8f88;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .langtog{position:fixed;top:14px;right:16px;z-index:50;display:flex;border:1.5px solid var(--terra);
+    border-radius:20px;overflow:hidden;font-size:12px;font-weight:700;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+  .langtog button{border:none;background:#fff;color:var(--terra);padding:6px 13px;cursor:pointer;font-family:inherit}
+  .langtog button.on{background:var(--terra);color:#fff}
+  .hero{position:relative;overflow:hidden;color:#fff;padding:62px 24px 70px;text-align:center;
+    background:
+      radial-gradient(circle at 18% 22%,rgba(243,168,60,.5) 0,transparent 28%),
+      radial-gradient(circle at 82% 70%,rgba(63,143,94,.45) 0,transparent 30%),
+      linear-gradient(135deg,var(--terra),var(--deep))}
+  .hero .papel{position:absolute;top:0;left:0;width:100%;height:14px;
+    background:repeating-linear-gradient(90deg,var(--marig) 0 26px,var(--green) 26px 52px,var(--teal) 52px 78px,var(--terra2) 78px 104px)}
+  .hero .w{max-width:720px;margin:0 auto;position:relative;z-index:2}
+  .hero .eye{letter-spacing:3px;font-size:12.5px;text-transform:uppercase;color:#ffe6c9;font-weight:700}
+  .hero h1{font-size:42px;margin:14px 0 10px;line-height:1.12}
+  .hero p{font-size:18px;color:#ffe9d6;max-width:560px;margin:0 auto 20px}
+  .when{display:inline-flex;gap:0;border-radius:14px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.22);margin-top:6px}
+  .when div{background:#fff;color:var(--ink);padding:14px 22px;text-align:center}
+  .when div+div{border-left:1px solid var(--line)}
+  .when .big{font-size:22px;font-weight:800;color:var(--terra);display:block}
+  .when .sm{font-size:11.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+  .btn{display:inline-block;background:var(--marig);color:#5a3410;font-weight:800;padding:13px 30px;border-radius:28px;
+    border:none;cursor:pointer;transition:.25s;box-shadow:0 8px 22px rgba(243,168,60,.35);font-family:inherit;font-size:15px;margin-top:22px}
+  .btn:hover{background:#ffbb52;transform:translateY(-2px)}
+  .sect{max-width:1000px;margin:0 auto;padding:52px 22px}
+  .sect h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--terra);text-align:center}
+  .sect h3{font-size:26px;text-align:center;margin:8px 0 8px;color:var(--deep)}
+  .lead{text-align:center;color:var(--mute);max-width:600px;margin:0 auto 32px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px;transition:.25s;
+    box-shadow:0 4px 13px rgba(122,51,34,.06);border-bottom:4px solid var(--marig)}
+  .card:nth-child(2n){border-bottom-color:var(--green)}.card:nth-child(3n){border-bottom-color:var(--teal)}
+  .card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(122,51,34,.14)}
+  .card .ic{font-size:26px}.card h4{margin:9px 0 6px;font-size:16px;color:var(--deep)}.card p{font-size:13.5px;color:var(--mute)}
+  .stats{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin-top:8px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px 28px;text-align:center;min-width:160px;
+    box-shadow:0 4px 13px rgba(122,51,34,.06)}
+  .stat .n{font-size:34px;font-weight:800;color:var(--terra)}.stat .l{font-size:12.5px;color:var(--mute)}
+  .band{background:linear-gradient(135deg,#1f6f5f,var(--teal));color:#eafaf6}
+  .band .sect{padding:44px 22px}
+  .qa{max-width:740px;margin:0 auto}
+  .qitem{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;margin-bottom:11px;overflow:hidden}
+  .qitem button{width:100%;text-align:left;background:none;border:none;color:#fff;font-size:15px;font-weight:700;
+    padding:15px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit}
+  .qitem .a{max-height:0;overflow:hidden;transition:max-height .35s ease;color:#cdeee7;font-size:14px}
+  .qitem .a p{padding:0 18px 15px}
+  .qitem.open .a{max-height:200px}
+  .qitem .chev{transition:.3s}.qitem.open .chev{transform:rotate(180deg)}
+  form{max-width:540px;margin:0 auto;background:#fff;border-radius:16px;padding:28px;border:1px solid var(--line);
+    box-shadow:0 10px 30px rgba(122,51,34,.1)}
+  .fg{margin-bottom:15px}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--deep)}
+  input,select{width:100%;padding:11px 13px;border:1.5px solid #e3d6c2;border-radius:9px;font-size:14px;font-family:inherit;background:#fdfbf6;transition:.2s}
+  input:focus,select:focus{outline:none;border-color:var(--terra);background:#fff}
+  .err{border-color:var(--terra)!important;background:#fdf1ec!important}
+  .emsg{color:var(--terra);font-size:12px;margin-top:5px;display:none}.emsg.show{display:block}
+  .ok-box{display:none;text-align:center;padding:24px 10px}.ok-box.show{display:block}
+  .ok-box .ring{width:62px;height:62px;border-radius:50%;border:3px solid var(--green);display:grid;place-items:center;margin:0 auto 14px;font-size:30px;color:var(--green)}
+  footer{background:#5a2a1c;color:#e8c9b6;padding:28px 24px;font-size:13px;text-align:center}
+  footer b{color:#fff}
+</style>
+</head>
+<body>
+<div class="langtog"><button id="b-en" class="on">EN</button><button id="b-es">ES</button></div>
+
+<div class="hero">
+  <div class="papel"></div>
+  <div class="w">
+    <div class="eye" data-en="Little Stars Pediatrics presents" data-es="Little Stars Pediatrics presenta">Little Stars Pediatrics presents</div>
+    <h1 data-en="The Free Saturday Children's Clinic" data-es="La Clinica Infantil Gratuita de los Sabados">The Free Saturday Children's Clinic</h1>
+    <p data-en="No insurance. No appointment. No cost. Quality pediatric care for children whose families are between coverage." data-es="Sin seguro. Sin cita. Sin costo. Atencion pediatrica de calidad para ninos cuyas familias estan entre coberturas.">No insurance. No appointment. No cost. Quality pediatric care for children whose families are between coverage.</p>
+    <div class="when">
+      <div><span class="big" data-en="Sat, Oct 17" data-es="Sab, 17 Oct">Sat, Oct 17</span><span class="sm">2026</span></div>
+      <div><span class="big">9 AM - 1 PM</span><span class="sm" data-en="Walk in anytime" data-es="Llegue a cualquier hora">Walk in anytime</span></div>
+      <div><span class="big" data-en="74th St" data-es="Calle 74">74th St</span><span class="sm">Jackson Heights</span></div>
+    </div>
+    <br><a class="btn" href="#rsvp" data-en="Let us know you are coming" data-es="Avisenos que viene">Let us know you are coming</a>
+  </div>
+</div>
+
+<section class="sect">
+  <h2 data-en="What we offer" data-es="Lo que ofrecemos">What we offer</h2>
+  <h3 data-en="A full pediatric visit, at no cost" data-es="Una visita pediatrica completa, sin costo">A full pediatric visit, at no cost</h3>
+  <p class="lead" data-en="The same care our patient families get, on a Saturday, free for the day." data-es="La misma atencion que reciben nuestras familias, un sabado, gratis por el dia.">The same care our patient families get, on a Saturday, free for the day.</p>
+  <div class="cards">
+    <div class="card"><div class="ic">&#127869;</div><h4 data-en="Well-child checks" data-es="Revisiones del nino sano">Well-child checks</h4><p data-en="Growth, development, and a head-to-toe exam." data-es="Crecimiento, desarrollo y un examen completo.">Growth, development, and a head-to-toe exam.</p></div>
+    <div class="card"><div class="ic">&#128137;</div><h4 data-en="Catch-up shots" data-es="Vacunas atrasadas">Catch-up shots</h4><p data-en="Free immunizations to get your child back on schedule." data-es="Vacunas gratuitas para poner a su nino al dia.">Free immunizations to get your child back on schedule.</p></div>
+    <div class="card"><div class="ic">&#128203;</div><h4 data-en="School and sports forms" data-es="Formularios de escuela">School and sports forms</h4><p data-en="Bring the form, leave with it signed." data-es="Traiga el formulario y salga con el firmado.">Bring the form, leave with it signed.</p></div>
+    <div class="card"><div class="ic">&#129658;</div><h4 data-en="Sick visits" data-es="Visitas por enfermedad">Sick visits</h4><p data-en="Coughs, fevers, rashes, and the worries in between." data-es="Tos, fiebre, sarpullidos y las dudas entre medio.">Coughs, fevers, rashes, and the worries in between.</p></div>
+    <div class="card"><div class="ic">&#127757;</div><h4 data-en="Interpreters on site" data-es="Interpretes presentes">Interpreters on site</h4><p data-en="English, Spanish, and a network for other languages." data-es="Ingles, Espanol y una red para otros idiomas.">English, Spanish, and a network for other languages.</p></div>
+    <div class="card"><div class="ic">&#128172;</div><h4 data-en="Help finding coverage" data-es="Ayuda con la cobertura">Help finding coverage</h4><p data-en="We can point you toward Medicaid and CHIP enrollment." data-es="Le orientamos hacia la inscripcion en Medicaid y CHIP.">We can point you toward Medicaid and CHIP enrollment.</p></div>
+  </div>
+</section>
+
+<section class="sect" style="padding-top:0">
+  <div class="stats">
+    <div class="stat"><div class="n" id="s1">0</div><div class="l" data-en="children seen last clinic" data-es="ninos atendidos">children seen last clinic</div></div>
+    <div class="stat"><div class="n" id="s2">0</div><div class="l" data-en="free shots given" data-es="vacunas gratis dadas">free shots given</div></div>
+    <div class="stat"><div class="n">$0</div><div class="l" data-en="charged to families" data-es="cobrado a familias">charged to families</div></div>
+    <div class="stat"><div class="n" id="s4">0</div><div class="l" data-en="clinics since 2021" data-es="clinicas desde 2021">clinics since 2021</div></div>
+  </div>
+</section>
+
+<div class="band">
+  <section class="sect">
+    <h2 style="color:#ffe6c9" data-en="Questions" data-es="Preguntas">Questions</h2>
+    <h3 style="color:#fff" data-en="Before you come" data-es="Antes de venir">Before you come</h3>
+    <div class="qa" id="qa"></div>
+  </section>
+</div>
+
+<section class="sect" id="rsvp">
+  <h2 data-en="Save your spot" data-es="Aparte su lugar">Save your spot</h2>
+  <h3 data-en="Tell us you are coming" data-es="Avisenos que viene">Tell us you are coming</h3>
+  <p class="lead" data-en="Walk-ins are always welcome. A quick note just helps us plan the morning." data-es="Siempre puede llegar sin avisar. Una nota breve nos ayuda a planear la manana.">Walk-ins are always welcome. A quick note just helps us plan the morning.</p>
+  <form id="form" novalidate>
+    <div class="fg"><label data-en="Parent or guardian name" data-es="Nombre del padre o tutor">Parent or guardian name</label>
+      <input id="nm" type="text"><div class="emsg" id="e-nm" data-en="Please enter a name." data-es="Por favor escriba un nombre.">Please enter a name.</div></div>
+    <div class="fg"><label data-en="How many children" data-es="Cuantos ninos">How many children</label>
+      <select id="ch"><option value="">--</option><option>1</option><option>2</option><option>3</option><option data-en="4 or more" data-es="4 o mas">4 or more</option></select>
+      <div class="emsg" id="e-ch" data-en="Choose a number." data-es="Elija un numero.">Choose a number.</div></div>
+    <div class="fg"><label data-en="Language you prefer" data-es="Idioma que prefiere">Language you prefer</label>
+      <select id="lg2"><option value="">--</option><option>English</option><option>Espanol</option><option data-en="Other (we will arrange)" data-es="Otro (lo arreglamos)">Other (we will arrange)</option></select>
+      <div class="emsg" id="e-lg2" data-en="Choose one." data-es="Elija una opcion.">Choose one.</div></div>
+    <button class="btn" type="submit" style="width:100%;margin-top:6px" data-en="Reserve a spot" data-es="Reservar un lugar">Reserve a spot</button>
+  </form>
+  <div class="ok-box" id="ok">
+    <div class="ring">&#10003;</div>
+    <h3 data-en="See you Saturday" data-es="Nos vemos el sabado">See you Saturday</h3>
+    <p class="lead" data-en="You are on the list. Come to 74th Street any time between 9 and 1. Bring any shot records and school forms you have." data-es="Esta en la lista. Venga a la Calle 74 entre 9 y 1. Traiga registros de vacunas y formularios escolares si los tiene.">You are on the list. Come to 74th Street any time between 9 and 1. Bring any shot records and school forms you have.</p>
+  </div>
+</section>
+
+<footer>
+  <b>Little Stars Pediatrics</b> &middot; 37-XX 74th Street, Jackson Heights, NY 11372<br>
+  <span data-en="A quarterly gift to the neighborhood, since 2021." data-es="Un regalo trimestral al vecindario, desde 2021.">A quarterly gift to the neighborhood, since 2021.</span>
+</footer>
+
+<script>
+  var QA=[
+    {q:{en:"Do I need insurance or an appointment?",es:"Necesito seguro o cita?"},a:{en:"No. The clinic is free and walk-in. Just come during the hours and we will see your child.",es:"No. La clinica es gratis y sin cita. Solo venga en el horario y atenderemos a su nino."}},
+    {q:{en:"What should I bring?",es:"Que debo traer?"},a:{en:"Any vaccine records, a school or sports form if you have one, and a list of any medicines your child takes.",es:"Cualquier registro de vacunas, un formulario escolar o deportivo si lo tiene, y una lista de los medicamentos de su nino."}},
+    {q:{en:"My child is sick today. Can we still come?",es:"Mi nino esta enfermo hoy. Podemos venir?"},a:{en:"Yes. We handle sick visits too, like fevers, coughs, and rashes. Come in.",es:"Si. Tambien atendemos visitas por enfermedad, como fiebre, tos y sarpullidos. Venga."}},
+    {q:{en:"Is my information safe?",es:"Esta segura mi informacion?"},a:{en:"Yes. We do not ask about immigration status, and your visit stays private, the same as any patient.",es:"Si. No preguntamos por el estatus migratorio, y su visita es privada, igual que la de cualquier paciente."}}
+  ];
+  var lang="en";
+  function setLang(l){lang=l;document.documentElement.lang=l;
+    document.getElementById("b-en").classList.toggle("on",l==="en");
+    document.getElementById("b-es").classList.toggle("on",l==="es");
+    document.querySelectorAll("[data-en]").forEach(function(el){var v=el.getAttribute("data-"+l);if(v!=null)el.textContent=v;});
+    buildQA();}
+  function buildQA(){
+    document.getElementById("qa").innerHTML=QA.map(function(x,i){
+      return '<div class="qitem" data-i="'+i+'"><button>'+x.q[lang]+'<span class="chev">&#9662;</span></button><div class="a"><p>'+x.a[lang]+'</p></div></div>';
+    }).join("");
+    document.querySelectorAll(".qitem button").forEach(function(b){
+      b.addEventListener("click",function(){b.parentElement.classList.toggle("open");});
+    });
+  }
+  document.getElementById("b-en").addEventListener("click",function(){setLang("en");});
+  document.getElementById("b-es").addEventListener("click",function(){setLang("es");});
+  buildQA();
+
+  function anim(el,t){var s=0,t0=null;function f(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1300,1);
+    el.textContent=Math.round((s+(t-s)*(1-Math.pow(1-p,3)))).toLocaleString();if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);}
+  anim(document.getElementById("s1"),84);
+  anim(document.getElementById("s2"),130);
+  anim(document.getElementById("s4"),19);
+
+  var F=document.getElementById("form");
+  function mark(id,bad){document.getElementById(id).classList.toggle("err",bad);var m=document.getElementById("e-"+id);if(m)m.classList.toggle("show",bad);}
+  ["nm","ch","lg2"].forEach(function(id){document.getElementById(id).addEventListener("input",function(){mark(id,false);});});
+  F.addEventListener("submit",function(e){
+    e.preventDefault();var ok=true;
+    if(document.getElementById("nm").value.trim().length<2){mark("nm",true);ok=false;}
+    if(!document.getElementById("ch").value){mark("ch",true);ok=false;}
+    if(!document.getElementById("lg2").value){mark("lg2",true);ok=false;}
+    if(!ok){var f=F.querySelector(".err");if(f)f.focus();return;}
+    F.style.display="none";var b=document.getElementById("ok");b.classList.add("show");b.scrollIntoView({behavior:"smooth",block:"center"});
+  });
+</script>
+</body>
+</html>

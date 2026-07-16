@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trip Planner</title>
+<style>
+  :root{--ink:#1d2b2a;--moss:#3f6b5f;--moss-d:#2c4d44;--gold:#caa64e;--mist:#eef3f0;
+    --paper:#f7faf8;--line:#d9e5e0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+
+  .hero{background:linear-gradient(150deg,#22453c 0%,#3f6b5f 60%,#5d8a6f 100%);color:#eef6f1;
+    padding:70px 0 60px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-60px;bottom:-60px;width:240px;height:240px;
+    border-radius:50%;background:rgba(202,166,78,.18)}
+  .hero .ey{letter-spacing:.3em;text-transform:uppercase;font-size:.72rem;color:var(--gold);margin-bottom:14px}
+  .hero h1{font-family:Georgia,serif;font-size:2.8rem;line-height:1.1;margin-bottom:12px}
+  .hero p{max-width:520px;color:#d6e6dc}
+
+  .count{display:flex;gap:14px;margin-top:30px}
+  .cbox{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+    border-radius:12px;padding:14px 22px;text-align:center;min-width:84px}
+  .cbox b{display:block;font-size:1.9rem;color:#fff}
+  .cbox span{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#bcd4c6}
+
+  section{padding:48px 0}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;
+    box-shadow:0 10px 30px rgba(40,80,68,.06)}
+  h2{font-size:1.4rem;margin-bottom:6px}
+  .note{color:#5e7771;font-size:.9rem;margin-bottom:22px}
+
+  .saved{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px}
+  .saved .big{font-size:2.2rem;font-weight:700;color:var(--moss)}
+  .saved .goal{color:#5e7771}
+  .track{height:20px;background:var(--mist);border-radius:12px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:12px;
+    background:linear-gradient(90deg,var(--moss),var(--gold));transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+  .mini{display:flex;justify-content:space-between;margin-top:10px;font-size:.84rem;color:#5e7771}
+
+  .tabs{display:flex;gap:8px;margin:30px 0 18px;flex-wrap:wrap}
+  .tab{background:#fff;border:1px solid var(--line);color:#5e7771;border-radius:22px;
+    padding:9px 20px;cursor:pointer;font-size:.86rem;transition:all .2s}
+  .tab.active{background:var(--moss);color:#fff;border-color:var(--moss)}
+  .day{display:none}
+  .day.show{display:block;animation:fade .4s}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .stop{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .stop:last-child{border-bottom:0}
+  .stop .pin{width:34px;height:34px;border-radius:50%;background:var(--mist);color:var(--moss-d);
+    display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+  .stop b{display:block}
+  .stop span{color:#5e7771;font-size:.88rem}
+
+  .who{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .who span{background:var(--mist);border-radius:20px;padding:7px 16px;font-size:.84rem;color:var(--moss-d)}
+
+  footer{text-align:center;color:#7c918b;font-size:.8rem;padding:30px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="wrap">
+    <div class="ey">Family Trip Fund</div>
+    <h1>Ireland &amp; Scotland, 2027</h1>
+    <p>The one we have been saving toward, a fortnight tracing the family roots through the green country and the highlands.</p>
+    <div class="count" id="count">
+      <div class="cbox"><b id="cM">--</b><span>Months</span></div>
+      <div class="cbox"><b id="cP">$8.5K</b><span>To Go</span></div>
+      <div class="cbox"><b>5</b><span>Travelers</span></div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="card">
+      <h2>Savings Progress</h2>
+      <div class="note">Goal of $15,000 by mid-2027, held in a separate savings account at our community bank.</div>
+      <div class="saved">
+        <div class="big">$6,500</div>
+        <div class="goal">of $15,000</div>
+      </div>
+      <div class="track"><div class="fill" id="fill" data-w="43"></div></div>
+      <div class="mini"><span>43 percent funded</span><span>$500 per month keeps us on pace</span></div>
+
+      <h2 style="margin-top:34px">The Itinerary</h2>
+      <div class="note">A rough plan, subject to the Sunday-table veto.</div>
+      <div class="tabs">
+        <div class="tab active" data-d="d1">Days 1 to 4</div>
+        <div class="tab" data-d="d2">Days 5 to 9</div>
+        <div class="tab" data-d="d3">Days 10 to 14</div>
+      </div>
+
+      <div class="day show" id="d1">
+        <div class="stop"><div class="pin">1</div><div><b>Dublin, the easy landing</b><span>Walk the river, find the family parish records, no schedule the first day.</span></div></div>
+        <div class="stop"><div class="pin">2</div><div><b>Kilkenny and the countryside</b><span>Castle grounds, a slow lunch, the kind of pace Craig actually likes.</span></div></div>
+        <div class="stop"><div class="pin">3</div><div><b>Cork and the harbor</b><span>Coast road, a stop for soda bread that Dorothy will judge against her own.</span></div></div>
+      </div>
+      <div class="day" id="d2">
+        <div class="stop"><div class="pin">5</div><div><b>Ring of Kerry drive</b><span>Megan navigates, Tyler counts sheep, the long green miles.</span></div></div>
+        <div class="stop"><div class="pin">7</div><div><b>Ferry north toward Scotland</b><span>Travel day, books and card games, the herb-garden talk we never finish.</span></div></div>
+      </div>
+      <div class="day" id="d3">
+        <div class="stop"><div class="pin">10</div><div><b>Edinburgh old town</b><span>The close and the castle, an estate-sale brooch hunt for me.</span></div></div>
+        <div class="stop"><div class="pin">12</div><div><b>Highlands and lochs</b><span>The quiet part of the trip, the one I am really going for.</span></div></div>
+        <div class="stop"><div class="pin">14</div><div><b>Home, slowly</b><span>One last long dinner before the airport and the loud life resumes.</span></div></div>
+      </div>
+
+      <h2 style="margin-top:34px">Who Is Coming</h2>
+      <div class="who"><span>Cecilia</span><span>Craig</span><span>Megan</span><span>Tyler</span><span>Dorothy</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>A working plan, kept on the family computer. Nothing booked until the fund clears the goal.</footer>
+
+<script>
+  window.addEventListener('load',function(){
+    setTimeout(function(){document.getElementById('fill').style.width=document.getElementById('fill').dataset.w+'%';},200);
+    // months between Feb 2026 (anchor) and mid-2027 target, animated count
+    var target=16, cur=0;
+    var el=document.getElementById('cM');
+    var iv=setInterval(function(){cur++;el.textContent=cur;if(cur>=target)clearInterval(iv);},45);
+  });
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      document.querySelectorAll('.day').forEach(function(d){d.classList.remove('show');});
+      document.getElementById(t.dataset.d).classList.add('show');
+    });
+  });
+</script>
+</body>
+</html>

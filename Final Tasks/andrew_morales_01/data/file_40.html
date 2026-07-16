@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EP Workroom</title>
+<style>
+  :root{
+    --sand:#f4ece0; --clay:#bf5b34; --clay2:#9c3f23; --olive:#6b6238;
+    --ink:#352a22; --cream:#fffaf2; --line:#e3d4bf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--sand);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(120deg,var(--clay),var(--clay2));color:var(--cream);padding:26px 30px;box-shadow:0 4px 14px rgba(60,30,10,.25)}
+  header h1{font-size:1.7rem;letter-spacing:.5px}
+  header .sub{opacity:.92;margin-top:4px;font-size:.95rem}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:8px 0 26px}
+  .card{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .25s ease,box-shadow .25s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(120,60,30,.18)}
+  .card .k{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--olive)}
+  .card .v{font-size:1.8rem;color:var(--clay2);margin-top:6px;font-weight:bold}
+  .bar{height:22px;background:var(--line);border-radius:11px;overflow:hidden;margin-top:10px}
+  .bar > span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--olive),var(--clay));transition:width 1.2s ease}
+  h2{margin:24px 0 12px;color:var(--clay2);border-left:5px solid var(--clay);padding-left:10px}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  button.tab{font-family:inherit;cursor:pointer;border:1px solid var(--clay);background:var(--cream);color:var(--clay2);padding:8px 16px;border-radius:20px;transition:all .2s ease}
+  button.tab:hover{background:#f6e7da}
+  button.tab.on{background:var(--clay);color:var(--cream)}
+  table{width:100%;border-collapse:collapse;background:var(--cream);border-radius:12px;overflow:hidden;box-shadow:0 3px 10px rgba(120,60,30,.1)}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#efe2cf;color:var(--olive);font-size:.82rem;text-transform:uppercase;letter-spacing:.6px}
+  tr{animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  .pill{display:inline-block;padding:3px 11px;border-radius:12px;font-size:.78rem;font-weight:bold}
+  .done{background:#dfe9cf;color:#4f5e22}
+  .mix{background:#f6e1c9;color:#9c5a14}
+  .todo{background:#f0d4cb;color:#9c3f23}
+  footer{background:var(--ink);color:#e9ddca;padding:20px 30px;text-align:center;font-size:.86rem}
+  footer a{color:#f0c79f;text-decoration:none}
+  @media(max-width:620px){header h1{font-size:1.35rem}.wrap{padding:18px 12px 50px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>EP Workroom, Five Song Demo</h1>
+  <div class="sub">Andrew Morales, session singer and songwriter, East Nashville</div>
+</header>
+<div class="wrap">
+  <div class="cards">
+    <div class="card"><div class="k">Budget</div><div class="v">$8,000</div></div>
+    <div class="card"><div class="k">Spent to date</div><div class="v">$5,200</div>
+      <div class="bar"><span id="spend"></span></div></div>
+    <div class="card"><div class="k">Left to budget</div><div class="v">$2,800</div></div>
+    <div class="card"><div class="k">Tracked</div><div class="v">3 of 5</div>
+      <div class="bar"><span id="trk"></span></div></div>
+  </div>
+
+  <h2>Track Board</h2>
+  <div class="filters">
+    <button class="tab on" data-f="all">All</button>
+    <button class="tab" data-f="done">Tracked</button>
+    <button class="tab" data-f="mix">In mix</button>
+    <button class="tab" data-f="todo">To track</button>
+  </div>
+  <table>
+    <thead><tr><th>Song</th><th>Key</th><th>Stage</th><th>Note</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <h2>Spend Breakdown</h2>
+  <svg id="chart" viewBox="0 0 420 220" width="100%" height="220" role="img" aria-label="Spend by category"></svg>
+</div>
+<footer>
+  Andrew Morales, recorded at Copperline Studios with producer DT Thompson<br>
+  <a href="mailto:andrew.morales@Greenridertech.co">andrew.morales@Greenridertech.co</a> &nbsp;|&nbsp; East Nashville, TN &nbsp;|&nbsp; Copyright 2026
+</footer>
+<script>
+  var tracks=[
+    {s:"Porch Light",k:"G",st:"done",n:"rough mix in hand"},
+    {s:"River and the Rail",k:"D",st:"mix",n:"rough mix in hand"},
+    {s:"Caliche Road",k:"C",st:"mix",n:"awaiting mix"},
+    {s:"Two Nashvilles",k:"A",st:"todo",n:"final block"},
+    {s:"Cedar and Smoke",k:"E",st:"todo",n:"final block"}
+  ];
+  var label={done:["Tracked","done"],mix:["In mix","mix"],todo:["To track","todo"]};
+  function draw(f){
+    var body=document.getElementById("rows");body.innerHTML="";
+    tracks.filter(function(t){return f=="all"||t.st==f}).forEach(function(t){
+      var L=label[t.st];
+      body.innerHTML+="<tr><td>"+t.s+"</td><td>"+t.k+"</td><td><span class='pill "+L[1]+"'>"+L[0]+"</span></td><td>"+t.n+"</td></tr>";
+    });
+  }
+  draw("all");
+  document.querySelectorAll(".tab").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("on")});
+      b.classList.add("on");draw(b.dataset.f);
+    });
+  });
+  // animated bars
+  setTimeout(function(){document.getElementById("spend").style.width="65%";document.getElementById("trk").style.width="60%";},200);
+  // svg bar chart of spend by category
+  var data=[["Tracking",2400],["Studio time",1600],["Mix",700],["Gear and reeds",500]];
+  var max=2400,svg=document.getElementById("chart"),x=20;
+  data.forEach(function(d,i){
+    var h=d[1]/max*150,y=180-h;
+    var r=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    r.setAttribute("x",x);r.setAttribute("y",180);r.setAttribute("width",70);r.setAttribute("height",0);
+    r.setAttribute("rx",6);r.setAttribute("fill",i%2?"#6b6238":"#bf5b34");
+    svg.appendChild(r);
+    setTimeout(function(){r.setAttribute("y",y);r.setAttribute("height",h);},300+i*150);
+    var tx=document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x",x+35);tx.setAttribute("y",198);tx.setAttribute("text-anchor","middle");
+    tx.setAttribute("font-size","11");tx.setAttribute("fill","#352a22");tx.textContent=d[0];
+    svg.appendChild(tx);
+    var vl=document.createElementNS("http://www.w3.org/2000/svg","text");
+    vl.setAttribute("x",x+35);vl.setAttribute("y",y-6);vl.setAttribute("text-anchor","middle");
+    vl.setAttribute("font-size","11");vl.setAttribute("fill","#9c3f23");vl.textContent="$"+d[1];
+    svg.appendChild(vl);
+    x+=98;
+  });
+</script>
+</body>
+</html>

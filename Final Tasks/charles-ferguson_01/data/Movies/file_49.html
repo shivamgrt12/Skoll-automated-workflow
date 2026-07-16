@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Western Reserve Woodturners Guild</title>
+<style>
+  :root{
+    --ink:#241c14; --bark:#3c2a1a; --amber:#b5701f; --amber2:#d8943c;
+    --cream:#f6efe4; --sage:#6b7350; --line:#e0d4c0; --shadow:0 8px 28px rgba(36,28,20,.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(60,42,26,.97);color:var(--cream);
+    box-shadow:0 2px 14px rgba(0,0,0,.25)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:bold;letter-spacing:.5px}
+  .mark{width:34px;height:34px;border:2px solid var(--amber2);border-radius:50%;
+    display:grid;place-items:center;font-size:15px;color:var(--amber2)}
+  nav ul{display:flex;gap:26px;list-style:none;font-family:Helvetica,Arial,sans-serif;font-size:14px;
+    text-transform:uppercase;letter-spacing:1px}
+  nav a{padding:6px 2px;border-bottom:2px solid transparent;transition:.25s}
+  nav a:hover{border-color:var(--amber2);color:var(--amber2)}
+  .menu-btn{display:none;background:none;border:1px solid var(--cream);color:var(--cream);
+    font-size:20px;border-radius:6px;padding:4px 10px;cursor:pointer}
+
+  .hero{position:relative;min-height:74vh;display:grid;align-items:center;overflow:hidden;
+    background:linear-gradient(135deg,#2b1d11,#5a3c20 55%,#86592b)}
+  .rings{position:absolute;right:-120px;top:50%;transform:translateY(-50%);opacity:.22}
+  .rings span{position:absolute;border:2px solid var(--amber2);border-radius:50%;
+    left:0;top:0;transform:translate(-50%,-50%);animation:spin 26s linear infinite}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  .hero-in{color:var(--cream);max-width:640px;animation:rise .9s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  .hero h1{font-size:46px;line-height:1.12;margin-bottom:16px}
+  .hero p{font-size:19px;opacity:.92;margin-bottom:26px}
+  .kicker{font-family:Helvetica,Arial,sans-serif;text-transform:uppercase;letter-spacing:3px;
+    font-size:13px;color:var(--amber2);margin-bottom:14px}
+  .btn{display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:bold;
+    letter-spacing:1px;text-transform:uppercase;padding:13px 26px;border-radius:7px;cursor:pointer;
+    border:2px solid var(--amber);background:var(--amber);color:#fff;transition:.25s}
+  .btn:hover{background:var(--amber2);border-color:var(--amber2);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--cream);margin-left:12px}
+  .btn.ghost:hover{background:rgba(255,255,255,.1)}
+
+  section{padding:74px 0}
+  .sec-head{text-align:center;margin-bottom:44px}
+  .sec-head .kicker{color:var(--amber)}
+  .sec-head h2{font-size:34px}
+  .sec-head p{color:#6a5b48;max-width:560px;margin:10px auto 0}
+
+  .reveal{opacity:0;transform:translateY(30px);transition:.7s}
+  .reveal.in{opacity:1;transform:none}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px;box-shadow:var(--shadow);
+    transition:.3s}
+  .card:hover{transform:translateY(-6px)}
+  .card h3{font-size:21px;margin-bottom:8px;color:var(--bark)}
+  .card .ic{width:46px;height:46px;border-radius:10px;background:var(--cream);display:grid;place-items:center;
+    font-size:22px;margin-bottom:14px}
+
+  .classes{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;font-family:Helvetica,Arial,sans-serif;font-size:15px}
+  th,td{text-align:left;padding:15px 14px;border-bottom:1px solid var(--line)}
+  th{background:var(--bark);color:var(--cream);text-transform:uppercase;letter-spacing:1px;font-size:12px}
+  tbody tr:hover{background:var(--cream)}
+  .tag{font-size:12px;font-weight:bold;padding:3px 10px;border-radius:20px;background:var(--cream);color:var(--sage)}
+  .tag.open{background:#e6f0dd;color:#4f6a33}
+  .tag.full{background:#f0e0dd;color:#9a4b3a}
+
+  .gallery .filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+  .chip{font-family:Helvetica,Arial,sans-serif;font-size:13px;letter-spacing:.5px;padding:9px 18px;border-radius:22px;
+    border:1px solid var(--bark);background:transparent;cursor:pointer;transition:.2s}
+  .chip.active,.chip:hover{background:var(--bark);color:var(--cream)}
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .piece{border-radius:12px;overflow:hidden;box-shadow:var(--shadow);background:#fff;transition:.4s;border:1px solid var(--line)}
+  .piece .swatch{height:170px;display:grid;place-items:center;color:#fff;font-size:40px}
+  .piece .meta{padding:16px 18px}
+  .piece h4{font-size:17px;color:var(--bark)}
+  .piece small{font-family:Helvetica,Arial,sans-serif;color:#8a7a64}
+  .hide{display:none}
+
+  .join{background:linear-gradient(135deg,#3c2a1a,#5a3c20);color:var(--cream)}
+  .join .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  form{background:#fff;color:var(--ink);padding:30px;border-radius:14px;box-shadow:var(--shadow)}
+  .field{margin-bottom:16px}
+  label{font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;display:block;margin-bottom:6px}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit}
+  input:focus,select:focus{outline:2px solid var(--amber2);border-color:transparent}
+  .note{font-family:Helvetica,Arial,sans-serif;font-size:14px;padding:12px;border-radius:8px;margin-top:8px;
+    background:#e6f0dd;color:#4f6a33;display:none}
+
+  footer{background:#241c14;color:#c9bba6;padding:48px 0 26px;font-family:Helvetica,Arial,sans-serif;font-size:14px}
+  .foot{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;margin-bottom:30px}
+  footer h5{color:var(--amber2);text-transform:uppercase;letter-spacing:1px;font-size:13px;margin-bottom:12px}
+  footer a:hover{color:var(--amber2)}
+  footer ul{list-style:none;line-height:1.9}
+  .copy{border-top:1px solid #3a2e20;padding-top:18px;text-align:center;color:#8a7a64}
+
+  @media(max-width:820px){
+    nav ul{display:none}.menu-btn{display:block}
+    nav.open ul{display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;
+      background:var(--bark);padding:18px 24px;gap:14px}
+    .grid3,.gal{grid-template-columns:1fr}.join .wrap{grid-template-columns:1fr}
+    .hero h1{font-size:34px}.foot{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top"><span class="mark">WR</span> Western Reserve Woodturners Guild</a>
+    <nav id="nav">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">&#9776;</button>
+      <ul>
+        <li><a href="#classes">Classes</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#join">Join</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero" style="padding:0">
+  <div class="rings">
+    <span style="width:160px;height:160px"></span>
+    <span style="width:260px;height:260px;animation-duration:34s"></span>
+    <span style="width:380px;height:380px;animation-duration:44s"></span>
+  </div>
+  <div class="wrap hero-in">
+    <div class="kicker">Crestwood, Ohio &bull; Established 1986</div>
+    <h1>Where Ohio hardwood becomes something worth keeping.</h1>
+    <p>A working community of bowl turners, spindle makers, and segmented-vessel builders. We meet, we teach, and we put real pieces on the floor every fall.</p>
+    <a href="#join" class="btn">Become a member</a>
+    <a href="#classes" class="btn ghost">See the class schedule</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">What we do</div>
+      <h2>A guild built around the bench</h2>
+      <p>No lectures for the sake of lectures. We turn, we sharpen, and we help each other keep ten fingers while doing it.</p>
+    </div>
+    <div class="grid3">
+      <div class="card reveal"><div class="ic">&#9874;</div><h3>Monthly classes</h3><p>Intermediate technique on the second Saturday of every month, taught at the bench with a fresh blank in front of you. End grain, hollowing, and segmented work.</p></div>
+      <div class="card reveal"><div class="ic">&#9733;</div><h3>The fall show</h3><p>Our members exhibit finished work every November. Display tables, a live demo, and a floater policy so your pieces travel safe.</p></div>
+      <div class="card reveal"><div class="ic">&#9883;</div><h3>Shared knowledge</h3><p>Sharpening jigs, finishing notes, and wood-sourcing leads from makers who have made the mistakes already so you do not have to.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="classes" class="classes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Bring a sharp gouge</div>
+      <h2>Upcoming classes and demos</h2>
+      <p>Second Saturday, 10:00 AM to 12:00 PM, in the guild shop. Members turn at no charge, guests pay a small bench fee.</p>
+    </div>
+    <div class="reveal" style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Date</th><th>Session</th><th>Level</th><th>Instructor</th><th>Seats</th></tr></thead>
+      <tbody>
+        <tr><td>October 11, 2025</td><td>End grain sealing and hollowing</td><td>Intermediate</td><td>Charles Ferguson</td><td><span class="tag full">Full</span></td></tr>
+        <tr><td>November 8, 2025</td><td>Bowl gouge presentation and the bevel</td><td>Intermediate</td><td>Charles Ferguson</td><td><span class="tag full">Full</span></td></tr>
+        <tr><td>December 13, 2025</td><td>Sharpening clinic and jig setup</td><td>All levels</td><td>Walter Brennan</td><td><span class="tag full">Full</span></td></tr>
+        <tr><td>January 10, 2026</td><td>Segmented ring math and glue-up</td><td>Intermediate</td><td>Charles Ferguson</td><td><span class="tag full">Full</span></td></tr>
+        <tr><td>February 14, 2026</td><td>Finishing: oil, wax, and the wipe-down</td><td>Intermediate</td><td>Charles Ferguson</td><td><span class="tag open">Open</span></td></tr>
+        <tr><td>October 10, 2026</td><td>Hollow form forms and wall control</td><td>Advanced</td><td>Charles Ferguson</td><td><span class="tag open">Open</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" class="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Member work</div>
+      <h2>On the floor this season</h2>
+      <p>A sampling of finished pieces from guild members. Filter by form and species.</p>
+    </div>
+    <div class="filters reveal">
+      <button class="chip active" data-f="all">All</button>
+      <button class="chip" data-f="bowl">Bowls</button>
+      <button class="chip" data-f="hollow">Hollow forms</button>
+      <button class="chip" data-f="segmented">Segmented</button>
+    </div>
+    <div class="gal" id="gal">
+      <div class="piece reveal" data-c="hollow"><div class="swatch" style="background:linear-gradient(135deg,#3a2618,#6b4423)">&#9899;</div><div class="meta"><h4>Black walnut hollow form</h4><small>10 by 4 in &bull; oil and wax &bull; C. Ferguson</small></div></div>
+      <div class="piece reveal" data-c="segmented"><div class="swatch" style="background:linear-gradient(135deg,#8a5a2b,#c79a5b)">&#9776;</div><div class="meta"><h4>Segmented walnut and maple vessel</h4><small>9 by 7 in &bull; best bowl, 2024 &bull; C. Ferguson</small></div></div>
+      <div class="piece reveal" data-c="bowl"><div class="swatch" style="background:linear-gradient(135deg,#9c7b3f,#d8b86a)">&#9679;</div><div class="meta"><h4>Ambrosia maple bowl</h4><small>10 by 4 in &bull; wiped oil &bull; C. Ferguson</small></div></div>
+      <div class="piece reveal" data-c="bowl"><div class="swatch" style="background:linear-gradient(135deg,#7a5230,#b88a52)">&#9679;</div><div class="meta"><h4>White oak salad bowl</h4><small>12 by 6 in &bull; food-safe finish &bull; W. Brennan</small></div></div>
+      <div class="piece reveal" data-c="hollow"><div class="swatch" style="background:linear-gradient(135deg,#4a3320,#80583a)">&#9899;</div><div class="meta"><h4>Box elder hollow vessel</h4><small>8 by 4 in &bull; flame figure &bull; guild member</small></div></div>
+      <div class="piece reveal" data-c="segmented"><div class="swatch" style="background:linear-gradient(135deg,#6b4a2a,#bfa06a)">&#9776;</div><div class="meta"><h4>Open-segment ring bowl</h4><small>11 by 5 in &bull; 240 segments &bull; guild member</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="join" class="join">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker" style="color:var(--amber2)">Membership</div>
+      <h2 style="font-size:32px;margin-bottom:14px">Join the guild</h2>
+      <p style="opacity:.9;margin-bottom:18px">Annual membership runs the calendar year and includes monthly classes, the fall show entry, and access to the shared shop. We turn at every skill level. Bring what you have and we will help with the rest.</p>
+      <ul style="list-style:none;font-family:Helvetica,Arial,sans-serif;line-height:2.1">
+        <li>&#10003; Second-Saturday classes at no member charge</li>
+        <li>&#10003; Fall show table and insured floater</li>
+        <li>&#10003; Tool library and sharpening station access</li>
+        <li>&#10003; Member rate on symposium travel</li>
+      </ul>
+    </div>
+    <form id="joinForm" novalidate>
+      <div class="field"><label for="nm">Full name</label><input id="nm" type="text" autocomplete="name" required></div>
+      <div class="field"><label for="em">Email</label><input id="em" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="lv">Experience level</label>
+        <select id="lv"><option>New to turning</option><option selected>Intermediate</option><option>Advanced</option></select></div>
+      <div class="field"><label for="iv">Mainly interested in</label>
+        <select id="iv"><option>Bowls</option><option>Hollow forms</option><option>Segmented work</option><option>Spindle and pens</option></select></div>
+      <button type="submit" class="btn" style="width:100%">Request membership</button>
+      <div class="note" id="note">Thanks. Your request is in. The membership chair will reach out before the next second-Saturday class.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <h5>Western Reserve Woodturners Guild</h5>
+        <p style="line-height:1.8;max-width:340px">A volunteer guild of hardwood turners in northeast Ohio. Self-hosted and run by members, for members, since 1986.</p>
+      </div>
+      <div><h5>Visit</h5><ul>
+        <li><a href="#classes">Classes</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#join">Membership</a></li>
+      </ul></div>
+      <div><h5>Contact</h5><ul>
+        <li>Crestwood, OH 44125</li>
+        <li>(440) 555-0137</li>
+        <li>Webmaster: C. Ferguson</li>
+      </ul></div>
+    </div>
+    <div class="copy">Copyright 2026 Western Reserve Woodturners Guild. Built and maintained by guild volunteers.</div>
+  </div>
+</footer>
+
+<script>
+  var menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('nav');
+  menuBtn.addEventListener('click',function(){nav.classList.toggle('open');});
+  nav.addEventListener('click',function(e){if(e.target.tagName==='A')nav.classList.remove('open');});
+
+  var chips=document.querySelectorAll('.chip');
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    chips.forEach(function(x){x.classList.remove('active');});
+    c.classList.add('active');
+    var f=c.dataset.f;
+    document.querySelectorAll('#gal .piece').forEach(function(p){
+      p.classList.toggle('hide',!(f==='all'||p.dataset.c===f));
+    });
+  });});
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  document.getElementById('joinForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var nm=document.getElementById('nm'),em=document.getElementById('em');
+    if(!nm.value.trim()||!em.value.trim()){
+      (nm.value.trim()?em:nm).focus();return;
+    }
+    document.getElementById('note').style.display='block';
+    this.querySelector('button').textContent='Request received';
+  });
+</script>
+</body>
+</html>

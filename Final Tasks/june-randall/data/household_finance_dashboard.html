@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Household Dashboard</title>
+<style>
+  :root{
+    --bg:#eef1f4; --card:#ffffff; --ink:#1d2733; --muted:#67727f; --line:#e3e8ed;
+    --teal:#2c6e6b; --gold:#c08a2d; --slate:#3a4a5c;
+    --c1:#2c6e6b; --c2:#3a6ea5; --c3:#c08a2d; --c4:#8a5a44; --c5:#5b7a5b; --c6:#9c6b8e; --c7:#6b7480; --c8:#cf8a3b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+  header.top h1{font-size:27px;letter-spacing:.2px}
+  header.top .sub{color:var(--muted);font-size:14px;margin-top:3px}
+  .stamp{font-size:12px;color:var(--muted);text-align:right}
+  .stamp b{color:var(--teal)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+  .kpi .lab{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .kpi .val{font-size:28px;font-weight:700;margin-top:6px}
+  .kpi .delta{font-size:12px;color:var(--muted);margin-top:4px}
+  .kpi .bar{position:absolute;left:0;top:0;bottom:0;width:5px}
+  .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .card h2{font-size:15px;letter-spacing:.2px}
+  .card .note{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:8px}
+  .span2{grid-column:1 / -1}
+  .donutwrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .legend{flex:1;min-width:220px}
+  .legend .row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;padding:5px 0;border-bottom:1px dashed var(--line);cursor:default}
+  .legend .row:last-child{border-bottom:none}
+  .legend .key{display:flex;align-items:center;gap:9px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .legend .amt{font-variant-numeric:tabular-nums;color:var(--slate);font-weight:600}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:210px;padding-top:14px}
+  .bars .b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bars .col{width:100%;border-radius:6px 6px 0 0;background:var(--teal);transition:filter .15s;position:relative}
+  .bars .b:hover .col{filter:brightness(1.12)}
+  .bars .v{font-size:11px;color:var(--slate);margin-bottom:4px;font-variant-numeric:tabular-nums}
+  .bars .lbl{font-size:10.5px;color:var(--muted);margin-top:7px;text-align:center;line-height:1.2;height:30px}
+  .goals .g{margin:14px 0}
+  .goals .g .h{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+  .goals .track{height:9px;background:#edf0f2;border-radius:6px;overflow:hidden}
+  .goals .fill{height:100%;border-radius:6px;width:0}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+  .mini{background:#f7f9fa;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .mini .l{font-size:12px;color:var(--muted)}
+  .mini .n{font-size:20px;font-weight:700;margin-top:3px}
+  .tablecard table{width:100%;border-collapse:collapse;font-size:13px}
+  .tablecard th,.tablecard td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  .tablecard th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .tablecard td.r,.tablecard th.r{text-align:right;font-variant-numeric:tabular-nums}
+  footer.foot{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Household Dashboard</h1>
+      <div class="sub">Randall family, monthly snapshot for October 2026</div>
+    </div>
+    <div class="stamp">Maintained at home for planning<br>Net monthly result this month: <b>balanced</b></div>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi"><span class="bar" style="background:var(--teal)"></span><div class="lab">Monthly take-home</div><div class="val">$11,700</div><div class="delta">June $6,200 and Samuel $5,500</div></div>
+    <div class="kpi"><span class="bar" style="background:var(--gold)"></span><div class="lab">Saved each month</div><div class="val">$4,175</div><div class="delta">Across nine funds</div></div>
+    <div class="kpi"><span class="bar" style="background:var(--slate)"></span><div class="lab">Estimated net worth</div><div class="val">$309,000</div><div class="delta">Up from $285,000 last year</div></div>
+    <div class="kpi"><span class="bar" style="background:var(--c4)"></span><div class="lab">Total debt remaining</div><div class="val">$154,000</div><div class="delta">Mortgage, car loan, no card balance</div></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Where the fixed spending goes</h2>
+      <div class="note">Fixed expenses total $7,525 each month</div>
+      <div class="donutwrap">
+        <svg id="donut" width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Spending breakdown"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Saved and invested each month</h2>
+      <div class="note">Nine funds, $4,175 in total</div>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card goals">
+      <h2>Goals in progress</h2>
+      <div class="note">Where the long plans stand</div>
+      <div class="g"><div class="h"><span>Church building fund, roof repair</span><span>70%</span></div><div class="track"><div class="fill" id="p1" style="background:var(--c5)"></div></div></div>
+      <div class="g"><div class="h"><span>Brianna 529, toward $36,000</span><span>78%</span></div><div class="track"><div class="fill" id="p2" style="background:var(--c2)"></div></div></div>
+      <div class="g"><div class="h"><span>Emergency fund, six month target</span><span>85%</span></div><div class="track"><div class="fill" id="p3" style="background:var(--teal)"></div></div></div>
+      <div class="twocol">
+        <div class="mini"><div class="l">Tithe, fixed and first</div><div class="n">$975</div></div>
+        <div class="mini"><div class="l">Support to Mom</div><div class="n">$300</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Net worth, year end</h2>
+      <div class="note">Estimated, before market movement</div>
+      <svg id="trend" width="100%" height="190" viewBox="0 0 480 190" preserveAspectRatio="none" aria-label="Net worth trend"></svg>
+    </div>
+
+    <div class="card tablecard span2">
+      <h2>Accounts at a glance</h2>
+      <div class="note">Balances rounded for the household view</div>
+      <table>
+        <thead><tr><th>Account</th><th>Held with</th><th>Owner</th><th class="r">Monthly in</th><th class="r">Balance</th></tr></thead>
+        <tbody id="acct"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">Randall household planning view. Figures are estimates kept for our own use and are rounded.</footer>
+</div>
+
+<script>
+  var ns="http://www.w3.org/2000/svg";
+  var spend = [
+    {label:"Housing, mortgage and escrow", value:2330, color:"#2c6e6b"},
+    {label:"Children, tuition and college", value:1300, color:"#3a6ea5"},
+    {label:"Church tithe", value:975, color:"#c08a2d"},
+    {label:"Groceries and dining", value:1100, color:"#8a5a44"},
+    {label:"Transportation", value:770, color:"#5b7a5b"},
+    {label:"Utilities", value:320, color:"#9c6b8e"},
+    {label:"Support to Mom", value:300, color:"#6b7480"},
+    {label:"Other, personal and misc", value:430, color:"#cf8a3b"}
+  ];
+  var total = spend.reduce(function(a,b){return a+b.value},0);
+  var r=62, cx=90, cy=90, circ=2*Math.PI*r, off=0;
+  var svg=document.getElementById('donut');
+  var base=document.createElementNS(ns,'circle');
+  base.setAttribute('cx',cx);base.setAttribute('cy',cy);base.setAttribute('r',r);
+  base.setAttribute('fill','none');base.setAttribute('stroke','#eef0f2');base.setAttribute('stroke-width','26');
+  svg.appendChild(base);
+  spend.forEach(function(s){
+    var seg=s.value/total*circ;
+    var c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill','none');c.setAttribute('stroke',s.color);c.setAttribute('stroke-width','26');
+    c.setAttribute('stroke-dasharray',seg+' '+(circ-seg));
+    c.setAttribute('stroke-dashoffset',-off);
+    c.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+    c.style.transition='opacity .15s'; c.setAttribute('data-k',s.label);
+    svg.appendChild(c); off+=seg;
+  });
+  var mid=document.createElementNS(ns,'text');
+  mid.setAttribute('x',cx);mid.setAttribute('y',cy-2);mid.setAttribute('text-anchor','middle');
+  mid.setAttribute('font-size','19');mid.setAttribute('font-weight','700');mid.setAttribute('fill','#1d2733');
+  mid.textContent='$7,525';
+  var mid2=document.createElementNS(ns,'text');
+  mid2.setAttribute('x',cx);mid2.setAttribute('y',cy+16);mid2.setAttribute('text-anchor','middle');
+  mid2.setAttribute('font-size','11');mid2.setAttribute('fill','#67727f');mid2.textContent='per month';
+  svg.appendChild(mid);svg.appendChild(mid2);
+
+  var leg=document.getElementById('legend');
+  spend.forEach(function(s){
+    var pct=Math.round(s.value/total*100);
+    var row=document.createElement('div');row.className='row';
+    row.innerHTML='<span class="key"><span class="dot" style="background:'+s.color+'"></span>'+s.label+'</span><span class="amt">$'+s.value.toLocaleString()+' &middot; '+pct+'%</span>';
+    row.addEventListener('mouseenter',function(){highlight(s.label,true)});
+    row.addEventListener('mouseleave',function(){highlight(s.label,false)});
+    leg.appendChild(row);
+  });
+  function highlight(k,on){
+    var arr=svg.querySelectorAll('circle[data-k]');
+    for(var i=0;i<arr.length;i++){
+      arr[i].style.opacity = (!on || arr[i].getAttribute('data-k')===k) ? '1' : '0.28';
+    }
+  }
+
+  var saves=[
+    {l:"Emergency",v:800},{l:"403(b)",v:525},{l:"401(k)",v:750},{l:"Lauren",v:300},
+    {l:"529 plan",v:400},{l:"Vacation",v:200},{l:"Home upkeep",v:300},{l:"Insurance",v:300},{l:"Taxable",v:600}
+  ];
+  var mx=Math.max.apply(null,saves.map(function(s){return s.v}));
+  var bc=document.getElementById('bars');
+  saves.forEach(function(s){
+    var b=document.createElement('div');b.className='b';
+    var h=Math.round(s.v/mx*150)+12;
+    b.innerHTML='<div class="v">$'+s.v+'</div><div class="col" style="height:'+h+'px" title="'+s.l+': $'+s.v+'"></div><div class="lbl">'+s.l+'</div>';
+    bc.appendChild(b);
+  });
+
+  document.querySelectorAll('.fill').forEach(function(f){f.style.transition='width .8s ease'});
+  setTimeout(function(){
+    document.getElementById('p1').style.width='70%';
+    document.getElementById('p2').style.width='78%';
+    document.getElementById('p3').style.width='85%';
+  },140);
+
+  var nw=[{y:"2023",v:228},{y:"2024",v:258},{y:"2025",v:285},{y:"2026",v:309}];
+  var ts=document.getElementById('trend'), W=480,H=190,pad=34;
+  var vmax=320,vmin=200;
+  function X(i){return pad+i*((W-2*pad)/(nw.length-1))}
+  function Y(v){return H-28-((v-vmin)/(vmax-vmin))*(H-58)}
+  [240,280,320].forEach(function(g){
+    var ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',pad);ln.setAttribute('x2',W-pad/2);ln.setAttribute('y1',Y(g));ln.setAttribute('y2',Y(g));
+    ln.setAttribute('stroke','#eef0f2');ts.appendChild(ln);
+    var t=document.createElementNS(ns,'text');t.setAttribute('x',4);t.setAttribute('y',Y(g)+4);
+    t.setAttribute('font-size','10');t.setAttribute('fill','#9aa4ae');t.textContent='$'+g+'k';ts.appendChild(t);
+  });
+  var pts=nw.map(function(d,i){return X(i)+','+Y(d.v)}).join(' ');
+  var area=document.createElementNS(ns,'polygon');
+  area.setAttribute('points',pad+','+(H-28)+' '+pts+' '+(W-pad)+','+(H-28));
+  area.setAttribute('fill','rgba(44,110,107,.10)');ts.appendChild(area);
+  var pl=document.createElementNS(ns,'polyline');
+  pl.setAttribute('points',pts);pl.setAttribute('fill','none');pl.setAttribute('stroke','#2c6e6b');pl.setAttribute('stroke-width','2.5');
+  ts.appendChild(pl);
+  nw.forEach(function(d,i){
+    var c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',X(i));c.setAttribute('cy',Y(d.v));c.setAttribute('r',4);
+    c.setAttribute('fill','#fff');c.setAttribute('stroke','#2c6e6b');c.setAttribute('stroke-width','2.5');ts.appendChild(c);
+    var t=document.createElementNS(ns,'text');t.setAttribute('x',X(i));t.setAttribute('y',H-10);
+    t.setAttribute('text-anchor','middle');t.setAttribute('font-size','11');t.setAttribute('fill','#67727f');t.textContent=d.y;ts.appendChild(t);
+  });
+
+  var accts=[
+    ["403(b) retirement","Meridian Financial","June","$525","$185,000"],
+    ["401(k) retirement","Employer plan","Samuel","$750","$96,000"],
+    ["Brianna 529 plan","Maryland 529","June","$400","$28,000"],
+    ["Emergency fund","Meridian HYSA","Joint","$800","$24,000"],
+    ["Checking","Harborstone Bank","Joint","varies","$6,287"],
+    ["Mortgage","Pinnacle Home Lending","Joint","-$2,180","-$142,000"]
+  ];
+  var tb=document.getElementById('acct');
+  accts.forEach(function(a){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+a[0]+'</td><td>'+a[1]+'</td><td>'+a[2]+'</td><td class="r">'+a[3]+'</td><td class="r">'+a[4]+'</td>';
+    tb.appendChild(tr);
+  });
+</script>
+</body>
+</html>

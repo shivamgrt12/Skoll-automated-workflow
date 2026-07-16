@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Steven Foster">
+<title>Household Finance Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1620; --panel:#16202c; --panel2:#1b2735; --ink:#dfe7ef; --mut:#8597a8;
+    --line:#28394a; --accent:#4ea1d3; --good:#6fcf97; --warn:#e6b450; --bad:#e07a5f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  header.nav{position:sticky;top:0;z-index:20;background:rgba(15,22,32,.94);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .nav-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:22px;
+    padding:14px 22px;flex-wrap:wrap}
+  .brand{font-weight:700;letter-spacing:.3px;font-size:17px;margin-right:auto}
+  .brand span{color:var(--accent)}
+  nav a{color:var(--mut);font-size:14px}
+  nav a:hover{color:var(--ink)}
+  main{max-width:1080px;margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h1{font-size:30px;margin:0 0 8px}
+  h2{font-size:22px;margin:0 0 18px}
+  .lede{color:var(--mut);max-width:60ch}
+  .hero{padding:54px 0 40px}
+  .stamp{color:var(--mut);font-size:13px;letter-spacing:.4px;text-transform:uppercase}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card .k{font-size:13px;color:var(--mut)}
+  .card .v{font-size:25px;font-weight:700;margin-top:4px}
+  .card .d{font-size:12px;margin-top:6px}
+  .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--mut)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:780px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .panel h3{margin:0 0 4px;font-size:16px}
+  .panel .sub{color:var(--mut);font-size:13px;margin-bottom:10px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mut);margin-top:10px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+  button{font:inherit;cursor:pointer;background:var(--panel2);color:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:8px 14px}
+  button:hover{border-color:var(--accent)}
+  button.active{background:var(--accent);border-color:var(--accent);color:#06121c;font-weight:600}
+  .note{font-size:12px;color:var(--mut);margin-top:10px}
+  footer{max-width:1080px;margin:0 auto;padding:28px 22px 50px;color:var(--mut);font-size:13px}
+  .pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;
+    border:1px solid var(--line);color:var(--mut)}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">Household <span>Ledger</span></div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#cashflow">Cash flow</a>
+      <a href="#networth">Net worth</a>
+      <a href="#runway">Runway</a>
+      <a href="#about">Notes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="overview">
+    <div class="stamp">Private review &middot; as of February 1, 2026</div>
+    <h1>Household Finance Dashboard</h1>
+    <p class="lede">A monthly read on cash flow, net worth, and how much runway the liquid
+    accounts actually buy. Figures are rounded to the nearest thousand and refreshed at the
+    start of each month, not carried from memory.</p>
+    <div class="cards">
+      <div class="card"><div class="k">Net worth</div><div class="v">$1,812K</div>
+        <div class="d flat">assets minus the mortgage</div></div>
+      <div class="card"><div class="k">Monthly surplus</div><div class="v">$4,370</div>
+        <div class="d up">to investing and savings</div></div>
+      <div class="card"><div class="k">Liquid runway</div><div class="v">7.3 yrs</div>
+        <div class="d flat">excludes retirement account</div></div>
+      <div class="card"><div class="k">Credit score</div><div class="v">~800</div>
+        <div class="d up">held steady</div></div>
+    </div>
+  </section>
+
+  <section id="cashflow">
+    <h2>Monthly cash flow</h2>
+    <p class="lede">Net take-home of $10,200 against $5,830 of expenses. Use the toggle to
+    weigh the budget by fixed costs versus the variable and discretionary lines.</p>
+    <div class="controls">
+      <button id="bAll" class="active" onclick="setView('all')">All expenses</button>
+      <button id="bFix" onclick="setView('fixed')">Fixed only</button>
+      <button id="bVar" onclick="setView('variable')">Variable only</button>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Expense lines</h3>
+        <div class="sub" id="barSub">All lines, dollars per month</div>
+        <!-- horizontal bar chart -->
+        <svg id="barChart" viewBox="0 0 460 320" width="100%" role="img"
+             aria-label="Monthly expense lines as a bar chart"></svg>
+      </div>
+      <div class="panel">
+        <h3>Where the take-home goes</h3>
+        <div class="sub">Expenses $5,830, surplus $4,370, of $10,200 take-home</div>
+        <!-- donut chart -->
+        <svg viewBox="0 0 220 220" width="220" height="220" role="img"
+             aria-label="Donut of expenses versus surplus">
+          <circle cx="110" cy="110" r="78" fill="none" stroke="#28394a" stroke-width="26"/>
+          <!-- expenses 57.2% -> dash. circumference 2*pi*78 = 490.1 -->
+          <circle cx="110" cy="110" r="78" fill="none" stroke="#e6b450" stroke-width="26"
+                  stroke-dasharray="280.3 209.8" stroke-dashoffset="0"
+                  transform="rotate(-90 110 110)"/>
+          <circle cx="110" cy="110" r="78" fill="none" stroke="#6fcf97" stroke-width="26"
+                  stroke-dasharray="209.8 280.3" stroke-dashoffset="-280.3"
+                  transform="rotate(-90 110 110)"/>
+          <text x="110" y="104" text-anchor="middle" fill="#dfe7ef" font-size="26" font-weight="700">42.8%</text>
+          <text x="110" y="126" text-anchor="middle" fill="#8597a8" font-size="12">to investing</text>
+        </svg>
+        <div class="legend">
+          <span><i style="background:#e6b450"></i>Expenses $5,830</span>
+          <span><i style="background:#6fcf97"></i>Surplus $4,370</span>
+        </div>
+        <p class="note">The surplus is the real lever. It funds the brokerage contributions
+        and the travel fund without touching principal.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="networth">
+    <h2>Net worth components</h2>
+    <p class="lede">Each line moves on its own cadence: the townhouse quarterly, the
+    retirement account monthly, the brokerage daily, savings monthly. A figure quoted
+    from last month's read is audit history, not an answer.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Assets and the mortgage</h3>
+        <div class="sub">Rounded to the nearest thousand</div>
+        <svg id="nwChart" viewBox="0 0 460 300" width="100%" role="img"
+             aria-label="Net worth components as a vertical bar chart"></svg>
+        <div class="legend">
+          <span><i style="background:#4ea1d3"></i>Assets</span>
+          <span><i style="background:#e07a5f"></i>Liability</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>The labeled lines</h3>
+        <div class="sub">Not the look-alike neighbors</div>
+        <table>
+          <thead><tr><th>Account</th><th class="num">Amount</th><th>Class</th></tr></thead>
+          <tbody>
+            <tr><td>Townhouse, East Sacramento</td><td class="num">$720,000</td><td><span class="pill">restricted</span></td></tr>
+            <tr><td>Retirement account, ending 3318</td><td class="num">$920,000</td><td><span class="pill">restricted</span></td></tr>
+            <tr><td>Brokerage, ending 7745</td><td class="num">$410,000</td><td><span class="pill">liquid</span></td></tr>
+            <tr><td>Savings, ending 6207</td><td class="num">$90,000</td><td><span class="pill">liquid</span></td></tr>
+            <tr><td>Checking, ending 4821</td><td class="num">$12,000</td><td><span class="pill">liquid</span></td></tr>
+            <tr><td>Mortgage, ending 5530</td><td class="num">-$340,000</td><td><span class="pill">liability</span></td></tr>
+            <tr><td><strong>Net worth</strong></td><td class="num"><strong>$1,812,000</strong></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="runway">
+    <h2>Sabbatical runway</h2>
+    <p class="lede">Liquid only. The retirement account is restricted and does not enter
+    the runway. Grouping it in would double the number and lie to me.</p>
+    <div class="cards">
+      <div class="card"><div class="k">Liquid assets</div><div class="v">$512K</div>
+        <div class="d flat">brokerage + savings + checking</div></div>
+      <div class="card"><div class="k">Monthly expenses</div><div class="v">$5,830</div>
+        <div class="d flat">the budget total</div></div>
+      <div class="card"><div class="k">Runway</div><div class="v">88 mo</div>
+        <div class="d up">about 7.3 years</div></div>
+      <div class="card"><div class="k">Three-month ask</div><div class="v">3.4%</div>
+        <div class="d flat">of the liquid runway</div></div>
+    </div>
+    <p class="note">The math forgets one cost: an unpaid stretch means health coverage out of
+    pocket runs higher than the $310 payroll-deducted premium. Budget for it before calling
+    the runway comfortable. The number that flatters me is the number to distrust.</p>
+  </section>
+
+  <section id="about">
+    <h2>How this is kept</h2>
+    <p class="lede">Reviewed the first of every month against refreshed balances, not
+    memorized ones. The dashboard is a record of attention, and attention is the part that
+    compounds. No new large commitment before a decision is made.</p>
+  </section>
+</main>
+
+<footer>
+  Steven Foster &middot; 3145 Folsom Boulevard, Unit 8, Sacramento, CA 95816 &middot;
+  steven.foster@mailcove.net &middot; private household record, not for sharing outside the trusted set.
+</footer>
+
+<script>
+  // ---- data ----
+  var fixed = [
+    {name:"Mortgage", v:2400, c:"fixed"},
+    {name:"Car payment", v:480, c:"fixed"},
+    {name:"Health insurance", v:310, c:"fixed"},
+    {name:"Association dues", v:280, c:"fixed"},
+    {name:"Utilities", v:220, c:"fixed"},
+    {name:"Subscriptions", v:165, c:"fixed"},
+    {name:"Car insurance", v:145, c:"fixed"},
+    {name:"Phone", v:75, c:"fixed"},
+    {name:"Levothyroxine copay", v:30, c:"fixed"}
+  ];
+  var variable = [
+    {name:"Travel fund", v:400, c:"variable"},
+    {name:"Groceries", v:380, c:"variable"},
+    {name:"Dining", v:320, c:"variable"},
+    {name:"Charitable giving", v:200, c:"variable"},
+    {name:"Personal and clothing", v:180, c:"variable"},
+    {name:"Professional development", v:150, c:"variable"},
+    {name:"Gas and charging", v:95, c:"variable"}
+  ];
+  var all = fixed.concat(variable).sort(function(a,b){return b.v-a.v;});
+
+  function drawBars(data, label){
+    var sub = document.getElementById('barSub'); sub.textContent = label;
+    var svg = document.getElementById('barChart');
+    var W=460, rowH=26, pad=120, top=8, max=Math.max.apply(null,data.map(function(d){return d.v;}));
+    var H = top + data.length*rowH + 8;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    var s='';
+    for(var i=0;i<data.length;i++){
+      var d=data[i], y=top+i*rowH+4, w=(W-pad-50)*(d.v/max);
+      var col = d.c==='fixed' ? '#4ea1d3' : '#6fcf97';
+      s+='<text x="0" y="'+(y+13)+'" fill="#8597a8" font-size="12">'+d.name+'</text>';
+      s+='<rect x="'+pad+'" y="'+y+'" width="'+w.toFixed(1)+'" height="16" rx="3" fill="'+col+'"></rect>';
+      s+='<text x="'+(pad+w+6)+'" y="'+(y+13)+'" fill="#dfe7ef" font-size="12">$'+d.v+'</text>';
+    }
+    svg.innerHTML=s;
+  }
+  function setView(v){
+    document.getElementById('bAll').classList.toggle('active', v==='all');
+    document.getElementById('bFix').classList.toggle('active', v==='fixed');
+    document.getElementById('bVar').classList.toggle('active', v==='variable');
+    if(v==='fixed') drawBars(fixed.slice().sort(function(a,b){return b.v-a.v;}),'Fixed costs, dollars per month');
+    else if(v==='variable') drawBars(variable.slice().sort(function(a,b){return b.v-a.v;}),'Variable costs, dollars per month');
+    else drawBars(all,'All lines, dollars per month');
+  }
+
+  function drawNetWorth(){
+    var data=[
+      {name:"Townhouse", v:720, neg:false},
+      {name:"Retirement", v:920, neg:false},
+      {name:"Brokerage", v:410, neg:false},
+      {name:"Savings", v:90, neg:false},
+      {name:"Checking", v:12, neg:false},
+      {name:"Mortgage", v:340, neg:true}
+    ];
+    var svg=document.getElementById('nwChart');
+    var W=460, H=300, base=250, padL=10, barW=54, gap=14, max=920;
+    var s='';
+    s+='<line x1="0" y1="'+base+'" x2="'+W+'" y2="'+base+'" stroke="#28394a"></line>';
+    for(var i=0;i<data.length;i++){
+      var d=data[i], h=(base-20)*(d.v/max), x=padL+i*(barW+gap), y=base-h;
+      var col=d.neg?'#e07a5f':'#4ea1d3';
+      s+='<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+h+'" rx="3" fill="'+col+'"></rect>';
+      s+='<text x="'+(x+barW/2)+'" y="'+(y-6)+'" text-anchor="middle" fill="#dfe7ef" font-size="11">'+d.v+'K</text>';
+      s+='<text x="'+(x+barW/2)+'" y="'+(base+16)+'" text-anchor="middle" fill="#8597a8" font-size="10">'+d.name+'</text>';
+    }
+    svg.innerHTML=s;
+  }
+
+  drawBars(all,'All lines, dollars per month');
+  drawNetWorth();
+</script>
+
+<section class="panel" id="reconcile">
+  <h2>What this page has never been checked against</h2>
+  <p class="lede">Every figure above comes from the budget sheet. The budget sheet came from me.
+  It has not been audited since the day it was made, and a number you have not looked at in two years
+  is a story rather than a measurement.</p>
+  <div class="grid2">
+    <div class="card">
+      <div class="sub">Lines the bank record confirms on its own</div>
+      <ul>
+        <li>Mortgage, $2,400, posts on the 2nd every month</li>
+        <li>HOA, $280, posts on the 3rd</li>
+        <li>Car payment, $480, posts on the 4th</li>
+        <li>The standing $500 transfer to the brokerage</li>
+      </ul>
+      <p class="note">These four I would defend without checking.</p>
+    </div>
+    <div class="card">
+      <div class="sub">Lines nothing outside this page confirms</div>
+      <ul>
+        <li>Phone, $75, rides the card and never appears as a named merchant</li>
+        <li>Health insurance, $310, comes out of payroll before the deposit lands</li>
+        <li>Levothyroxine copay, $30, quarterly in practice, monthly on this page</li>
+        <li>Charitable giving, $200, sits with the peer-payment rail, not the bank</li>
+        <li>Professional development, $150, is a guess with a decimal point on it</li>
+        <li>Personal and clothing, $180, is whatever it was the month I wrote it</li>
+      </ul>
+      <p class="note">Eight categories in total that the checking record cannot see.</p>
+    </div>
+  </div>
+  <h2>The lines I suspect have moved</h2>
+  <table>
+    <thead><tr><th>Line</th><th>On this page</th><th>Why I doubt it</th></tr></thead>
+    <tbody>
+      <tr><td>Dining</td><td>$320</td><td>Kru, the Firehouse, and the delivery app are all in the bank record. I have never added them up.</td></tr>
+      <tr><td>Subscriptions</td><td>$165</td><td>Seven services. Only three show up in the bank record on their own.</td></tr>
+      <tr><td>Groceries</td><td>$380</td><td>Three different merchants. The split between them has drifted.</td></tr>
+      <tr><td>Gas and charging</td><td>$95</td><td>Mostly home charging, which arrives inside the utility bill, not as its own line.</td></tr>
+    </tbody>
+  </table>
+  <p class="note">The gap between what this page says and what actually left the accounts is the whole
+  risk in the runway number on the next panel. Until that is rebuilt from the transaction history rather
+  than from this sheet, the runway figure is an assertion.</p>
+</section>
+
+</body>
+</html>

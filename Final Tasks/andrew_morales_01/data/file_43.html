@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session Request</title>
+<style>
+  :root{--plum:#4a2d5e;--plum2:#33203f;--lav:#b78fd1;--blush:#f3ecf7;--gold:#d9b25a;--ink:#241830;--card:#fff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Century Gothic','Segoe UI',sans-serif;background:linear-gradient(160deg,var(--blush),#e7dcf0);color:var(--ink);min-height:100vh}
+  header{background:var(--plum);color:#f4ecfa;padding:30px 26px;text-align:center}
+  header h1{font-size:1.7rem;letter-spacing:1px}
+  header p{margin-top:6px;opacity:.9;font-size:.95rem}
+  .card{max-width:640px;margin:26px auto;background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(74,45,94,.2);overflow:hidden}
+  .card .body{padding:26px}
+  .field{margin-bottom:18px;animation:slide .5s ease both}
+  .field:nth-child(2){animation-delay:.05s}.field:nth-child(3){animation-delay:.1s}
+  @keyframes slide{from{opacity:0;transform:translateX(-12px)}to{opacity:1}}
+  label{display:block;font-size:.82rem;text-transform:uppercase;letter-spacing:.7px;color:var(--plum);margin-bottom:6px}
+  input,select{width:100%;padding:12px;border:1px solid #d8cae6;border-radius:10px;font-size:1rem;font-family:inherit;transition:border .2s,box-shadow .2s}
+  input:focus,select:focus{outline:none;border-color:var(--lav);box-shadow:0 0 0 3px rgba(183,143,209,.3)}
+  .two{display:flex;gap:14px;flex-wrap:wrap}
+  .two > div{flex:1;min-width:160px}
+  button{width:100%;background:var(--plum);color:#fff;border:none;padding:14px;border-radius:10px;font-size:1.05rem;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:background .2s,transform .1s}
+  button:hover{background:var(--plum2)}
+  button:active{transform:scale(.98)}
+  .msg{margin-top:8px;font-size:.85rem;color:#b3402f;min-height:1em}
+  .summary{margin-top:20px;background:var(--blush);border-left:5px solid var(--gold);border-radius:10px;padding:18px;display:none}
+  .summary.show{display:block;animation:slide .4s ease}
+  .summary h3{color:var(--plum);margin-bottom:10px}
+  .summary .line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #d8cae6}
+  .summary .tot{font-weight:bold;color:var(--plum2);font-size:1.1rem;margin-top:8px}
+  footer{text-align:center;padding:22px;color:var(--plum2);font-size:.84rem}
+  footer a{color:var(--plum);text-decoration:none}
+  @media(max-width:520px){header h1{font-size:1.35rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Session Request</h1>
+  <p>Book harmony, backup, or lead vocals with Andrew Morales</p>
+</header>
+<div class="card">
+  <div class="body">
+    <form id="f" novalidate>
+      <div class="field">
+        <label for="name">Your name or studio</label>
+        <input id="name" type="text" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="type">Session type</label>
+        <select id="type">
+          <option value="250">Harmony stack, standard</option>
+          <option value="300">Backup vocal session</option>
+          <option value="400">Lead or feature vocal</option>
+        </select>
+      </div>
+      <div class="field two">
+        <div>
+          <label for="hours">Hours, three to four typical</label>
+          <input id="hours" type="number" min="1" max="8" value="3">
+        </div>
+        <div>
+          <label for="date">Preferred date</label>
+          <input id="date" type="date" min="2026-10-01" value="2026-10-12">
+        </div>
+      </div>
+      <div class="field">
+        <label for="room">Room</label>
+        <select id="room">
+          <option>Copperline Studios</option>
+          <option>Magnolia Sound</option>
+          <option>Bluebird Track Studio</option>
+        </select>
+      </div>
+      <button type="submit">Request session</button>
+      <div class="msg" id="msg"></div>
+    </form>
+    <div class="summary" id="sum">
+      <h3>Request summary</h3>
+      <div id="lines"></div>
+    </div>
+  </div>
+</div>
+<footer>
+  Andrew Morales, session voice &nbsp;|&nbsp; <a href="mailto:andrew.morales@Greenridertech.co">andrew.morales@Greenridertech.co</a> &nbsp;|&nbsp; East Nashville, TN &nbsp;|&nbsp; Copyright 2026
+</footer>
+<script>
+  var form=document.getElementById("f"),msg=document.getElementById("msg");
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var name=document.getElementById("name").value.trim();
+    var rate=parseInt(document.getElementById("type").value,10);
+    var hours=parseInt(document.getElementById("hours").value,10);
+    var date=document.getElementById("date").value;
+    var room=document.getElementById("room").value;
+    msg.textContent="";
+    if(!name){msg.textContent="Please add a name or studio.";return}
+    if(isNaN(hours)||hours<1||hours>8){msg.textContent="Hours should be between 1 and 8.";return}
+    if(!date){msg.textContent="Please choose a date.";return}
+    var yr=parseInt(date.slice(0,4),10),mo=parseInt(date.slice(5,7),10);
+    if(yr===2026&&mo>=3&&mo<=9){msg.textContent="That window is fully booked. Please pick a fall date.";return}
+    var base=rate*Math.max(1,Math.round(hours/3.5));
+    var total=base;
+    var d=new Date(date+"T00:00:00");
+    var nice=d.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+    document.getElementById("lines").innerHTML=
+      "<div class='line'><span>For</span><span>"+name+"</span></div>"+
+      "<div class='line'><span>Room</span><span>"+room+"</span></div>"+
+      "<div class='line'><span>Date</span><span>"+nice+"</span></div>"+
+      "<div class='line'><span>Hours</span><span>"+hours+"</span></div>"+
+      "<div class='line'><span>Base rate</span><span>$"+rate+"</span></div>"+
+      "<div class='line tot'><span>Estimated total</span><span>$"+total+"</span></div>";
+    document.getElementById("sum").classList.add("show");
+    msg.textContent="Request drafted. Confirmation follows by email.";
+    msg.style.color="#3a7a4a";
+  });
+</script>
+</body>
+</html>

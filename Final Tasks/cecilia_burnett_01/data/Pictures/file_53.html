@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Dashboard</title>
+<style>
+  :root{--bg:#0f1720;--panel:#17222e;--panel2:#1d2a38;--line:#26384a;
+    --txt:#e6edf3;--mut:#8aa0b4;--green:#39c08a;--gold:#e0b64a;--blue:#5aa9e6;--rose:#e07a8b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  .shell{max-width:1180px;margin:0 auto;padding:26px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;
+    padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .top h1{font-size:1.5rem;font-weight:600}
+  .top .sub{color:var(--mut);font-size:.9rem;margin-top:4px}
+  .badge{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:7px 16px;font-size:.8rem;color:var(--mut)}
+  .badge b{color:var(--green)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:22px 0}
+  .kpi{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+  .kpi .lab{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .kpi .val{font-size:1.85rem;font-weight:700;margin:8px 0 2px;
+    opacity:0;transform:translateY(10px);animation:rise .6s forwards}
+  .kpi .delta{font-size:.8rem}
+  .up{color:var(--green)} .down{color:var(--rose)}
+  .kpi::after{content:"";position:absolute;right:-20px;top:-20px;width:80px;height:80px;
+    border-radius:50%;opacity:.12}
+  .k1::after{background:var(--green)} .k2::after{background:var(--gold)}
+  .k3::after{background:var(--blue)} .k4::after{background:var(--rose)}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .tabs{display:flex;gap:6px;margin:8px 0 18px;flex-wrap:wrap}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--mut);
+    padding:9px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+  .tab:hover{color:var(--txt)}
+  .tab.active{background:var(--blue);color:#05121d;border-color:var(--blue);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .panel h2{font-size:1rem;font-weight:600;margin-bottom:4px}
+  .panel .note{color:var(--mut);font-size:.8rem;margin-bottom:16px}
+  .pane{display:none} .pane.show{display:block}
+
+  /* bar chart */
+  .bars{display:flex;align-items:flex-end;gap:26px;height:230px;padding:10px 6px 0}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bar{width:60%;border-radius:6px 6px 0 0;height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .bar-col span{margin-top:10px;font-size:.78rem;color:var(--mut)}
+  .bar-col b{font-size:.78rem;margin-bottom:6px;color:var(--txt)}
+
+  /* legend rows */
+  .row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .row .name{flex:1;font-size:.9rem}
+  .row .amt{font-weight:600;font-size:.9rem}
+  .track{height:7px;background:var(--panel2);border-radius:5px;overflow:hidden;margin-top:14px}
+  .fill{height:100%;width:0;border-radius:5px;transition:width 1.1s ease}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:.8rem;color:var(--mut)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+
+  footer{color:var(--mut);font-size:.78rem;text-align:center;margin-top:26px;
+    padding-top:16px;border-top:1px solid var(--line)}
+  @media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div>
+      <h1>Golden Prairie Nails &mdash; Owner Dashboard</h1>
+      <div class="sub">Consolidated view across Main Street, Orchard Plaza, and Wheaton. Period: Fiscal Year 2025.</div>
+    </div>
+    <div class="badge">Cash on hand <b>$66,244</b> &middot; as of Feb 28, 2026</div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi k1"><div class="lab">Gross Revenue</div><div class="val">$1.21M</div><div class="delta up">FY2025 across 3 sites</div></div>
+    <div class="kpi k2"><div class="lab">Owner Take-Home</div><div class="val">$146,680</div><div class="delta up">after payroll and rent</div></div>
+    <div class="kpi k3"><div class="lab">Monthly Rent</div><div class="val">$14,500</div><div class="delta">3 locations combined</div></div>
+    <div class="kpi k4"><div class="lab">Card Balance</div><div class="val">$4,200</div><div class="delta down">Wheaton equipment</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-p="rev">Revenue by Location</div>
+    <div class="tab" data-p="exp">Expense Breakdown</div>
+    <div class="tab" data-p="fund">Trip Fund Progress</div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="pane show" id="rev">
+        <h2>Annual Revenue by Location</h2>
+        <div class="note">FY2025 gross, US dollars. Main Street remains the flagship.</div>
+        <div class="bars">
+          <div class="bar-col"><b>$548K</b><div class="bar" style="background:var(--green)" data-h="100"></div><span>Main Street</span></div>
+          <div class="bar-col"><b>$402K</b><div class="bar" style="background:var(--gold)" data-h="73"></div><span>Orchard Plaza</span></div>
+          <div class="bar-col"><b>$262K</b><div class="bar" style="background:var(--blue)" data-h="48"></div><span>Wheaton</span></div>
+        </div>
+      </div>
+      <div class="pane" id="exp">
+        <h2>Operating Expenses, FY2025</h2>
+        <div class="note">Largest cost lines. Total operating expenses $1,065,800.</div>
+        <div class="bars">
+          <div class="bar-col"><b>$600K</b><div class="bar" style="background:var(--rose)" data-h="100"></div><span>Payroll</span></div>
+          <div class="bar-col"><b>$174K</b><div class="bar" style="background:var(--gold)" data-h="29"></div><span>Rent</span></div>
+          <div class="bar-col"><b>$119K</b><div class="bar" style="background:var(--blue)" data-h="20"></div><span>Supplies</span></div>
+          <div class="bar-col"><b>$66K</b><div class="bar" style="background:var(--green)" data-h="11"></div><span>Taxes</span></div>
+        </div>
+      </div>
+      <div class="pane" id="fund">
+        <h2>Ireland and Scotland Trip Fund</h2>
+        <div class="note">Goal $15,000 by mid-2027. Balance to date $6,500.</div>
+        <div class="track" style="margin-top:30px;height:18px"><div class="fill" style="background:linear-gradient(90deg,var(--green),var(--gold))" data-w="43"></div></div>
+        <p style="margin-top:14px;color:var(--mut);font-size:.9rem">$6,500 saved &middot; $8,500 remaining &middot; on track at $500 per month.</p>
+        <div class="bars" style="height:150px;margin-top:14px">
+          <div class="bar-col"><b>$5.4K</b><div class="bar" style="background:var(--blue)" data-h="64"></div><span>Dec 2025</span></div>
+          <div class="bar-col"><b>$6.0K</b><div class="bar" style="background:var(--blue)" data-h="71"></div><span>Jan 2026</span></div>
+          <div class="bar-col"><b>$6.5K</b><div class="bar" style="background:var(--green)" data-h="77"></div><span>Feb 2026</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Cash Position</h2>
+      <div class="note">Business checking, ending Feb 2026.</div>
+      <div class="row"><span class="dot" style="background:var(--green)"></span><span class="name">Beginning balance</span><span class="amt">$58,400</span></div>
+      <div class="row"><span class="dot" style="background:var(--blue)"></span><span class="name">Card settlement deposits</span><span class="amt">+$42,572</span></div>
+      <div class="row"><span class="dot" style="background:var(--rose)"></span><span class="name">Payroll, rent, vendors</span><span class="amt">-$34,727</span></div>
+      <div class="row"><span class="dot" style="background:var(--gold)"></span><span class="name">Ending balance</span><span class="amt">$66,244</span></div>
+      <div class="track"><div class="fill" style="background:var(--green)" data-w="88"></div></div>
+      <p style="color:var(--mut);font-size:.8rem;margin-top:10px">Emergency fund held separately at $40,000.</p>
+      <div class="legend">
+        <span><i style="background:var(--green)"></i>Inflow</span>
+        <span><i style="background:var(--rose)"></i>Outflow</span>
+        <span><i style="background:var(--gold)"></i>Balance</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>Prepared for internal review &middot; figures reconcile to the FY2025 profit and loss statement.</footer>
+</div>
+
+<script>
+  function animate(){
+    document.querySelectorAll('.pane.show .bar').forEach(function(b){b.style.height=b.dataset.h+'%';});
+    document.querySelectorAll('.pane.show .fill, .panel .fill').forEach(function(f){f.style.width=f.dataset.w+'%';});
+  }
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('show');});
+      var pane=document.getElementById(t.dataset.p);
+      pane.classList.add('show');
+      pane.querySelectorAll('.bar').forEach(function(b){b.style.height='0';});
+      setTimeout(animate,40);
+    });
+  });
+  window.addEventListener('load',function(){setTimeout(animate,150);});
+</script>
+</body>
+</html>

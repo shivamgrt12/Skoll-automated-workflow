@@ -1,0 +1,162 @@
+[
+  {
+    "id": "4000001",
+    "issue_number": "91",
+    "repo": "ridgeline-queue",
+    "user": "tom-esplin",
+    "body": "I think the root cause is the eager rebalance policy. We could try setting `session.timeout.ms` higher or switching to cooperative sticky rebalance.",
+    "created_at": "2026-12-09T09:00:00Z"
+  },
+  {
+    "id": "4000002",
+    "issue_number": "91",
+    "repo": "ridgeline-queue",
+    "user": "amanda-hayes",
+    "body": "Good call. I'll test cooperative sticky in the staging cluster today. If that reduces p99 by 50%+ we ship it.",
+    "created_at": "2026-12-09T10:00:00Z"
+  },
+  {
+    "id": "4000003",
+    "issue_number": "90",
+    "repo": "ridgeline-queue",
+    "user": "priya-sundaram",
+    "body": "Looks good. One nit: the metric name should match the existing convention `ridgeline.queue.*` not `rcl.queue.*`.",
+    "created_at": "2026-12-07T14:00:00Z"
+  },
+  {
+    "id": "4000004",
+    "issue_number": "90",
+    "repo": "ridgeline-queue",
+    "user": "amanda-hayes",
+    "body": "Fixed in latest commit. Updated all metric names to `ridgeline.queue.*` convention.",
+    "created_at": "2026-12-07T15:00:00Z"
+  },
+  {
+    "id": "4000005",
+    "issue_number": "41",
+    "repo": "ridgeline-compute",
+    "user": "tom-esplin",
+    "body": "Draft PR up. Cap is set to 1000 in-flight jobs. Backpressure signal fires when queue depth hits 800.",
+    "created_at": "2026-12-10T12:00:00Z"
+  },
+  {
+    "id": "4000006",
+    "issue_number": "41",
+    "repo": "ridgeline-compute",
+    "user": "amanda-hayes",
+    "body": "Thanks Tom. Let me know when you're ready for review. I want to add a load test in staging before we merge — can you add a test job to the PR?",
+    "created_at": "2026-12-10T13:00:00Z"
+  },
+  {
+    "id": "4000007",
+    "issue_number": "7",
+    "repo": "rcl-infra",
+    "user": "rachel-nguyen",
+    "body": "Staging upgrade is done and looking healthy. Will kick off the production node group upgrade on Monday morning during low-traffic window.",
+    "created_at": "2026-12-06T14:00:00Z"
+  },
+  {
+    "id": "4000008",
+    "issue_number": "7",
+    "repo": "rcl-infra",
+    "user": "amanda-hayes",
+    "body": "+1. Make sure the PDB is in place before starting the rollout. We got caught without one last quarter.",
+    "created_at": "2026-12-06T15:00:00Z"
+  },
+  {
+    "id": "4000009",
+    "issue_number": "13",
+    "repo": "wasatch-gear-tracker",
+    "user": "amanda-hayes",
+    "body": "Started on this. Kings Peak and Uintas High Route waypoints are in. Will add Mirror Lake corridor this weekend.",
+    "created_at": "2026-11-25T10:00:00Z"
+  },
+  {
+    "id": "4000010",
+    "issue_number": "22",
+    "repo": "ridgeline-api",
+    "user": "rachel-nguyen",
+    "body": "PR merged. Ran the SLO burn rate report for the past 7 days and the 2% miss is gone — down to 0.1%.",
+    "created_at": "2026-03-12T12:00:00Z"
+  },
+  {
+    "id": "4000011",
+    "issue_number": "21",
+    "repo": "ridgeline-api",
+    "user": "priya-sundaram",
+    "body": "I have spans working for `/compute.JobService/SubmitJob` and `/queue.ProducerService/Publish`. The remaining handlers are in progress.",
+    "created_at": "2026-11-10T10:00:00Z"
+  },
+  {
+    "id": "4000012",
+    "issue_number": "21",
+    "repo": "ridgeline-api",
+    "user": "amanda-hayes",
+    "body": "Looking good. Make sure to tag the span with `rpc.service` and `rpc.method` per the OpenTelemetry semantic conventions.",
+    "created_at": "2026-11-11T09:00:00Z"
+  },
+  {
+    "id": "4000013",
+    "issue_number": "9",
+    "repo": "ridgeline-auth",
+    "user": "jake-navarro",
+    "body": "Proposed fix: increase `REFRESH_TOKEN_GRACE_PERIOD_SECS` env var default from 2 to 30. Added a feature flag so we can tune per-environment.",
+    "created_at": "2026-11-27T10:00:00Z"
+  },
+  {
+    "id": "4000014",
+    "issue_number": "9",
+    "repo": "ridgeline-auth",
+    "user": "amanda-hayes",
+    "body": "30 seconds sounds right. Make sure the grace period is bounded and we still reject tokens used after revocation.",
+    "created_at": "2026-11-27T11:00:00Z"
+  },
+  {
+    "id": "4000015",
+    "issue_number": "4",
+    "repo": "rcl-cli",
+    "user": "priya-sundaram",
+    "body": "PR is ready for review. Uses Server-Sent Events under the hood to stream log lines. Works in both `--follow` and one-shot modes.",
+    "created_at": "2026-11-28T15:00:00Z"
+  },
+  {
+    "id": "4000016",
+    "issue_number": "4",
+    "repo": "rcl-cli",
+    "user": "amanda-hayes",
+    "body": "Nice implementation. One request: add a `--since` flag so users can replay the last N lines before following live, like `docker logs --tail N --follow`.",
+    "created_at": "2026-11-28T09:00:00Z"
+  },
+  {
+    "id": "4000017",
+    "issue_number": "3",
+    "repo": "rcl-terraform-provider",
+    "user": "jake-navarro",
+    "body": "I'll implement a polling loop on the workspace status endpoint. Will use exponential backoff with a max wait of 10 minutes before failing.",
+    "created_at": "2026-11-16T10:00:00Z"
+  },
+  {
+    "id": "4000018",
+    "issue_number": "90",
+    "repo": "ridgeline-queue",
+    "user": "jake-navarro",
+    "body": "For compacted topics we need to decide: do we implement at the client layer by key-deduplicating on publish, or do we need Redpanda-native log compaction? I lean native.",
+    "created_at": "2026-12-11T08:00:00Z"
+  },
+  {
+    "id": "4000019",
+    "issue_number": "90",
+    "repo": "ridgeline-queue",
+    "user": "amanda-hayes",
+    "body": "Agreed, native compaction is the right call. The client-layer approach would break ordering guarantees for changelog consumers.",
+    "created_at": "2026-12-11T09:00:00Z"
+  },
+  {
+    "id": "4000020",
+    "issue_number": "23",
+    "repo": "ridgeline-api",
+    "user": "rachel-nguyen",
+    "body": "We should add an allowlist for trusted proxy CIDRs in the config rather than trusting all X-Forwarded-For headers — otherwise this is trivially spoofable.",
+    "created_at": "2026-11-28T10:00:00Z"
+  }
+]

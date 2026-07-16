@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantern Tides, playtest dashboard</title>
+<style>
+  :root{--ink:#16151d;--panel:#211f2b;--panel2:#2a2836;--cream:#f4eee2;--mut:#9a9488;
+        --lant:#d99a3f;--river:#6fa3b0;--pine:#7fae73;--bad:#c96a55;--line:#34323d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--cream);font-family:"Segoe UI",Verdana,sans-serif;line-height:1.5}
+  header{position:sticky;top:0;background:rgba(22,21,29,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:5}
+  .head{max-width:1000px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .head h1{margin:0;font-size:21px;font-weight:600}
+  .head .sub{color:var(--mut);font-size:13px}
+  .badge{font-size:12px;color:var(--lant);border:1px solid var(--lant);border-radius:999px;padding:5px 12px;letter-spacing:.03em}
+  .wrap{max-width:1000px;margin:0 auto;padding:26px 24px 40px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:640px){.kpis{grid-template-columns:1fr 1fr}}
+  .kpi{background:var(--panel);border-radius:12px;padding:18px;animation:rise .5s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .kpi .n{font-size:30px;font-weight:700}
+  .kpi .l{color:var(--mut);font-size:13px;margin-top:4px}
+  .tabs{display:flex;gap:8px;margin:30px 0 16px}
+  .tabs button{font:inherit;font-size:14px;background:var(--panel);color:var(--mut);border:1px solid var(--line);
+    padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .2s ease}
+  .tabs button:hover{color:var(--cream)}
+  .tabs button.on{background:var(--lant);color:#241a08;border-color:var(--lant);font-weight:600}
+  .panel{background:var(--panel);border-radius:14px;padding:22px}
+  .view{display:none}.view.on{display:block}
+  .bars{display:flex;flex-direction:column;gap:16px;margin-top:6px}
+  .barrow{display:grid;grid-template-columns:160px 1fr 46px;align-items:center;gap:14px}
+  @media(max-width:560px){.barrow{grid-template-columns:104px 1fr 38px}}
+  .barrow .lab{font-size:14px;color:var(--cream)}
+  .track{background:var(--panel2);border-radius:7px;height:26px;overflow:hidden}
+  .fill{height:100%;border-radius:7px;width:var(--w);animation:grow 1.05s cubic-bezier(.2,.7,.2,1)}
+  @keyframes grow{from{width:0}to{width:var(--w)}}
+  .barrow .val{font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:18px}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--mut);font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .note{color:var(--mut);font-size:13px;margin-top:18px}
+  footer{border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+  .foot{max-width:1000px;margin:0 auto;padding:22px 24px 50px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .foot a{color:var(--river);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div>
+      <h1>Lantern Tides, playtest dashboard</h1>
+      <div class="sub">Closed rounds, January 4 to February 10, 2026</div>
+    </div>
+    <span class="badge">build 0.6.5-vslice</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi"><div class="n">20</div><div class="l">sessions logged</div></div>
+    <div class="kpi"><div class="n">9 to 34</div><div class="l">minutes per session</div></div>
+    <div class="kpi"><div class="n">2</div><div class="l">crashes, same scene</div></div>
+    <div class="kpi"><div class="n">0</div><div class="l">softlocks after 0.6.2</div></div>
+  </div>
+
+  <div class="tabs" role="group" aria-label="Switch view">
+    <button class="on" data-v="funnel">Chapter funnel</button>
+    <button data-v="builds">Sessions by build</button>
+  </div>
+
+  <section class="view on" id="funnel">
+    <div class="panel">
+      <div class="bars">
+        <div class="barrow"><span class="lab">Festival</span><div class="track"><div class="fill" style="--w:100%;background:#7fae73"></div></div><span class="val">20</span></div>
+        <div class="barrow"><span class="lab">General store</span><div class="track"><div class="fill" style="--w:85%;background:#7fae73"></div></div><span class="val">17</span></div>
+        <div class="barrow"><span class="lab">River road</span><div class="track"><div class="fill" style="--w:65%;background:#d99a3f"></div></div><span class="val">13</span></div>
+        <div class="barrow"><span class="lab">Night sky teaser</span><div class="track"><div class="fill" style="--w:35%;background:#c96a55"></div></div><span class="val">7</span></div>
+      </div>
+      <p class="note">Furthest scene reached, out of twenty sessions. The teaser ends at a soft wall before the unfinished night sky area, gated for the showcase demo on November 8, 2026.</p>
+    </div>
+  </section>
+
+  <section class="view" id="builds">
+    <div class="panel">
+      <div class="bars">
+        <div class="barrow"><span class="lab">0.6.2-vslice</span><div class="track"><div class="fill" style="--w:83%;background:#6fa3b0"></div></div><span class="val">5</span></div>
+        <div class="barrow"><span class="lab">0.6.3-vslice</span><div class="track"><div class="fill" style="--w:100%;background:#6fa3b0"></div></div><span class="val">6</span></div>
+        <div class="barrow"><span class="lab">0.6.4-vslice</span><div class="track"><div class="fill" style="--w:83%;background:#6fa3b0"></div></div><span class="val">5</span></div>
+        <div class="barrow"><span class="lab">0.6.5-vslice</span><div class="track"><div class="fill" style="--w:66%;background:#6fa3b0"></div></div><span class="val">4</span></div>
+      </div>
+      <table>
+        <thead><tr><th>Build</th><th class="num">Sessions</th><th class="num">Completed a chapter</th><th class="num">Softlocks</th><th class="num">Crashes</th></tr></thead>
+        <tbody>
+          <tr><td>0.6.2-vslice</td><td class="num">5</td><td class="num">2</td><td class="num">1</td><td class="num">0</td></tr>
+          <tr><td>0.6.3-vslice</td><td class="num">6</td><td class="num">3</td><td class="num">0</td><td class="num">1</td></tr>
+          <tr><td>0.6.4-vslice</td><td class="num">5</td><td class="num">2</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>0.6.5-vslice</td><td class="num">4</td><td class="num">2</td><td class="num">0</td><td class="num">1</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Softlocks drop to zero after the bridge fix in 0.6.3. Both crashes trace to the same unfinished night sky edge, now behind the soft wall.</p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="foot">
+    <span>Lantern Tides devlog, source data from twenty closed playtest sessions.</span>
+    <a href="https://angelabrooks.design/devlog">angelabrooks.design/devlog</a>
+  </div>
+</footer>
+
+<script>
+  var tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(function(b){
+    b.addEventListener('click', function(){
+      tabs.forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      var v = b.getAttribute('data-v');
+      document.querySelectorAll('.view').forEach(function(s){ s.classList.remove('on'); });
+      var view = document.getElementById(v);
+      view.classList.add('on');
+      view.querySelectorAll('.fill').forEach(function(el){
+        el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+      });
+    });
+  });
+</script>
+</body>
+</html>

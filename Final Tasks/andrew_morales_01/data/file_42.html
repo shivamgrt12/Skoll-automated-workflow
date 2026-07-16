@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Money Pulse</title>
+<style>
+  :root{--teal:#0f7a6e;--teal2:#0b5d54;--mint:#e6f5f1;--leaf:#3fb89a;--coral:#e08a5b;--ink:#1f2d2a;--card:#ffffff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--mint);color:var(--ink)}
+  header{background:var(--teal);color:#eafaf6;padding:24px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  header h1{font-size:1.5rem}
+  header .who{font-size:.9rem;opacity:.9}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 18px 60px}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
+  .stat{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 3px 10px rgba(15,122,110,.12);border-bottom:4px solid var(--leaf);transition:transform .25s}
+  .stat:hover{transform:translateY(-4px)}
+  .stat .l{font-size:.78rem;color:var(--teal2);text-transform:uppercase;letter-spacing:.6px}
+  .stat .n{font-size:1.5rem;font-weight:bold;color:var(--teal);margin-top:5px}
+  .panel{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 4px 14px rgba(15,122,110,.12);margin-bottom:22px}
+  .panel h2{color:var(--teal2);margin-bottom:14px;font-size:1.15rem}
+  .flex{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+  canvas{max-width:100%}
+  .legend{list-style:none;font-size:.92rem}
+  .legend li{margin:6px 0;display:flex;align-items:center}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block;margin-right:8px}
+  .calc label{display:block;font-size:.85rem;margin:10px 0 4px;color:var(--teal2)}
+  .calc input{width:100%;padding:10px;border:1px solid #bcd9d2;border-radius:8px;font-size:1rem}
+  .calc button{margin-top:14px;background:var(--teal);color:#fff;border:none;padding:11px 22px;border-radius:8px;cursor:pointer;font-size:1rem;transition:background .2s}
+  .calc button:hover{background:var(--teal2)}
+  .result{margin-top:14px;padding:14px;border-radius:10px;background:var(--mint);font-weight:bold;color:var(--teal2);opacity:0;transition:opacity .4s}
+  .result.show{opacity:1}
+  .err{color:var(--coral)}
+  footer{text-align:center;padding:20px;color:var(--teal2);font-size:.84rem}
+  footer a{color:var(--teal);text-decoration:none}
+  @media(max-width:560px){header h1{font-size:1.2rem}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Money Pulse</h1><div class="who">Personal ledger snapshot, February 2026</div></div>
+  <div class="who">Andrew Morales, East Nashville</div>
+</header>
+<div class="wrap">
+  <div class="row">
+    <div class="stat"><div class="l">Gross, year</div><div class="n">$82,500</div></div>
+    <div class="stat"><div class="l">Sessions</div><div class="n">$55,000</div></div>
+    <div class="stat"><div class="l">Publishing</div><div class="n">$24,000</div></div>
+    <div class="stat"><div class="l">Royalties</div><div class="n">$3,500</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Where the month goes</h2>
+    <div class="flex">
+      <canvas id="donut" width="240" height="240"></canvas>
+      <ul class="legend" id="leg"></ul>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Reserves</h2>
+    <p style="margin-bottom:10px">Held at Heartland Credit Union.</p>
+    <canvas id="bars" width="600" height="180"></canvas>
+  </div>
+
+  <div class="panel calc">
+    <h2>EP finish-line planner</h2>
+    <p style="font-size:.9rem">About $2,800 remains to budget for final tracking, mix, and master. Enter what you can set aside each month to see the timeline.</p>
+    <label for="amt">Monthly set-aside, in dollars</label>
+    <input id="amt" type="number" min="1" inputmode="numeric">
+    <button id="go">Calculate</button>
+    <div class="result" id="out"></div>
+  </div>
+</div>
+<footer>
+  Andrew Morales &nbsp;|&nbsp; <a href="mailto:andrew.morales@Greenridertech.co">andrew.morales@Greenridertech.co</a> &nbsp;|&nbsp; East Nashville, TN &nbsp;|&nbsp; Copyright 2026
+</footer>
+<script>
+  var spend=[
+    ["Rent",1450,"#0f7a6e"],["Groceries",350,"#3fb89a"],["To Mama",300,"#7fd0bd"],
+    ["Rideshare",200,"#e08a5b"],["Therapy copay",120,"#c98b57"],["Utilities",120,"#9bc7bd"],
+    ["Yoga",89,"#5aa899"],["Phone",65,"#356b62"]
+  ];
+  var total=spend.reduce(function(a,b){return a+b[1]},0);
+  // donut
+  var c=document.getElementById("donut").getContext("2d"),cx=120,cy=120,R=92,r=52,a0=-Math.PI/2;
+  var leg=document.getElementById("leg");
+  function drawDonut(p){
+    c.clearRect(0,0,240,240);var ang=a0;
+    spend.forEach(function(s){
+      var slice=s[1]/total*Math.PI*2*p;
+      c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R,ang,ang+slice);c.closePath();
+      c.fillStyle=s[2];c.fill();ang+=slice;
+    });
+    c.globalCompositeOperation="destination-out";
+    c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();
+    c.globalCompositeOperation="source-over";
+    c.fillStyle="#1f2d2a";c.font="bold 18px Segoe UI";c.textAlign="center";
+    c.fillText("$"+total,cx,cy+6);
+  }
+  spend.forEach(function(s){
+    leg.innerHTML+="<li><i style='background:"+s[2]+"'></i>"+s[0]+" &nbsp;$"+s[1]+"</li>";
+  });
+  var prog=0,t=setInterval(function(){prog+=0.05;if(prog>=1){prog=1;clearInterval(t)}drawDonut(prog)},25);
+  // bars
+  var b=document.getElementById("bars").getContext("2d");
+  var res=[["Checking",8200],["Savings",4500]],bmax=9000;
+  res.forEach(function(d,i){
+    var w=d[1]/bmax*420,y=40+i*70;
+    b.fillStyle=i?"#3fb89a":"#0f7a6e";
+    var grow=0,iv=setInterval(function(){grow+=w/20;if(grow>=w){grow=w;clearInterval(iv)}
+      b.clearRect(120,y,460,40);b.fillRect(120,y,grow,40);},20);
+    b.fillStyle="#1f2d2a";b.font="14px Segoe UI";b.textAlign="right";b.fillText(d[0],112,y+25);
+    b.textAlign="left";b.fillText("$"+d[1],124+w,y+25);
+  });
+  // calculator
+  document.getElementById("go").addEventListener("click",function(){
+    var out=document.getElementById("out");out.classList.add("show");
+    var v=parseFloat(document.getElementById("amt").value);
+    if(isNaN(v)||v<=0){out.innerHTML="<span class='err'>Enter a monthly amount greater than zero.</span>";return}
+    var months=Math.ceil(2800/v);
+    out.innerHTML="At $"+v+" a month, the remaining $2,800 is covered in "+months+" month"+(months>1?"s":"")+". Pitching opens in October 2026.";
+  });
+</script>
+</body>
+</html>

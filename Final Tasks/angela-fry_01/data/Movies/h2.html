@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Century Training Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#15171c;--panel:#1f232b;--line:#2c313b;--orange:#e07b39;--sand:#f6eadd;--text:#e7e3da;--muted:#9aa1ad}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:#15171c;color:#e7e3da}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;
+    background:#1f232b;border-bottom:2px solid var(--orange)}
+  header h1{font-size:1.2rem;color:var(--orange);letter-spacing:.5px}
+  header .who{color:#9aa1ad;font-size:.9rem}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px}
+  .count{background:linear-gradient(135deg,#e07b39,#9c4a1e);border-radius:16px;padding:26px;text-align:center;color:#fff;margin-bottom:24px}
+  .count .big{font-size:3rem;font-weight:800;line-height:1}
+  .count .lbl{opacity:.9;margin-top:6px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px}
+  .stat{background:#1f232b;border:1px solid #2c313b;border-radius:14px;padding:18px}
+  .stat .n{font-size:1.7rem;font-weight:700;color:var(--orange)}
+  .stat .c{color:#9aa1ad;font-size:.85rem;margin-top:4px}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .tab{background:#1f232b;border:1px solid #2c313b;color:#e7e3da;padding:10px 18px;border-radius:30px;cursor:pointer;transition:.2s}
+  .tab:hover{border-color:var(--orange)}
+  .tab.active{background:var(--orange);border-color:var(--orange);color:#15171c;font-weight:700}
+  .panel{background:#1f232b;border:1px solid #2c313b;border-radius:16px;padding:22px;margin-bottom:24px}
+  .panel h2{font-size:1.1rem;margin-bottom:16px;color:#f6eadd}
+  .view{display:none;animation:fade .4s}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  svg{width:100%;height:auto;display:block}
+  .bar{transition:height .8s cubic-bezier(.2,.8,.2,1),y .8s cubic-bezier(.2,.8,.2,1)}
+  .zone{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2c313b}
+  .zone:last-child{border:none}
+  .swatch{width:16px;height:16px;border-radius:4px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:11px 10px;text-align:left;border-bottom:1px solid #2c313b;font-size:.92rem}
+  th{color:#9aa1ad;font-weight:600}
+  footer{border-top:1px solid #2c313b;color:#9aa1ad;text-align:center;padding:26px;font-size:.85rem}
+  footer span{color:var(--orange)}
+  @media(max-width:640px){
+    header{flex-direction:column;gap:6px;text-align:center}
+    .count .big{font-size:2.3rem}
+    .tabs{justify-content:center}
+    .tab{flex:1 1 auto;text-align:center}
+    .stat .n{font-size:1.4rem}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Century Training Dashboard</h1>
+  <div class="who">Angela Fry, bib 417</div>
+</header>
+<div class="wrap">
+
+  <div class="count">
+    <div class="big" id="days">--</div>
+    <div class="lbl">days to the Gold Country Century, Sunday, October 18, 2026</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">1,180</div><div class="c">miles this block</div></div>
+    <div class="stat"><div class="n">112</div><div class="c">longest week, miles</div></div>
+    <div class="stat"><div class="n">142</div><div class="c">average ride heart rate</div></div>
+    <div class="stat"><div class="n">3</div><div class="c">rides per week</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-v="mileage">Weekly mileage</button>
+    <button class="tab" data-v="zones">Heart rate zones</button>
+    <button class="tab" data-v="rides">Recent rides</button>
+  </div>
+
+  <div class="panel">
+    <div class="view on" id="mileage">
+      <h2>Weekly mileage into the peak</h2>
+      <svg viewBox="0 0 700 280" id="chart" role="img" aria-label="Weekly mileage chart"></svg>
+    </div>
+
+    <div class="view" id="zones">
+      <h2>Training heart rate zones</h2>
+      <div class="zone"><span class="swatch" style="background:#3a7d44"></span><strong>Zone 1, recovery</strong><span style="margin-left:auto;color:#9aa1ad">below 120</span></div>
+      <div class="zone"><span class="swatch" style="background:#6fae3f"></span><strong>Zone 2, endurance</strong><span style="margin-left:auto;color:#9aa1ad">120 to 140</span></div>
+      <div class="zone"><span class="swatch" style="background:#e0b53a"></span><strong>Zone 3, tempo</strong><span style="margin-left:auto;color:#9aa1ad">141 to 155</span></div>
+      <div class="zone"><span class="swatch" style="background:#e07b39"></span><strong>Zone 4, threshold</strong><span style="margin-left:auto;color:#9aa1ad">156 to 168</span></div>
+      <div class="zone"><span class="swatch" style="background:#b23b2e"></span><strong>Zone 5, hard</strong><span style="margin-left:auto;color:#9aa1ad">169 and up</span></div>
+    </div>
+
+    <div class="view" id="rides">
+      <h2>Recent rides with Marcus</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Route</th><th>Miles</th><th>Avg HR</th></tr></thead>
+        <tbody>
+          <tr><td>Feb 14</td><td>Sloughhouse loop</td><td>64.2</td><td>141</td></tr>
+          <tr><td>Feb 07</td><td>Latrobe Road</td><td>52.0</td><td>145</td></tr>
+          <tr><td>Jan 31</td><td>Folsom to Auburn</td><td>58.7</td><td>139</td></tr>
+          <tr><td>Jan 24</td><td>Latrobe to Plymouth</td><td>60.4</td><td>142</td></tr>
+          <tr><td>Jan 17</td><td>Sloughhouse loop</td><td>55.3</td><td>140</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<footer>Logged from the <span>Garmin Edge 530</span>. Steady, not fast. Built by Angela Fry for the long Saturday rides.</footer>
+
+<script>
+  // countdown from a reference build date to the event (no live clock dependency for reproducibility)
+  var event=new Date('2026-10-18T07:00:00');
+  var ref=new Date('2026-02-18T08:00:00');
+  var days=Math.round((event-ref)/86400000);
+  document.getElementById('days').textContent=days;
+
+  // SVG bar chart
+  var weeks=[['W4',50],['W6',78],['W8',60],['W10',100],['W12',72],['W13',112],['W16',100]];
+  var svg=document.getElementById('chart');
+  var W=700,H=280,pad=34,max=120;
+  var bw=(W-pad*2)/weeks.length*0.6, gap=(W-pad*2)/weeks.length;
+  weeks.forEach(function(d,i){
+    var x=pad+i*gap+gap*0.2;
+    var h=(d[1]/max)*(H-pad*2);
+    var y=H-pad-h;
+    var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('class','bar'); r.setAttribute('x',x); r.setAttribute('width',bw);
+    r.setAttribute('y',H-pad); r.setAttribute('height',0); r.setAttribute('rx',5); r.setAttribute('fill','#e07b39');
+    svg.appendChild(r);
+    setTimeout(function(){ r.setAttribute('y',y); r.setAttribute('height',h); }, 80+i*90);
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x+bw/2); t.setAttribute('y',H-pad+18); t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill','#9aa1ad'); t.setAttribute('font-size','12'); t.textContent=d[0]; svg.appendChild(t);
+    var v=document.createElementNS('http://www.w3.org/2000/svg','text');
+    v.setAttribute('x',x+bw/2); v.setAttribute('y',y-6); v.setAttribute('text-anchor','middle');
+    v.setAttribute('fill','#f6eadd'); v.setAttribute('font-size','12'); v.textContent=d[1]; svg.appendChild(v);
+  });
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.view').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('active');
+      document.getElementById(b.dataset.v).classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>

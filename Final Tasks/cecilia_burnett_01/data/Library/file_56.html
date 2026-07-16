@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Board</title>
+<style>
+  :root{--bg:#fbf7f4;--ink:#332b2e;--rose:#b9758a;--rose-d:#8f5269;--line:#ecdfe2;--soft:#f3e7ec}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Trebuchet MS',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  header{text-align:center;padding:64px 22px 40px;
+    background:radial-gradient(circle at 50% 0,var(--soft),var(--bg) 70%)}
+  header .ey{letter-spacing:.32em;text-transform:uppercase;font-size:.72rem;color:var(--rose);margin-bottom:14px}
+  header h1{font-size:2.6rem;font-family:Georgia,serif;margin-bottom:12px}
+  header p{color:#7a6e72;max-width:520px;margin:0 auto}
+
+  .filters{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:34px 0 30px}
+  .f{background:#fff;border:1px solid var(--line);color:#7a6e72;border-radius:24px;
+    padding:9px 20px;cursor:pointer;font-size:.85rem;transition:all .25s}
+  .f:hover{border-color:var(--rose)}
+  .f.active{background:var(--rose);color:#fff;border-color:var(--rose)}
+
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:60px}
+  .tile{border-radius:12px;overflow:hidden;cursor:pointer;position:relative;aspect-ratio:1/1;
+    border:1px solid var(--line);transition:transform .35s,box-shadow .35s;
+    opacity:0;transform:scale(.94);animation:pop .5s forwards}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .tile:hover{transform:translateY(-5px);box-shadow:0 16px 36px rgba(140,80,105,.2)}
+  .swatch{position:absolute;inset:0}
+  .cap{position:absolute;left:0;right:0;bottom:0;padding:16px;color:#fff;
+    background:linear-gradient(transparent,rgba(40,25,32,.82));
+    transform:translateY(8px);opacity:.92;transition:all .3s}
+  .tile:hover .cap{transform:none;opacity:1}
+  .cap b{display:block;font-size:1.02rem}
+  .cap span{font-size:.78rem;opacity:.85}
+  .tag{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.85);color:var(--rose-d);
+    font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:14px}
+
+  .hidden{display:none}
+
+  /* lightbox */
+  .lb{position:fixed;inset:0;background:rgba(35,20,28,.86);display:none;
+    align-items:center;justify-content:center;padding:24px;z-index:60}
+  .lb.open{display:flex}
+  .lb-card{background:#fff;border-radius:14px;max-width:440px;width:100%;overflow:hidden;
+    transform:scale(.92);transition:transform .3s}
+  .lb.open .lb-card{transform:none}
+  .lb-sw{height:230px}
+  .lb-body{padding:24px}
+  .lb-body h3{font-family:Georgia,serif;font-size:1.5rem;margin-bottom:6px}
+  .lb-body .meta{color:#7a6e72;font-size:.85rem;margin-bottom:14px}
+  .lb-body .chips span{display:inline-block;background:var(--soft);color:var(--rose-d);
+    border-radius:14px;padding:5px 12px;font-size:.76rem;margin:0 6px 6px 0}
+  .close{float:right;cursor:pointer;color:#fff;font-size:1.6rem;line-height:1;
+    background:none;border:0;margin:-6px -4px 0 0}
+  footer{text-align:center;color:#9a8d91;font-size:.8rem;padding:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="ey">Salon Inspiration Board</div>
+  <h1>Golden Prairie Design Studio</h1>
+  <p>The looks our techs reference each season, curated from estate-sale color stories and trends we test before they ever reach a client's hands.</p>
+</header>
+
+<div class="wrap">
+  <div class="filters">
+    <button class="f active" data-cat="all">All</button>
+    <button class="f" data-cat="Spring">Spring</button>
+    <button class="f" data-cat="Prom">Prom</button>
+    <button class="f" data-cat="Holiday">Holiday</button>
+    <button class="f" data-cat="Year Round">Year Round</button>
+    <button class="f" data-cat="Fall">Fall</button>
+  </div>
+
+  <div class="gal" id="gal"></div>
+</div>
+
+<div class="lb" id="lb">
+  <div class="lb-card">
+    <div class="lb-sw" id="lbSw"></div>
+    <div class="lb-body">
+      <button class="close" id="lbClose" style="color:#332b2e">&times;</button>
+      <h3 id="lbName"></h3>
+      <div class="meta" id="lbMeta"></div>
+      <div class="chips" id="lbChips"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Curated by Cecilia &middot; refreshed each season for all three locations.</footer>
+
+<script>
+  var designs=[
+    {n:"Soft Prairie Ombre",cat:"Spring",style:"Ombre",col:"Blush to cream",loc:"All Locations",g:"linear-gradient(135deg,#f6d8d2,#fff4ec)"},
+    {n:"Holiday Gold Foil Tips",cat:"Holiday",style:"French Variation",col:"Nude and gold",loc:"Main Street",g:"linear-gradient(135deg,#e9cf9a,#7a5c2e)"},
+    {n:"Lavender Marble",cat:"Spring",style:"Marble",col:"Lavender and white",loc:"Wheaton",g:"linear-gradient(135deg,#cdbce6,#f3eefa)"},
+    {n:"Prom Glass Chrome",cat:"Prom",style:"Chrome",col:"Silver and lilac",loc:"Orchard Plaza",g:"linear-gradient(135deg,#c9c9d6,#9f86c0)"},
+    {n:"Minimal Riverwalk Lines",cat:"Year Round",style:"Line Art",col:"Sage and tan",loc:"All Locations",g:"linear-gradient(135deg,#b7c2a2,#e7e0cf)"},
+    {n:"Vintage Cameo Accent",cat:"Year Round",style:"Hand Painted",col:"Ivory and rose",loc:"Main Street",g:"linear-gradient(135deg,#f0e2d6,#d59ca9)"},
+    {n:"Autumn Plaid Tips",cat:"Fall",style:"Hand Painted",col:"Rust and gold",loc:"Wheaton",g:"linear-gradient(135deg,#b5642f,#d9a64a)"},
+    {n:"Petal Press Gel",cat:"Spring",style:"Pressed Floral",col:"Pink and sage",loc:"Orchard Plaza",g:"linear-gradient(135deg,#f3c6cf,#bcd0a8)"},
+    {n:"Midnight Prom Sparkle",cat:"Prom",style:"Glitter Fade",col:"Navy and silver",loc:"Main Street",g:"linear-gradient(135deg,#27324a,#8893b0)"}
+  ];
+
+  var gal=document.getElementById('gal');
+  function render(cat){
+    gal.innerHTML="";
+    designs.forEach(function(d,i){
+      if(cat!=="all" && d.cat!==cat) return;
+      var t=document.createElement('div');
+      t.className="tile";
+      t.style.animationDelay=(i*0.05)+"s";
+      t.innerHTML='<div class="swatch" style="background:'+d.g+'"></div>'+
+        '<span class="tag">'+d.cat+'</span>'+
+        '<div class="cap"><b>'+d.n+'</b><span>'+d.style+'</span></div>';
+      t.addEventListener('click',function(){openLb(d);});
+      gal.appendChild(t);
+    });
+  }
+  var filters=document.querySelectorAll('.f');
+  filters.forEach(function(f){
+    f.addEventListener('click',function(){
+      filters.forEach(function(x){x.classList.remove('active');});
+      f.classList.add('active');
+      render(f.dataset.cat);
+    });
+  });
+
+  var lb=document.getElementById('lb');
+  function openLb(d){
+    document.getElementById('lbSw').style.background=d.g;
+    document.getElementById('lbName').textContent=d.n;
+    document.getElementById('lbMeta').textContent=d.style+" &middot; "+d.loc;
+    document.getElementById('lbMeta').innerHTML=d.style+" &middot; "+d.loc;
+    document.getElementById('lbChips').innerHTML="<span>"+d.col+"</span><span>"+d.cat+"</span>";
+    lb.classList.add('open');
+  }
+  document.getElementById('lbClose').addEventListener('click',function(){lb.classList.remove('open');});
+  lb.addEventListener('click',function(e){if(e.target===lb)lb.classList.remove('open');});
+
+  render("all");
+</script>
+</body>
+</html>
