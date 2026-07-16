@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mile Marker</title>
+<style>
+  :root{
+    --bg:#0f141b; --panel:#161e29; --panel2:#1d2733; --line:#2a3848;
+    --txt:#e7edf3; --muted:#8ea2b6; --amber:#f0a23b; --amber2:#ffc775; --green:#4cc38a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:20;background:rgba(15,20,27,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .nav{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.4px}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(240,162,59,.18)}
+  .nav nav{display:flex;gap:6px;flex-wrap:wrap}
+  .nav button{background:transparent;border:1px solid transparent;color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;transition:.2s}
+  .nav button:hover{color:var(--txt);border-color:var(--line)}
+  .nav button.active{color:#10161e;background:var(--amber);font-weight:600}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+  .hero{padding:26px 0 8px}
+  .hero h1{font-size:30px;font-weight:700}
+  .hero p{color:var(--muted);margin-top:6px;max-width:640px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(4,1fr);margin:22px 0}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:18px;opacity:0;transform:translateY(14px);animation:rise .6s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .num{font-size:30px;font-weight:700;color:var(--amber2)}
+  .kpi .lab{color:var(--muted);font-size:13px;margin-top:4px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px}
+  .panel h2{font-size:17px;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .tabbtns{display:flex;gap:8px;margin:6px 0 18px;flex-wrap:wrap}
+  .tabbtns button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:13px;transition:.2s}
+  .tabbtns button.active{background:var(--amber);color:#10161e;border-color:var(--amber);font-weight:600}
+  .view{display:none}.view.show{display:block;animation:fade .4s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:240px;padding-top:10px}
+  .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px}
+  .bar .col{width:100%;background:linear-gradient(180deg,var(--amber2),var(--amber));border-radius:6px 6px 0 0;height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .bar small{color:var(--muted);font-size:11px}
+  .bar .val{font-size:11px;color:var(--txt)}
+  svg .gl{stroke:var(--line);stroke-width:1}
+  .savepath{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2s .2s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .area{fill:rgba(76,195,138,.12)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600}
+  td.r,th.r{text-align:right}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  .foot{max-width:1080px;margin:0 auto;padding:22px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand"><span class="dot"></span> Mile Marker</div>
+    <nav>
+      <button class="active" data-tab="overview">Overview</button>
+      <button data-tab="miles">Mileage</button>
+      <button data-tab="savings">Savings</button>
+      <button data-tab="about">About</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>Anthony's Mileage and Savings Tracker</h1>
+    <p>A simple one page board I keep for myself. Miles paid, money saved, and whether the plan to retire by sixty still holds. Numbers run through the end of the last full quarter.</p>
+  </section>
+
+  <div class="grid kpis">
+    <div class="card kpi"><div class="num" data-count="126480">0</div><div class="lab">Miles driven, 2025</div></div>
+    <div class="card kpi"><div class="num" data-count="83240" data-prefix="$">0</div><div class="lab">Gross pay, 2025</div></div>
+    <div class="card kpi"><div class="num" data-count="37232" data-prefix="$">0</div><div class="lab">High yield savings</div></div>
+    <div class="card kpi"><div class="num" data-count="248">0</div><div class="lab">Loads completed</div></div>
+  </div>
+
+  <div id="overview" class="view show">
+    <div class="panel">
+      <h2>Where the year went</h2>
+      <div class="sub">Top freight lanes by miles, company truck, 2025.</div>
+      <table>
+        <thead><tr><th>Lane</th><th>Corridor</th><th class="r">Loads</th><th class="r">Share</th></tr></thead>
+        <tbody>
+          <tr><td>Birmingham to Nashville</td><td>I-65</td><td class="r">62</td><td class="r">25%</td></tr>
+          <tr><td>Nashville to Columbus</td><td>I-65 / I-71</td><td class="r">41</td><td class="r">17%</td></tr>
+          <tr><td>Birmingham to Atlanta</td><td>I-20</td><td class="r">38</td><td class="r">15%</td></tr>
+          <tr><td>Memphis to Birmingham</td><td>I-22</td><td class="r">29</td><td class="r">12%</td></tr>
+          <tr><td>Louisville to Indianapolis</td><td>I-65</td><td class="r">24</td><td class="r">10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="miles" class="view">
+    <div class="panel">
+      <h2>Monthly miles</h2>
+      <div class="sub">Behind the wheel, by month. Hover a bar for the number.</div>
+      <div class="tabbtns">
+        <button class="active" data-half="h1">Jan to Jun</button>
+        <button data-half="h2">Jul to Dec</button>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </div>
+
+  <div id="savings" class="view">
+    <div class="panel">
+      <h2>Savings trajectory</h2>
+      <div class="sub">High yield balance through the year. Steady transfers, no withdrawals.</div>
+      <svg viewBox="0 0 600 260" width="100%" height="260" preserveAspectRatio="none" aria-label="savings line chart">
+        <line class="gl" x1="40" y1="30" x2="40" y2="220"></line>
+        <line class="gl" x1="40" y1="220" x2="580" y2="220"></line>
+        <line class="gl" x1="40" y1="160" x2="580" y2="160"></line>
+        <line class="gl" x1="40" y1="100" x2="580" y2="100"></line>
+        <polygon class="area" points="40,200 130,188 220,176 310,168 400,150 490,138 580,120 580,220 40,220"></polygon>
+        <polyline class="savepath" points="40,200 130,188 220,176 310,168 400,150 490,138 580,120"></polyline>
+      </svg>
+      <p style="color:var(--muted);font-size:13px;margin-top:8px">Goal: build the high yield account toward fifty thousand by retirement, on top of the self managed IRA.</p>
+    </div>
+  </div>
+
+  <div id="about" class="view">
+    <div class="panel">
+      <h2>About this board</h2>
+      <div class="sub">Personal use only.</div>
+      <p style="color:var(--muted)">Twelve years driving for the same carrier out of Birmingham, three weeks out and one week home. I built this page to keep an eye on the only two numbers that decide when I can park the truck for good: miles paid and money saved. No employer match, so the saving is on me. Money is patience.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot">
+    <div>Mile Marker, kept by Anthony Hicks, Birmingham AL</div>
+    <div>Private page, not for distribution</div>
+  </div>
+</footer>
+
+<script>
+  // tab nav
+  const navBtns=document.querySelectorAll('.nav button');
+  const views=document.querySelectorAll('.view');
+  navBtns.forEach(b=>b.addEventListener('click',()=>{
+    navBtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    const t=b.dataset.tab;views.forEach(v=>v.classList.toggle('show',v.id===t));
+    if(t==='miles')drawBars(currentHalf);
+  }));
+  // count up
+  function countUp(el){
+    const target=+el.dataset.count, pre=el.dataset.prefix||'';
+    let cur=0;const step=target/60;
+    const t=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(t)}
+      el.textContent=pre+Math.round(cur).toLocaleString();},16);
+  }
+  document.querySelectorAll('[data-count]').forEach(countUp);
+  // bar chart
+  const miles={h1:[10240,9880,11020,10460,11240,10760],h2:[11120,10980,10320,11460,9980,8920]},
+        labs={h1:['Jan','Feb','Mar','Apr','May','Jun'],h2:['Jul','Aug','Sep','Oct','Nov','Dec']};
+  let currentHalf='h1';const maxM=12000;
+  function drawBars(half){
+    currentHalf=half;const box=document.getElementById('bars');box.innerHTML='';
+    miles[half].forEach((m,i)=>{
+      const b=document.createElement('div');b.className='bar';
+      b.innerHTML='<span class="val">'+m.toLocaleString()+'</span><div class="col"></div><small>'+labs[half][i]+'</small>';
+      box.appendChild(b);
+      requestAnimationFrame(()=>{setTimeout(()=>{b.querySelector('.col').style.height=(m/maxM*100)+'%';},60*i);});
+    });
+  }
+  document.querySelectorAll('.tabbtns button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tabbtns button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');drawBars(b.dataset.half);
+  }));
+  drawBars('h1');
+</script>
+</body>
+</html>
