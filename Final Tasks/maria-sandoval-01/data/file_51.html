@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maria Sandoval Watercolor - Portfolio and Commissions</title>
+<style>
+  :root {
+    --sage: #7a9e7e;
+    --warm-white: #fdf9f4;
+    --terracotta: #c4714a;
+    --deep-teal: #2d5f5e;
+    --soft-gold: #c8a96e;
+    --text-dark: #2a2a2a;
+    --text-mid: #555;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    line-height: 1.7;
+  }
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(253,249,244,0.96);
+    border-bottom: 1px solid #e0d8ce;
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-size: 1.25rem; letter-spacing: 0.05em;
+    color: var(--deep-teal); font-style: italic;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--text-mid); font-size: 0.9rem;
+    letter-spacing: 0.04em; transition: color 0.2s;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+  .nav-links a:hover { color: var(--terracotta); }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh;
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    padding: 5rem 6rem;
+    gap: 4rem;
+    background: linear-gradient(135deg, var(--warm-white) 60%, #f0e8dd 100%);
+  }
+  .hero-text h1 {
+    font-size: 3.5rem; line-height: 1.15;
+    color: var(--deep-teal); font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+  .hero-text h1 em { color: var(--terracotta); }
+  .hero-text p {
+    font-size: 1.1rem; color: var(--text-mid);
+    max-width: 440px; margin-bottom: 2.5rem;
+  }
+  .btn {
+    display: inline-block; padding: 0.85rem 2.2rem;
+    border: 2px solid var(--deep-teal); color: var(--deep-teal);
+    text-decoration: none; font-family: 'Helvetica Neue', sans-serif;
+    font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+    transition: all 0.25s;
+  }
+  .btn:hover { background: var(--deep-teal); color: var(--warm-white); }
+  .btn-fill {
+    background: var(--terracotta); border-color: var(--terracotta); color: white;
+    margin-left: 1rem;
+  }
+  .btn-fill:hover { background: #b05e38; border-color: #b05e38; color: white; }
+  .hero-palette {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+  }
+  .swatch {
+    border-radius: 4px; aspect-ratio: 1;
+    display: flex; align-items: flex-end; padding: 0.6rem;
+    font-size: 0.7rem; color: rgba(255,255,255,0.85);
+    font-family: 'Helvetica Neue', sans-serif;
+    letter-spacing: 0.03em;
+    transition: transform 0.2s;
+    cursor: default;
+  }
+  .swatch:hover { transform: scale(1.04); }
+  .s1 { background: linear-gradient(135deg, #7a9e7e, #5a7e60); }
+  .s2 { background: linear-gradient(135deg, #c4714a, #a35535); }
+  .s3 { background: linear-gradient(135deg, #2d5f5e, #1a3d3c); }
+  .s4 { background: linear-gradient(135deg, #c8a96e, #a88840); }
+  .s5 { background: linear-gradient(135deg, #8fb4c8, #5a8ba8); }
+  .s6 { background: linear-gradient(135deg, #d4a7b0, #b07888); }
+  .s7 { background: linear-gradient(135deg, #c9c08a, #a09060); }
+  .s8 { background: linear-gradient(135deg, #e8c498, #c89a60); }
+  .s9 { background: linear-gradient(135deg, #6a7c8e, #4a5c6e); }
+
+  /* SECTION COMMON */
+  section { padding: 5rem 6rem; }
+  .section-label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--soft-gold); margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: 2.2rem; font-weight: 400; color: var(--deep-teal);
+    margin-bottom: 1rem;
+  }
+  .divider { width: 56px; height: 2px; background: var(--terracotta); margin: 1.5rem 0 2.5rem; }
+
+  /* GALLERY */
+  .gallery-section { background: #f5efe7; }
+  .gallery-filters {
+    display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 0.5rem 1.4rem; border: 1px solid #c8b89a;
+    background: transparent; cursor: pointer;
+    font-family: 'Helvetica Neue', sans-serif; font-size: 0.8rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-mid); transition: all 0.2s; border-radius: 2px;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--deep-teal); color: white; border-color: var(--deep-teal);
+  }
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  }
+  .gallery-card {
+    background: white; border-radius: 4px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.12); }
+  .gallery-thumb {
+    height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Georgia', serif; font-style: italic;
+    font-size: 1rem; color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    padding: 1rem; text-align: center;
+  }
+  .gallery-info { padding: 1rem 1.25rem 1.25rem; }
+  .gallery-info h4 { font-size: 0.95rem; color: var(--text-dark); margin-bottom: 0.25rem; }
+  .gallery-info span { font-size: 0.78rem; color: var(--text-mid); font-family: sans-serif; }
+  .g1 { background: linear-gradient(160deg, #d4a7b0 0%, #8fb4c8 100%); }
+  .g2 { background: linear-gradient(160deg, #7a9e7e 0%, #2d5f5e 100%); }
+  .g3 { background: linear-gradient(160deg, #c8a96e 0%, #c4714a 100%); }
+  .g4 { background: linear-gradient(160deg, #8fb4c8 0%, #2d5f5e 100%); }
+  .g5 { background: linear-gradient(160deg, #c9c08a 0%, #7a9e7e 100%); }
+  .g6 { background: linear-gradient(160deg, #e8c498 0%, #c4714a 100%); }
+
+  /* COMMISSIONS */
+  .commissions-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; }
+  .commission-info h3 { font-size: 1.6rem; font-weight: 400; margin-bottom: 1.5rem; }
+  .commission-info p { color: var(--text-mid); margin-bottom: 1rem; }
+  .price-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+  .price-table th { text-align: left; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); padding: 0.6rem 0.5rem; border-bottom: 1px solid #e0d8ce; }
+  .price-table td { padding: 0.7rem 0.5rem; border-bottom: 1px solid #f0e8de; font-size: 0.95rem; }
+  .price-table td:last-child { color: var(--terracotta); font-weight: 500; }
+  .commission-form { background: white; padding: 2rem; border-radius: 4px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+  .commission-form h4 { font-size: 1.1rem; margin-bottom: 1.5rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 0.4rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.7rem 0.9rem;
+    border: 1px solid #d8cec4; border-radius: 2px;
+    font-family: 'Georgia', serif; font-size: 0.95rem;
+    background: var(--warm-white);
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--deep-teal);
+  }
+  .form-group textarea { height: 100px; resize: vertical; }
+  .form-submit {
+    width: 100%; padding: 0.9rem;
+    background: var(--deep-teal); color: white; border: none;
+    font-family: 'Helvetica Neue', sans-serif; font-size: 0.85rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s; border-radius: 2px;
+  }
+  .form-submit:hover { background: #1a3d3c; }
+
+  /* CLASSES */
+  .classes-section { background: var(--deep-teal); color: white; }
+  .classes-section .section-label { color: var(--soft-gold); }
+  .classes-section .section-title { color: white; }
+  .classes-section .divider { background: var(--soft-gold); }
+  .classes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+  .class-card {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    padding: 2rem; border-radius: 4px; transition: background 0.25s;
+  }
+  .class-card:hover { background: rgba(255,255,255,0.14); }
+  .class-card h3 { font-size: 1.2rem; font-weight: 400; margin-bottom: 0.5rem; color: var(--soft-gold); }
+  .class-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.65; }
+  .class-detail { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .class-detail span { font-family: sans-serif; font-size: 0.8rem; color: rgba(255,255,255,0.65); }
+  .class-detail span strong { color: rgba(255,255,255,0.9); }
+
+  /* ABOUT */
+  .about-section { background: white; }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .about-text p { color: var(--text-mid); margin-bottom: 1rem; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .stat-box { text-align: center; padding: 2rem 1rem; background: #f5efe7; border-radius: 4px; }
+  .stat-box .number { font-size: 2.4rem; color: var(--terracotta); font-weight: 400; }
+  .stat-box .label { font-family: sans-serif; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); margin-top: 0.3rem; }
+  .quote-block { border-left: 3px solid var(--soft-gold); padding: 1.25rem 1.5rem; background: #f9f5ef; margin: 2rem 0; }
+  .quote-block p { font-style: italic; color: var(--text-mid); }
+
+  /* FOOTER */
+  footer {
+    background: var(--text-dark); color: rgba(255,255,255,0.7);
+    padding: 3rem 6rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;
+  }
+  footer h4 { color: white; font-size: 0.9rem; letter-spacing: 0.06em; margin-bottom: 1rem; font-family: sans-serif; }
+  footer p, footer a { font-size: 0.85rem; line-height: 1.8; color: rgba(255,255,255,0.65); text-decoration: none; display: block; }
+  footer a:hover { color: var(--soft-gold); }
+  .footer-bottom { background: #1a1a1a; text-align: center; padding: 1rem; font-family: sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-text { animation: fadeUp 0.8s ease both; }
+  .hero-palette { animation: fadeUp 0.8s 0.2s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .hero, section { padding: 4rem 3rem; }
+    .hero { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .commissions-grid, .about-grid, .classes-grid { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 3rem 1.5rem; }
+    section { padding: 3rem 1.5rem; }
+    .hero-text h1 { font-size: 2.2rem; }
+    .gallery-grid { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr; padding: 2rem 1.5rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Maria Sandoval</span>
+  <ul class="nav-links">
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#commissions">Commissions</a></li>
+    <li><a href="#classes">Classes</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-text">
+    <p class="section-label">Watercolor - Dearborn, Michigan</p>
+    <h1>Painting light<br>as it falls, <em>not<br>as we expect it.</em></h1>
+    <p>Original watercolor works, private commissions, and studio classes in Dearborn. Florals, landscapes, and portraits painted from observation and memory.</p>
+    <a href="#gallery" class="btn">View Gallery</a>
+    <a href="#commissions" class="btn btn-fill">Request a Commission</a>
+  </div>
+  <div class="hero-palette">
+    <div class="swatch s1">Sage</div>
+    <div class="swatch s2">Terracotta</div>
+    <div class="swatch s3">Deep Teal</div>
+    <div class="swatch s4">Warm Gold</div>
+    <div class="swatch s5">Sky Blue</div>
+    <div class="swatch s6">Dusty Rose</div>
+    <div class="swatch s7">Straw</div>
+    <div class="swatch s8">Peach</div>
+    <div class="swatch s9">Slate</div>
+  </div>
+</section>
+
+<section class="gallery-section" id="gallery">
+  <p class="section-label">Portfolio</p>
+  <h2 class="section-title">Selected Works</h2>
+  <div class="divider"></div>
+  <div class="gallery-filters">
+    <button class="filter-btn active" onclick="filterGallery('all', this)">All</button>
+    <button class="filter-btn" onclick="filterGallery('florals', this)">Florals</button>
+    <button class="filter-btn" onclick="filterGallery('landscapes', this)">Landscapes</button>
+    <button class="filter-btn" onclick="filterGallery('portraits', this)">Portraits</button>
+    <button class="filter-btn" onclick="filterGallery('commissions', this)">Commissions</button>
+  </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="gallery-card" data-cat="florals">
+      <div class="gallery-thumb g1">Peonies in Morning Light</div>
+      <div class="gallery-info">
+        <h4>Peonies in Morning Light</h4>
+        <span>Watercolor on cold press - 11x14 in</span>
+      </div>
+    </div>
+    <div class="gallery-card" data-cat="landscapes">
+      <div class="gallery-thumb g2">October Field, Ann Arbor Road</div>
+      <div class="gallery-info">
+        <h4>October Field, Ann Arbor Road</h4>
+        <span>Watercolor on cold press - 9x12 in</span>
+      </div>
+    </div>
+    <div class="gallery-card" data-cat="commissions">
+      <div class="gallery-thumb g3">Lakeside Kitchen - Commission</div>
+      <div class="gallery-info">
+        <h4>Lakeside Kitchen Storefront</h4>
+        <span>Private commission - 11x14 in</span>
+      </div>
+    </div>
+    <div class="gallery-card" data-cat="landscapes">
+      <div class="gallery-thumb g4">Late February, Backyard Light</div>
+      <div class="gallery-info">
+        <h4>Late February, Backyard Light</h4>
+        <span>Watercolor on hot press - 5x7 in</span>
+      </div>
+    </div>
+    <div class="gallery-card" data-cat="florals">
+      <div class="gallery-thumb g5">Herb Garden, July</div>
+      <div class="gallery-info">
+        <h4>Herb Garden, July</h4>
+        <span>Watercolor on cold press - 8x10 in</span>
+      </div>
+    </div>
+    <div class="gallery-card" data-cat="portraits">
+      <div class="gallery-thumb g6">Study in Afternoon Window</div>
+      <div class="gallery-info">
+        <h4>Study in Afternoon Window</h4>
+        <span>Watercolor on cold press - 9x12 in</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="commissions">
+  <p class="section-label">Commissioned Work</p>
+  <h2 class="section-title">Commission a Painting</h2>
+  <div class="divider"></div>
+  <div class="commissions-grid">
+    <div class="commission-info">
+      <h3>Every commission begins with a conversation.</h3>
+      <p>I work from observation, memory, and reference images you share with me. Before I begin, I send a sketch and a color study for your approval so there are no surprises when the final piece arrives.</p>
+      <p>Subjects I work well with: storefronts and buildings with character, interiors in natural light, garden and floral arrangements, landscape views, and domestic scenes. I do not paint portraits with faces.</p>
+      <p>Commission slots open each season. Delivery is typically six to ten weeks from deposit, depending on complexity.</p>
+      <table class="price-table">
+        <thead>
+          <tr><th>Size</th><th>Description</th><th>Starting Price</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5x7 in</td><td>Small study or gift piece</td><td>$200</td></tr>
+          <tr><td>8x10 in</td><td>Standard single subject</td><td>$350</td></tr>
+          <tr><td>11x14 in</td><td>Detailed or complex subject</td><td>$600</td></tr>
+          <tr><td>Custom</td><td>Large format or multi-subject</td><td>from $800</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.85rem;color:var(--text-mid)">A 50 percent deposit secures your slot. Balance due on delivery. Framing available on request.</p>
+    </div>
+    <div class="commission-form">
+      <h4>Inquiry Form</h4>
+      <div class="form-group">
+        <label>Your Name (full name)</label>
+        <input type="text" aria-label="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" aria-label="Your email address">
+      </div>
+      <div class="form-group">
+        <label>Subject Matter</label>
+        <select>
+          <option>Storefront or building</option>
+          <option>Garden or florals</option>
+          <option>Landscape or outdoor scene</option>
+          <option>Interior or domestic light</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Preferred Size</label>
+        <select>
+          <option>5x7 in - Small study</option>
+          <option>8x10 in - Standard</option>
+          <option>11x14 in - Detailed</option>
+          <option>Custom - describe below</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tell me about the piece (subject, occasion, reference images, ideal timeline)</label>
+        <textarea aria-label="Describe the piece you have in mind"></textarea>
+      </div>
+      <button class="form-submit">Send Inquiry</button>
+    </div>
+  </div>
+</section>
+
+<section class="classes-section" id="classes">
+  <p class="section-label">Instruction</p>
+  <h2 class="section-title">Watercolor Classes</h2>
+  <div class="divider"></div>
+  <p style="color:rgba(255,255,255,0.75);max-width:560px;margin-bottom:2.5rem;">
+    Classes focus on building honest technique from direct observation. Students learn to see light before they learn to paint it. All levels welcome; advanced students work on florals and portraiture.
+  </p>
+  <div class="classes-grid">
+    <div class="class-card">
+      <h3>Saturday Group Class</h3>
+      <p>Open to all skill levels. Structured sessions covering technique, composition, and color theory. Wet-on-wet, glazing, lifting, dry brush. Critique and individual feedback each session.</p>
+      <div class="class-detail">
+        <span><strong>When:</strong> Saturdays, 2:00 to 4:00 PM</span>
+        <span><strong>Where:</strong> Dearborn Community Arts Center, Studio B</span>
+        <span><strong>Tuition:</strong> $40 per month</span>
+        <span><strong>Enrollment:</strong> Open - limited spots</span>
+      </div>
+    </div>
+    <div class="class-card">
+      <h3>Tuesday Private Class</h3>
+      <p>Small group meeting in the home studio on Pelham Road. Individualized pace and subject matter. Students work in series across a semester; advanced work in portraits and complex landscapes.</p>
+      <div class="class-detail">
+        <span><strong>When:</strong> Tuesdays, 7:00 to 8:30 PM</span>
+        <span><strong>Where:</strong> Home studio, Dearborn</span>
+        <span><strong>Tuition:</strong> Donated - no fee</span>
+        <span><strong>Enrollment:</strong> Waitlist - inquire below</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-section" id="about">
+  <p class="section-label">About</p>
+  <h2 class="section-title">Maria Sandoval</h2>
+  <div class="divider"></div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I learned to paint from my grandmother, who worked in oils and whose eyes measured color in a way I am still trying to understand. I came back to painting seriously in my early thirties, after dental school and residency, and found that it did something nothing else did: it made me pay attention to exactly one thing.</p>
+      <p>Watercolor is unforgiving about this. You cannot overwork it and expect it to improve. The best paintings I have made are the ones where I stopped before I thought I was finished. That is a lesson I keep relearning.</p>
+      <div class="quote-block">
+        <p>"Overworked paintings are always worse than ones left alone too soon."</p>
+      </div>
+      <p>I teach because explaining something forces you to understand it better. My students range from 16 to 65 and arrive from every direction; the ones who progress fastest are the ones who learn to slow down and really look before the brush touches paper.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-box">
+        <div class="number">15+</div>
+        <div class="label">Regular Students</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">10+</div>
+        <div class="label">Years Painting</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">40+</div>
+        <div class="label">Commissions Completed</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">2</div>
+        <div class="label">Active Classes Weekly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div>
+    <h4>Maria Sandoval Watercolor</h4>
+    <p>Dearborn, Michigan</p>
+    <p>Classes, commissions, and original work</p>
+  </div>
+  <div>
+    <h4>Contact</h4>
+    <p>For commissions and class inquiries, use the form above or reach out directly.</p>
+    <p>Commission response time: 2 to 3 business days</p>
+    <p>Class inquiries: responded to within 48 hours</p>
+  </div>
+  <div>
+    <h4>Quick Links</h4>
+    <a href="#gallery">Gallery</a>
+    <a href="#commissions">Commission a Painting</a>
+    <a href="#classes">Classes</a>
+    <a href="#about">About</a>
+  </div>
+</footer>
+<div class="footer-bottom">
+  Maria Sandoval Watercolor - Dearborn, Michigan
+</div>
+
+<script>
+  function filterGallery(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.gallery-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = '';
+        card.style.animation = 'fadeUp 0.35s ease both';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Intersection observer for scroll animations
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'fadeUp 0.6s ease both';
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.gallery-card, .class-card, .stat-box').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

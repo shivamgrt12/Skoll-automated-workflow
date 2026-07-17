@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Dashboard - Maria Sandoval</title>
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --navy: #1c3352;
+    --teal: #2a8a8c;
+    --teal-lt: #e6f7f7;
+    --orange: #e07040;
+    --orange-lt: #fdf0ea;
+    --sage: #6a9470;
+    --sage-lt: #edf5ee;
+    --gold: #c8952a;
+    --gold-lt: #fdf5e6;
+    --red: #d05050;
+    --gray: #5a6270;
+    --border: #e4e8f0;
+    --text: #1a1a2e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* SIDEBAR */
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--navy); color: white; padding: 1.5rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-header .name { font-size: 1rem; font-weight: 700; }
+  .sidebar-header .role { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 0.15rem; }
+  .sidebar-header .date { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 0.5rem; }
+  .sidebar nav { padding: 1rem 0; }
+  .nav-section { padding: 0.75rem 1.5rem 0.25rem; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+  .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 1.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+  .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; }
+  .nav-item .icon { width: 18px; text-align: center; font-size: 1rem; }
+
+  /* MAIN */
+  .main { overflow-y: auto; }
+  .topbar { background: white; padding: 0 2.5rem; height: 60px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+  .topbar h1 { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+  .topbar-right { display: flex; gap: 1rem; align-items: center; font-size: 0.82rem; color: var(--gray); }
+  .status-pill { background: var(--sage-lt); color: var(--sage); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+  /* CONTENT */
+  .content { padding: 2rem 2.5rem; }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .kpi { background: var(--card); border-radius: 8px; padding: 1.4rem; border: 1px solid var(--border); }
+  .kpi .label { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+  .kpi .value { font-size: 1.8rem; font-weight: 800; color: var(--navy); }
+  .kpi .sub { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+  .kpi .change { font-size: 0.75rem; margin-top: 0.4rem; font-weight: 600; }
+  .up { color: var(--sage); } .down { color: var(--red); }
+  .kpi.teal { border-top: 3px solid var(--teal); }
+  .kpi.sage { border-top: 3px solid var(--sage); }
+  .kpi.orange { border-top: 3px solid var(--orange); }
+  .kpi.gold { border-top: 3px solid var(--gold); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+
+  /* CARD BASE */
+  .card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); padding: 1.5rem; }
+  .card h3 { font-size: 0.9rem; font-weight: 700; color: var(--navy); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+
+  /* BUDGET BARS */
+  .budget-item { margin-bottom: 1.1rem; }
+  .budget-item .budget-header { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
+  .budget-item .budget-cat { font-size: 0.82rem; color: var(--gray); }
+  .budget-item .budget-vals { font-size: 0.78rem; font-weight: 600; }
+  .budget-item .budget-vals .spent { color: var(--navy); }
+  .budget-item .budget-vals .limit { color: var(--gray); }
+  .bar-bg { background: var(--border); border-radius: 4px; height: 7px; }
+  .bar-fill { height: 7px; border-radius: 4px; }
+
+  /* SAVINGS PROGRESS */
+  .savings-goal { display: flex; flex-direction: column; gap: 1rem; }
+  .goal-item { }
+  .goal-header { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+  .goal-name { font-size: 0.82rem; font-weight: 600; color: var(--navy); }
+  .goal-pct { font-size: 0.78rem; color: var(--teal); font-weight: 700; }
+  .goal-sub { font-size: 0.72rem; color: var(--gray); margin-top: 0.25rem; }
+
+  /* SCHEDULE TABLE */
+  .schedule-table { width: 100%; border-collapse: collapse; }
+  .schedule-table th { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray); padding: 0.5rem 0; text-align: left; border-bottom: 1px solid var(--border); }
+  .schedule-table td { padding: 0.65rem 0; font-size: 0.82rem; border-bottom: 1px solid var(--border); }
+  .schedule-table td:first-child { color: var(--gray); font-size: 0.75rem; width: 80px; }
+  .schedule-table td .event-name { font-weight: 600; color: var(--navy); }
+  .schedule-table td .event-loc { font-size: 0.72rem; color: var(--gray); margin-top: 0.1rem; }
+  .event-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.5rem; }
+
+  /* HEALTH TRACKER */
+  .health-items { display: flex; flex-direction: column; gap: 0.85rem; }
+  .health-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; border-radius: 6px; border: 1px solid var(--border); }
+  .health-item .hi-left .hi-name { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
+  .health-item .hi-left .hi-detail { font-size: 0.75rem; color: var(--gray); margin-top: 0.1rem; }
+  .badge { padding: 0.25rem 0.65rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700; }
+  .badge.ok { background: var(--sage-lt); color: var(--sage); }
+  .badge.watch { background: var(--gold-lt); color: var(--gold); }
+  .badge.low { background: var(--orange-lt); color: var(--orange); }
+
+  /* VINT D CHART */
+  .vitd-chart { margin: 1rem 0; }
+  .vitd-bar-wrap { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .vitd-label { font-size: 0.72rem; color: var(--gray); width: 80px; }
+  .vitd-bg { flex: 1; background: var(--border); border-radius: 4px; height: 10px; }
+  .vitd-fill { height: 10px; border-radius: 4px; }
+  .vitd-val { font-size: 0.72rem; font-weight: 600; width: 70px; text-align: right; }
+  .vitd-note { font-size: 0.72rem; color: var(--gray); margin-top: 0.75rem; border-left: 2px solid var(--teal); padding-left: 0.75rem; }
+
+  /* EXERCISE LOG */
+  .exercise-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem; margin: 1rem 0; }
+  .day-cell { text-align: center; }
+  .day-cell .day-label { font-size: 0.62rem; color: var(--gray); margin-bottom: 0.25rem; text-transform: uppercase; }
+  .day-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+  .day-dot.yoga { background: var(--teal); color: white; }
+  .day-dot.walk { background: var(--sage); color: white; }
+  .day-dot.swim { background: var(--gold); color: white; }
+  .day-dot.rest { background: var(--border); color: var(--gray); }
+  .exercise-key { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .ex-key-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--gray); }
+  .ex-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ACCOUNTS */
+  .accounts-list { display: flex; flex-direction: column; gap: 0.85rem; }
+  .account-row { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; border: 1px solid var(--border); border-radius: 6px; }
+  .account-row .acc-left .acc-name { font-size: 0.85rem; font-weight: 700; color: var(--navy); }
+  .account-row .acc-left .acc-type { font-size: 0.72rem; color: var(--gray); }
+  .account-row .acc-balance { font-size: 1rem; font-weight: 800; color: var(--teal); }
+  .account-total { display: flex; justify-content: space-between; padding: 0.6rem 1rem; margin-top: 0.5rem; font-size: 0.82rem; font-weight: 700; color: var(--navy); border-top: 2px solid var(--border); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .kpi { animation: fadeUp 0.4s ease both; }
+  .kpi:nth-child(2) { animation-delay: 0.08s; }
+  .kpi:nth-child(3) { animation-delay: 0.16s; }
+  .kpi:nth-child(4) { animation-delay: 0.24s; }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="name">Maria Sandoval</div>
+      <div class="role">Pediatric Dentist - Dearborn, MI</div>
+      <div class="date">February 2026</div>
+    </div>
+    <nav>
+      <div class="nav-section">Overview</div>
+      <a href="#" class="nav-item active"><span class="icon">📊</span> Dashboard</a>
+      <a href="#" class="nav-item"><span class="icon">💰</span> Accounts</a>
+      <a href="#" class="nav-item"><span class="icon">💳</span> Budget</a>
+      <div class="nav-section">Health</div>
+      <a href="#" class="nav-item"><span class="icon">🏃</span> Exercise</a>
+      <a href="#" class="nav-item"><span class="icon">💊</span> Health Metrics</a>
+      <div class="nav-section">Schedule</div>
+      <a href="#" class="nav-item"><span class="icon">📅</span> This Week</a>
+      <a href="#" class="nav-item"><span class="icon">🎯</span> Goals</a>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <h1>Personal Dashboard</h1>
+      <div class="topbar-right">
+        <span class="status-pill">February 2026</span>
+        <span>Dearborn, MI</span>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- KPI ROW -->
+      <div class="kpi-row">
+        <div class="kpi teal">
+          <div class="label">Personal Checking</div>
+          <div class="value">$5,200</div>
+          <div class="sub">Dearborn FCU - Jan 31, 2026</div>
+          <div class="change up">+$500 vs prior month</div>
+        </div>
+        <div class="kpi sage">
+          <div class="label">Personal Savings</div>
+          <div class="value">$38,500</div>
+          <div class="sub">Dearborn FCU savings</div>
+          <div class="change up">+$5,289.60 this month</div>
+        </div>
+        <div class="kpi orange">
+          <div class="label">SEP IRA Balance</div>
+          <div class="value">$96,000</div>
+          <div class="sub">As of December 31, 2025</div>
+          <div class="change up">+$16,600 in 2025</div>
+        </div>
+        <div class="kpi gold">
+          <div class="label">Practice Loan Remaining</div>
+          <div class="value">$68,000</div>
+          <div class="sub">Payoff on track: July 2029</div>
+          <div class="change down">$1,800/mo - accelerating</div>
+        </div>
+      </div>
+
+      <!-- BUDGET AND GOALS -->
+      <div class="two-col">
+        <div class="card">
+          <h3>Monthly Personal Budget - January 2026</h3>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Housing (mortgage)</span>
+              <span class="budget-vals"><span class="spent">$1,950</span> <span class="limit">/ $1,950</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Vehicle lease</span>
+              <span class="budget-vals"><span class="spent">$520</span> <span class="limit">/ $520</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Groceries and household</span>
+              <span class="budget-vals"><span class="spent">$386</span> <span class="limit">/ $450</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:86%;background:var(--sage)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Art supplies</span>
+              <span class="budget-vals"><span class="spent">$81</span> <span class="limit">/ $100</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:81%;background:var(--sage)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Yoga membership</span>
+              <span class="budget-vals"><span class="spent">$92</span> <span class="limit">/ $92</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Dining and entertainment</span>
+              <span class="budget-vals"><span class="spent">$214</span> <span class="limit">/ $280</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:76%;background:var(--gold)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Insurance (health, auto, home)</span>
+              <span class="budget-vals"><span class="spent">$630</span> <span class="limit">/ $630</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-header">
+              <span class="budget-cat">Parent support transfer</span>
+              <span class="budget-vals"><span class="spent">$300</span> <span class="limit">/ $300</span></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Savings Goals Progress</h3>
+          <div class="savings-goal">
+            <div class="goal-item">
+              <div class="goal-header">
+                <span class="goal-name">Emergency Fund (6 months)</span>
+                <span class="goal-pct">83%</span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" style="width:83%;background:var(--teal)"></div></div>
+              <div class="goal-sub">$38,500 of $46,000 target</div>
+            </div>
+            <div class="goal-item">
+              <div class="goal-header">
+                <span class="goal-name">SEP IRA 2026 Contribution</span>
+                <span class="goal-pct">0%</span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" style="width:0%;background:var(--gold)"></div></div>
+              <div class="goal-sub">$0 of $12,000 target - begins Q4</div>
+            </div>
+            <div class="goal-item">
+              <div class="goal-header">
+                <span class="goal-name">Practice Loan Acceleration</span>
+                <span class="goal-pct">59%</span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" style="width:59%;background:var(--orange)"></div></div>
+              <div class="goal-sub">$96,000 repaid of $164,000 original</div>
+            </div>
+            <div class="goal-item">
+              <div class="goal-header">
+                <span class="goal-name">Charitable Giving 2026</span>
+                <span class="goal-pct">0%</span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" style="width:0%;background:var(--sage)"></div></div>
+              <div class="goal-sub">$0 of $2,400 annual target</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEDULE AND HEALTH -->
+      <div class="two-col">
+        <div class="card">
+          <h3>This Week - February 9 to 14, 2026</h3>
+          <table class="schedule-table">
+            <thead><tr><th>Day</th><th>Event</th></tr></thead>
+            <tbody>
+              <tr><td>Mon 9</td><td><div class="event-name"><span class="event-dot" style="background:var(--teal)"></span>Clinic 8:30 AM - 5 PM</div><div class="event-loc">Yoga 6 PM - Serenity Studio</div></td></tr>
+              <tr><td>Tue 10</td><td><div class="event-name"><span class="event-dot" style="background:var(--teal)"></span>Clinic 8:30 AM - 5 PM</div><div class="event-loc">Private painting class 7 PM - home</div></td></tr>
+              <tr><td>Wed 11</td><td><div class="event-name"><span class="event-dot" style="background:var(--teal)"></span>Clinic 8:30 AM - 5 PM</div><div class="event-loc">Yoga 6 PM - Serenity Studio</div></td></tr>
+              <tr><td>Thu 12</td><td><div class="event-name"><span class="event-dot" style="background:var(--orange)"></span>Annual physical - Dr. Nelson 10 AM</div><div class="event-loc">Clinic 8:30 AM (half day)</div></td></tr>
+              <tr><td>Fri 13</td><td><div class="event-name"><span class="event-dot" style="background:var(--teal)"></span>Clinic 8:30 AM - noon</div><div class="event-loc">Dinner with Lisa Harper - evening</div></td></tr>
+              <tr><td>Sat 14</td><td><div class="event-name"><span class="event-dot" style="background:var(--sage)"></span>Arts Center class 2 PM to 4 PM</div><div class="event-loc">Morning off - paint or read</div></td></tr>
+              <tr><td>Sun 15</td><td><div class="event-name"><span class="event-dot" style="background:var(--gold)"></span>Church 9 AM - lunch at Mom and Dad's noon</div><div class="event-loc">Evening: week planning, 7 PM</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Health Tracker</h3>
+          <div class="health-items">
+            <div class="health-item">
+              <div class="hi-left">
+                <div class="hi-name">Vitamin D Level</div>
+                <div class="hi-detail">22 ng/mL (low) - Feb 12, 2026 physical</div>
+              </div>
+              <span class="badge watch">Low - On Supplement</span>
+            </div>
+            <div class="health-item">
+              <div class="hi-left">
+                <div class="hi-name">Cholesterol</div>
+                <div class="hi-detail">182 mg/dL total - all panels normal</div>
+              </div>
+              <span class="badge ok">Normal</span>
+            </div>
+            <div class="health-item">
+              <div class="hi-left">
+                <div class="hi-name">Blood Pressure</div>
+                <div class="hi-detail">118/74 mmHg - excellent</div>
+              </div>
+              <span class="badge ok">Normal</span>
+            </div>
+            <div class="health-item">
+              <div class="hi-left">
+                <div class="hi-name">BMI</div>
+                <div class="hi-detail">22.4 - healthy range</div>
+              </div>
+              <span class="badge ok">Normal</span>
+            </div>
+          </div>
+          <div class="vitd-chart">
+            <h4 style="font-size:0.8rem;color:var(--navy);margin:1rem 0 0.6rem">Vitamin D Tracking</h4>
+            <div class="vitd-bar-wrap">
+              <div class="vitd-label">Feb 2026</div>
+              <div class="vitd-bg"><div class="vitd-fill" style="width:22%;background:var(--orange)"></div></div>
+              <div class="vitd-val" style="color:var(--orange)">22 ng/mL</div>
+            </div>
+            <div class="vitd-bar-wrap">
+              <div class="vitd-label">Target</div>
+              <div class="vitd-bg"><div class="vitd-fill" style="width:55%;background:var(--sage)"></div></div>
+              <div class="vitd-val" style="color:var(--sage)">55 ng/mL</div>
+            </div>
+            <div class="vitd-bar-wrap">
+              <div class="vitd-label">Optimal</div>
+              <div class="vitd-bg"><div class="vitd-fill" style="width:65%;background:var(--teal)"></div></div>
+              <div class="vitd-val" style="color:var(--teal)">65 ng/mL</div>
+            </div>
+            <div class="vitd-note">Vit D3 2,000 IU daily with meals. Recheck October 2026. Also: daily outdoor walk helps.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXERCISE AND ACCOUNTS -->
+      <div class="three-col">
+        <div class="card">
+          <h3>Exercise - Week of Feb 9</h3>
+          <div class="exercise-week">
+            <div class="day-cell"><div class="day-label">M</div><div class="day-dot yoga" title="Yoga">Y</div></div>
+            <div class="day-cell"><div class="day-label">T</div><div class="day-dot walk" title="Walk">W</div></div>
+            <div class="day-cell"><div class="day-label">W</div><div class="day-dot yoga" title="Yoga">Y</div></div>
+            <div class="day-cell"><div class="day-label">T</div><div class="day-dot walk" title="Walk">W</div></div>
+            <div class="day-cell"><div class="day-label">F</div><div class="day-dot walk" title="Walk">W</div></div>
+            <div class="day-cell"><div class="day-label">S</div><div class="day-dot rest" title="Rest">-</div></div>
+            <div class="day-cell"><div class="day-label">S</div><div class="day-dot walk" title="Walk">W</div></div>
+          </div>
+          <div class="exercise-key">
+            <div class="ex-key-item"><div class="ex-dot" style="background:var(--teal)"></div>Yoga (Mon/Wed)</div>
+            <div class="ex-key-item"><div class="ex-dot" style="background:var(--sage)"></div>30-min walk</div>
+            <div class="ex-key-item"><div class="ex-dot" style="background:var(--gold)"></div>Swimming</div>
+          </div>
+          <div style="margin-top:1rem;font-size:0.75rem;color:var(--gray)">Weekly total: 2 yoga sessions + 4 walks. Target: 5+ active days per week.</div>
+        </div>
+        <div class="card" style="grid-column:span 2">
+          <h3>Account Summary - January 31, 2026</h3>
+          <div class="accounts-list">
+            <div class="account-row">
+              <div class="acc-left"><div class="acc-name">Business Checking</div><div class="acc-type">Bright Smiles - Great Lakes Commercial Bank</div></div>
+              <div class="acc-balance">$24,000</div>
+            </div>
+            <div class="account-row">
+              <div class="acc-left"><div class="acc-name">Personal Savings</div><div class="acc-type">Dearborn Federal CU - account ending 8820</div></div>
+              <div class="acc-balance">$38,500</div>
+            </div>
+            <div class="account-row">
+              <div class="acc-left"><div class="acc-name">Personal Checking</div><div class="acc-type">Dearborn Federal CU - account ending 2034</div></div>
+              <div class="acc-balance">$5,200</div>
+            </div>
+            <div class="account-row">
+              <div class="acc-left"><div class="acc-name">SEP IRA</div><div class="acc-type">Retirement - account ending 7755 (Dec 31, 2025)</div></div>
+              <div class="acc-balance">$96,000</div>
+            </div>
+          </div>
+          <div class="account-total"><span>Total Liquid + Retirement</span><span style="color:var(--teal)">$163,700</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.day-dot[title]').forEach(dot => {
+    dot.title = dot.title || '';
+  });
+</script>
+</body>
+</html>
