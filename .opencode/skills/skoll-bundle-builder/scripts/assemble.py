@@ -14,8 +14,9 @@ Deterministic. Consumes:
                                       selected required/distractor API subset)
 
 Only the SELECTED API subset (required + distractor) is copied into the
-bundle's mock_data/, not the whole catalog. The home/ tree is copied intact
-to data/ as the agent workspace. Produces the native layout in out_dir:
+bundle's mock_data/, not the whole catalog. The home/ tree is flattened into
+data/ (all files at the top level, no subfolders) as the agent workspace.
+Produces the native layout in out_dir:
 task.yaml (with the built system_prompt), README.md, persona/, mock_data/
 (subset), data/ (from home/), plus the generated PROMPT.md/rubric.json/
 test_outputs.py/test_weights.json/TRUTH.md. No inject/ folder is emitted.
@@ -124,6 +125,24 @@ def _copy_tree(src: Path, dst: Path) -> None:
     if dst.exists():
         shutil.rmtree(dst)
     shutil.copytree(src, dst)
+
+
+def _copy_flat(src: Path, dst: Path) -> None:
+    # Flatten the persona workspace: every file anywhere under home/ lands
+    # directly in data/ with no subfolders. Basenames must be unique across the
+    # whole tree; a collision would silently drop a file, so fail loudly instead.
+    if dst.exists():
+        shutil.rmtree(dst)
+    dst.mkdir(parents=True)
+    seen: dict[str, Path] = {}
+    for path in sorted(p for p in src.rglob("*") if p.is_file()):
+        if path.name in seen:
+            raise SystemExit(
+                f"cannot flatten {src} into data/: duplicate filename "
+                f"{path.name!r} from {seen[path.name]} and {path}"
+            )
+        seen[path.name] = path
+        shutil.copy2(path, dst / path.name)
 
 
 def build_task_description(meta: dict, prompt_md: str) -> str:
@@ -271,7 +290,7 @@ def assemble(
 
     _copy_persona(input_dir, out_dir / "persona")
     _copy_mock_subset(input_dir / "mock_data", out_dir / "mock_data", meta)
-    _copy_tree(input_dir / "home", out_dir / "data")
+    _copy_flat(input_dir / "home", out_dir / "data")
 
     return []
 
