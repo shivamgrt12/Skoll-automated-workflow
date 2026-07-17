@@ -691,7 +691,11 @@ def _stage_gate_autofix(
     mock_clause = (
         " You may also enrich persona mock data under the values-only rules "
         "(no schema change, no banned service, preserve valid placeholders) by "
-        "re-emitting the corrected 'mock_data/<svc>-api/<file>' files."
+        "re-emitting the corrected 'mock_data/<svc>-api/<file>' files. Never resolve, "
+        "collapse, or reconcile two differing business values that represent the same "
+        "quantity across files: those disagreements are intentional traps and must "
+        "survive. You may only fix stubs, thin population, values that contradict the "
+        "persona, values that contradict PROMPT.md, and broken id or key references."
         if input_dir is not None
         else ""
     )

@@ -142,7 +142,14 @@ write down, for your own use, the following. You will hand these to the bundle s
    section priority ranked brief.
 4. **The cross source conflicts.** At least two places where two sources disagree and the
    newest or most authoritative source must win. You will NOT reveal these in the prompt.
-   Discovering them is the test. You only record them here for the bundle stage.
+   Discovering them is the test. You only record them here for the bundle stage. Build each
+   conflict well formed: both the winning value and the losing value must be independently
+   valid for this persona, sharing the same company, currency, locale, and units. The trap is
+   only that they disagree on recency or authority, never that one value is wrong for the
+   person. A decoy that names the wrong company, a foreign currency the persona would not use,
+   or an impossible figure is a malformed trap, not a harder one, and it will look like broken
+   data downstream. If a value would read as wrong to someone who knows this persona, fix it
+   before you record it.
 5. **The calculation.** At least one non trivial computation the person wants walked
    through or done, with a defensible method.
 6. **The red lines.** At least one place where the obvious action is the wrong one and the
@@ -196,12 +203,16 @@ power narrowly and only under the rules below.
 - **Never touch a banned service.** The four banned services from Section 0 stay out of the
   bundle entirely, so never enrich, name, or select their mock data.
 
-**Keep everything consistent.** An edit is only done when nothing else contradicts it. If you
-change or add an entity in one file, every other file that references it must still line up
-(the same customer id in `invoices.json`, the same account in `payments.json`, and so on).
-The values you write must match the numbers, names, and dates you put in the prompt and will
-later put in TRUTH.md. If you cannot make an edit consistent across the files it touches, do
-not make it.
+**Keep everything consistent, and verify it.** An edit is only done when nothing else
+contradicts it. If you change or add an entity in one file, every other file that references
+it must still line up (the same customer id in `invoices.json`, the same account in
+`payments.json`, and so on). Do not treat this as a promise to yourself; verify it. For every
+record you edit or add, enumerate the other files and records that reference its ids, names,
+or keys, and confirm each one still resolves to a real record. Name those touched references
+explicitly in the `detail` of the matching `mock_data_changes.json` entry (or in the design
+notes) so the check is auditable and not just asserted. The values you write must match the
+numbers, names, and dates you put in the prompt and will later put in TRUTH.md. If you cannot
+make an edit consistent across the files it touches, do not make it.
 
 **Record every edit.** After you finish any mock-data edits, emit a
 `mock_data_changes.json` artifact (in the same marked-file form as your other artifacts)
@@ -336,6 +347,13 @@ state pass or fail with a one line reason. If anything fails, fix it and rerun t
 3. Opening turn forces multiple parallel subagents.
 4. At least two deliverables requested.
 5. At least two hidden cross source conflicts exist in the design, none revealed in text.
+5a. Each hidden conflict is well formed. Its decoy value is persona-consistent, sharing the
+    same company, currency, locale, and units as the winner, and differs from the winner only
+    on recency or authority. No decoy is simply wrong for this persona. State each conflict's
+    winner and decoy and confirm both are values this persona could really hold.
+5b. Every mock-data record I edited or added still has all of its cross-file id, name, and key
+    references resolving to a real record in the file they point at. I enumerated those
+    references one by one and confirmed each resolves; none dangles.
 6. At least one calculation and at least one red line in the design.
 7. No em dash, no semicolon, no colon in any body, verified by reading character by character.
 8. No temporal lexicon, no opening time stamp.

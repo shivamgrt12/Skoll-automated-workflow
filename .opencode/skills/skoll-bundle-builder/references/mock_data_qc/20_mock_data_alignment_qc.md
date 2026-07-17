@@ -30,14 +30,29 @@ Judge only the **required** services (distractor data is noise and may be sparse
   reconciliation that fits in ten records is a violation.
 - The data contradicts the persona (wrong principal, wrong company, a currency or
   locale the persona would not use, records for someone who is not this persona).
-- Cross-file references do not line up: an id, name, or key used in one required
-  file has no matching record in the file it points at (an invoice for a customer
-  id that is not in `customers`, a payment against an account that does not exist).
-- The values in the mock data disagree with concrete numbers, names, or dates the
-  prompt or design notes state.
+- Cross-file references do not line up: an id or key used in one required file has
+  no matching record in the file it points at (an invoice for a customer id that is
+  not in `customers`, a payment against an account that does not exist). This is a
+  referential-integrity check on ids and keys only. Two records holding different
+  business *values* for the same quantity is not a broken reference and is covered
+  by the rule below.
+- A load-bearing value contradicts the persona itself (wrong principal, wrong
+  company, a currency or locale the persona would not use) or contradicts a concrete
+  number, name, or date stated in `PROMPT.md`.
 
 ## What is fine (do not flag)
 
+- **Intended cross-source conflicts.** Two independent sources reporting different
+  values for the same real-world quantity (a tracker figure that disagrees with an
+  analysis output, a stale total beside a fresh recompute) is a designed feature of
+  the task, not a defect. Discovering which source wins is the test. Do **not** flag
+  a value merely because it differs from another file, and do **not** flag it because
+  it differs from the authoritative value recorded in the design notes conflicts
+  table (section 5). The design notes record both the winning and the losing value on
+  purpose; the losing value is supposed to live in the mock data. Only flag such a
+  value if it independently contradicts the persona, contradicts a number stated in
+  `PROMPT.md`, or breaks id/key referential integrity. Never "reconcile", collapse,
+  or align two differing business values to each other.
 - Valid placeholders that are correct on purpose: an aggregate or summary row such
   as `Multiple - See Batch Detail`, a null field a service genuinely leaves blank,
   a totals row. Only flag a blank when the persona makes clear it should be filled.
@@ -60,5 +75,10 @@ example `mock_data/quickbooks-api/customers.json`. Obey every rule below.
 - **Keep everything consistent.** Every id, name, or key you write or add must line
   up across the files that reference it, and must match the numbers, names, and
   dates in `PROMPT.md`.
+- **Never collapse an intended conflict.** Do not resolve, align, or reconcile two
+  differing business values that represent the same quantity across files. Those
+  disagreements are the trap and must survive. You may only fix stubs, thin
+  population, values that contradict the persona, values that contradict `PROMPT.md`,
+  and broken id/key references.
 
 Do not fabricate data the prompt never touches, and do not enrich distractors.
