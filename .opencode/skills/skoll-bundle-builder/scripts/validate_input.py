@@ -79,6 +79,10 @@ def _check_task(input_dir: Path, spec: dict) -> list[Check]:
     for fname in spec["required_files"]:
         fpath = task_dir / fname
         checks.append(Check(f"task/{fname} present", fpath.is_file()))
+    for fname in spec.get("optional_files", []):
+        fpath = task_dir / fname
+        if fpath.is_file():
+            checks.append(Check(f"task/{fname} present (optional)", True))
     return checks
 
 
