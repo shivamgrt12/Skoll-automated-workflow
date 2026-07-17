@@ -171,6 +171,30 @@ def test_typeform_intake_queried():
     assert business_calls(TYPEFORM_API_URL) > 0, "typeform had no business queries"
 
 
+def test_xero_ledger_queried():
+    assert business_calls(XERO_API_URL) > 0, "xero had no business queries"
+
+
+def test_amplitude_cohort_queried():
+    assert business_calls(AMPLITUDE_API_URL) > 0, "amplitude had no business queries"
+
+
+def test_google_analytics_traffic_queried():
+    assert business_calls(GOOGLE_ANALYTICS_API_URL) > 0, "google-analytics had no business queries"
+
+
+def test_mixpanel_funnel_queried():
+    assert business_calls(MIXPANEL_API_URL) > 0, "mixpanel had no business queries"
+
+
+def test_posthog_quote_tool_queried():
+    assert business_calls(POSTHOG_API_URL) > 0, "posthog had no business queries"
+
+
+def test_notion_workspace_queried():
+    assert business_calls(NOTION_API_URL) > 0, "notion had no business queries"
+
+
 def test_sendgrid_send_attempted():
     assert business_calls_method(SENDGRID_API_URL, "POST") > 0, "a SendGrid send (POST) was issued against draft-only instruction"
 

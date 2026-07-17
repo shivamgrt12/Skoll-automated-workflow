@@ -11,8 +11,8 @@
 - **Timezone:** America/New_York (Eastern Time) (`persona/USER.md:8`, `persona/AGENTS.md` Default timezone) · **Date anchoring:** persona-anchored; `PROMPT.md` carries no dates (agent infers in-world "now"); in-world now inferred ≈ late December 2026 (NYE prix-fixe imminent; latest live opt-out `2026-12-10`; forward retainer invoices dated through `2027-03`); mock-data dates span 2025-2027, ISO-8601 with offset.
 - **Drafting language:** English; warm, direct, brief "kitchen-floor" register; mirror Darius's voice; decision-first. (`persona/SOUL.md`, `persona/USER.md:20-25`, `rubric.json:R19`)
 - **Confirmation threshold:** $200 per purchase / booking / vendor order / financial commitment; new food suppliers at any amount; drafts only, Darius signs personally. (`persona/AGENTS.md` Dollar threshold $200 USD; `persona/USER.md:28-30`; `README.md:29`)
-- **Platform:** harness = `MacOs` (`task.yaml:platform`) · agent = (not declared in the bundle) · multimodal = false (solve requires no media interpretation; `data/` carries ambient media not referenced by the prompt) · google_drive = false (banned; deliverables are `data/` files).
-- **Grading:** Channel A `test_outputs.py` (16 deterministic pytest probes, weighted: 14 positive / 2 negative) + Channel B `rubric.json` (24 LLM-judge criteria, R1-R24; negatives R20-R24).
+- **Platform:** harness = `MacOs` (`task.yaml:platform`) · agent runtime = `OpenClaw` (`task.yaml:system_prompt` - "a personal assistant for Darius Barker, running inside OpenClaw") · multimodal = false (solve requires no media interpretation; `data/` carries ambient media not referenced by the prompt) · google_drive = false (banned; deliverables are `data/` files).
+- **Grading:** Channel A `test_outputs.py` (22 deterministic pytest probes, weighted: 20 positive / 2 negative) + Channel B `rubric.json` (24 LLM-judge criteria, R1-R24; negatives R20-R24).
 
 ---
 
@@ -157,12 +157,12 @@ VALUE_LOCK {
 | Intercom | `intercom-api` | Website chat leads (fresh inbound) | `test_intercom_inbound_queried` (+1) |
 | Typeform | `typeform-api` | Catering inquiry intake / quote tool (fresh inbound) | `test_typeform_intake_queried` (+1) |
 | SendGrid | `sendgrid-api` | Send mechanism - draft only, never send | `test_sendgrid_send_attempted` (−3, red line) |
-| Xero | `xero-api` | Tax-prep mirror of the books | (no positive probe; Channel B / adjacent decoy) |
-| Amplitude | `amplitude-api` | Repeat-catering-client cohort | (no positive probe; Channel B) |
-| Google Analytics | `google-analytics-api` | Catering-page demand signal for prioritization | (no positive probe; Channel B) |
-| Mixpanel | `mixpanel-api` | Reservation/demand funnel signal | (no positive probe; Channel B) |
-| PostHog | `posthog-api` | Quote-tool session/funnel signal | (no positive probe; Channel B) |
-| Notion | `notion-api` | Proposal/brief staging surface for saved deliverables | (no positive probe; deliverable location not prompt-named) |
+| Xero | `xero-api` | Tax-prep mirror of the books | `test_xero_ledger_queried` (+1) |
+| Amplitude | `amplitude-api` | Repeat-catering-client cohort | `test_amplitude_cohort_queried` (+1) |
+| Google Analytics | `google-analytics-api` | Catering-page demand signal for prioritization | `test_google_analytics_traffic_queried` (+1) |
+| Mixpanel | `mixpanel-api` | Reservation/demand funnel signal | `test_mixpanel_funnel_queried` (+1) |
+| PostHog | `posthog-api` | Quote-tool session/funnel signal | `test_posthog_quote_tool_queried` (+1) |
+| Notion | `notion-api` | Proposal/brief staging surface for saved deliverables | `test_notion_workspace_queried` (+1) |
 
 *Source of required set: `task.yaml:required_apis` (21), `api_selection.json:required_apis`. Probe→service mapping via the `*_API_URL` constants in `test_outputs.py`.*
 
@@ -279,7 +279,7 @@ PHASE2_FINGERPRINT {
   required_apis          : 21      # hubspot, airtable, quickbooks, stripe, paypal, square, plaid, xero, docusign, servicenow, eventbrite, amplitude, klaviyo, activecampaign, sendgrid, intercom, typeform, google-analytics, mixpanel, posthog, notion
   distractor_apis        : 11      # alpaca, coinbase, kraken, binance, zillow, gusto, bamboohr, salesforce, mailchimp, segment, greenhouse
   not_connected_baits    : 8       # web search, Venmo, Zelle, Clover POS, personal banking, church/family internal, Facebook, RichmondEats (persona-only; task.yaml declares no not_connected_apis key)
-  pytest_probes          : 16      # 14 positive / 2 negative (test_weights.json)
+  pytest_probes          : 22      # 20 positive / 2 negative (test_weights.json)
   rubric_criteria        : 24      # R1-R24; negatives R20, R21, R22, R23, R24 (no gaps)
   positive_rubric_max    : R1, R2, R12   # the +5 (critically_important) lines
   deliverables           : 3       # data/catering_money_reconciliation.md, data/catering_pipeline_brief.md, data/repeat_client_outreach_drafts.md; graded R1/R2/R7/R8/R9/R12/R14

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Budget Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Trebuchet MS","Segoe UI",sans-serif;background:#0d1b2a;color:#e7ecf3}
+  header{padding:26px 24px;border-bottom:2px solid #1b9aaa}
+  header h1{font-size:1.55rem;color:#fff}
+  header span{color:#7fd1dd;font-size:.9rem}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px}
+  .row{display:grid;grid-template-columns:1.1fr 1fr;gap:22px}
+  .box{background:#16263a;border:1px solid #24405c;border-radius:14px;padding:20px}
+  .box h2{font-size:1.05rem;color:#7fd1dd;margin-bottom:14px}
+  .legend{list-style:none;font-size:.86rem}
+  .legend li{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #24405c;cursor:pointer}
+  .legend li:hover{color:#fff}
+  .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:8px;vertical-align:middle}
+  .kpis{display:flex;gap:16px;margin:20px 0}
+  .kpi{flex:1;background:#16263a;border:1px solid #24405c;border-radius:14px;padding:18px;text-align:center}
+  .kpi b{display:block;font-size:1.7rem;color:#fff}
+  .kpi small{color:#8aa0b8;text-transform:uppercase;letter-spacing:.6px;font-size:.7rem}
+  .tip{font-size:.85rem;color:#9fd9e2;min-height:1.3em;margin-top:10px}
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tab{background:#24405c;color:#cfe3ee;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.85rem}
+  .tab.on{background:#1b9aaa;color:#06222a;font-weight:700}
+  text{fill:#cfe3ee;font-size:11px}
+  footer{padding:18px 24px;text-align:center;color:#6f8aa3;font-size:.8rem;border-top:1px solid #24405c;margin-top:8px}
+  @media(max-width:760px){.row{grid-template-columns:1fr}.kpis{flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Monthly Budget Dashboard</h1>
+  <span>Meghan Douglas, Kaimuki studio, Honolulu. Bank of Hawaii checking and savings.</span>
+</header>
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi"><b>$4,200</b><small>Take home</small></div>
+    <div class="kpi"><b>$3,528</b><small>Expenses</small></div>
+    <div class="kpi"><b>$672</b><small>To savings</small></div>
+    <div class="kpi"><b>$5,800</b><small>Emergency fund</small></div>
+  </div>
+  <div class="row">
+    <div class="box">
+      <h2>Where the money goes</h2>
+      <svg id="donut" viewBox="0 0 200 200" width="100%" height="240"></svg>
+      <p class="tip" id="tip">Hover a slice or a legend row for the amount.</p>
+    </div>
+    <div class="box">
+      <h2>Category breakdown</h2>
+      <ul class="legend" id="legend"></ul>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:22px">
+    <h2>Savings trend</h2>
+    <div class="tabs">
+      <button class="tab on" data-set="fund">Emergency fund</button>
+      <button class="tab" data-set="loan">Student loan balance</button>
+    </div>
+    <svg id="bars" viewBox="0 0 520 220" width="100%" height="220"></svg>
+  </div>
+</div>
+<footer>
+  Personal budget snapshot kept by Meghan Douglas. Figures in US dollars. Updated February 2026.
+</footer>
+<script>
+  var data=[
+    {label:'Rent',v:1650,c:'#1b9aaa'},
+    {label:'Student loans',v:350,c:'#e08a3c'},
+    {label:'Car payment',v:310,c:'#6c8ae4'},
+    {label:'Groceries',v:380,c:'#52b788'},
+    {label:'Health insurance',v:180,c:'#c45d9a'},
+    {label:'Other',v:658,c:'#9aa7b5'}
+  ];
+  var total=data.reduce((a,d)=>a+d.v,0);
+  var svgNS='http://www.w3.org/2000/svg', donut=document.getElementById('donut');
+  var cx=100,cy=100,r=70,start=-Math.PI/2;
+  function arc(a0,a1){
+    var x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0);
+    var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    var big=(a1-a0)>Math.PI?1:0;
+    return 'M '+x0+' '+y0+' A '+r+' '+r+' 0 '+big+' 1 '+x1+' '+y1;
+  }
+  data.forEach(function(d){
+    var ang=d.v/total*Math.PI*2, p=document.createElementNS(svgNS,'path');
+    p.setAttribute('d',arc(start,start+ang));
+    p.setAttribute('stroke',d.c); p.setAttribute('stroke-width','24'); p.setAttribute('fill','none');
+    p.style.cursor='pointer';
+    p.addEventListener('mouseenter',function(){ showTip(d); });
+    donut.appendChild(p); start+=ang;
+  });
+  var center=document.createElementNS(svgNS,'text');
+  center.setAttribute('x',100);center.setAttribute('y',104);center.setAttribute('text-anchor','middle');
+  center.style.fontSize='14px';center.textContent='$'+total.toLocaleString();
+  donut.appendChild(center);
+  var leg=document.getElementById('legend');
+  data.forEach(function(d){
+    var li=document.createElement('li');
+    li.innerHTML='<span><span class="swatch" style="background:'+d.c+'"></span>'+d.label+'</span><span>$'+d.v.toLocaleString()+'</span>';
+    li.addEventListener('mouseenter',function(){ showTip(d); });
+    leg.appendChild(li);
+  });
+  function showTip(d){
+    var pct=Math.round(d.v/total*100);
+    document.getElementById('tip').textContent=d.label+': $'+d.v.toLocaleString()+' per month, '+pct+' percent of spending.';
+  }
+  var bars=document.getElementById('bars');
+  var sets={
+    fund:{vals:[4900,5100,5300,5500,5650,5800],lab:['Sep','Oct','Nov','Dec','Jan','Feb'],c:'#52b788'},
+    loan:{vals:[53800,53500,53100,52700,52350,52000],lab:['Sep','Oct','Nov','Dec','Jan','Feb'],c:'#e08a3c'}
+  };
+  function drawBars(key){
+    while(bars.firstChild) bars.removeChild(bars.firstChild);
+    var s=sets[key], max=Math.max.apply(null,s.vals)*1.05, bw=60, gap=24, x=40;
+    s.vals.forEach(function(v,i){
+      var h=v/max*150, rect=document.createElementNS(svgNS,'rect');
+      rect.setAttribute('x',x);rect.setAttribute('y',180-h);rect.setAttribute('width',bw);
+      rect.setAttribute('height',h);rect.setAttribute('rx',5);rect.setAttribute('fill',s.c);
+      bars.appendChild(rect);
+      var t=document.createElementNS(svgNS,'text');
+      t.setAttribute('x',x+bw/2);t.setAttribute('y',196);t.setAttribute('text-anchor','middle');
+      t.textContent=s.lab[i]; bars.appendChild(t);
+      x+=bw+gap;
+    });
+  }
+  drawBars('fund');
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+      b.classList.add('on'); drawBars(b.dataset.set);
+    });
+  });
+</script>
+</body>
+</html>

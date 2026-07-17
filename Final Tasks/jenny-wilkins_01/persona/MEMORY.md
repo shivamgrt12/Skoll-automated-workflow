@@ -80,7 +80,7 @@ The garden is the through-line: a quarter acre edited for nearly forty years. Je
 **Home address**: 48 Winding Brook Lane, Glastonbury, CT 06033.
 
 ## Connected Accounts
-- **Google Workspace**: jenny.wilkins@Finthesiss.ai, with Gmail and Calendar fully connected. This is the only account connected for the agent's use.
+- **Google Workspace**: jenny.wilkins@Finthesiss.ai, with Gmail, Calendar, and Contacts fully connected. This is the only account connected for the agent's use.
 
 ## Preferences
 - **Books**: Literary fiction, garden design, natural history, British mysteries. About 3 to 4 books a month across Kindle, audio, and physical. Reads English mysteries before American ones.

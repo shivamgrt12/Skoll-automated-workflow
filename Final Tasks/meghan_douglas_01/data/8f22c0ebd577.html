@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHT Hour Tracker</title>
+<style>
+  :root{
+    --ink:#10242b; --teal:#0f7b8a; --teal-dark:#0a5a66; --sand:#f4efe6;
+    --paper:#ffffff; --coral:#e07a5f; --line:#d9e3e5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:var(--sand);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(120deg,var(--teal-dark),var(--teal));color:#fff;padding:28px 22px}
+  header h1{font-size:1.6rem;letter-spacing:.3px}
+  header p{opacity:.9;margin-top:6px;font-size:.95rem}
+  .wrap{max-width:960px;margin:0 auto;padding:22px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(16,36,43,.06)}
+  .card .num{font-size:2rem;font-weight:700;color:var(--teal-dark)}
+  .card .lbl{font-size:.82rem;text-transform:uppercase;letter-spacing:.6px;color:#5c6f72;margin-top:4px}
+  .bar{height:18px;background:#e6eef0;border-radius:10px;overflow:hidden;margin:10px 0 4px}
+  .bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--coral));width:0;transition:width .6s ease}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:18px}
+  .panel h2{font-size:1.15rem;margin-bottom:12px;color:var(--teal-dark)}
+  label{display:block;font-size:.85rem;margin:10px 0 4px;color:#3c4f52}
+  input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:1rem}
+  button{margin-top:14px;background:var(--teal);color:#fff;border:none;padding:11px 18px;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:600}
+  button:hover{background:var(--teal-dark)}
+  .result{margin-top:14px;padding:12px;background:var(--sand);border-radius:8px;font-size:.95rem}
+  .result strong{color:var(--coral)}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:#5c6f72;font-weight:600;text-transform:uppercase;font-size:.74rem;letter-spacing:.5px}
+  footer{background:var(--ink);color:#cdd9db;padding:18px 22px;text-align:center;font-size:.82rem;margin-top:24px}
+  @media(max-width:680px){.cards{grid-template-columns:1fr}header h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Certified Hand Therapist Hour Tracker</h1>
+  <p>Meghan Yuki Douglas, OTR/L, Pacific Rehabilitation Associates, Honolulu</p>
+</header>
+<div class="wrap">
+  <div class="cards">
+    <div class="card"><div class="num" id="cLogged">2,800</div><div class="lbl">Hours logged</div></div>
+    <div class="card"><div class="num">4,000</div><div class="lbl">Hours required</div></div>
+    <div class="card"><div class="num" id="cLeft">1,200</div><div class="lbl">Hours remaining</div></div>
+  </div>
+  <div class="panel">
+    <h2>Progress toward the January 9, 2027 exam</h2>
+    <div class="bar"><span id="prog"></span></div>
+    <p style="font-size:.85rem;color:#5c6f72" id="pct">70 percent of the practice requirement complete.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Projection calculator</h2>
+    <p style="font-size:.88rem;color:#5c6f72">Estimate when the 4,000 hour requirement is met based on a weekly hand therapy pace.</p>
+    <label for="logged">Current logged hours</label>
+    <input id="logged" type="number" value="2800">
+    <label for="weekly">Hand therapy hours per week</label>
+    <input id="weekly" type="number" value="22">
+    <button id="calc">Project finish</button>
+    <div class="result" id="out">Enter a weekly pace and project the finish.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Recent supervised and solo split</h2>
+    <table>
+      <thead><tr><th>Week of</th><th>Solo hrs</th><th>Supervised hrs</th><th>Cosign</th></tr></thead>
+      <tbody>
+        <tr><td>Oct 12, 2026</td><td>10.5</td><td>7.0</td><td>Dr. Elaine Park</td></tr>
+        <tr><td>Oct 19, 2026</td><td>11.0</td><td>7.5</td><td>Dr. Elaine Park</td></tr>
+        <tr><td>Oct 26, 2026</td><td>9.5</td><td>8.0</td><td>Dr. Elaine Park</td></tr>
+        <tr><td>Nov 2, 2026</td><td>11.5</td><td>6.5</td><td>Dr. Elaine Park</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<footer>
+  Prepared by Meghan Douglas for the HTCC candidate log. Practice exam blocked November 7, 2026. Honolulu testing center.
+</footer>
+<script>
+  function paint(logged){
+    var req=4000, pct=Math.min(100,Math.round(logged/req*100));
+    document.getElementById('prog').style.width=pct+'%';
+    document.getElementById('pct').textContent=pct+' percent of the practice requirement complete.';
+    document.getElementById('cLogged').textContent=logged.toLocaleString();
+    document.getElementById('cLeft').textContent=Math.max(0,req-logged).toLocaleString();
+  }
+  paint(2800);
+  document.getElementById('calc').addEventListener('click',function(){
+    var logged=parseFloat(document.getElementById('logged').value)||0;
+    var weekly=parseFloat(document.getElementById('weekly').value)||0;
+    var remaining=4000-logged;
+    var out=document.getElementById('out');
+    paint(logged);
+    if(remaining<=0){ out.innerHTML='Requirement already met. Focus on exam domains.'; return; }
+    if(weekly<=0){ out.innerHTML='Enter a weekly pace above zero.'; return; }
+    var weeks=Math.ceil(remaining/weekly);
+    var finish=new Date(2026,10,3); finish.setDate(finish.getDate()+weeks*7);
+    var opts={year:'numeric',month:'long',day:'numeric'};
+    out.innerHTML='At <strong>'+weekly+'</strong> hours per week, the remaining <strong>'+remaining+
+      '</strong> hours take about <strong>'+weeks+'</strong> weeks, finishing near <strong>'+
+      finish.toLocaleDateString('en-US',opts)+'</strong>.';
+  });
+</script>
+</body>
+</html>

@@ -139,3 +139,4 @@
 - Mykonos Taverna kitchen line cameras and the walk-in cooler temperature monitor are not connected.
 - Yiayia Maria's accounts in Greece are not connected. Route through Katerina on WhatsApp.
 - Venmo, Zelle, and personal banking apps on Aaron's iPhone are not connected.
+</content>

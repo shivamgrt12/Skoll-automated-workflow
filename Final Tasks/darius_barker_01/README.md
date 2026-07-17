@@ -2,7 +2,7 @@
 
 **Domain:** Professional / Prosumer
 
-**Persona:** Darius Marcus Barker (he/him), owner and head chef of Memphis Soul Kitchen, a 42-seat Southern soul food restaurant in Richmond's Church Hill neighborhood. He runs the kitchen six days a week and personally owns the catering pipeline, the books, and the vendor and client relationships; the catering side has quietly grown into real money and he is saving to buy the building out from under the lease. His AI assistant persona is OpenClaw. Domain is derived from the persona: a solo owner-operator running his own book of professional work.
+**Persona:** Darius Marcus Barker (he/him), owner and head chef of Memphis Soul Kitchen, a 42-seat Southern soul food restaurant in Richmond's Church Hill neighborhood. He runs the kitchen six days a week and personally owns the catering pipeline, the books, and the vendor and client relationships; the catering side has quietly grown into real money and he is saving to buy the building out from under the lease. His AI assistant runs inside OpenClaw, the agent runtime named in the task system prompt ("a personal assistant for Darius Barker, running inside OpenClaw"). Domain is derived from the persona: a solo owner-operator running his own book of professional work.
 
 ## Task summary
 
