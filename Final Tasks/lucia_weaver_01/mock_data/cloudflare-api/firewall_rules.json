@@ -1,0 +1,202 @@
+[
+  {
+    "id": "fw0001bots",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block known bad bots",
+    "action": "block",
+    "expression": "(cf.client.bot and not cf.verified_bot_category eq \"\")",
+    "paused": "false",
+    "priority": "1",
+    "created_on": "2025-11-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0002threat",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Challenge high threat score",
+    "action": "challenge",
+    "expression": "(cf.threat_score gt 30)",
+    "paused": "false",
+    "priority": "2",
+    "created_on": "2025-11-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0003ratelimit",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Rate-limit checkout endpoint to 20 req/min per IP",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/checkout\" and rate(1m) gt 20)",
+    "paused": "false",
+    "priority": "3",
+    "created_on": "2026-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0004xmasratelimit",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Christmas peak: tighten rate limit on shop endpoints (Dec 1-24)",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/shop\" and rate(1m) gt 60 and ip.geoip.country ne \"SE\")",
+    "paused": "true",
+    "priority": "4",
+    "created_on": "2025-11-28T10:00:00.000Z"
+  },
+  {
+    "id": "fw0005scraper",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block aggressive crawlers scraping book catalogue",
+    "action": "block",
+    "expression": "(http.user_agent contains \"AhrefsBot\" or http.user_agent contains \"SemrushBot\" or http.user_agent contains \"MJ12bot\")",
+    "paused": "false",
+    "priority": "5",
+    "created_on": "2026-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "fw0006wordpress",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block wp-login.php after WordPress to Webflow migration",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"/wp-login.php\" or http.request.uri.path contains \"/wp-admin\")",
+    "paused": "false",
+    "priority": "6",
+    "created_on": "2026-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0007xmlrpc",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block xmlrpc.php probe attempts",
+    "action": "block",
+    "expression": "(http.request.uri.path eq \"/xmlrpc.php\")",
+    "paused": "false",
+    "priority": "7",
+    "created_on": "2026-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0008jonasip",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Allow Jonas Hedlund design studio IP for staging access",
+    "action": "allow",
+    "expression": "(ip.src in {185.75.142.0/24})",
+    "paused": "false",
+    "priority": "0",
+    "created_on": "2025-12-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0009countryblock",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "JS challenge for high-risk country traffic hitting checkout",
+    "action": "js_challenge",
+    "expression": "(ip.geoip.country in {\"CN\" \"RU\" \"KP\"} and http.request.uri.path contains \"/checkout\")",
+    "paused": "false",
+    "priority": "8",
+    "created_on": "2026-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0010adminpath",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block path traversal attempts",
+    "action": "block",
+    "expression": "(http.request.uri.path contains \"..%2F\" or http.request.uri.path contains \"..%5C\")",
+    "paused": "false",
+    "priority": "9",
+    "created_on": "2026-03-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0011launchweek",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Launch week (Oct 16-23 2026): challenge non-SE traffic on shop pages",
+    "action": "challenge",
+    "expression": "(ip.geoip.country ne \"SE\" and http.request.uri.path contains \"/shop\" and rate(1m) gt 30)",
+    "paused": "true",
+    "priority": "10",
+    "created_on": "2026-03-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0012hotlink",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block image hotlinking from external domains",
+    "action": "block",
+    "expression": "(http.request.uri.path matches \"\\.(jpg|jpeg|png|webp)$\" and http.referer ne \"\" and not http.referer contains \"weaverandbook.se\")",
+    "paused": "false",
+    "priority": "11",
+    "created_on": "2026-02-15T10:00:00.000Z"
+  },
+  {
+    "id": "fw0013sqlinjection",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Managed OWASP: block SQL injection probes on search endpoint",
+    "action": "block",
+    "expression": "(cf.waf.score lt 30 and http.request.uri.path contains \"/search\")",
+    "paused": "false",
+    "priority": "12",
+    "created_on": "2026-03-15T10:00:00.000Z"
+  },
+  {
+    "id": "fw0014headlessbots",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Challenge likely headless browser traffic on checkout",
+    "action": "js_challenge",
+    "expression": "(cf.bot_management.score lt 30 and http.request.uri.path contains \"/checkout\")",
+    "paused": "false",
+    "priority": "13",
+    "created_on": "2026-01-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0015allowgooglebot",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Allow Googlebot and Bingbot explicitly",
+    "action": "allow",
+    "expression": "(cf.verified_bot_category eq \"Search Engine\" and (http.user_agent contains \"Googlebot\" or http.user_agent contains \"Bingbot\"))",
+    "paused": "false",
+    "priority": "0",
+    "created_on": "2025-11-10T10:00:00.000Z"
+  },
+  {
+    "id": "fw0016postflood",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block POST flood on newsletter signup form",
+    "action": "challenge",
+    "expression": "(http.request.method eq \"POST\" and http.request.uri.path contains \"/subscribe\" and rate(1m) gt 10)",
+    "paused": "false",
+    "priority": "14",
+    "created_on": "2026-02-05T10:00:00.000Z"
+  },
+  {
+    "id": "fw0017bookfair",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Gothenburg Book Fair week (late Sep): relax rate limits for press traffic",
+    "action": "allow",
+    "expression": "(ip.geoip.country eq \"SE\" and http.referer contains \"bokmassan.se\")",
+    "paused": "true",
+    "priority": "15",
+    "created_on": "2026-03-01T10:00:00.000Z"
+  },
+  {
+    "id": "fw0018xssblock",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Block XSS probe attempts on search and comment inputs",
+    "action": "block",
+    "expression": "(http.request.uri.query contains \"<script\" or http.request.uri.query contains \"javascript:\")",
+    "paused": "false",
+    "priority": "16",
+    "created_on": "2026-03-20T10:00:00.000Z"
+  },
+  {
+    "id": "fw0019apilimit",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "Rate-limit Webflow webhook callbacks",
+    "action": "challenge",
+    "expression": "(http.request.uri.path contains \"/api/webhook\" and rate(5m) gt 100)",
+    "paused": "false",
+    "priority": "17",
+    "created_on": "2026-03-06T14:00:00.000Z"
+  },
+  {
+    "id": "fw0020ipv6block",
+    "zone_id": "zone7wb1aaaa2bbb3ccc4ddd5eee6fff7",
+    "description": "JS challenge for traffic from anonymised IPv6 /48 blocks on checkout",
+    "action": "js_challenge",
+    "expression": "(ip6.src in {::ffff:0:0/96} and http.request.uri.path contains \"/checkout\")",
+    "paused": "false",
+    "priority": "18",
+    "created_on": "2026-01-15T10:00:00.000Z"
+  }
+]

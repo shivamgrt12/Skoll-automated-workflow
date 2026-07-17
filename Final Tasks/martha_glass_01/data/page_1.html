@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reykjanes Gas Monitoring Overview</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#161d26; --panel2:#1d2733; --line:#2a3744;
+    --ink:#e8edf2; --muted:#8da0b3; --ember:#e0653a; --ember2:#f0a05a;
+    --teal:#3fb6a8; --gold:#d8b24a; --accent:#5aa9e6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:radial-gradient(1200px 600px at 70% -10%,#1a2430 0%,var(--bg) 60%);color:var(--ink);line-height:1.55}
+  header{position:sticky;top:0;z-index:20;background:rgba(15,20,25,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar{max-width:1100px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px}
+  .logo{width:34px;height:34px;border-radius:8px;background:conic-gradient(from 200deg,var(--ember),var(--gold),var(--teal),var(--ember));box-shadow:0 0 18px rgba(224,101,58,.35)}
+  .brandtxt b{font-size:15px;letter-spacing:.3px}
+  .brandtxt span{display:block;font-size:11px;color:var(--muted)}
+  nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav a{color:var(--muted);text-decoration:none;font-size:13px;padding:7px 12px;border-radius:7px;transition:.2s}
+  nav a:hover{color:var(--ink);background:var(--panel2)}
+  .wrap{max-width:1100px;margin:0 auto;padding:26px 22px 60px}
+  .hero{padding:30px 0 14px}
+  .hero h1{font-size:30px;font-weight:700;letter-spacing:.2px}
+  .hero p{color:var(--muted);max-width:640px;margin-top:8px;font-size:14px}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--teal);border:1px solid var(--line);padding:5px 11px;border-radius:99px;margin-top:14px;background:var(--panel)}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--teal);box-shadow:0 0 0 0 rgba(63,182,168,.7);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,182,168,.6)}70%{box-shadow:0 0 0 9px rgba(63,182,168,0)}100%{box-shadow:0 0 0 0 rgba(63,182,168,0)}}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;opacity:0;transform:translateY(12px);animation:rise .6s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .card .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+  .card .v{font-size:26px;font-weight:700;margin-top:6px}
+  .card .v small{font-size:13px;color:var(--muted);font-weight:500}
+  .card .t{font-size:12px;margin-top:4px}
+  .up{color:var(--ember2)}.flat{color:var(--teal)}.dn{color:var(--accent)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px}
+  .ph{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .ph h2{font-size:17px;font-weight:650}
+  .ph .sub{font-size:12px;color:var(--muted)}
+  .tabs{margin-left:auto;display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:10px;border:1px solid var(--line)}
+  .tab{border:none;background:transparent;color:var(--muted);font-size:12.5px;padding:7px 13px;border-radius:7px;cursor:pointer;transition:.2s;font-family:inherit}
+  .tab.active{background:var(--ember);color:#fff;box-shadow:0 4px 14px rgba(224,101,58,.35)}
+  .chartbox{position:relative;height:300px;margin-top:14px}
+  svg{width:100%;height:100%;overflow:visible}
+  .grid line{stroke:var(--line);stroke-width:1}
+  .axis text{fill:var(--muted);font-size:11px}
+  .series{fill:none;stroke:var(--ember);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+  .area{fill:url(#grad);opacity:.5}
+  .pt{fill:var(--ember);stroke:var(--bg);stroke-width:2;cursor:pointer}
+  .bar2{fill:var(--accent);transition:.2s}
+  .bar2:hover{fill:var(--ember2)}
+  .tip{position:absolute;pointer-events:none;background:#000d;border:1px solid var(--line);color:var(--ink);font-size:12px;padding:6px 9px;border-radius:7px;opacity:0;transform:translate(-50%,-120%);transition:opacity .15s;white-space:nowrap}
+  .two{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:18px}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .badge{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line)}
+  .b-ok{color:var(--teal);border-color:#27514b;background:#102420}
+  .b-watch{color:var(--gold);border-color:#4a401f;background:#231f10}
+  footer{border-top:1px solid var(--line);margin-top:40px}
+  .ft{max-width:1100px;margin:0 auto;padding:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:12px}
+  @media(max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo"></div>
+    <div class="brandtxt"><b>Gas Monitoring Overview</b><span>Reykjanes Peninsula, inter-eruptive phase</span></div>
+    <nav>
+      <a href="#flux">Flux</a>
+      <a href="#detail">Stations</a>
+      <a href="#about">Method</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>Reykjanes gas monitoring</h1>
+    <p>A working overview of surface gas observations across the Svartsengi and Sundhnukur area. Figures are summarised from released monitoring runs and are read as observations, never as a forecast.</p>
+    <span class="pill"><span class="dot"></span> Live snapshot, updated 22 February 2026</span>
+  </section>
+
+  <section class="cards">
+    <div class="card"><div class="k">SO2 flux, latest</div><div class="v">42 <small>t/day</small></div><div class="t flat">No significant change</div></div>
+    <div class="card"><div class="k">CO2 / SO2 ratio</div><div class="v">14.2</div><div class="t up">Slightly elevated</div></div>
+    <div class="card"><div class="k">Seismicity, weekly</div><div class="v">312 <small>events</small></div><div class="t up">Above baseline</div></div>
+    <div class="card"><div class="k">Active stations</div><div class="v">6 <small>of 6</small></div><div class="t flat">All reporting</div></div>
+  </section>
+
+  <section id="flux" class="panel">
+    <div class="ph">
+      <div>
+        <h2>Time series</h2>
+        <div class="sub">Monthly summary, October 2025 to February 2026</div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-set="so2">SO2 flux</button>
+        <button class="tab" data-set="co2">CO2/SO2</button>
+        <button class="tab" data-set="quakes">Seismicity</button>
+      </div>
+    </div>
+    <div class="chartbox">
+      <svg id="chart" viewBox="0 0 720 300" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e0653a" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#e0653a" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g class="grid" id="grid"></g>
+        <g class="axis" id="xaxis"></g>
+        <g class="axis" id="yaxis"></g>
+        <path class="area" id="area"></path>
+        <path class="series" id="series"></path>
+        <g id="dots"></g>
+      </svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend"><span><i style="background:#e0653a"></i>Selected series</span><span><i style="background:#2a3744"></i>Reference grid</span><span>Hover a point for the value</span></div>
+  </section>
+
+  <div class="two">
+    <section id="detail" class="panel">
+      <div class="ph"><div><h2>Station status</h2><div class="sub">Last reporting window</div></div></div>
+      <table>
+        <thead><tr><th>Station</th><th>Feature</th><th>Method</th><th>State</th></tr></thead>
+        <tbody>
+          <tr><td>REY-01</td><td>Svartsengi plume</td><td>DOAS</td><td><span class="badge b-ok">Reporting</span></td></tr>
+          <tr><td>REY-02</td><td>Sundhnukur fissure</td><td>MultiGAS</td><td><span class="badge b-ok">Reporting</span></td></tr>
+          <tr><td>REY-03</td><td>Eldvorp scan line</td><td>DOAS</td><td><span class="badge b-watch">Wind limited</span></td></tr>
+          <tr><td>REY-04</td><td>Grindavik north</td><td>MultiGAS</td><td><span class="badge b-ok">Reporting</span></td></tr>
+          <tr><td>REY-05</td><td>Drone transect</td><td>Drone</td><td><span class="badge b-watch">Weather hold</span></td></tr>
+          <tr><td>REY-06</td><td>Reference cell</td><td>Lab</td><td><span class="badge b-ok">Stable</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><div><h2>Weekly events</h2><div class="sub">Located earthquakes near Svartsengi</div></div></div>
+      <div class="chartbox" style="height:240px">
+        <svg id="bars" viewBox="0 0 360 240" preserveAspectRatio="none">
+          <g class="grid" id="bgrid"></g>
+          <g id="barset"></g>
+          <g class="axis" id="baxis"></g>
+        </svg>
+      </div>
+    </section>
+  </div>
+
+  <section id="about" class="panel">
+    <div class="ph"><div><h2>How to read this</h2></div></div>
+    <p style="color:var(--muted);font-size:13.5px;max-width:760px">Surface sulphur dioxide flux is measured by ground based scanning, and gas species ratios by direct sampling during accessible windows. In the present phase, elevated seismicity and continuing magma accumulation are not, so far, accompanied by a significant change in surface flux. That combination is itself the finding, and it is communicated plainly to civil protection before it reaches anyone else.</p>
+  </section>
+</div>
+
+<footer>
+  <div class="ft">
+    <div>Gas Geochemistry Group, Natural Hazards Division. Compiled by Martha Glass.</div>
+    <div>Internal working view. Not for redistribution. Reykjavik, Iceland.</div>
+  </div>
+</footer>
+
+<script>
+  var DATA = {
+    so2:   {label:"SO2 flux (t/day)", unit:" t/day", v:[55,48,51,46,42], max:80},
+    co2:   {label:"CO2/SO2 ratio",    unit:"",       v:[11.8,12.5,13.1,13.6,14.2], max:20},
+    quakes:{label:"Located events",   unit:" events",v:[180,240,205,275,312], max:360}
+  };
+  var months = ["Oct 25","Nov 25","Dec 25","Jan 26","Feb 26"];
+  var PAD={l:46,r:14,t:16,b:30}, W=720, H=300;
+  var svg=document.getElementById('chart'), tip=document.getElementById('tip');
+  var cur="so2";
+
+  function sx(i,n){return PAD.l+(W-PAD.l-PAD.r)*(i/(n-1));}
+  function sy(val,max){return H-PAD.b-(H-PAD.t-PAD.b)*(val/max);}
+
+  function draw(set){
+    var d=DATA[set], n=d.v.length, max=d.max;
+    var grid=document.getElementById('grid');grid.innerHTML="";
+    var yax=document.getElementById('yaxis');yax.innerHTML="";
+    var xax=document.getElementById('xaxis');xax.innerHTML="";
+    for(var g=0;g<=4;g++){
+      var y=PAD.t+(H-PAD.t-PAD.b)*(g/4);
+      grid.innerHTML+='<line x1="'+PAD.l+'" y1="'+y+'" x2="'+(W-PAD.r)+'" y2="'+y+'"/>';
+      var lab=Math.round(max-(max/4)*g);
+      yax.innerHTML+='<text x="'+(PAD.l-8)+'" y="'+(y+4)+'" text-anchor="end">'+lab+'</text>';
+    }
+    for(var i=0;i<n;i++){
+      xax.innerHTML+='<text x="'+sx(i,n)+'" y="'+(H-8)+'" text-anchor="middle">'+months[i]+'</text>';
+    }
+    var path="", area="";
+    for(var i=0;i<n;i++){
+      var x=sx(i,n), y=sy(d.v[i],max);
+      path+=(i?" L":"M")+x+" "+y;
+    }
+    area=path+" L"+sx(n-1,n)+" "+(H-PAD.b)+" L"+sx(0,n)+" "+(H-PAD.b)+" Z";
+    var sEl=document.getElementById('series'); sEl.setAttribute('d',path);
+    var len=sEl.getTotalLength();
+    sEl.style.strokeDasharray=len; sEl.style.strokeDashoffset=len;
+    sEl.getBoundingClientRect();
+    sEl.style.transition="stroke-dashoffset 1s ease"; sEl.style.strokeDashoffset=0;
+    document.getElementById('area').setAttribute('d',area);
+    var dots=document.getElementById('dots'); dots.innerHTML="";
+    for(var i=0;i<n;i++){
+      var x=sx(i,n), y=sy(d.v[i],max);
+      var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("class","pt");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",4.5);
+      c.dataset.m=months[i];c.dataset.val=d.v[i]+d.unit;
+      dots.appendChild(c);
+    }
+  }
+  function bindTips(){
+    document.getElementById('dots').addEventListener('mousemove',function(e){
+      var t=e.target; if(!t.classList||!t.classList.contains('pt')){tip.style.opacity=0;return;}
+      var box=svg.getBoundingClientRect();
+      var cx=parseFloat(t.getAttribute('cx'))/W*box.width;
+      var cy=parseFloat(t.getAttribute('cy'))/H*box.height;
+      tip.style.left=cx+"px";tip.style.top=cy+"px";tip.style.opacity=1;
+      tip.textContent=t.dataset.m+": "+t.dataset.val;
+    });
+    document.getElementById('dots').addEventListener('mouseleave',function(){tip.style.opacity=0;});
+  }
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active'); cur=b.dataset.set; draw(cur);
+    });
+  });
+
+  // weekly bar chart
+  (function(){
+    var bv=[38,52,44,61,47,69,73], days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    var bw=360,bh=240,bp={l:28,r:8,t:14,b:26}, bmax=80;
+    var grid=document.getElementById('bgrid');
+    for(var g=0;g<=4;g++){var y=bp.t+(bh-bp.t-bp.b)*(g/4);grid.innerHTML+='<line x1="'+bp.l+'" y1="'+y+'" x2="'+(bw-bp.r)+'" y2="'+y+'"/>';}
+    var set=document.getElementById('barset'), ax=document.getElementById('baxis');
+    var n=bv.length, gapw=(bw-bp.l-bp.r)/n;
+    for(var i=0;i<n;i++){
+      var x=bp.l+gapw*i+gapw*0.18, w=gapw*0.64;
+      var h=(bh-bp.t-bp.b)*(bv[i]/bmax), y=bh-bp.b-h;
+      var r=document.createElementNS("http://www.w3.org/2000/svg","rect");
+      r.setAttribute("class","bar2");r.setAttribute("x",x);r.setAttribute("width",w);
+      r.setAttribute("y",bh-bp.b);r.setAttribute("height",0);r.setAttribute("rx",3);
+      set.appendChild(r);
+      (function(rr,yy,hh,delay){setTimeout(function(){rr.style.transition="y .6s ease,height .6s ease";rr.setAttribute("y",yy);rr.setAttribute("height",hh);},delay);})(r,y,h,120+i*70);
+      ax.innerHTML+='<text x="'+(x+w/2)+'" y="'+(bh-8)+'" text-anchor="middle">'+days[i]+'</text>';
+    }
+  })();
+
+  draw('so2'); bindTips();
+</script>
+</body>
+</html>

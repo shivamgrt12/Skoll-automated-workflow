@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operations Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1620; --panel:#16202c; --panel2:#1c2835; --line:#26333f;
+    --txt:#e8edf2; --muted:#8ea0ae; --teal:#3fb6a8; --amber:#e2a64b; --rose:#d76b7a; --blue:#5b8def; --green:#5fc27e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+
+  aside{background:var(--panel);border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em;margin-bottom:30px}
+  .dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--blue));display:grid;place-items:center;color:#0f1620;font-weight:800}
+  .navi{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .navi a{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;color:var(--muted);font-size:.92rem;cursor:pointer;transition:.2s}
+  .navi a:hover{background:var(--panel2);color:var(--txt)}
+  .navi a.on{background:linear-gradient(90deg,rgba(63,182,168,.18),transparent);color:var(--teal)}
+  .navi svg{width:18px;height:18px}
+  .sidefoot{position:absolute;bottom:22px;left:18px;right:18px;font-size:.76rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+  main{padding:28px 32px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+  .top h1{font-size:1.5rem;font-weight:700}
+  .top p{color:var(--muted);font-size:.9rem}
+  .pill{font-size:.78rem;color:var(--teal);background:rgba(63,182,168,.12);padding:7px 14px;border-radius:30px;border:1px solid rgba(63,182,168,.3)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px;opacity:0;transform:translateY(14px);animation:rise .6s forwards}
+  .kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.16s}.kpi:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .lab{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .kpi .big{font-size:1.9rem;font-weight:700;margin:6px 0 2px}
+  .kpi .trend{font-size:.8rem}.up{color:var(--green)}.down{color:var(--rose)}
+
+  .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .panel h3{font-size:1rem;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:.82rem;margin-bottom:18px}
+
+  .bars{display:flex;align-items:flex-end;gap:12px;height:230px;padding-top:8px}
+  .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+  .b .stack{width:100%;max-width:46px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .b .seg{width:100%;border-radius:5px 5px 0 0;height:0;transition:height 1s ease}
+  .b .seg.book{background:linear-gradient(180deg,var(--teal),#2c8579)}
+  .b small{font-size:.72rem;color:var(--muted)}
+  .b em{font-style:normal;font-size:.78rem;font-weight:700}
+
+  .legend{display:flex;gap:16px;margin-top:14px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  .donut{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .ring{--p:0;width:160px;height:160px;border-radius:50%;
+    background:conic-gradient(var(--blue) 0 40%, var(--teal) 40% 80%, var(--amber) 80% 100%);
+    display:grid;place-items:center;position:relative;flex:0 0 auto}
+  .ring::after{content:"";position:absolute;width:104px;height:104px;border-radius:50%;background:var(--panel)}
+  .ring b{position:relative;z-index:1;font-size:1.4rem}
+  .ring b small{display:block;font-size:.66rem;color:var(--muted);font-weight:400;letter-spacing:.08em}
+  .keys{list-style:none;font-size:.85rem;display:flex;flex-direction:column;gap:10px}
+  .keys li{display:flex;align-items:center;gap:9px;color:var(--muted)}
+  .keys b{color:var(--txt)}
+
+  table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:4px}
+  th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}
+  .tag{font-size:.72rem;padding:3px 10px;border-radius:20px}
+  .t-ok{background:rgba(95,194,126,.16);color:var(--green)}
+  .t-wait{background:rgba(226,166,75,.16);color:var(--amber)}
+  .t-hold{background:rgba(215,107,122,.16);color:var(--rose)}
+
+  .full{margin-top:18px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-direction:column}.sidefoot{position:static;margin-top:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo"><span class="dot">C</span> Studio Ops</div>
+    <ul class="navi">
+      <li><a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Overview</a></li>
+      <li><a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> Calendar</a></li>
+      <li><a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 17l5-5 4 3 8-8"/></svg> Pipeline</a></li>
+      <li><a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg> Vendors</a></li>
+    </ul>
+    <div class="sidefoot">Mark Campbell, lead planner<br>Campbell Events, internal use</div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><h1>Season Overview</h1><p>Working view, updated February 9, 2026</p></div>
+      <div class="pill">Peak season opens in five weeks</div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="lab">Booked weddings</div><div class="big" data-count="4">0</div><div class="trend up">2 contracts cleared since November</div></div>
+      <div class="kpi"><div class="lab">Open inquiries</div><div class="big" data-count="5">0</div><div class="trend up">3 consults booked</div></div>
+      <div class="kpi"><div class="lab">2025 revenue</div><div class="big">$198k</div><div class="trend up">Up from $186k in 2024</div></div>
+      <div class="kpi"><div class="lab">Vendor confirms</div><div class="big">6 of 8</div><div class="trend down">2 still pending</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h3>Revenue by quarter, 2025</h3>
+        <p class="sub">Total of 198,000 across the year, concentrated in the summer season</p>
+        <div class="bars" id="bars">
+          <div class="b"><div class="stack"><div class="seg book" data-h="23"></div></div><em>$18k</em><small>Q1</small></div>
+          <div class="b"><div class="stack"><div class="seg book" data-h="92"></div></div><em>$72k</em><small>Q2</small></div>
+          <div class="b"><div class="stack"><div class="seg book" data-h="100"></div></div><em>$78k</em><small>Q3</small></div>
+          <div class="b"><div class="stack"><div class="seg book" data-h="38"></div></div><em>$30k</em><small>Q4</small></div>
+        </div>
+        <div class="legend"><span><i class="sw" style="background:var(--teal)"></i> Booked revenue</span><span>Quiet winter, full summer, the usual shape of the year</span></div>
+      </div>
+
+      <div class="panel">
+        <h3>Where inquiries come from</h3>
+        <p class="sub">Last five leads logged this winter</p>
+        <div class="donut">
+          <div class="ring"><b>5<small>LEADS</small></b></div>
+          <ul class="keys">
+            <li><i class="sw" style="background:var(--blue)"></i> <b>Referral</b> &nbsp; 2 leads</li>
+            <li><i class="sw" style="background:var(--teal)"></i> <b>Website</b> &nbsp; 2 leads</li>
+            <li><i class="sw" style="background:var(--amber)"></i> <b>Social</b> &nbsp; 1 lead</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <h3>Vendor confirmation status</h3>
+      <p class="sub">Tracking against the next confirmed wedding</p>
+      <table>
+        <thead><tr><th>Category</th><th>Partner</th><th>Contact</th><th>Day of role</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Catering</td><td>Pellegrini Fine Catering</td><td>(215) 555-9014</td><td>Plated dinner, 140 guests</td><td><span class="tag t-ok">Confirmed</span></td></tr>
+          <tr><td>Florals</td><td>Byrne and Bloom</td><td>(267) 555-3328</td><td>Ceremony and tables</td><td><span class="tag t-ok">Confirmed</span></td></tr>
+          <tr><td>Photography</td><td>Halcyon Studio</td><td>(215) 555-2210</td><td>Full day coverage</td><td><span class="tag t-ok">Confirmed</span></td></tr>
+          <tr><td>Lighting</td><td>Lumen AV</td><td>(215) 555-3390</td><td>Uplighting and dance floor</td><td><span class="tag t-ok">Confirmed</span></td></tr>
+          <tr><td>Cake</td><td>Sift Bakeshop</td><td>(215) 555-6628</td><td>Three tier, delivery noon</td><td><span class="tag t-wait">Awaiting</span></td></tr>
+          <tr><td>Music</td><td>Spinwell Entertainment</td><td>(267) 555-7781</td><td>Reception sound and DJ</td><td><span class="tag t-wait">Awaiting</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  function counters(){document.querySelectorAll('[data-count]').forEach(function(el){
+    var t=+el.getAttribute('data-count'),s=0;var id=setInterval(function(){s++;if(s>=t){s=t;clearInterval(id)}el.textContent=s},90);});}
+  counters();
+  var seen=false;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;
+    document.querySelectorAll('#bars .seg').forEach(function(s){s.style.height=s.getAttribute('data-h')+'%'});}})},{threshold:.3});
+  io.observe(document.getElementById('bars'));
+  document.querySelectorAll('.navi a').forEach(function(a){a.addEventListener('click',function(){
+    document.querySelectorAll('.navi a').forEach(function(x){x.classList.remove('on')});a.classList.add('on');});});
+</script>
+</body>
+</html>

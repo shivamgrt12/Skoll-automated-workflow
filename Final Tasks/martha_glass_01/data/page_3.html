@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volcanic Gas Geochemistry Group</title>
+<style>
+  :root{
+    --bg:#f4f7f8; --ink:#16242b; --soft:#536069; --rule:#dde6e9;
+    --teal:#11796e; --teal2:#16a394; --slate:#2b3d46; --amber:#c9762e; --white:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{position:sticky;top:0;z-index:30;background:rgba(244,247,248,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+  .bar{max-width:1080px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:12px}
+  .logo{width:32px;height:32px;border-radius:9px;background:var(--slate);position:relative}
+  .logo:before{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--teal2),var(--teal) 70%)}
+  .name{font-weight:700;font-size:14.5px}.name span{display:block;font-size:11px;color:var(--soft);font-weight:500}
+  nav{margin-left:auto;display:flex;gap:2px}
+  nav a{font-size:13px;color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:7px;transition:.2s}
+  nav a:hover{color:var(--teal);background:#e7eff0}
+  .hero{background:linear-gradient(150deg,var(--slate),#16323a 55%,#0e2329);color:#eaf2f3;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(22,163,148,.30),transparent 65%)}
+  .hwrap{max-width:1080px;margin:0 auto;padding:74px 22px 64px;position:relative;z-index:2}
+  .tag{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal2)}
+  h1{font-size:42px;line-height:1.1;margin:14px 0 14px;max-width:720px}
+  .hlead{font-size:18px;color:#b8c9cd;max-width:620px}
+  .stats{display:flex;gap:38px;margin-top:34px;flex-wrap:wrap}
+  .stat b{font-size:30px;color:#fff;display:block}
+  .stat span{font-size:12.5px;color:#9fb3b7;letter-spacing:.4px}
+  section{max-width:1080px;margin:0 auto;padding:54px 22px}
+  .shead{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+  h2{font-size:28px;margin-bottom:8px}
+  .intro{color:var(--soft);max-width:660px;margin-bottom:26px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .tile{background:var(--white);border:1px solid var(--rule);border-radius:14px;padding:22px;transition:.25s}
+  .tile:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(20,40,46,.10);border-color:#bcd4cf}
+  .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:#e4f1ef}
+  .ic svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:2}
+  .tile h3{font-size:17px;margin-bottom:6px}
+  .tile p{font-size:13.5px;color:var(--soft)}
+  .people{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .person{background:var(--white);border:1px solid var(--rule);border-radius:14px;padding:20px;text-align:center}
+  .avatar{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff}
+  .a1{background:linear-gradient(140deg,var(--teal2),var(--teal))}
+  .a2{background:linear-gradient(140deg,#5a7a86,var(--slate))}
+  .a3{background:linear-gradient(140deg,#d79a55,var(--amber))}
+  .a4{background:linear-gradient(140deg,#7a8c95,#46606b)}
+  .person b{font-size:15px}.person span{display:block;font-size:12.5px;color:var(--soft);margin-top:3px}
+  .pubs{background:var(--white);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+  .pub{padding:16px 20px;border-bottom:1px solid var(--rule);display:flex;gap:16px;align-items:flex-start;transition:.2s}
+  .pub:last-child{border-bottom:none}
+  .pub:hover{background:#f0f6f5}
+  .yr{font-weight:700;color:var(--teal);font-size:13px;min-width:46px}
+  .pub .t{font-size:14.5px}.pub .m{font-size:12.5px;color:var(--soft);margin-top:2px}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .kit{background:var(--white);border:1px solid var(--rule);border-radius:14px;padding:8px 20px}
+  .kit .k{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--rule);font-size:14px}
+  .kit .k:last-child{border-bottom:none}
+  .kit .k span{color:var(--soft);font-size:12.5px}
+  form{background:var(--slate);color:#eaf2f3;border-radius:16px;padding:26px}
+  form h3{font-size:19px;margin-bottom:4px}
+  form .fl{font-size:13px;color:#a9bcc1;margin:14px 0 6px}
+  form input,form textarea{width:100%;font-family:inherit;font-size:14px;padding:11px 13px;border-radius:9px;border:1px solid #3c525c;background:#22343c;color:#fff}
+  form input:focus,form textarea:focus{outline:none;border-color:var(--teal2)}
+  form textarea{resize:vertical;min-height:84px}
+  form button{margin-top:16px;width:100%;font-family:inherit;font-size:14px;font-weight:600;padding:13px;border:none;border-radius:9px;background:var(--teal2);color:#06211d;cursor:pointer;transition:.2s}
+  form button:hover{background:#1bbaa9}
+  .fmsg{font-size:13px;margin-top:12px;min-height:18px}
+  .fmsg.ok{color:#8fe3d4}.fmsg.err{color:#f0ad94}
+  footer{background:#0e2329;color:#9fb3b7}
+  .ft{max-width:1080px;margin:0 auto;padding:28px 22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12.5px}
+  .ft a{color:#cfe0e2;text-decoration:none}
+  @media(max-width:860px){h1{font-size:32px}.grid3,.people{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}nav{display:none}}
+  @media(max-width:520px){.grid3,.people{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo"></div>
+    <div class="name">Volcanic Gas Geochemistry Group<span>Natural Hazards Division, Reykjavik</span></div>
+    <nav>
+      <a href="#work">Research</a>
+      <a href="#team">Team</a>
+      <a href="#pubs">Publications</a>
+      <a href="#kit">Instruments</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hwrap">
+    <div class="tag">Eruption forecasting and hazard communication</div>
+    <h1>Reading volcanic gas to give communities time to act</h1>
+    <p class="hlead">We measure the gases that magma releases, sulphur dioxide, carbon dioxide, and hydrogen sulphide, to detect changes in activity across Iceland's restless systems and the wider European network.</p>
+    <div class="stats">
+      <div class="stat"><b>4</b><span>active volcanic systems tracked</span></div>
+      <div class="stat"><b>8</b><span>European partner observatories</span></div>
+      <div class="stat"><b>2021</b><span>continuous Reykjanes monitoring since</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="work">
+  <div class="shead">What we do</div>
+  <h2>Three lines of measurement</h2>
+  <p class="intro">Our methods are chosen to work where volcanoes actually are, on glaciers, in highland weather, and across plumes that rarely sit still.</p>
+  <div class="grid3">
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+      <h3>Remote scanning</h3>
+      <p>Ground based scanning measures sulphur dioxide flux in any plume that clears the terrain, day to day and through unrest.</p>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l5 3"/></svg></div>
+      <h3>Direct sampling</h3>
+      <p>Field instruments capture gas species ratios at fumaroles and vents during the short windows the weather allows.</p>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8l8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8"/></svg></div>
+      <h3>Drone surveys</h3>
+      <p>Sensor payloads reach plumes and craters that are unsafe or impossible to sample on foot, extending coverage safely.</p>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="shead">Who we are</div>
+  <h2>A small group, deep in the field</h2>
+  <p class="intro">Built around long field experience, careful records, and clear communication from monitoring to public guidance.</p>
+  <div class="people">
+    <div class="person"><div class="avatar a1">MG</div><b>Martha Glass</b><span>Group lead, gas geochemistry</span></div>
+    <div class="person"><div class="avatar a2">LE</div><b>Lilja Einarsdottir</b><span>Doctoral researcher, tremor signals</span></div>
+    <div class="person"><div class="avatar a3">MB</div><b>Marco Bianchi</b><span>Network co-lead, Italy</span></div>
+    <div class="person"><div class="avatar a4">SJ</div><b>Sarah Jennings</b><span>Visiting collaborator</span></div>
+  </div>
+</section>
+
+<section id="pubs">
+  <div class="shead">Selected output</div>
+  <h2>Recent and in progress</h2>
+  <div class="pubs">
+    <div class="pub"><div class="yr">2026</div><div><div class="t">Inter-eruptive gas flux at Svartsengi: a multi-year record from the Reykjanes Peninsula</div><div class="m">Working draft, target Bulletin of Volcanology. Glass, Bianchi, Einarsdottir.</div></div></div>
+    <div class="pub"><div class="yr">2026</div><div><div class="t">Standardised gas monitoring protocol, version 2, across eight observatories</div><div class="m">European Volcanic Gas Network technical note.</div></div></div>
+    <div class="pub"><div class="yr">2025</div><div><div class="t">Katla readiness: gas geochemistry and monitoring capability</div><div class="m">Assessment chapter prepared for institute management. Submission target October 2026.</div></div></div>
+    <div class="pub"><div class="yr">2025</div><div><div class="t">Drone-mounted sensing of inaccessible plumes in highland Iceland</div><div class="m">Methods contribution, consortium proceedings.</div></div></div>
+  </div>
+</section>
+
+<section id="kit">
+  <div class="split">
+    <div>
+      <div class="shead">In the kit</div>
+      <h2>Instruments we run</h2>
+      <p class="intro">A shared fleet, planned ahead so parallel campaigns never collide. Every unit carries a calibration schedule.</p>
+      <div class="kit">
+        <div class="k"><div>DOAS UV spectrometer<span style="display:block">Plume scanning, flux retrieval</span></div><b style="color:var(--teal)">In service</b></div>
+        <div class="k"><div>MultiGAS unit<span style="display:block">Gas species ratios</span></div><b style="color:var(--amber)">At vendor</b></div>
+        <div class="k"><div>Drone sensor payloads<span style="display:block">Two units, redundant</span></div><b style="color:var(--teal)">In service</b></div>
+        <div class="k"><div>Portable weather station<span style="display:block">Wind and humidity context</span></div><b style="color:var(--teal)">In service</b></div>
+      </div>
+    </div>
+    <div id="contact">
+      <form id="cform" novalidate>
+        <h3>Get in touch</h3>
+        <p style="font-size:13px;color:#a9bcc1;margin-top:4px">For collaboration, student supervision, or data requests through the public portal.</p>
+        <div class="fl">Name</div>
+        <input type="text" id="cn" aria-label="Name">
+        <div class="fl">Email</div>
+        <input type="email" id="ce" aria-label="Email">
+        <div class="fl">Message</div>
+        <textarea id="cm" aria-label="Message"></textarea>
+        <button type="submit">Send enquiry</button>
+        <div class="fmsg" id="fmsg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">
+    <div>Volcanic Gas Geochemistry Group. Refreshed each semester by Martha Glass and Lilja Einarsdottir.</div>
+    <div><a href="#work">Research</a> &middot; <a href="#contact">Contact</a> &middot; Reykjavik, Iceland</div>
+  </div>
+</footer>
+
+<script>
+  var tio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform="none";}});},{threshold:.15});
+  document.querySelectorAll('.tile,.person').forEach(function(el){el.style.opacity=0;el.style.transform="translateY(14px)";el.style.transition="opacity .6s ease, transform .6s ease";tio.observe(el);});
+
+  var f=document.getElementById('cform'), m=document.getElementById('fmsg');
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var n=document.getElementById('cn').value.trim();
+    var e=document.getElementById('ce').value.trim();
+    var msg=document.getElementById('cm').value.trim();
+    var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    if(n.length<2){m.className="fmsg err";m.textContent="Please tell us your name.";return;}
+    if(!ok){m.className="fmsg err";m.textContent="Please enter a valid email address.";return;}
+    if(msg.length<5){m.className="fmsg err";m.textContent="Add a short message so we can route your enquiry.";return;}
+    m.className="fmsg ok";m.textContent="Thank you. Your enquiry has been queued and we will reply within a few working days.";
+    f.reset();
+  });
+</script>
+</body>
+</html>

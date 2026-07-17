@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desert Bloom Coordinator Dashboard | R. Holt</title>
+<meta name="description" content="Internal volunteer coordination dashboard for Desert Bloom Women's Shelter. Not for public distribution.">
+<style>
+  :root{
+    --bg:#f5f3ee;
+    --panel:#ffffff;
+    --ink:#1f2330;
+    --muted:#6a7384;
+    --line:#e4e0d6;
+    --brand:#7a3a4c;
+    --brand2:#a86a3a;
+    --green:#3f7a5b;
+    --amber:#c79434;
+    --red:#b54a3a;
+    --blue:#3a6a8e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:"Inter",Segoe UI,Helvetica,sans-serif;color:var(--ink);line-height:1.5}
+  /* Layout */
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  aside.side{
+    background:#1f2330;color:#dde1ec;padding:22px 16px;position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px;margin-bottom:24px}
+  .brand .mk{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg, var(--brand), var(--brand2))}
+  .brand div{font-family:Georgia,serif;font-size:16px;font-weight:700;letter-spacing:.02em;color:#fff}
+  .brand small{display:block;color:#8b94a6;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+  nav.side-nav a{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#b9c1d2;text-decoration:none;font-size:14px;margin-bottom:2px;
+  }
+  nav.side-nav a:hover{background:#2a3040;color:#fff}
+  nav.side-nav a.active{background:linear-gradient(180deg, rgba(168,106,58,.18), transparent);color:#fff;border-left:3px solid var(--brand2);padding-left:9px}
+  nav.side-nav .group{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#7c8499;padding:14px 12px 6px}
+  .badge{margin-left:auto;background:var(--brand);color:#fff;border-radius:999px;padding:2px 8px;font-size:11px}
+  .who{position:absolute;bottom:18px;left:16px;right:16px;background:#2a3040;border-radius:10px;padding:12px;font-size:12.5px;color:#cfd5e2}
+  .who strong{color:#fff;display:block;font-size:13.5px}
+  /* Main */
+  main{padding:24px 28px 60px;max-width:1280px}
+  header.page{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;gap:20px;flex-wrap:wrap}
+  header.page h1{font-family:Georgia,serif;font-size:28px;margin:0}
+  header.page .crumb{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  .controls{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{background:#fff;border:1px solid var(--line);padding:9px 14px;border-radius:8px;font:inherit;font-size:13.5px;cursor:pointer;color:var(--ink)}
+  .btn:hover{background:#faf8f3}
+  .btn.p{background:var(--brand);color:#fff;border-color:transparent}
+  .btn.p:hover{background:#642e3e}
+  /* KPI cards */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+  .kpi .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .kpi .v{font-family:Georgia,serif;font-size:30px;margin-top:6px}
+  .kpi .d{font-size:12.5px;margin-top:6px}
+  .kpi .d.up{color:var(--green)}
+  .kpi .d.dn{color:var(--red)}
+  .kpi .glyph{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:rgba(122,58,76,.1);color:var(--brand);font-weight:700}
+  /* Grid blocks */
+  .grid{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;margin-bottom:22px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .panel h3{margin:0 0 4px;font-family:Georgia,serif;font-size:18px}
+  .panel .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .panel .ph .meta{color:var(--muted);font-size:12.5px}
+  /* Chart */
+  .chart{width:100%;height:240px}
+  .legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  tr:hover td{background:#faf8f3}
+  .pill{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+  .pill.ok{background:rgba(63,122,91,.12);color:var(--green)}
+  .pill.pend{background:rgba(199,148,52,.14);color:var(--amber)}
+  .pill.alert{background:rgba(181,74,58,.12);color:var(--red)}
+  .pill.info{background:rgba(58,106,142,.12);color:var(--blue)}
+  /* Mini bars */
+  .stack{display:flex;height:8px;border-radius:6px;overflow:hidden;background:#eee;margin-top:6px}
+  .stack i{height:100%}
+  /* Three column */
+  .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .tile h4{margin:0 0 4px;font-size:14px}
+  .tile p{margin:0;color:var(--muted);font-size:13px}
+  /* Alerts */
+  .alert{
+    border-left:4px solid var(--amber);background:#fff7e6;padding:12px 14px;border-radius:8px;
+    margin-bottom:10px;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .alert.red{border-color:var(--red);background:#fde8e4}
+  .alert .x{cursor:pointer;color:var(--muted);background:transparent;border:0;font-size:18px}
+  @media(max-width:980px){
+    .app{grid-template-columns:1fr}
+    aside.side{position:relative;height:auto}
+    .who{position:relative;left:auto;right:auto;bottom:auto;margin-top:16px}
+    .grid,.kpis,.three{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:620px){
+    .grid,.kpis,.three{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="side">
+  <div class="brand"><div class="mk"></div><div>Desert Bloom<small>Coordinator</small></div></div>
+  <nav class="side-nav">
+    <div class="group">Programmes</div>
+    <a href="#" class="active">Overview</a>
+    <a href="#">Volunteers <span class="badge">11</span></a>
+    <a href="#">Legal Clinic</a>
+    <a href="#">Empowerment Groups</a>
+    <div class="group">Gala 2026</div>
+    <a href="#">Sponsors</a>
+    <a href="#">Budget</a>
+    <a href="#">Programme &amp; RSVPs</a>
+    <div class="group">Admin</div>
+    <a href="#">Roster (Airtable)</a>
+    <a href="#">Donor CRM (HubSpot)</a>
+    <a href="#">Settings</a>
+  </nav>
+  <div class="who"><strong>R. Holt</strong>Volunteer Programme Coordinator . since 2017</div>
+</aside>
+
+<main>
+<header class="page">
+  <div>
+    <div class="crumb">Overview . November 2026</div>
+    <h1>Coordinator dashboard</h1>
+  </div>
+  <div class="controls">
+    <select class="btn"><option>Last 90 days</option><option>YTD</option><option>This week</option></select>
+    <button class="btn">Export</button>
+    <button class="btn p">+ Schedule shift</button>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="k">Active volunteers</div>
+    <div class="v">11</div>
+    <div class="d up">+2 since September 2025</div>
+    <div class="glyph">V</div>
+  </div>
+  <div class="kpi">
+    <div class="k">Clinic consults (YTD)</div>
+    <div class="v">62</div>
+    <div class="d up">+18% vs 2025 H1</div>
+    <div class="glyph">C</div>
+  </div>
+  <div class="kpi">
+    <div class="k">Gala pledged</div>
+    <div class="v">$31,400</div>
+    <div class="d up">+ $4,200 since October</div>
+    <div class="glyph">$</div>
+  </div>
+  <div class="kpi">
+    <div class="k">Open follow-ups</div>
+    <div class="v">7</div>
+    <div class="d dn">2 over 14 days</div>
+    <div class="glyph">!</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <div class="ph">
+      <div><h3>Clinic intake by matter type</h3><div class="meta">Counts only, no resident identifiers per policy</div></div>
+      <div class="meta">Oct 2025 - Feb 2026</div>
+    </div>
+    <svg class="chart" viewBox="0 0 600 240" preserveAspectRatio="none" aria-label="Stacked bars by month">
+      <!-- y grid -->
+      <g stroke="#eee" stroke-width="1">
+        <line x1="40" y1="40" x2="590" y2="40"/>
+        <line x1="40" y1="90" x2="590" y2="90"/>
+        <line x1="40" y1="140" x2="590" y2="140"/>
+        <line x1="40" y1="190" x2="590" y2="190"/>
+      </g>
+      <g font-size="10" fill="#9aa3b2" font-family="Inter,sans-serif">
+        <text x="34" y="44" text-anchor="end">15</text>
+        <text x="34" y="94" text-anchor="end">10</text>
+        <text x="34" y="144" text-anchor="end">5</text>
+        <text x="34" y="194" text-anchor="end">0</text>
+      </g>
+      <!-- bars: 8 months, each grouped -->
+      <g>
+        <!-- Oct -->
+        <rect x="60" y="140" width="38" height="50" fill="#7a3a4c"/>
+        <rect x="60" y="100" width="38" height="40" fill="#a86a3a"/>
+        <rect x="60" y="80"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="79" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Oct</text>
+        <!-- Nov -->
+        <rect x="125" y="130" width="38" height="60" fill="#7a3a4c"/>
+        <rect x="125" y="100" width="38" height="30" fill="#a86a3a"/>
+        <rect x="125" y="80"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="144" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Nov</text>
+        <!-- Dec -->
+        <rect x="190" y="150" width="38" height="40" fill="#7a3a4c"/>
+        <rect x="190" y="120" width="38" height="30" fill="#a86a3a"/>
+        <rect x="190" y="100" width="38" height="20" fill="#3a6a8e"/>
+        <text x="209" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Dec</text>
+        <!-- Jan -->
+        <rect x="255" y="110" width="38" height="80" fill="#7a3a4c"/>
+        <rect x="255" y="80"  width="38" height="30" fill="#a86a3a"/>
+        <rect x="255" y="60"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="274" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Jan</text>
+        <!-- Feb -->
+        <rect x="320" y="120" width="38" height="70" fill="#7a3a4c"/>
+        <rect x="320" y="90"  width="38" height="30" fill="#a86a3a"/>
+        <rect x="320" y="70"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="339" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Feb</text>
+        <!-- Mar -->
+        <rect x="385" y="100" width="38" height="90" fill="#7a3a4c"/>
+        <rect x="385" y="60"  width="38" height="40" fill="#a86a3a"/>
+        <rect x="385" y="40"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="404" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Mar</text>
+        <!-- Apr -->
+        <rect x="450" y="115" width="38" height="75" fill="#7a3a4c"/>
+        <rect x="450" y="80"  width="38" height="35" fill="#a86a3a"/>
+        <rect x="450" y="60"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="469" y="208" text-anchor="middle" font-size="10" fill="#6a7384">Apr</text>
+        <!-- May -->
+        <rect x="515" y="105" width="38" height="85" fill="#7a3a4c"/>
+        <rect x="515" y="70"  width="38" height="35" fill="#a86a3a"/>
+        <rect x="515" y="50"  width="38" height="20" fill="#3a6a8e"/>
+        <text x="534" y="208" text-anchor="middle" font-size="10" fill="#6a7384">May</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><i style="background:#7a3a4c"></i>Order of protection</span>
+      <span><i style="background:#a86a3a"></i>Custody / parenting time</span>
+      <span><i style="background:#3a6a8e"></i>Housing / tenant</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><div><h3>Gala progress to goal</h3><div class="meta">Target: $45,000 by 1 Nov</div></div></div>
+    <div style="display:flex;align-items:end;gap:16px;margin-top:8px">
+      <div style="font-family:Georgia,serif;font-size:38px">$31,400</div>
+      <div style="color:var(--muted);font-size:13px;padding-bottom:6px">of $45,000 (70%)</div>
+    </div>
+    <div class="stack" style="height:14px;margin-top:14px">
+      <i style="width:48%;background:#3f7a5b" title="Collected"></i>
+      <i style="width:22%;background:#c79434" title="Pledged"></i>
+      <i style="width:30%;background:#e4e0d6" title="To raise"></i>
+    </div>
+    <div class="legend" style="margin-top:12px">
+      <span><i style="background:#3f7a5b"></i>Collected . $21,500</span>
+      <span><i style="background:#c79434"></i>Pledged . $9,900</span>
+      <span><i style="background:#e4e0d6"></i>To raise . $13,600</span>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+    <h4 style="margin:0 0 6px;font-size:14px">Top sponsors this quarter</h4>
+    <table>
+      <tr><td>Catalina Foothills Dental</td><td style="text-align:right">$10,000</td><td><span class="pill ok">Paid</span></td></tr>
+      <tr><td>Old Pueblo Title &amp; Trust</td><td style="text-align:right">$5,000</td><td><span class="pill ok">Paid</span></td></tr>
+      <tr><td>Reyna Tax &amp; Advisory</td><td style="text-align:right">$5,000</td><td><span class="pill pend">Partial</span></td></tr>
+      <tr><td>Tanque Verde Veterinary</td><td style="text-align:right">$2,500</td><td><span class="pill pend">Pledged</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="grid" style="grid-template-columns:.9fr 1.4fr">
+  <div class="panel">
+    <div class="ph"><div><h3>Alerts</h3><div class="meta">Auto-flagged by coordinator rules</div></div></div>
+    <div class="alert red">
+      <div><strong>Background check expiring.</strong> DB-072 Sandra Begay due 12 Dec.</div>
+      <button class="x" aria-label="dismiss">x</button>
+    </div>
+    <div class="alert">
+      <div><strong>3rd attorney for spring clinic.</strong> Protection-order line growing; need a 4th if July is similar.</div>
+      <button class="x" aria-label="dismiss">x</button>
+    </div>
+    <div class="alert">
+      <div><strong>Printed-programme draft</strong> due to designer Fri 5 PM. Sponsor logos still missing.</div>
+      <button class="x" aria-label="dismiss">x</button>
+    </div>
+    <div class="alert red">
+      <div><strong>$185 bar group renewal</strong> over $150 threshold. Hold for Randy sign-off.</div>
+      <button class="x" aria-label="dismiss">x</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><div><h3>Upcoming volunteer shifts</h3><div class="meta">Next 14 days, Tucson local time</div></div></div>
+    <table>
+      <tr><th>Date</th><th>Shift</th><th>Lead</th><th>Status</th></tr>
+      <tr><td>Tue 3 Nov</td><td>Empowerment group, 6:30 PM</td><td>R. Holt</td><td><span class="pill ok">Covered</span></td></tr>
+      <tr><td>Wed 4 Nov</td><td>First-Wed legal clinic, 5:30 PM</td><td>T. Aldama</td><td><span class="pill info">Need 1 atty</span></td></tr>
+      <tr><td>Thu 5 Nov</td><td>Empowerment group, 6:30 PM</td><td>P. Nunez</td><td><span class="pill ok">Covered</span></td></tr>
+      <tr><td>Sat 7 Nov</td><td>Skeleton crew, no group</td><td>D. Ochoa</td><td><span class="pill pend">Standby</span></td></tr>
+      <tr><td>Tue 10 Nov</td><td>Empowerment group, 6:30 PM</td><td>R. Holt</td><td><span class="pill ok">Covered</span></td></tr>
+      <tr><td>Thu 12 Nov</td><td>Empowerment group, 6:30 PM</td><td>S. Begay</td><td><span class="pill alert">Bg check exp</span></td></tr>
+      <tr><td>Sat 14 Nov</td><td>Gala vendor walk-through, Cottonwood Bend, 9 AM</td><td>R. Holt, D. Ochoa</td><td><span class="pill ok">Confirmed</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="three">
+  <div class="panel tile">
+    <h4>Volunteer hours, October</h4>
+    <p>Total logged: 184 . R. Holt 38 . Diana 31 . Top floor 22</p>
+    <div class="stack"><i style="width:62%;background:var(--green)"></i><i style="width:24%;background:var(--amber)"></i><i style="width:14%;background:var(--blue)"></i></div>
+  </div>
+  <div class="panel tile">
+    <h4>Newsletter health</h4>
+    <p>Q4 send via SendGrid: 1,184 delivered . open 41% . click 9%</p>
+    <div class="stack"><i style="width:41%;background:var(--brand)"></i><i style="width:9%;background:var(--brand2)"></i><i style="width:50%;background:#eee"></i></div>
+  </div>
+  <div class="panel tile">
+    <h4>Twilio reminder texts</h4>
+    <p>Tue/Thu group reminders sent on schedule, 0 failures in last 30 days.</p>
+    <div class="stack"><i style="width:100%;background:var(--green)"></i></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  // dismiss alerts
+  document.querySelectorAll('.alert .x').forEach(function(b){
+    b.addEventListener('click', function(){ b.parentNode.style.display='none'; });
+  });
+</script>
+</body>
+</html>

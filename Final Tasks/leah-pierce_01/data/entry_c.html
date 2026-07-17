@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C10 Build Board</title>
+<style>
+  :root{
+    --bg:#14171c; --panel:#1d2229; --line:#2c333d; --ink:#eef1f5;
+    --muted:#9aa5b1; --accent:#e8792b; --accent2:#f4b23e; --good:#4bb96a; --wait:#5aa9e6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(120deg,#1d2229,#14171c);border-bottom:3px solid var(--accent);
+    padding:26px 22px;position:sticky;top:0;z-index:5}
+  header h1{font-size:1.5rem;letter-spacing:.3px}
+  header p{color:var(--muted);font-size:.9rem;margin-top:4px}
+  .tag{display:inline-block;background:var(--accent);color:#14171c;font-weight:700;
+    font-size:.72rem;padding:3px 9px;border-radius:20px;margin-right:6px}
+  main{max-width:1040px;margin:0 auto;padding:22px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;
+    opacity:0;transform:translateY(14px);animation:rise .6s forwards}
+  .card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}
+  .card:nth-child(4){animation-delay:.24s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .kpi .n{font-size:1.9rem;font-weight:800;color:var(--accent2)}
+  .kpi .l{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .two{grid-template-columns:1.3fr 1fr}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  h2{font-size:1.02rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  h2::before{content:"";width:10px;height:10px;background:var(--accent);border-radius:3px}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:8px}
+  .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+  .bar .fill{width:100%;background:linear-gradient(180deg,var(--accent2),var(--accent));border-radius:6px 6px 0 0;
+    height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+  .bar .cap{font-size:.72rem;color:var(--muted)}
+  .bar .val{font-size:.72rem;color:var(--ink);font-weight:600}
+  .ring{display:flex;align-items:center;gap:16px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .mid{font-size:.86rem;color:var(--muted)}
+  .ring .mid b{display:block;font-size:1.6rem;color:var(--ink)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .filters button{background:#232a33;color:var(--ink);border:1px solid var(--line);
+    padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.82rem;transition:.2s}
+  .filters button:hover{border-color:var(--accent)}
+  .filters button.on{background:var(--accent);color:#14171c;font-weight:700;border-color:var(--accent)}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.4px}
+  .pill{font-size:.72rem;padding:2px 9px;border-radius:12px;font-weight:600}
+  .s-hand{background:rgba(75,185,106,.18);color:var(--good)}
+  .s-order{background:rgba(90,169,230,.18);color:var(--wait)}
+  .s-plan{background:rgba(244,178,62,.18);color:var(--accent2)}
+  .prog{height:14px;background:#232a33;border-radius:10px;overflow:hidden;margin-top:6px}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width 1.2s ease}
+  footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:20px;font-size:.82rem;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="tag">PROJECT</span><span class="tag">GARAGE BUILD</span></div>
+  <h1>1987 C10 Build Board</h1>
+  <p>Primer gray, engine on the stand, four-barrel swap underway. Kept at Dad's garage, Decatur AL.</p>
+</header>
+<main>
+  <div class="grid kpis">
+    <div class="card kpi"><div class="n" data-count="279">0</div><div class="l">Dollars into the build</div></div>
+    <div class="card kpi"><div class="n" data-count="9">0</div><div class="l">Parts and tools on hand</div></div>
+    <div class="card kpi"><div class="n" data-count="5">0</div><div class="l">Big parts still to buy</div></div>
+    <div class="card kpi"><div class="n" data-count="45">0</div><div class="l">Overall build percent</div></div>
+  </div>
+
+  <div class="grid two" style="margin-bottom:16px">
+    <div class="card">
+      <h2>Parts spend by month</h2>
+      <div class="bars" id="bars">
+        <div class="bar"><span class="val">75</span><div class="fill" data-h="100"></div><span class="cap">Aug</span></div>
+        <div class="bar"><span class="val">62</span><div class="fill" data-h="83"></div><span class="cap">Sep</span></div>
+        <div class="bar"><span class="val">16</span><div class="fill" data-h="22"></div><span class="cap">Oct</span></div>
+        <div class="bar"><span class="val">34</span><div class="fill" data-h="46"></div><span class="cap">Nov</span></div>
+        <div class="bar"><span class="val">19</span><div class="fill" data-h="25"></div><span class="cap">Dec</span></div>
+        <div class="bar"><span class="val">34</span><div class="fill" data-h="46"></div><span class="cap">Jan</span></div>
+        <div class="bar"><span class="val">38</span><div class="fill" data-h="51"></div><span class="cap">Feb</span></div>
+      </div>
+      <p style="color:var(--muted);font-size:.8rem;margin-top:10px">Running total to date: 279.36. Budget target is about 100 a month for parts.</p>
+    </div>
+    <div class="card">
+      <h2>Budget used</h2>
+      <div class="ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#232a33" stroke-width="14"></circle>
+          <circle id="arc" cx="60" cy="60" r="52" fill="none" stroke="#e8792b" stroke-width="14"
+            stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327"></circle>
+        </svg>
+        <div class="mid"><b id="pct">0%</b>of the 620 saved-up parts budget</div>
+      </div>
+      <div class="prog"><i id="p1"></i></div>
+      <p style="color:var(--muted);font-size:.8rem;margin-top:8px">Four-barrel carb and starter are the big line items still ahead.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Parts and status</h2>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All</button>
+      <button data-f="hand">In hand</button>
+      <button data-f="order">On order</button>
+      <button data-f="plan">Planned</button>
+    </div>
+    <table>
+      <thead><tr><th>Part</th><th>Source</th><th>Cost</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+<footer>Build board kept by Leah Pierce, Decatur AL. Updated February 2026.</footer>
+
+<script>
+  var parts=[
+    ["Carb rebuild kit","the auto parts store","34.49","hand"],
+    ["Spark plugs, set of 8","the general store","18.40","hand"],
+    ["Intake gasket set","the auto parts store","28.75","order"],
+    ["Grade 8 intake bolts","the hardware store","9.25","hand"],
+    ["Engine stand","the discount tool store","74.99","hand"],
+    ["Compression tester","the auto parts store","39.99","hand"],
+    ["Rebuilt four-barrel carb","a performance parts supplier","289.99","plan"],
+    ["Low pressure fuel pump","a performance parts supplier","62.00","plan"],
+    ["Starter motor","the auto parts store","118.00","plan"],
+    ["Plug wires","the auto parts store","44.99","plan"],
+    ["Radiator hoses","the auto parts store","36.50","plan"]
+  ];
+  var label={hand:["In hand","s-hand"],order:["On order","s-order"],plan:["Planned","s-plan"]};
+  function draw(f){
+    var b=document.getElementById("rows");b.innerHTML="";
+    parts.filter(function(p){return f==="all"||p[3]===f;}).forEach(function(p){
+      var t=label[p[3]];
+      b.insertAdjacentHTML("beforeend","<tr><td>"+p[0]+"</td><td>"+p[1]+"</td><td>"+p[2]+
+        "</td><td><span class='pill "+t[1]+"'>"+t[0]+"</span></td></tr>");
+    });
+  }
+  draw("all");
+  document.getElementById("filters").addEventListener("click",function(e){
+    if(e.target.tagName!=="BUTTON")return;
+    [].forEach.call(this.children,function(c){c.classList.remove("on");});
+    e.target.classList.add("on");draw(e.target.dataset.f);
+  });
+  window.addEventListener("load",function(){
+    document.querySelectorAll(".fill").forEach(function(el){
+      setTimeout(function(){el.style.height=(el.dataset.h*1.4)+"px";},120);
+    });
+    document.querySelectorAll(".n").forEach(function(el){
+      var end=+el.dataset.count,cur=0,step=Math.max(1,Math.round(end/40));
+      var id=setInterval(function(){cur+=step;if(cur>=end){cur=end;clearInterval(id);}el.textContent=cur;},22);
+    });
+    setTimeout(function(){
+      document.getElementById("arc").style.transition="stroke-dashoffset 1.3s ease";
+      document.getElementById("arc").style.strokeDashoffset=327*(1-0.47);
+      document.getElementById("p1").style.width="47%";
+      var p=document.getElementById("pct"),c=0,i=setInterval(function(){c++;p.textContent=c+"%";if(c>=47)clearInterval(i);},22);
+    },200);
+  });
+</script>
+</body>
+</html>

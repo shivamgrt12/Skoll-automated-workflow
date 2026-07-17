@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monthly Money Board</title>
+<style>
+  :root{--bg:#f4f6f9;--card:#fff;--ink:#1f2a37;--muted:#6b7787;--line:#e4e9f0;
+    --navy:#243b6b;--teal:#12a3a3;--gold:#e0a530;--rose:#d4607a;--green:#2f9e5f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--navy);color:#fff;padding:28px 22px}
+  header h1{font-size:1.5rem}
+  header p{opacity:.82;font-size:.9rem;margin-top:5px}
+  main{max-width:960px;margin:0 auto;padding:22px}
+  .tabs{display:flex;gap:8px;margin:-46px 0 18px;position:relative}
+  .tabs button{flex:0 0 auto;background:#fff;border:1px solid var(--line);border-radius:22px;
+    padding:9px 20px;cursor:pointer;font-size:.86rem;color:var(--ink);box-shadow:0 4px 14px rgba(20,30,50,.08);transition:.2s}
+  .tabs button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .row{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 6px 18px rgba(20,30,50,.05)}
+  .stat .n{font-size:1.8rem;font-weight:800}
+  .stat .l{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .in .n{color:var(--green)}.ex .n{color:var(--rose)}.lo .n{color:var(--navy)}
+  h2{font-size:1.05rem;margin-bottom:14px}
+  .panel{display:none;animation:fade .4s ease}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+  .catbar{display:flex;align-items:center;gap:12px;margin:9px 0}
+  .catbar .name{width:120px;font-size:.85rem;color:var(--muted);flex:0 0 auto}
+  .catbar .track{flex:1;background:#eef2f7;border-radius:8px;height:22px;overflow:hidden}
+  .catbar .track i{display:block;height:100%;width:0;border-radius:8px;
+    background:linear-gradient(90deg,var(--navy),var(--teal));transition:width 1s ease}
+  .catbar .amt{width:52px;text-align:right;font-size:.85rem;font-weight:600}
+  .ring{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .mid b{display:block;font-size:1.7rem}
+  .ring .mid{color:var(--muted);font-size:.86rem}
+  .alloc li{list-style:none;display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+  footer{text-align:center;color:var(--muted);font-size:.82rem;padding:22px}
+  @media(max-width:620px){.tabs{margin-top:-40px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Monthly Money Board</h1>
+  <p>A quick read on take-home, where it goes, and the emergency fund. Kept by Leah Pierce, Decatur AL.</p>
+</header>
+<main>
+  <div class="tabs" id="tabs">
+    <button class="on" data-p="over">Overview</button>
+    <button data-p="exp">Expenses</button>
+    <button data-p="save">Savings</button>
+  </div>
+
+  <section class="panel on" id="over">
+    <div class="row">
+      <div class="card stat in"><div class="n" data-count="2950" data-pre="$">$0</div><div class="l">Monthly take-home</div></div>
+      <div class="card stat ex"><div class="n" data-count="1995" data-pre="$">$0</div><div class="l">Monthly expenses</div></div>
+      <div class="card stat lo"><div class="n" data-count="955" data-pre="$">$0</div><div class="l">Left over</div></div>
+    </div>
+    <div class="card">
+      <h2>Income against expenses</h2>
+      <div class="catbar"><span class="name">Take-home</span><span class="track"><i data-w="100" style="background:linear-gradient(90deg,#2f9e5f,#5fca88)"></i></span><span class="amt">2950</span></div>
+      <div class="catbar"><span class="name">Expenses</span><span class="track"><i data-w="68" style="background:linear-gradient(90deg,#d4607a,#e78aa0)"></i></span><span class="amt">1995</span></div>
+      <div class="catbar"><span class="name">Left over</span><span class="track"><i data-w="32"></i></span><span class="amt">955</span></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">Overtime months add roughly 2000 to 3000 across the year, and that extra goes straight to the fund.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="exp">
+    <div class="card">
+      <h2>Where the 1995 goes</h2>
+      <div id="cats"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="save">
+    <div class="card">
+      <h2>Emergency fund goal</h2>
+      <div class="ring">
+        <svg width="130" height="130" viewBox="0 0 130 130">
+          <circle cx="65" cy="65" r="56" fill="none" stroke="#eef2f7" stroke-width="15"></circle>
+          <circle id="arc" cx="65" cy="65" r="56" fill="none" stroke="#12a3a3" stroke-width="15"
+            stroke-linecap="round" stroke-dasharray="352" stroke-dashoffset="352"></circle>
+        </svg>
+        <div class="mid"><b id="pct">0%</b>4,800 saved of a 10,000 goal</div>
+      </div>
+      <p style="color:var(--muted);font-size:.85rem;margin-top:12px">At about 455 a month with no withdrawals, the goal lands in roughly 11 to 12 months.</p>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Leftover, allocated</h2>
+      <ul class="alloc">
+        <li><span>Transfer to the fund</span><b>455</b></li>
+        <li><span>Dates and going out</span><b>200</b></li>
+        <li><span>Extra parts buffer</span><b>150</b></li>
+        <li><span>Unassigned cushion</span><b>150</b></li>
+      </ul>
+    </div>
+  </section>
+</main>
+<footer>Personal budget board. Figures in US dollars. Reviewed the first of each month.</footer>
+
+<script>
+  var cats=[["Rent",475],["Truck payment",310],["Groceries",280],["Health plan",165],
+    ["Gas",150],["Insurance",140],["Dining out",120],["Truck parts",100],
+    ["Utilities",95],["Personal",70],["Phone",55],["Subscriptions",35]];
+  var max=475;
+  var host=document.getElementById("cats");
+  cats.forEach(function(c){
+    host.insertAdjacentHTML("beforeend",
+      "<div class='catbar'><span class='name'>"+c[0]+"</span><span class='track'><i data-w='"+
+      Math.round(c[1]/max*100)+"'></i></span><span class='amt'>"+c[1]+"</span></div>");
+  });
+  function animateBars(scope){
+    scope.querySelectorAll(".track i").forEach(function(el){
+      if(el.dataset.done)return;el.dataset.done="1";
+      setTimeout(function(){el.style.width=el.dataset.w+"%";},80);
+    });
+  }
+  function counters(){
+    document.querySelectorAll(".n").forEach(function(el){
+      var end=+el.dataset.count,pre=el.dataset.pre||"",cur=0,step=Math.max(1,Math.round(end/45));
+      var id=setInterval(function(){cur+=step;if(cur>=end){cur=end;clearInterval(id);}el.textContent=pre+cur;},20);
+    });
+  }
+  document.getElementById("tabs").addEventListener("click",function(e){
+    if(e.target.tagName!=="BUTTON")return;
+    [].forEach.call(this.children,function(c){c.classList.remove("on");});
+    e.target.classList.add("on");
+    document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("on");});
+    var pan=document.getElementById(e.target.dataset.p);pan.classList.add("on");
+    animateBars(pan);
+    if(e.target.dataset.p==="save")ringGo();
+  });
+  function ringGo(){
+    var a=document.getElementById("arc");if(a.dataset.done)return;a.dataset.done="1";
+    a.style.transition="stroke-dashoffset 1.3s ease";a.style.strokeDashoffset=352*(1-0.48);
+    var p=document.getElementById("pct"),c=0,i=setInterval(function(){c++;p.textContent=c+"%";if(c>=48)clearInterval(i);},20);
+  }
+  window.addEventListener("load",function(){counters();animateBars(document.getElementById("over"));});
+</script>
+</body>
+</html>

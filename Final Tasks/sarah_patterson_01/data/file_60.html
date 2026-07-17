@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lisbon and Porto, the plan</title>
+<style>
+  :root{--sky:#2f6f9e;--sun:#e8a33d;--sea:#1f9e8e;--ink:#16242e;--paper:#f3f7f9;--card:#ffffff;--muted:#5d6f78;--line:#dce7ec}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Avenir Next','Segoe UI',Arial,sans-serif;color:var(--ink);
+       background:linear-gradient(180deg,#eaf3f7,var(--paper));min-height:100vh}
+  .topnav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);
+          border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+          gap:12px;flex-wrap:wrap;padding:12px 28px}
+  .topnav .b{font-weight:700;color:var(--sky);letter-spacing:.3px}
+  .topnav .links{display:flex;gap:6px;flex-wrap:wrap}
+  .topnav .links a{text-decoration:none;color:var(--ink);font-size:.85rem;padding:7px 13px;border-radius:18px;transition:.2s}
+  .topnav .links a:hover{background:var(--sea);color:#fff}
+  #countdown,#savings,#cities,#packing{scroll-margin-top:70px}
+  .ftr{background:var(--ink);color:#cfe0e6}
+  .ftr .inner{max-width:960px;margin:0 auto;padding:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .ftr .links{display:flex;gap:16px;flex-wrap:wrap}
+  .ftr a{color:#9fc7d2;text-decoration:none;font-size:.86rem}
+  .ftr a:hover{color:#fff}
+  .ftr .tagline{width:100%;border-top:1px solid rgba(255,255,255,.14);padding-top:14px;font-size:.84rem;opacity:.85}
+  header{background:linear-gradient(135deg,var(--sky),var(--sea));color:#fff;padding:40px 28px 70px;position:relative;overflow:hidden}
+  header .inner{max-width:960px;margin:0 auto;position:relative;z-index:2}
+  .tag{letter-spacing:3px;text-transform:uppercase;font-size:.74rem;opacity:.9}
+  header h1{font-size:clamp(2rem,5vw,3rem);margin:8px 0 6px}
+  header p{opacity:.92;max-width:520px}
+  .sun{position:absolute;width:160px;height:160px;border-radius:50%;background:var(--sun);top:-40px;right:60px;opacity:.5;
+       filter:blur(6px);animation:bob 7s ease-in-out infinite;z-index:1}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(16px)}}
+  .wrap{max-width:960px;margin:-44px auto 50px;padding:0 28px;position:relative;z-index:5}
+  .count{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 12px 30px rgba(31,110,140,.12);
+         display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+  .count h2{font-size:1.05rem;color:var(--muted);font-weight:600}
+  .clock{display:flex;gap:14px}
+  .unit{text-align:center;min-width:64px;background:var(--paper);border-radius:12px;padding:12px 8px}
+  .unit b{display:block;font-size:1.9rem;color:var(--sky)}
+  .unit span{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:22px}
+  .panel h3{font-size:1.25rem;margin-bottom:4px}
+  .panel .sub{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+  .save .barwrap{height:18px;background:var(--paper);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  .save .fill{height:100%;width:0;background:linear-gradient(90deg,var(--sea),var(--sun));border-radius:12px;transition:width 1.4s ease}
+  .save .nums{display:flex;justify-content:space-between;margin-top:10px;font-size:.9rem;color:var(--muted)}
+  .save .nums b{color:var(--ink)}
+  .cities{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .city{border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .25s,box-shadow .25s;cursor:pointer}
+  .city:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(31,110,140,.16)}
+  .city .top{height:96px;display:flex;align-items:flex-end;padding:14px;color:#fff;font-size:1.3rem;font-weight:700}
+  .city.lisbon .top{background:linear-gradient(135deg,#e8a33d,#cf6f3d)}
+  .city.porto .top{background:linear-gradient(135deg,#2f6f9e,#1f9e8e)}
+  .city .body{padding:16px}
+  .city ul{list-style:none;font-size:.9rem;color:var(--muted)}
+  .city li{padding:5px 0;border-bottom:1px dashed var(--line)}
+  .city li:last-child{border:none}
+  .check h3{margin-bottom:14px}
+  .list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;
+        font-size:.92rem;user-select:none;transition:.18s}
+  .item .box{width:20px;height:20px;border:2px solid var(--sea);border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff}
+  .item.done{background:#eef7f4;color:var(--muted);text-decoration:line-through}
+  .item.done .box{background:var(--sea)}
+  .progress{margin-top:14px;font-size:.85rem;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:.84rem;padding:22px}
+  @media(max-width:720px){.cities{grid-template-columns:1fr}.list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="topnav" id="top">
+  <span class="b">Lisbon and Porto</span>
+  <div class="links">
+    <a href="#countdown">Countdown</a>
+    <a href="#savings">Savings</a>
+    <a href="#cities">Cities</a>
+    <a href="#packing">Packing</a>
+  </div>
+</nav>
+<header>
+  <div class="sun"></div>
+  <div class="inner">
+    <div class="tag">Two weeks, saved for, queued</div>
+    <h1>Lisbon and Porto with Kaitlyn</h1>
+    <p>The plan that lives outside the spreadsheet. Itinerary, savings, and the packing list we will ignore until the night before.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="count" id="countdown">
+    <h2>Counting down to wheels up</h2>
+    <div class="clock">
+      <div class="unit"><b id="d">0</b><span>days</span></div>
+      <div class="unit"><b id="h">0</b><span>hours</span></div>
+      <div class="unit"><b id="m">0</b><span>min</span></div>
+      <div class="unit"><b id="s">0</b><span>sec</span></div>
+    </div>
+  </div>
+
+  <div class="panel save" id="savings">
+    <h3>Savings progress</h3>
+    <div class="sub">Per person. Goal is the all in trip cost; we split everything down the middle.</div>
+    <div class="barwrap"><div class="fill" id="fill"></div></div>
+    <div class="nums"><span>Saved <b>822</b></span><span id="pct">0%</span><span>Goal <b>2290</b></span></div>
+  </div>
+
+  <div class="panel" id="cities">
+    <h3>Where we go</h3>
+    <div class="sub">Five nights south, then north for four. Train in between.</div>
+    <div class="cities">
+      <div class="city lisbon"><div class="top">Lisbon</div>
+        <div class="body"><ul>
+          <li>Five nights, a small place in the old quarter</li>
+          <li>Day trip up the coast for the palaces</li>
+          <li>Slow mornings, custard tarts, the tram</li>
+          <li>One nice dinner, the rest by feel</li>
+        </ul></div></div>
+      <div class="city porto"><div class="top">Porto</div>
+        <div class="body"><ul>
+          <li>Four nights by the river</li>
+          <li>The bookshop, the bridge, the cellars across the water</li>
+          <li>A day out to the valley if the budget holds</li>
+          <li>Last night, postcards to everyone back home</li>
+        </ul></div></div>
+    </div>
+  </div>
+
+  <div class="panel check" id="packing">
+    <h3>Packing checklist</h3>
+    <div class="list" id="list"></div>
+    <div class="progress" id="prog">0 of 8 packed</div>
+  </div>
+</div>
+
+<footer class="ftr">
+  <div class="inner">
+    <span class="b" style="color:#fff;font-weight:700">Lisbon and Porto</span>
+    <nav class="links">
+      <a href="#countdown">Countdown</a>
+      <a href="#savings">Savings</a>
+      <a href="#cities">Cities</a>
+      <a href="#packing">Packing</a>
+      <a href="#top">Back to top</a>
+    </nav>
+    <div class="tagline">Planned at the kitchen table. Saving in progress. Postcards promised.</div>
+  </div>
+</footer>
+
+<script>
+  // Countdown to an early spring 2027 departure
+  var target=new Date('2027-04-08T09:00:00');
+  function tick(){
+    var now=new Date(), diff=Math.max(0,target-now);
+    var dd=Math.floor(diff/86400000), hh=Math.floor(diff%86400000/3600000),
+        mm=Math.floor(diff%3600000/60000), ss=Math.floor(diff%60000/1000);
+    document.getElementById('d').textContent=dd;
+    document.getElementById('h').textContent=hh;
+    document.getElementById('m').textContent=mm;
+    document.getElementById('s').textContent=ss;
+  }
+  tick();setInterval(tick,1000);
+
+  // Savings bar
+  var pct=Math.round(822/2290*100);
+  setTimeout(function(){document.getElementById('fill').style.width=pct+'%';document.getElementById('pct').textContent=pct+'%';},250);
+
+  // Checklist
+  var items=['Passports','Adapters','Comfortable shoes','Light layers','Phrasebook notes','Reusable bottle','Earrings, a few pairs','Postcard stamps'];
+  var list=document.getElementById('list'), prog=document.getElementById('prog'), done=0;
+  items.forEach(function(t){
+    var el=document.createElement('div');el.className='item';
+    el.innerHTML='<span class="box">&#10003;</span><span>'+t+'</span>';
+    el.addEventListener('click',function(){
+      el.classList.toggle('done');done=document.querySelectorAll('.item.done').length;
+      prog.textContent=done+' of '+items.length+' packed';
+    });
+    list.appendChild(el);
+  });
+</script>
+</body>
+</html>

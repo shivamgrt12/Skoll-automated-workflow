@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medication and Appointment Tracker</title>
+<style>
+  :root{
+    --ink:#2b2620; --paper:#f6f1e7; --card:#fffaf0; --line:#d8cdb6;
+    --sage:#6f8a6a; --sage-dark:#4f6b4b; --rust:#9c5a3c; --gold:#b08a3a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.5;}
+  header{background:var(--sage-dark);color:#f6f1e7;padding:26px 22px;border-bottom:6px solid var(--gold);}
+  header h1{margin:0;font-size:26px;letter-spacing:.4px;}
+  header p{margin:6px 0 0;font-size:14px;color:#dfe8da;}
+  main{max-width:880px;margin:0 auto;padding:22px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.06);}
+  h2{font-size:18px;color:var(--sage-dark);border-bottom:2px solid var(--gold);padding-bottom:6px;margin-top:0;}
+  table{width:100%;border-collapse:collapse;font-size:15px;}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);}
+  th{background:#efe7d3;color:#4a4234;}
+  .pillbtn{cursor:pointer;border:1px solid var(--sage);background:#eef2ea;color:var(--sage-dark);border-radius:14px;padding:4px 12px;font-family:inherit;font-size:13px;}
+  .pillbtn.taken{background:var(--sage);color:#fff;border-color:var(--sage-dark);}
+  .summary{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
+  .stat{flex:1;min-width:150px;background:#efe7d3;border-radius:8px;padding:12px;text-align:center;}
+  .stat .num{font-size:30px;color:var(--rust);font-weight:bold;}
+  .stat .lbl{font-size:13px;color:#5a5140;}
+  .next{background:#eef2ea;border-left:4px solid var(--sage);padding:10px 12px;border-radius:4px;margin-top:8px;}
+  footer{background:#efe7d3;border-top:3px solid var(--gold);text-align:center;padding:16px;font-size:13px;color:#6a6150;}
+  @media (max-width:600px){header h1{font-size:21px;} .summary{flex-direction:column;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Daily Medication and Appointment Tracker</h1>
+  <p>Megan E. Turner, 48 Elm Street, Thomaston, Connecticut 06787</p>
+</header>
+<main>
+  <section class="panel">
+    <h2>This Morning's Doses</h2>
+    <p style="font-size:14px;color:#5a5140;">Tap each one as you take it with the 6:45 decaf. The count keeps itself.</p>
+    <table>
+      <thead><tr><th>Medication</th><th>Dose</th><th>When</th><th>Mark</th></tr></thead>
+      <tbody id="medbody">
+        <tr><td>Tiotropium (Spiriva)</td><td>18 mcg inhaled</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+        <tr><td>Amlodipine</td><td>5 mg</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+        <tr><td>Acetaminophen</td><td>650 mg as needed</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+        <tr><td>Diclofenac gel</td><td>Both knees</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+        <tr><td>Calcium with D3</td><td>600 mg</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+        <tr><td>Vitamin B12</td><td>1000 mcg</td><td>Morning</td><td><button class="pillbtn" onclick="toggle(this)">Mark taken</button></td></tr>
+      </tbody>
+    </table>
+    <div class="summary">
+      <div class="stat"><div class="num" id="doneNum">0</div><div class="lbl">Taken</div></div>
+      <div class="stat"><div class="num" id="leftNum">6</div><div class="lbl">Remaining</div></div>
+      <div class="stat"><div class="num" id="pctNum">0%</div><div class="lbl">Complete</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Upcoming Appointments</h2>
+    <table>
+      <thead><tr><th>Date</th><th>Provider</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>October 14, 2026</td><td>Dr. Steven Alford</td><td>Quarterly primary care, bring BP log</td></tr>
+        <tr><td>November 18, 2026</td><td>Dr. Nina Chowdhury</td><td>Six-month pulmonology, bring Spiriva</td></tr>
+        <tr><td>December 9, 2026</td><td>Dr. Giordano</td><td>Dental cleaning, Thomaston office</td></tr>
+      </tbody>
+    </table>
+    <div class="next" id="nextNote">Next up: Dr. Steven Alford on October 14, 2026. David drives to Torrington.</div>
+  </section>
+</main>
+<footer>
+  Kept for Megan Turner. Refills and rides arranged through David Turner, 860-555-0118. Updated February 2026.
+</footer>
+<script>
+  function toggle(btn){
+    var taken = btn.classList.toggle('taken');
+    btn.textContent = taken ? 'Taken' : 'Mark taken';
+    recount();
+  }
+  function recount(){
+    var btns = document.querySelectorAll('.pillbtn');
+    var done = document.querySelectorAll('.pillbtn.taken').length;
+    var total = btns.length;
+    document.getElementById('doneNum').textContent = done;
+    document.getElementById('leftNum').textContent = total - done;
+    document.getElementById('pctNum').textContent = Math.round(done/total*100) + '%';
+    var note = document.getElementById('nextNote');
+    if(done === total){ note.textContent = 'Morning doses complete. Well done. Next appointment: Dr. Alford, October 14, 2026.'; }
+    else { note.textContent = 'Next up: Dr. Steven Alford on October 14, 2026. David drives to Torrington.'; }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Reading Life, the journal of Lucia Weaver</title>
+<style>
+  :root{--bg:#11161c;--panel:#1a222c;--ink:#e9e4d8;--muted:#8a96a3;--accent:#d98a3d;--accent2:#7fa6a0;--line:#2a3441}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Iowan Old Style",Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+  header{padding:60px 0 30px;border-bottom:1px solid var(--line);text-align:center}
+  header .k{font-family:Helvetica,Arial,sans-serif;letter-spacing:5px;font-size:.7rem;text-transform:uppercase;color:var(--accent)}
+  header h1{font-size:2.6rem;margin:10px 0 6px}
+  header p{color:var(--muted);max-width:560px;margin:0 auto;font-style:italic}
+
+  .meters{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:38px 0}
+  .meter{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;text-align:center}
+  .meter b{display:block;font-size:1.9rem;color:var(--accent2)}
+  .meter span{font-family:Helvetica,Arial,sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+
+  .bars{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:40px}
+  .bars h3{font-size:1.1rem;margin-bottom:16px}
+  .bar{display:flex;align-items:center;gap:12px;margin:10px 0;font-family:Helvetica,Arial,sans-serif;font-size:.85rem}
+  .bar .lab{width:90px;color:var(--muted)}
+  .bar .track{flex:1;height:14px;background:#0c1116;border-radius:7px;overflow:hidden}
+  .bar .fill{height:100%;width:0;border-radius:7px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px;align-items:center}
+  .filter{font-family:Helvetica,Arial,sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;
+    background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 16px;border-radius:20px;cursor:pointer;transition:.2s}
+  .filter:hover{border-color:var(--accent)}
+  .filter.active{background:var(--accent);border-color:var(--accent);color:#11161c}
+
+  .shelf{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .book{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent2);border-radius:6px;padding:18px 20px;
+    transition:.35s;opacity:1}
+  .book.hide{opacity:0;transform:scale(.96);height:0;padding:0;margin:0;border:0;overflow:hidden}
+  .book .t{font-size:1.2rem}
+  .book .a{color:var(--muted);font-style:italic;margin-bottom:8px}
+  .book .meta{font-family:Helvetica,Arial,sans-serif;font-size:.72rem;letter-spacing:.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .stars{color:var(--accent)}
+  .lang-de{border-left-color:#c46a4f}.lang-sv{border-left-color:#7fa6a0}.lang-en{border-left-color:#d4b15e}.lang-fr{border-left-color:#9a86b8}
+
+  .project{background:linear-gradient(150deg,#1d2a2a,#16201d);border:1px solid var(--line);border-radius:10px;padding:28px;margin:40px 0}
+  .project .k{font-family:Helvetica,Arial,sans-serif;letter-spacing:3px;font-size:.68rem;text-transform:uppercase;color:var(--accent2)}
+  .project h3{font-size:1.5rem;margin:8px 0 10px}
+  .ring{display:flex;align-items:center;gap:22px;margin-top:14px}
+  svg.donut{transform:rotate(-90deg)}
+  .donut circle{fill:none;stroke-width:12}
+  .donut .bgr{stroke:#0c1116}.donut .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.6s ease}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:var(--muted);
+    font-family:Helvetica,Arial,sans-serif;font-size:.8rem;margin-top:20px}
+  footer .accent{color:var(--accent)}
+  @media(max-width:760px){.meters{grid-template-columns:1fr 1fr}.shelf{grid-template-columns:1fr}header h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="k">A reading life</div>
+    <h1>The Journal</h1>
+    <p>Kept continuously since 2005. What I read, in which language, and whether I would press it into a customer's hands.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="meters">
+    <div class="meter"><b id="m1">0</b><span>Read in 2025</span></div>
+    <div class="meter"><b id="m2">0</b><span>Languages</span></div>
+    <div class="meter"><b id="m3">0</b><span>Now recommending</span></div>
+    <div class="meter"><b id="m4">0</b><span>Years of journals</span></div>
+  </div>
+
+  <div class="bars">
+    <h3>Reading by language, 2025</h3>
+    <div class="bar"><span class="lab">English</span><div class="track"><div class="fill" style="background:#d4b15e" data-w="54"></div></div><span>54</span></div>
+    <div class="bar"><span class="lab">Swedish</span><div class="track"><div class="fill" style="background:#7fa6a0" data-w="29"></div></div><span>29</span></div>
+    <div class="bar"><span class="lab">German</span><div class="track"><div class="fill" style="background:#c46a4f" data-w="12"></div></div><span>12</span></div>
+    <div class="bar"><span class="lab">French</span><div class="track"><div class="fill" style="background:#9a86b8" data-w="5"></div></div><span>5</span></div>
+  </div>
+
+  <div class="controls">
+    <span style="font-family:Helvetica,Arial,sans-serif;font-size:.74rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Filter the shelf</span>
+    <button class="filter active" data-f="all">All</button>
+    <button class="filter" data-f="sv">Swedish</button>
+    <button class="filter" data-f="en">English</button>
+    <button class="filter" data-f="de">German</button>
+    <button class="filter" data-f="rec">Recommending</button>
+  </div>
+
+  <div class="shelf" id="shelf">
+    <div class="book lang-sv" data-lang="sv" data-rec="yes"><div class="t">Drommfakulteten</div><div class="a">Sara Stridsberg</div><div class="meta"><span>Swedish</span><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>Literary fiction</span></div></div>
+    <div class="book lang-de" data-lang="de" data-rec="yes"><div class="t">The Rings of Saturn</div><div class="a">W. G. Sebald</div><div class="meta"><span>German, read in English</span><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>Non-fiction</span></div></div>
+    <div class="book lang-en" data-lang="en" data-rec="no"><div class="t">Cloud Atlas</div><div class="a">David Mitchell</div><div class="meta"><span>English</span><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>Literary fiction</span></div></div>
+    <div class="book lang-sv" data-lang="sv" data-rec="yes"><div class="t">Havet inom</div><div class="a">Anders Lilja</div><div class="meta"><span>Swedish</span><span class="stars">&#9733;&#9733;&#9733;&#9733;</span><span>Literary fiction</span></div></div>
+    <div class="book lang-en" data-lang="en" data-rec="yes"><div class="t">Pedro Paramo</div><div class="a">Juan Rulfo</div><div class="meta"><span>Spanish, read in English</span><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span>International</span></div></div>
+    <div class="book lang-de" data-lang="de" data-rec="no"><div class="t">Siddhartha</div><div class="a">Hermann Hesse</div><div class="meta"><span>German</span><span class="stars">&#9733;&#9733;&#9733;</span><span>Too schematic for me</span></div></div>
+    <div class="book lang-sv" data-lang="sv" data-rec="yes"><div class="t">Solvinden</div><div class="a">Sofia Nyman</div><div class="meta"><span>Swedish</span><span class="stars">&#9733;&#9733;&#9733;&#9733;</span><span>Literary fiction</span></div></div>
+    <div class="book lang-en" data-lang="en" data-rec="yes"><div class="t">The Blue Fox</div><div class="a">Sjon</div><div class="meta"><span>Icelandic, read in English</span><span class="stars">&#9733;&#9733;&#9733;&#9733;</span><span>Short and strange</span></div></div>
+  </div>
+
+  <div class="project">
+    <div class="k">Long form, not for publication</div>
+    <h3>The translation</h3>
+    <p style="color:var(--muted)">A German novella into English, roughly a paragraph a week. Kept private, worked on in the quiet hours before the shop opens.</p>
+    <div class="ring">
+      <svg class="donut" width="96" height="96" viewBox="0 0 96 96">
+        <circle class="bgr" cx="48" cy="48" r="40"></circle>
+        <circle class="fg" id="ring" cx="48" cy="48" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+      </svg>
+      <div><b style="font-size:1.6rem;color:var(--accent)">62%</b><div style="font-family:Helvetica,Arial,sans-serif;font-size:.78rem;color:var(--muted)">of the draft through, no deadline and that is the point</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">Kept by hand in a Leuchtturm1917, transcribed here for myself.<br>
+  <span class="accent">Lucia Weaver</span>, Uppsala. Near silence while reading, always.</div>
+</footer>
+
+<script>
+  function count(id,to){var el=document.getElementById(id),n=0;var step=Math.max(1,Math.round(to/40));
+    var t=setInterval(function(){n+=step;if(n>=to){n=to;clearInterval(t)}el.textContent=n},26)}
+  function start(){count('m1',92);count('m2',4);count('m3',57);count('m4',21);
+    document.querySelectorAll('.fill').forEach(function(f){f.style.width=f.dataset.w+'%'});
+    document.getElementById('ring').style.strokeDashoffset=(251.2*(1-0.62)).toFixed(1)}
+  var seen=false;
+  var io=new IntersectionObserver(function(e){if(e[0].isIntersecting&&!seen){seen=true;start()}},{threshold:.1});
+  io.observe(document.querySelector('.meters'));
+  if(window.innerHeight>400)setTimeout(function(){if(!seen){seen=true;start()}},400);
+
+  var filters=document.querySelectorAll('.filter');
+  filters.forEach(function(b){b.addEventListener('click',function(){
+    filters.forEach(function(x){x.classList.remove('active')});b.classList.add('active');
+    var f=b.dataset.f;
+    document.querySelectorAll('.book').forEach(function(card){
+      var show=(f==='all')||(f==='rec'&&card.dataset.rec==='yes')||(card.dataset.lang===f);
+      card.classList.toggle('hide',!show);
+    });
+  })});
+</script>
+</body>
+</html>

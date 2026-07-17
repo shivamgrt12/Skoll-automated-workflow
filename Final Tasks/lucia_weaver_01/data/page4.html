@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserve a seat, Weaver &amp; Book author evenings</title>
+<style>
+  :root{--paper:#fbf7ef;--ink:#2c2620;--plum:#6c3b54;--plum-d:#4e2a3d;--olive:#8a7a3a;--line:#e4dac7;--ok:#3f7d5a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Palatino Linotype",Georgia,serif;background:var(--paper);color:var(--ink);line-height:1.6}
+  .bar{background:var(--plum);color:#f7ecd9;padding:14px 0}
+  .bar .wrap{display:flex;justify-content:space-between;align-items:center}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  .bar b{font-size:1.1rem;letter-spacing:.5px}
+  .bar span{font-family:Helvetica,Arial,sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+  .hero{text-align:center;padding:54px 22px 14px}
+  .hero .k{font-family:Helvetica,Arial,sans-serif;letter-spacing:4px;font-size:.7rem;text-transform:uppercase;color:var(--olive)}
+  .hero h1{font-size:2.3rem;margin:10px 0 8px}
+  .hero p{color:#6f655a;max-width:520px;margin:0 auto}
+
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:34px auto 60px}
+  .events,.form{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px}
+  .events h2,.form h2{font-size:1.15rem;margin-bottom:16px}
+  .ev{border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin-bottom:12px;cursor:pointer;transition:.2s;position:relative}
+  .ev:hover{border-color:var(--plum)}
+  .ev.sel{border-color:var(--plum);background:#fbf2f6;box-shadow:0 6px 18px rgba(108,59,84,.12)}
+  .ev .d{font-family:Helvetica,Arial,sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--olive)}
+  .ev .t{font-size:1.08rem;margin:3px 0}
+  .ev .s{font-family:Helvetica,Arial,sans-serif;font-size:.78rem;color:#8a8073}
+  .ev .seats{position:absolute;top:14px;right:16px;font-family:Helvetica,Arial,sans-serif;font-size:.7rem;color:var(--ok)}
+  .ev.full{opacity:.55;cursor:not-allowed}
+  .ev.full .seats{color:var(--plum)}
+
+  label{display:block;font-family:Helvetica,Arial,sans-serif;font-size:.74rem;letter-spacing:.5px;text-transform:uppercase;color:#7a7065;margin:14px 0 5px}
+  input,select{width:100%;font-family:inherit;font-size:1rem;padding:11px 12px;border:1px solid var(--line);border-radius:7px;background:#fffdf9;color:var(--ink);transition:.2s}
+  input:focus,select:focus{outline:0;border-color:var(--plum);box-shadow:0 0 0 3px rgba(108,59,84,.12)}
+  .row{display:flex;gap:12px}.row>div{flex:1}
+  .err{color:var(--plum);font-family:Helvetica,Arial,sans-serif;font-size:.74rem;margin-top:4px;display:none}
+  .err.show{display:block}
+  .submit{width:100%;margin-top:20px;background:var(--plum);color:#fff;border:0;padding:14px;border-radius:7px;
+    font-family:Helvetica,Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase;font-size:.82rem;cursor:pointer;transition:.2s}
+  .submit:hover{background:var(--plum-d);transform:translateY(-2px)}
+  .done{text-align:center;padding:20px 6px;display:none}
+  .done.show{display:block;animation:pop .5s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  .check{width:60px;height:60px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px}
+  footer{background:var(--ink);color:#cdc2ad;text-align:center;padding:26px;font-family:Helvetica,Arial,sans-serif;font-size:.78rem}
+  footer a{color:var(--olive);text-decoration:none}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap"><b>Weaver &amp; Book</b><span>Svartbacksgatan 18, Uppsala</span></div></div>
+
+<div class="hero">
+  <div class="k">Author evenings</div>
+  <h1>Reserve a seat</h1>
+  <p>Our evenings are free, but seating is limited, so we ask you to register. We will hold your place and send a short reminder by email.</p>
+</div>
+
+<div class="wrap layout">
+  <div class="events">
+    <h2>Choose an evening</h2>
+    <div class="ev" data-id="anniv" data-name="Fifteenth anniversary evening"><span class="seats">few seats</span><div class="d">Sat 17 October 2026, 18:00</div><div class="t">Fifteen years, three voices</div><div class="s">Stridsberg, Nyman, Clement</div></div>
+    <div class="ev" data-id="ser1" data-name="Author series, Sara Stridsberg"><span class="seats">open</span><div class="d">Fri 23 October 2026, 19:00</div><div class="t">Sara Stridsberg in conversation</div><div class="s">Norstedts</div></div>
+    <div class="ev" data-id="ser2" data-name="Author series, Nora Clement"><span class="seats">open</span><div class="d">Fri 20 November 2026, 19:00</div><div class="t">Nora Clement reads</div><div class="s">Alfabeta</div></div>
+    <div class="ev full" data-id="club" data-name="Book club"><span class="seats">full</span><div class="d">Wed, third of the month, 18:30</div><div class="t">Evening reading group</div><div class="s">Waiting list only</div></div>
+  </div>
+
+  <div class="form">
+    <form id="rsvp" novalidate>
+      <h2>Your details</h2>
+      <label>Selected evening</label>
+      <input id="chosen" readonly />
+      <div class="err" id="eErr">Please choose an evening first.</div>
+      <label>Full name</label>
+      <input id="name" />
+      <div class="err" id="nErr">Please tell us your name.</div>
+      <label>Email</label>
+      <input id="email" type="email" />
+      <div class="err" id="mErr">Please enter a valid email address.</div>
+      <div class="row">
+        <div><label>Seats</label>
+          <select id="seats"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        <div><label>Student discount</label>
+          <select id="stu"><option>No</option><option>Yes, university student</option></select></div>
+      </div>
+      <button type="submit" class="submit">Reserve my seat</button>
+    </form>
+    <div class="done" id="done">
+      <div class="check">&#10003;</div>
+      <h2 style="border:0">You are registered</h2>
+      <p id="doneMsg" style="color:#6f655a"></p>
+      <button class="submit" id="again" style="margin-top:16px">Register for another evening</button>
+    </div>
+  </div>
+</div>
+
+<footer>Questions? events@weaverbook.se or 018-13 24 80. Doors open twenty minutes before each evening.<br>
+<a href="#">weaverbook.se</a> &nbsp;|&nbsp; Instagram @weaverbook</footer>
+
+<script>
+var chosen=null;
+document.querySelectorAll('.ev').forEach(function(ev){
+  if(ev.classList.contains('full'))return;
+  ev.addEventListener('click',function(){
+    document.querySelectorAll('.ev').forEach(function(x){x.classList.remove('sel')});
+    ev.classList.add('sel');chosen=ev.dataset.name;
+    document.getElementById('chosen').value=ev.dataset.name;
+    document.getElementById('eErr').classList.remove('show');
+  });
+});
+function bad(id){document.getElementById(id).classList.add('show')}
+function ok(id){document.getElementById(id).classList.remove('show')}
+document.getElementById('rsvp').addEventListener('submit',function(e){
+  e.preventDefault();var valid=true;
+  var name=document.getElementById('name').value.trim();
+  var email=document.getElementById('email').value.trim();
+  if(!chosen){bad('eErr');valid=false}else ok('eErr');
+  if(name.length<2){bad('nErr');valid=false}else ok('nErr');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){bad('mErr');valid=false}else ok('mErr');
+  if(!valid)return;
+  var seats=document.getElementById('seats').value;
+  document.getElementById('rsvp').style.display='none';
+  var dn=document.getElementById('done');dn.classList.add('show');
+  document.getElementById('doneMsg').textContent='We have held '+seats+' seat(s) for '+name+' at '+chosen+'. A reminder is on its way to '+email+'.';
+});
+document.getElementById('again').addEventListener('click',function(){
+  document.getElementById('done').classList.remove('show');
+  document.getElementById('rsvp').reset();document.getElementById('rsvp').style.display='block';
+  document.querySelectorAll('.ev').forEach(function(x){x.classList.remove('sel')});chosen=null;
+  document.getElementById('chosen').value='';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<homeAutomation version="2.4" exported="2026-02-15T21:40:00-06:00">
+  <site>
+    <name>Circle C Ranch Residence</name>
+    <city>Austin</city>
+    <region>TX</region>
+    <timezone>America/Chicago</timezone>
+    <controller>
+      <cluster>Raspberry Pi 5, three nodes</cluster>
+      <primary node="A" address="10.0.20.11" platform="HA OS"/>
+      <worker node="B" address="10.0.20.12" role="Zigbee2MQTT"/>
+      <worker node="C" address="10.0.20.13" role="failover and backups"/>
+    </controller>
+  </site>
+
+  <network>
+    <vlan id="20" name="Infra" subnet="10.0.20.0/24" purpose="home lab, HA cluster, NAS"/>
+    <vlan id="30" name="IoT" subnet="10.0.30.0/24" purpose="smart home devices, isolated"/>
+    <vlan id="40" name="Cameras" subnet="10.0.40.0/24" purpose="cameras, no internet egress"/>
+    <policy from="IoT" to="Trusted" action="block"/>
+    <policy from="Cameras" to="internet" action="block"/>
+  </network>
+
+  <areas>
+    <area id="living">Living room</area>
+    <area id="kitchen">Kitchen</area>
+    <area id="office">Home office</area>
+    <area id="listening">Listening room</area>
+    <area id="garage">Garage</area>
+    <area id="deck">Backyard deck</area>
+  </areas>
+
+  <devices>
+    <device id="light.living" type="lighting" integration="Lutron Caseta" area="living" state="online"/>
+    <device id="light.kitchen" type="lighting" integration="Lutron Caseta" area="kitchen" state="online"/>
+    <device id="climate.main" type="thermostat" integration="Ecobee" area="living" state="online"/>
+    <device id="climate.upstairs" type="thermostat" integration="Ecobee" area="office" state="online"/>
+    <device id="camera.front" type="camera" integration="Ring" area="deck" state="online" egress="blocked"/>
+    <device id="binary_sensor.presence_living" type="mmwave" integration="Aqara FP2" area="living" state="tuning"/>
+    <device id="binary_sensor.presence_office" type="mmwave" integration="Aqara FP2" area="office" state="online"/>
+    <device id="sensor.powerwall" type="energy" integration="Tesla" area="garage" state="tuning">
+      <attribute name="mode">Time-Based Control</attribute>
+      <attribute name="backup_reserve_percent">30</attribute>
+      <attribute name="units">2</attribute>
+    </device>
+    <device id="sensor.solar" type="energy" integration="SolarEdge" area="garage" state="online">
+      <attribute name="array_kw">8.4</attribute>
+    </device>
+  </devices>
+
+  <automations>
+    <automation id="circadian_evening" enabled="true">
+      <alias>Circadian lighting after sunset</alias>
+      <trigger platform="sun" event="sunset" offset="-00:20:00"/>
+      <action service="light.turn_on" target="light.living, light.kitchen">
+        <data name="color_temp_kelvin">2400</data>
+      </action>
+    </automation>
+    <automation id="hvac_precool" enabled="true">
+      <alias>Pre-cool before the peak window</alias>
+      <trigger platform="time" at="15:00:00"/>
+      <condition type="numeric_state" entity="weather.forecast_high" above="90"/>
+      <action service="climate.set_temperature" target="climate.main, climate.upstairs">
+        <data name="temperature">70</data>
+      </action>
+    </automation>
+    <automation id="presence_room_control" enabled="true">
+      <alias>Presence based room lighting</alias>
+      <trigger platform="state" entity="binary_sensor.presence_office" to="on"/>
+      <action service="light.turn_on" target="light.office"/>
+      <note>False negative rate reduced to 3 percent after threshold tuning</note>
+    </automation>
+    <automation id="storm_watch_precharge" enabled="true">
+      <alias>Storm Watch pre-charge</alias>
+      <trigger platform="event" event="severe_weather_alert"/>
+      <action service="powerwall.set_reserve" target="sensor.powerwall">
+        <data name="reserve_percent">100</data>
+      </action>
+    </automation>
+    <automation id="low_battery_notify" enabled="true">
+      <alias>Low battery sensor alert</alias>
+      <trigger platform="numeric_state" entity="sensor.aqara_battery" below="20"/>
+      <action service="notify.mobile" target="jennifer"/>
+      <note>Watches the 12 Aqara sensors on the IoT VLAN</note>
+    </automation>
+    <automation id="seasonal_reserve" enabled="false">
+      <alias>Seasonal Powerwall reserve schedule</alias>
+      <trigger platform="time" at="02:00:00"/>
+      <note>Drops reserve to 20 percent for the cooling season, still in tuning</note>
+    </automation>
+  </automations>
+
+  <energy>
+    <period label="February 2026">
+      <solarGenerated unit="kWh">910</solarGenerated>
+      <homeConsumed unit="kWh">1300</homeConsumed>
+      <gridImport unit="kWh">470</gridImport>
+      <powerwallAbsorbed unit="kWh">210</powerwallAbsorbed>
+      <powerwallDischarged unit="kWh">198</powerwallDischarged>
+      <selfSupply unit="percent">64</selfSupply>
+    </period>
+  </energy>
+</homeAutomation>

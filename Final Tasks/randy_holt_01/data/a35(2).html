@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tucson Marathon Training . R. Holt</title>
+<style>
+  :root{
+    --bg:#fff8ee;
+    --ink:#1a1a1a;
+    --muted:#666;
+    --line:#e8e0d0;
+    --orange:#d6571f;
+    --sand:#c98a3d;
+    --teal:#1f7a6a;
+    --maroon:#7a2330;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  /* Header */
+  .top{
+    background:linear-gradient(135deg, #2a1a14 0%, #6a2a18 40%, #d6571f 100%);
+    color:#fff;
+    padding:60px 22px 80px;position:relative;overflow:hidden;
+  }
+  .top::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:60px;
+    background:linear-gradient(180deg, transparent, var(--bg));
+    pointer-events:none;
+  }
+  .nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+  .brand{font-family:"Iowan Old Style",Georgia,serif;font-weight:700;letter-spacing:.04em;font-size:20px}
+  .nav a{color:#fff;text-decoration:none;margin-left:22px;opacity:.92}
+  .nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+  .hero{max-width:1100px;margin:36px auto 0}
+  .kicker{text-transform:uppercase;letter-spacing:.4em;font-size:11px;opacity:.85}
+  h1{font-family:"Iowan Old Style",Georgia,serif;font-size:clamp(34px,5vw,52px);margin:.4em 0 .3em;line-height:1.1}
+  .lede{max-width:680px;font-size:17px;opacity:.92}
+  .pills{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}
+  .pill{
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:6px 14px;border-radius:999px;font-size:12.5px;letter-spacing:.06em;
+  }
+  /* Wrapper */
+  main{max-width:1100px;margin:-40px auto 0;padding:0 22px 60px;position:relative;z-index:2}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 0 var(--line), 0 30px 60px -32px rgba(120,60,30,.18)}
+  .card .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .card .v{font-family:"Iowan Old Style",Georgia,serif;font-size:32px;margin-top:6px}
+  .card .d{font-size:12.5px;color:var(--muted);margin-top:6px}
+  /* Plan grid */
+  h2{font-family:"Iowan Old Style",Georgia,serif;font-size:28px;margin:34px 0 12px}
+  .sub{color:var(--muted);max-width:760px}
+  table.plan{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table.plan th,table.plan td{padding:11px 12px;text-align:left;font-size:14px;border-bottom:1px solid var(--line)}
+  table.plan th{background:#fbf1de;text-transform:uppercase;font-size:11px;letter-spacing:.14em;color:var(--maroon)}
+  table.plan tr:last-child td{border-bottom:0}
+  table.plan .long{color:var(--orange);font-weight:700}
+  table.plan .easy{color:var(--teal)}
+  /* Chart */
+  .chartbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:22px}
+  svg.chart{width:100%;height:240px;display:block}
+  .legend{display:flex;gap:18px;color:var(--muted);font-size:13px;margin-top:6px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  /* Buttons */
+  .btn{display:inline-block;padding:11px 18px;border-radius:8px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:0}
+  .btn-p{background:var(--orange);color:#fff}
+  .btn-p:hover{background:#b14416}
+  .btn-g{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  /* Form */
+  .row2{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:14px}
+  form.log{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-items:end}
+  form.log label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  form.log input,form.log select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit}
+  form.log .full{grid-column:1/-1}
+  .table-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table.log{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.log th,table.log td{padding:10px 12px;border-bottom:1px solid var(--line)}
+  table.log th{background:#fff8ee;color:var(--muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:left}
+  table.log tr:last-child td{border-bottom:0}
+  footer{padding:24px 22px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);background:#fdf3e3}
+  footer .row{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  @media(max-width:880px){
+    .grid{grid-template-columns:1fr 1fr}
+    .row2{grid-template-columns:1fr}
+    form.log{grid-template-columns:1fr 1fr}
+    .nav a{margin-left:12px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="nav">
+    <div class="brand">Tucson Marathon . R. Holt</div>
+    <nav>
+      <a href="#plan">Plan</a>
+      <a href="#log">Log</a>
+      <a href="#chart">Mileage</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+  <div class="hero">
+    <div class="kicker">Sunday, December 6, 2026  .  Catalina to downtown</div>
+    <h1>26.2, on a sore right foot.</h1>
+    <p class="lede">A personal training tracker for the Tucson Marathon. Three runs a week, one long Sunday walk on the Saguaro NP loop, and a hard rule about pulling back when the plantar fascia complains.</p>
+    <div class="pills">
+      <span class="pill">Target time . 4:20</span>
+      <span class="pill">Long run day . Saturday</span>
+      <span class="pill">Rest . Sun PM, Mon, Wed</span>
+      <span class="pill">No new shoes after October</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="grid" id="kpis">
+    <div class="card"><div class="k">This week mileage</div><div class="v">14.2 mi</div><div class="d">of 16 mi target . on pace</div></div>
+    <div class="card"><div class="k">Weekly avg, 4-week</div><div class="v">16.8 mi</div><div class="d">+ 1.4 vs prior block</div></div>
+    <div class="card"><div class="k">Longest run, ytd</div><div class="v">11.3 mi</div><div class="d">Sabino loop + Riverpark</div></div>
+    <div class="card"><div class="k">Plantar fascia flare days</div><div class="v">2</div><div class="d">last 30 . target zero</div></div>
+  </div>
+
+  <h2 id="plan">Block 3 plan, six weeks</h2>
+  <p class="sub">Build long-run distance gradually. One quality session per week. Sunday is a desert walk with Barbara, not a workout.</p>
+  <table class="plan">
+    <thead><tr><th>Week</th><th>Tue</th><th>Thu</th><th>Sat (long)</th><th>Sun walk</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td>Wk 1</td><td>3 mi easy</td><td>3 mi tempo</td><td class="long">8 mi long</td><td class="easy">5 mi walk</td><td>14 mi</td></tr>
+      <tr><td>Wk 2</td><td>3 mi easy</td><td>4 mi tempo</td><td class="long">9 mi long</td><td class="easy">5 mi walk</td><td>16 mi</td></tr>
+      <tr><td>Wk 3</td><td>3 mi easy</td><td>4 mi hills</td><td class="long">10 mi long</td><td class="easy">5 mi walk</td><td>17 mi</td></tr>
+      <tr><td>Wk 4</td><td>3 mi easy</td><td>3 mi tempo</td><td class="long">7 mi cutback</td><td class="easy">5 mi walk</td><td>13 mi</td></tr>
+      <tr><td>Wk 5</td><td>3 mi easy</td><td>5 mi tempo</td><td class="long">12 mi long</td><td class="easy">5 mi walk</td><td>20 mi</td></tr>
+      <tr><td>Wk 6</td><td>3 mi easy</td><td>4 mi tempo</td><td class="long">13 mi long</td><td class="easy">6 mi walk</td><td>20 mi</td></tr>
+    </tbody>
+  </table>
+
+  <div class="chartbox" id="chart">
+    <h2 style="margin-top:0">Mileage trend, last 10 weeks</h2>
+    <svg class="chart" viewBox="0 0 600 220" preserveAspectRatio="none" aria-label="Mileage trend">
+      <g stroke="#eee" stroke-width="1">
+        <line x1="40" y1="20" x2="590" y2="20"/>
+        <line x1="40" y1="70" x2="590" y2="70"/>
+        <line x1="40" y1="120" x2="590" y2="120"/>
+        <line x1="40" y1="170" x2="590" y2="170"/>
+      </g>
+      <g font-size="10" fill="#888">
+        <text x="34" y="24" text-anchor="end">24</text>
+        <text x="34" y="74" text-anchor="end">18</text>
+        <text x="34" y="124" text-anchor="end">12</text>
+        <text x="34" y="174" text-anchor="end">6</text>
+      </g>
+      <!-- bars -->
+      <g>
+        <rect x="60"  y="120" width="36" height="50" fill="#c98a3d"/>
+        <rect x="110" y="110" width="36" height="60" fill="#c98a3d"/>
+        <rect x="160" y="100" width="36" height="70" fill="#c98a3d"/>
+        <rect x="210" y="130" width="36" height="40" fill="#1f7a6a"/>
+        <rect x="260" y="95"  width="36" height="75" fill="#c98a3d"/>
+        <rect x="310" y="80"  width="36" height="90" fill="#c98a3d"/>
+        <rect x="360" y="120" width="36" height="50" fill="#1f7a6a"/>
+        <rect x="410" y="70"  width="36" height="100" fill="#c98a3d"/>
+        <rect x="460" y="58"  width="36" height="112" fill="#d6571f"/>
+        <rect x="510" y="50"  width="36" height="120" fill="#d6571f"/>
+      </g>
+      <g font-size="9" fill="#888" text-anchor="middle">
+        <text x="78"  y="190">W1</text><text x="128" y="190">W2</text><text x="178" y="190">W3</text>
+        <text x="228" y="190">W4*</text><text x="278" y="190">W5</text><text x="328" y="190">W6</text>
+        <text x="378" y="190">W7*</text><text x="428" y="190">W8</text><text x="478" y="190">W9</text>
+        <text x="528" y="190">W10</text>
+      </g>
+      <text x="40" y="208" font-size="10" fill="#888">* cutback weeks; intentional reduction</text>
+    </svg>
+    <div class="legend">
+      <span><i style="background:#c98a3d"></i>Standard week</span>
+      <span><i style="background:#1f7a6a"></i>Cutback week</span>
+      <span><i style="background:#d6571f"></i>Peak week</span>
+    </div>
+  </div>
+
+  <div class="row2" id="log">
+    <div>
+      <h2 style="margin-top:30px">Log a run</h2>
+      <p class="sub">Honest log only. If the foot grumbles, mark it. Weeks with 2 grumbles cap at easy.</p>
+      <form class="log" id="logForm" novalidate>
+        <div><label>Date</label><input type="date" id="lD"></div>
+        <div><label>Route</label><select id="lR"><option>Sabino loop</option><option>Reid Park</option><option>Riverpark</option><option>Saguaro NP</option><option>Treadmill</option></select></div>
+        <div><label>Type</label><select id="lT"><option>Easy</option><option>Tempo</option><option>Long</option><option>Hills</option><option>Walk</option></select></div>
+        <div><label>Miles</label><input type="number" step="0.1" min="0" id="lM"></div>
+        <div><label>Time (mm:ss)</label><input id="lTm"></div>
+        <div><label>Foot</label><select id="lF"><option>OK</option><option>Tight</option><option>Grumble</option><option>Hot</option></select></div>
+        <div class="full"><button class="btn btn-p" type="submit">Add to log</button></div>
+      </form>
+    </div>
+    <div>
+      <h2 style="margin-top:30px">Recent</h2>
+      <div class="table-wrap">
+        <table class="log" id="logTable">
+          <thead><tr><th>Date</th><th>Type</th><th>Route</th><th>Mi</th><th>Time</th><th>Foot</th></tr></thead>
+          <tbody>
+            <tr><td>18 Oct</td><td>Walk</td><td>Saguaro NP</td><td>5.8</td><td>1:42:00</td><td>OK</td></tr>
+            <tr><td>17 Oct</td><td>Long</td><td>Sabino+Riverpark</td><td>9.4</td><td>1:24:10</td><td>Tight</td></tr>
+            <tr><td>16 Oct</td><td>Tempo</td><td>Reid Park</td><td>4.0</td><td>32:40</td><td>OK</td></tr>
+            <tr><td>14 Oct</td><td>Easy</td><td>Sabino loop</td><td>3.0</td><td>27:50</td><td>OK</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="about">A few honest rules</h2>
+  <p class="sub">Written so I do not have to argue with myself at 5:45 AM.</p>
+  <ol>
+    <li><strong>If the foot grumbles two days in a row, the next run is a walk.</strong> The marathon is in December; the desk is in court on Monday.</li>
+    <li><strong>Sunday is family.</strong> Walk, do not run. Barbara sets the pace.</li>
+    <li><strong>No new shoes after October.</strong> Break-in injuries land worst on race day.</li>
+    <li><strong>Trial weeks override training weeks.</strong> Move long runs to the next quiet Saturday.</li>
+  </ol>
+</main>
+
+<footer>
+  <div class="row">
+    <div>(c) 2026 R. Holt . private training tracker . Tucson, AZ</div>
+    <div>Built with no analytics, no third parties, no sign-in.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('logForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var d = document.getElementById('lD').value || 'today';
+    var r = document.getElementById('lR').value;
+    var t = document.getElementById('lT').value;
+    var m = document.getElementById('lM').value || '-';
+    var tm = document.getElementById('lTm').value || '-';
+    var f = document.getElementById('lF').value;
+    var tb = document.querySelector('#logTable tbody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+d+'</td><td>'+t+'</td><td>'+r+'</td><td>'+m+'</td><td>'+tm+'</td><td>'+f+'</td>';
+    tb.insertBefore(tr, tb.firstChild);
+    this.reset();
+  });
+</script>
+</body>
+</html>

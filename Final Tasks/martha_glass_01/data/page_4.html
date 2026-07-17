@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italy Trip Planner</title>
+<style>
+  :root{
+    --sky:#2a6f8e; --sky2:#3f97b8; --sun:#e8943a; --terra:#c0502f; --olive:#6d7a3a;
+    --bg:#fbf6ee; --card:#ffffff; --ink:#26221d; --soft:#6f675c; --rule:#ece2d2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{position:sticky;top:0;z-index:30;background:rgba(251,246,238,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+  .bar{max-width:1060px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:12px}
+  .glyph{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--sun),var(--terra));position:relative;box-shadow:0 4px 12px rgba(192,80,47,.3)}
+  .glyph:after{content:"";position:absolute;left:9px;bottom:8px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:11px solid #fff;opacity:.9}
+  .name{font-weight:700;font-size:15px}.name span{display:block;font-size:11px;color:var(--soft);font-weight:500}
+  nav{margin-left:auto;display:flex;gap:2px}
+  nav a{font-size:13px;color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:7px;transition:.2s}
+  nav a:hover{color:var(--terra);background:#f4ead9}
+  .hero{background:linear-gradient(160deg,var(--sky),var(--sky2));color:#eef7fa;position:relative;overflow:hidden}
+  .sun{position:absolute;right:8%;top:30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#ffe7a8,#f0b24f);box-shadow:0 0 60px rgba(240,178,79,.6);animation:bob 6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+  .hwrap{max-width:1060px;margin:0 auto;padding:60px 22px 56px;position:relative;z-index:2}
+  .tag{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#cfeaf2}
+  h1{font-size:40px;line-height:1.1;margin:12px 0 12px}
+  .hlead{font-size:17px;color:#d7ecf2;max-width:560px}
+  .count{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
+  .cbox{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:14px 18px;text-align:center;min-width:78px}
+  .cbox b{display:block;font-size:26px}.cbox span{font-size:11px;color:#cfeaf2;letter-spacing:.5px}
+  section{max-width:1060px;margin:0 auto;padding:48px 22px}
+  .shead{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--terra);margin-bottom:8px}
+  h2{font-size:27px;margin-bottom:6px}
+  .intro{color:var(--soft);max-width:640px;margin-bottom:24px}
+  .timeline{position:relative;margin-left:8px;padding-left:26px;border-left:3px solid var(--rule)}
+  .leg{position:relative;margin-bottom:22px;opacity:0;transform:translateX(-12px);transition:.55s}
+  .leg.in{opacity:1;transform:none}
+  .leg:before{content:"";position:absolute;left:-35px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--sun);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--sun)}
+  .leg h3{font-size:17px}.leg .when{font-size:12px;color:var(--terra);font-weight:600;letter-spacing:.4px}
+  .leg p{font-size:13.5px;color:var(--soft);margin-top:3px}
+  .twocol{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start}
+  .budget{background:var(--card);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+  .budget .brow{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--rule);font-size:14px}
+  .budget .brow:last-child{border-bottom:none}
+  .budget .brow .lab{flex:1}
+  .budget .brow .lab span{display:block;font-size:11.5px;color:var(--soft)}
+  .budget .brow .eur{color:var(--soft);font-size:12.5px;min-width:64px;text-align:right}
+  .budget .brow .isk{font-weight:700;min-width:88px;text-align:right}
+  .budget .total{background:#faf1e2;font-weight:700}
+  .budget .total .isk{color:var(--terra)}
+  .swatch{width:10px;height:26px;border-radius:4px}
+  .save{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:22px}
+  .ring{display:flex;align-items:center;gap:18px}
+  .ring svg{width:120px;height:120px;flex:none}
+  .ring .rt{font-size:13px;color:var(--soft)}
+  .ring .rt b{display:block;font-size:22px;color:var(--ink)}
+  .save .track{height:10px;background:#eee3d2;border-radius:99px;margin-top:18px;overflow:hidden}
+  .save .fill{height:100%;width:0;background:linear-gradient(90deg,var(--olive),var(--sun));border-radius:99px;transition:width 1.3s ease}
+  .save .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--soft);margin-top:8px}
+  .checks{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:10px 20px;margin-top:6px}
+  .chk{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--rule);cursor:pointer;user-select:none}
+  .chk:last-child{border-bottom:none}
+  .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--sky2);flex:none;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .box svg{width:13px;height:13px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:.2s}
+  .chk.done .box{background:var(--olive);border-color:var(--olive)}
+  .chk.done .box svg{opacity:1}
+  .chk .ct{font-size:14px;transition:.2s}.chk.done .ct{color:var(--soft);text-decoration:line-through}
+  .chk .who{margin-left:auto;font-size:11px;color:var(--soft);border:1px solid var(--rule);padding:3px 9px;border-radius:99px}
+  .prepbar{display:flex;align-items:center;gap:12px;margin:4px 0 14px;font-size:13px;color:var(--soft)}
+  .prepbar .pt{flex:1;height:8px;background:#eee3d2;border-radius:99px;overflow:hidden}
+  .prepbar .pf{height:100%;width:0;background:var(--sky2);border-radius:99px;transition:.4s}
+  footer{background:#1c3a47;color:#bcd2da}
+  .ft{max-width:1060px;margin:0 auto;padding:26px 22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12.5px}
+  @media(max-width:820px){h1{font-size:31px}.twocol{grid-template-columns:1fr}nav{display:none}.sun{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="glyph"></div>
+    <div class="name">Italy Trip Planner<span>Glass and Sigurdsson family</span></div>
+    <nav>
+      <a href="#route">Route</a>
+      <a href="#budget">Budget</a>
+      <a href="#prep">Prep</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="sun"></div>
+  <div class="hwrap">
+    <div class="tag">Long deferred, finally on the calendar</div>
+    <h1>Pompeii, Vesuvius, and Etna</h1>
+    <p class="hlead">A family trip that blends Lily's volcano fascination with travel we have put off for years. Target window, June 2027.</p>
+    <div class="count" id="count">
+      <div class="cbox"><b id="d-mon">0</b><span>MONTHS</span></div>
+      <div class="cbox"><b id="d-day">0</b><span>DAYS</span></div>
+      <div class="cbox"><b>3</b><span>TRAVELLERS</span></div>
+      <div class="cbox"><b>10</b><span>NIGHTS</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="route">
+  <div class="shead">The route</div>
+  <h2>Three stops, south down the country</h2>
+  <p class="intro">Rome to settle in, Naples for the sites Lily has read about for years, then Catania for the mountain that does what mine do at home.</p>
+  <div class="timeline" id="tl">
+    <div class="leg"><div class="when">Days 1 to 3 &middot; Rome</div><h3>Land and adjust</h3><p>Apartment near the centre, slow first days, the old city on foot, gelato as a daily ritual.</p></div>
+    <div class="leg"><div class="when">Days 4 to 6 &middot; Naples and the bay</div><h3>Pompeii and Vesuvius</h3><p>Lily's priority. Two guided days across the buried city and up to the crater rim, with the geology explained properly.</p></div>
+    <div class="leg"><div class="when">Days 7 to 9 &middot; Catania</div><h3>Etna, weather permitting</h3><p>A guided ascent if the mountain allows it, and a quieter day by the coast if it does not.</p></div>
+    <div class="leg"><div class="when">Day 10 &middot; Home</div><h3>Return to Reykjavik</h3><p>Evening flight back, notebooks full, already planning the next one.</p></div>
+  </div>
+</section>
+
+<section id="budget">
+  <div class="shead">The money</div>
+  <h2>Where it goes</h2>
+  <p class="intro">Saved on a separate line from the emergency fund, paced over the year. Converted at 1 euro to 149 kronur.</p>
+  <div class="twocol">
+    <div class="budget">
+      <div class="brow"><div class="swatch" style="background:var(--sky2)"></div><div class="lab">Flights<span>3 return, Reykjavik to Rome</span></div><div class="eur">1,650 EUR</div><div class="isk">246,000</div></div>
+      <div class="brow"><div class="swatch" style="background:var(--sun)"></div><div class="lab">Accommodation<span>10 nights, apartments</span></div><div class="eur">1,800 EUR</div><div class="isk">268,000</div></div>
+      <div class="brow"><div class="swatch" style="background:var(--terra)"></div><div class="lab">Pompeii and Vesuvius<span>Guided sites, 2 days</span></div><div class="eur">240 EUR</div><div class="isk">35,800</div></div>
+      <div class="brow"><div class="swatch" style="background:#9a3f23"></div><div class="lab">Etna<span>Guided ascent, transport</span></div><div class="eur">360 EUR</div><div class="isk">53,700</div></div>
+      <div class="brow"><div class="swatch" style="background:var(--olive)"></div><div class="lab">Trains and transfers<span>Rome, Naples, Catania</span></div><div class="eur">320 EUR</div><div class="isk">47,700</div></div>
+      <div class="brow"><div class="swatch" style="background:#3f7a6e"></div><div class="lab">Food and daily<span>10 days, family of three</span></div><div class="eur">1,200 EUR</div><div class="isk">179,000</div></div>
+      <div class="brow"><div class="swatch" style="background:#8a7d68"></div><div class="lab">Travel insurance<span>Family policy add-on</span></div><div class="eur">140 EUR</div><div class="isk">20,900</div></div>
+      <div class="brow"><div class="swatch" style="background:#b9a14a"></div><div class="lab">Contingency<span>Weather and changes</span></div><div class="eur">300 EUR</div><div class="isk">44,700</div></div>
+      <div class="brow total"><div class="swatch" style="background:var(--ink)"></div><div class="lab">Estimated total</div><div class="eur">6,010 EUR</div><div class="isk">895,500</div></div>
+    </div>
+
+    <div class="save">
+      <div class="ring">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#eee3d2" stroke-width="14"/>
+          <circle id="arc" cx="60" cy="60" r="50" fill="none" stroke="url(#g)" stroke-width="14" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314" stroke-dashoffset="314"/>
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d7a3a"/><stop offset="1" stop-color="#e8943a"/></linearGradient></defs>
+          <text id="arcpct" x="60" y="66" text-anchor="middle" font-size="22" font-weight="700" fill="#26221d">0%</text>
+        </svg>
+        <div class="rt">Saved toward the trip<b>540,000 kr</b>of 895,500 kr target</div>
+      </div>
+      <div class="track"><div class="fill" id="sfill"></div></div>
+      <div class="row"><span>On track for the June 2027 window</span><span>Separate from the emergency fund</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="prep">
+  <div class="shead">Before we go</div>
+  <h2>The list</h2>
+  <p class="intro">Tap an item to mark it done. Shared between Martha and Derek on the family board.</p>
+  <div class="prepbar"><span id="preppct">0 of 6 done</span><div class="pt"><div class="pf" id="pf"></div></div></div>
+  <div class="checks" id="checks">
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Renew passports, check all three are valid past 2027</div><div class="who">Martha</div></div>
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Watch flight fares, set a price alert</div><div class="who">Martha</div></div>
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Shortlist apartments near the centre in each city</div><div class="who">Derek</div></div>
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Book guided Pompeii and Vesuvius days in advance</div><div class="who">Martha</div></div>
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Pack a reading list with Lily, history of the sites</div><div class="who">Lily</div></div>
+    <div class="chk"><div class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div><div class="ct">Add the trip to the family travel insurance policy</div><div class="who">Derek</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">
+    <div>Italy Trip Planner. Tracked on the family board with the house projects.</div>
+    <div>Saving paced separately from the emergency fund. Reykjavik, Iceland.</div>
+  </div>
+</footer>
+
+<script>
+  // countdown to June 2027 window
+  function tick(){
+    var target=new Date(2027,5,1);
+    var now=new Date();
+    var ms=target-now; if(ms<0)ms=0;
+    var days=Math.floor(ms/86400000);
+    var months=Math.floor(days/30.44);
+    document.getElementById('d-mon').textContent=months;
+    document.getElementById('d-day').textContent=days%31;
+  }
+  tick();
+
+  // timeline reveal
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in');});},{threshold:.2});
+  document.querySelectorAll('.leg').forEach(function(l){io.observe(l);});
+
+  // savings ring + bar
+  var pct=Math.round(540000/895500*100);
+  var sio=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        document.getElementById('sfill').style.width=pct+"%";
+        var arc=document.getElementById('arc'), full=314;
+        arc.style.transition="stroke-dashoffset 1.3s ease";
+        arc.style.strokeDashoffset=full-(full*pct/100);
+        var n=0,t=setInterval(function(){n++;document.getElementById('arcpct').textContent=n+"%";if(n>=pct)clearInterval(t);},22);
+        sio.disconnect();
+      }
+    });
+  },{threshold:.4});
+  sio.observe(document.getElementById('save')||document.body);
+  var saveEl=document.querySelector('.save'); if(saveEl) sio.observe(saveEl);
+
+  // checklist
+  var checks=document.getElementById('checks').querySelectorAll('.chk');
+  var pf=document.getElementById('pf'), pp=document.getElementById('preppct');
+  function refresh(){
+    var done=0; checks.forEach(function(c){if(c.classList.contains('done'))done++;});
+    pf.style.width=(done/checks.length*100)+"%";
+    pp.textContent=done+" of "+checks.length+" done";
+  }
+  checks.forEach(function(c){c.addEventListener('click',function(){c.classList.toggle('done');refresh();});});
+  refresh();
+</script>
+</body>
+</html>

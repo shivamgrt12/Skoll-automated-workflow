@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Household Budget Planner</title>
+<style>
+  :root{--bg:#eef3f1;--card:#ffffff;--ink:#26302c;--green:#2f6f57;--green-d:#1f4f3d;--clay:#c9743f;--slate:#5b6b66;--line:#d6e0db;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Trebuchet MS',Verdana,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:var(--green-d);color:#eaf3ee;padding:24px;}
+  header h1{margin:0;font-size:24px;}
+  header p{margin:6px 0 0;color:#bcd6c9;font-size:14px;}
+  .wrap{max-width:900px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;}
+  .card h2{margin:0 0 12px;font-size:17px;color:var(--green-d);border-bottom:2px solid var(--clay);padding-bottom:6px;}
+  label{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin:9px 0;color:var(--slate);}
+  input{width:110px;padding:6px;border:1px solid var(--line);border-radius:5px;font-size:14px;text-align:right;font-family:inherit;}
+  .totals{grid-column:1 / -1;}
+  .bigrow{display:flex;gap:16px;flex-wrap:wrap;}
+  .bignum{flex:1;min-width:160px;text-align:center;background:#e7f0eb;border-radius:8px;padding:14px;}
+  .bignum .lbl{font-size:13px;color:var(--slate);}
+  .bignum .val{font-size:28px;font-weight:bold;color:var(--green);}
+  .bignum.neg .val{color:var(--clay);}
+  .bar{height:22px;border-radius:11px;background:#e7f0eb;overflow:hidden;margin-top:12px;}
+  .bar > span{display:block;height:100%;background:var(--green);width:0;transition:width .3s;}
+  button{margin-top:14px;cursor:pointer;background:var(--green);color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:14px;font-family:inherit;}
+  footer{text-align:center;padding:18px;font-size:13px;color:var(--slate);border-top:3px solid var(--clay);background:#e2ebe6;}
+  @media (max-width:640px){.wrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Monthly Household Budget Planner</h1>
+  <p>Elm Street ledger for Megan Turner, figured in US dollars, mortgage retired since 1998</p>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>Income</h2>
+    <label>Social Security <input type="number" id="i1" value="1680"></label>
+    <label>Survivor pension <input type="number" id="i2" value="820"></label>
+  </div>
+  <div class="card">
+    <h2>Expenses</h2>
+    <label>Property tax and insurance <input type="number" id="e1" value="310"></label>
+    <label>Utilities and oil heat <input type="number" id="e2" value="340"></label>
+    <label>Groceries <input type="number" id="e3" value="220"></label>
+    <label>Medicare and Medigap <input type="number" id="e4" value="185"></label>
+    <label>Medications and supplements <input type="number" id="e5" value="110"></label>
+    <label>Car insurance and gas <input type="number" id="e6" value="100"></label>
+    <label>Phone and landline <input type="number" id="e7" value="55"></label>
+    <label>Home maintenance amortized <input type="number" id="e8" value="120"></label>
+    <label>Gifts, dining, miscellaneous <input type="number" id="e9" value="120"></label>
+  </div>
+  <div class="card totals">
+    <h2>Summary</h2>
+    <div class="bigrow">
+      <div class="bignum"><div class="lbl">Total Income</div><div class="val" id="totIn">$0</div></div>
+      <div class="bignum"><div class="lbl">Total Expenses</div><div class="val" id="totOut">$0</div></div>
+      <div class="bignum" id="leftBox"><div class="lbl">Toward Savings</div><div class="val" id="leftover">$0</div></div>
+    </div>
+    <div class="bar"><span id="bar"></span></div>
+    <button onclick="recalc()">Recalculate</button>
+    <p style="font-size:13px;color:var(--slate);" id="note"></p>
+  </div>
+</div>
+<footer>Savings held at Thomaston Savings Bank. The life insurance safety net stays untouched. Reviewed February 2026.</footer>
+<script>
+  var inc=['i1','i2'];
+  var exp=['e1','e2','e3','e4','e5','e6','e7','e8','e9'];
+  function sum(ids){return ids.reduce(function(a,id){var v=parseFloat(document.getElementById(id).value);return a+(isNaN(v)?0:v);},0);}
+  function money(n){return '$'+n.toLocaleString('en-US');}
+  function recalc(){
+    var ti=sum(inc), to=sum(exp), left=ti-to;
+    document.getElementById('totIn').textContent=money(ti);
+    document.getElementById('totOut').textContent=money(to);
+    document.getElementById('leftover').textContent=money(left);
+    var pct = ti>0 ? Math.max(0,Math.min(100, left/ti*100)) : 0;
+    document.getElementById('bar').style.width=pct+'%';
+    var box=document.getElementById('leftBox');
+    box.classList.toggle('neg', left<0);
+    document.getElementById('note').textContent = left>=0
+      ? 'About '+money(left)+' a month feeds savings and the unexpected.'
+      : 'Expenses exceed income this month. Trim a line above.';
+  }
+  document.querySelectorAll('input').forEach(function(el){el.addEventListener('input',recalc);});
+  recalc();
+</script>
+</body>
+</html>

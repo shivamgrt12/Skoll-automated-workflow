@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blood Pressure Dashboard</title>
+<style>
+  :root{--bg:#0e1726;--panel:#15233a;--ink:#e7eefb;--muted:#9fb2cf;--teal:#39c0b8;--amber:#f0b94a;--rose:#e06b7e;--line:#27374f;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{padding:24px;background:linear-gradient(120deg,#15233a,#1d3354);border-bottom:1px solid var(--line);}
+  header h1{margin:0;font-size:24px;}
+  header p{margin:6px 0 0;color:var(--muted);font-size:14px;}
+  .wrap{max-width:960px;margin:0 auto;padding:20px;}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .card .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+  .card .v{font-size:28px;font-weight:700;margin-top:6px;}
+  .teal{color:var(--teal);} .amber{color:var(--amber);} .rose{color:var(--rose);}
+  .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:20px;}
+  .chartbox h2{margin:0 0 4px;font-size:17px;}
+  .controls{margin:12px 0;display:flex;gap:8px;flex-wrap:wrap;}
+  .tab{cursor:pointer;background:#1d2f49;color:var(--muted);border:1px solid var(--line);border-radius:18px;padding:6px 14px;font-size:13px;}
+  .tab.active{background:var(--teal);color:#06231f;border-color:var(--teal);font-weight:600;}
+  svg{width:100%;height:auto;display:block;}
+  .legend{display:flex;gap:18px;font-size:13px;color:var(--muted);margin-top:8px;}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+  footer{border-top:1px solid var(--line);text-align:center;padding:18px;color:var(--muted);font-size:13px;}
+  @media (max-width:680px){.cards{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Blood Pressure Dashboard</h1>
+  <p>Megan E. Turner, amlodipine 5 mg daily, target below 140 over 90, reported to Dr. Alford each quarter</p>
+</header>
+<div class="wrap">
+  <div class="cards">
+    <div class="card"><div class="k">Average Systolic</div><div class="v teal" id="avgSys">132</div></div>
+    <div class="card"><div class="k">Average Diastolic</div><div class="v teal" id="avgDia">78</div></div>
+    <div class="card"><div class="k">Highest Reading</div><div class="v rose" id="peak">137 / 82</div></div>
+    <div class="card"><div class="k">Readings Logged</div><div class="v amber" id="count">6</div></div>
+  </div>
+  <div class="chartbox">
+    <h2>Weekly Averages</h2>
+    <div class="controls">
+      <span class="tab active" data-range="6" onclick="setRange(this,6)">Last 6 weeks</span>
+      <span class="tab" data-range="4" onclick="setRange(this,4)">Last 4 weeks</span>
+      <span class="tab" data-range="2" onclick="setRange(this,2)">Last 2 weeks</span>
+    </div>
+    <svg id="chart" viewBox="0 0 720 280" role="img" aria-label="Blood pressure line chart"></svg>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--teal)"></span>Systolic</span>
+      <span><span class="dot" style="background:var(--amber)"></span>Diastolic</span>
+      <span><span class="dot" style="background:var(--rose)"></span>Upper target 140</span>
+    </div>
+  </div>
+</div>
+<footer>Home log kept at 48 Elm Street, Thomaston, Connecticut. Review window October 2025 to February 2026.</footer>
+<script>
+  var weeks = [
+    {w:'Wk 1', sys:133, dia:77},{w:'Wk 2', sys:135, dia:79},{w:'Wk 3', sys:131, dia:76},
+    {w:'Wk 4', sys:132, dia:78},{w:'Wk 5', sys:130, dia:77},{w:'Wk 6', sys:134, dia:80}
+  ];
+  function setRange(el, n){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+    el.classList.add('active');
+    draw(weeks.slice(weeks.length-n));
+  }
+  function draw(data){
+    var svg=document.getElementById('chart');
+    var W=720,H=280,padL=44,padR=20,padT=20,padB=40;
+    var minY=70,maxY=145;
+    function x(i){return padL+(W-padL-padR)*(data.length===1?0.5:i/(data.length-1));}
+    function y(v){return padT+(H-padT-padB)*(1-(v-minY)/(maxY-minY));}
+    var s='';
+    for(var g=80;g<=140;g+=20){var gy=y(g);s+='<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="#27374f"/>'+'<text x="6" y="'+(gy+4)+'" fill="#9fb2cf" font-size="11">'+g+'</text>';}
+    var ty=y(140);
+    s+='<line x1="'+padL+'" y1="'+ty+'" x2="'+(W-padR)+'" y2="'+ty+'" stroke="#e06b7e" stroke-dasharray="5 4"/>';
+    function path(key,color){var d='';data.forEach(function(p,i){d+=(i?'L':'M')+x(i)+' '+y(p[key])+' ';});return '<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="3"/>';}
+    s+=path('sys','#39c0b8')+path('dia','#f0b94a');
+    data.forEach(function(p,i){
+      s+='<circle cx="'+x(i)+'" cy="'+y(p.sys)+'" r="4" fill="#39c0b8"><title>'+p.w+': '+p.sys+' systolic</title></circle>';
+      s+='<circle cx="'+x(i)+'" cy="'+y(p.dia)+'" r="4" fill="#f0b94a"><title>'+p.w+': '+p.dia+' diastolic</title></circle>';
+      s+='<text x="'+x(i)+'" y="'+(H-padB+18)+'" fill="#9fb2cf" font-size="11" text-anchor="middle">'+p.w+'</text>';
+    });
+    svg.innerHTML=s;
+    var as=Math.round(data.reduce(function(a,p){return a+p.sys;},0)/data.length);
+    var ad=Math.round(data.reduce(function(a,p){return a+p.dia;},0)/data.length);
+    document.getElementById('avgSys').textContent=as;
+    document.getElementById('avgDia').textContent=ad;
+    document.getElementById('count').textContent=data.length;
+    var hi=data.reduce(function(a,p){return p.sys>a.sys?p:a;},data[0]);
+    document.getElementById('peak').textContent=hi.sys+' / '+hi.dia;
+  }
+  draw(weeks);
+</script>
+</body>
+</html>
