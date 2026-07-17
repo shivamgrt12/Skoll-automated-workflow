@@ -380,6 +380,7 @@ def stage_prompt(input_dir: Path, work: Path, auto: bool, design: dict | None) -
         [input_dir, input_dir / "home", input_dir / "mock_data", work],
         ("api_selection.json",),
         enrich_input_dir=input_dir,
+        input_dir=input_dir,
     )
 
     return _read_api_selection(work)
@@ -535,6 +536,7 @@ def _prompt_self_repair_sweep(input_dir: Path, work: Path) -> None:
         work,
         _prompt_qc_context(input_dir, work),
         PROMPT_ARTIFACTS,
+        input_dir=input_dir,
     )
 
 
@@ -584,6 +586,49 @@ def _load_severity(gate_dir: Path) -> dict[str, str]:
         return {}
     data = _load_yaml(manifest) or {}
     return {k: str(v).lower() for k, v in data.get("severity", {}).items()}
+
+
+def _load_gate_context(gate_dir: Path) -> dict[str, list[str]]:
+    # Optional per-gate context declaration living beside `severity:` in the
+    # manifest. Maps a gate filename to the symbolic context tokens it actually
+    # reads (e.g. ["work"] for a gate that only inspects the artifact). Gates
+    # absent from this map fall back to the sweep's full context list, so an
+    # undeclared gate behaves exactly as before this key existed.
+    manifest = gate_dir / "manifest.yaml"
+    if not manifest.is_file():
+        return {}
+    data = _load_yaml(manifest) or {}
+    raw = data.get("context") or {}
+    return {k: [str(t) for t in (v or [])] for k, v in raw.items()}
+
+
+def _resolve_gate_context(
+    tokens: list[str],
+    work: Path,
+    default: list[Path],
+    input_dir: Path | None,
+    harness_dir: Path | None,
+) -> list[Path]:
+    # Expand symbolic context tokens into concrete directories for one gate.
+    # Safety rails: an undeclared gate (no tokens) keeps the full default; an
+    # unknown or non-existent token is skipped; and if expansion yields nothing
+    # we fall back to the full default rather than starve the gate of context.
+    if not tokens:
+        return default
+    table: dict[str, Path] = {"work": work}
+    if input_dir is not None:
+        table.update(
+            {
+                "input": input_dir,
+                "home": input_dir / "home",
+                "task": input_dir / "task",
+                "mock_data": input_dir / "mock_data",
+            }
+        )
+    if harness_dir is not None:
+        table["harness"] = harness_dir
+    dirs = [table[t] for t in tokens if t in table and table[t].exists()]
+    return dirs or default
 
 
 def _run_mechanical_stage_gate(gate: Path, work: Path) -> tuple[bool, str]:
@@ -754,6 +799,8 @@ def _stage_qc_sweep(
     context_dirs: list[Path],
     artifacts: tuple[str, ...],
     enrich_input_dir: Path | None = None,
+    input_dir: Path | None = None,
+    harness_dir: Path | None = None,
 ) -> None:
     """Blocking auto-fix QC sweep for one generating stage.
 
@@ -766,11 +813,17 @@ def _stage_qc_sweep(
     if not gates:
         return
     severity = _load_severity(gate_dir)
+    gate_context_map = _load_gate_context(gate_dir)
+    context_source = input_dir if input_dir is not None else enrich_input_dir
     print(f"\n--- {stage_name} QC sweep ({gate_dir.name}) ---")
     blocking_failures: list[str] = []
     report_entries: list[tuple[str, str, str]] = []
     for gate in gates:
         level = severity.get(gate.name, "block")
+        gate_ctx = _resolve_gate_context(
+            gate_context_map.get(gate.name, []),
+            work, context_dirs, context_source, harness_dir,
+        )
         verdict = "fail"
         detail = ""
         for attempt in range(1, QC_STAGE_MAX_FIX_ITERS + 1):
@@ -780,12 +833,12 @@ def _stage_qc_sweep(
                 detail = gate_output
             else:
                 self_verdict, detail, wrote = _stage_gate_autofix(
-                    gate, context_dirs, work, artifacts, enrich_input_dir
+                    gate, gate_ctx, work, artifacts, enrich_input_dir
                 )
                 if wrote:
                     # The fixer edited the artifact; never trust its self-report.
                     # Re-run the gate in check-only mode for an independent verdict.
-                    verdict = _stage_gate_check(gate, context_dirs, work, artifacts)
+                    verdict = _stage_gate_check(gate, gate_ctx, work, artifacts)
                 else:
                     verdict = self_verdict
             if verdict in ("pass", "warn"):
@@ -794,7 +847,7 @@ def _stage_qc_sweep(
                 print(f"[{gate_dir.name} RETRY] {gate.name} still failing "
                       f"(attempt {attempt}/{QC_STAGE_MAX_FIX_ITERS})")
                 if gate.suffix == ".py":
-                    _mechanical_gate_fix(gate, context_dirs, work, artifacts, detail)
+                    _mechanical_gate_fix(gate, gate_ctx, work, artifacts, detail)
         if verdict == "pass":
             print(f"[{gate_dir.name} PASS] {gate.name}")
         elif verdict == "warn":
@@ -845,10 +898,14 @@ def stage_rubric(input_dir: Path, work: Path, harness_dir: Path, meta: dict) -> 
             print(f"  [rubric attempt {attempt}/{attempts} produced no usable rubric: {exc}]")
             continue
         sweep_context = [input_dir, input_dir / "home", input_dir / "mock_data", work]
-        _stage_qc_sweep("rubric", RUBRIC_QC_DIR, work, sweep_context, ("rubric.json",))
+        _stage_qc_sweep(
+            "rubric", RUBRIC_QC_DIR, work, sweep_context, ("rubric.json",),
+            input_dir=input_dir, harness_dir=harness_dir,
+        )
         _stage_qc_sweep(
             "pytest", PYTEST_QC_DIR, work, sweep_context,
             ("test_outputs.py", "test_weights.json"),
+            input_dir=input_dir, harness_dir=harness_dir,
         )
         return
     raise StageError(f"rubric stage failed after {attempts} attempts: {last_error}")
@@ -878,6 +935,7 @@ def stage_truth(input_dir: Path, work: Path, harness_dir: Path) -> None:
         "truth", TRUTH_QC_DIR, work,
         [input_dir, input_dir / "home", input_dir / "mock_data", input_dir / "task", work],
         ("TRUTH.md",),
+        input_dir=input_dir, harness_dir=harness_dir,
     )
 
 
@@ -1071,7 +1129,7 @@ def _pause(stage: str, auto: bool) -> None:
         raise SystemExit("stopped by operator")
 
 
-def _rerun_midstage_qc(stage: str, input_dir: Path, work: Path) -> None:
+def _rerun_midstage_qc(stage: str, input_dir: Path, work: Path, harness_dir: Path | None = None) -> None:
     if stage == "prompt" and (work / "PROMPT.md").is_file():
         _prompt_self_repair_sweep(input_dir, work)
         if (work / "api_selection.json").is_file():
@@ -1082,20 +1140,26 @@ def _rerun_midstage_qc(stage: str, input_dir: Path, work: Path) -> None:
                 [input_dir, input_dir / "home", input_dir / "mock_data", work],
                 ("api_selection.json",),
                 enrich_input_dir=input_dir,
+                input_dir=input_dir,
             )
     elif stage == "rubric" and (work / "rubric.json").is_file():
         sweep_context = [input_dir, input_dir / "home", input_dir / "mock_data", work]
-        _stage_qc_sweep("rubric", RUBRIC_QC_DIR, work, sweep_context, ("rubric.json",))
+        _stage_qc_sweep(
+            "rubric", RUBRIC_QC_DIR, work, sweep_context, ("rubric.json",),
+            input_dir=input_dir, harness_dir=harness_dir,
+        )
         if (work / "test_outputs.py").is_file() and (work / "test_weights.json").is_file():
             _stage_qc_sweep(
                 "pytest", PYTEST_QC_DIR, work, sweep_context,
                 ("test_outputs.py", "test_weights.json"),
+                input_dir=input_dir, harness_dir=harness_dir,
             )
     elif stage == "truth" and (work / "TRUTH.md").is_file():
         _stage_qc_sweep(
             "truth", TRUTH_QC_DIR, work,
             [input_dir, input_dir / "home", input_dir / "mock_data", input_dir / "task", work],
             ("TRUTH.md",),
+            input_dir=input_dir, harness_dir=harness_dir,
         )
 
 
@@ -1132,7 +1196,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
             # from a crashed prior run may still hold a defective artifact.
             print(f"[skip] {stage} body already complete — re-running mid-stage QC")
             try:
-                _rerun_midstage_qc(stage, input_dir, work)
+                _rerun_midstage_qc(stage, input_dir, work, harness_dir)
             except StageError as exc:
                 _record(manifest, stage, "failed", error=str(exc))
                 _save_manifest(work, manifest)
