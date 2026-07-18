@@ -416,27 +416,59 @@ checkers. Without it the prompt is a dead end, so never skip it.
 
 ### Artifact 3, the README
 
-Print a `README.md` body, the human overview a reviewer reads first. It draws entirely from
-the prompt and the design notes you just wrote, it invents nothing new. Use exactly these
-sections in this order.
+Print a `README.md` body, the detailed human overview a reviewer reads first. It draws
+entirely from the prompt and the design notes you just wrote, it invents nothing new. The
+README is a thirteen-section document with numbered `##` headings separated by `---` rules.
+You author the eight narrative sections; the assembly stage fills the five mechanical
+sections (4, 7, 9, 10, 13) from the actual generated files so they can never drift.
 
-- A level-one title line `# <task_id> — <principal>` naming the task id and the persona.
-- A single opening paragraph. Name the domain in the first words, then in one dense sentence
-  say who the persona is and what the assistant trues up in this task, and what it is asked
-  to leave untouched. This is the focal event from the design notes stated plainly.
-- `## Turn map`, a markdown table with columns Turn, Tag, Focus. One row per turn. The Focus
-  cell lists the workstreams that turn drives, in the persona's plain terms.
-- `## Traps`, one bullet per hidden conflict from the design notes, each stating the value
-  that wins and the values that are set aside, with the real numbers. This mirrors the
-  intended-winner column of your conflicts table.
-- `## Red lines`, one bullet per red line, the actions that must stay drafts or stay
-  untouched, including the boundary services left alone.
-- `## Deliverables`, one bullet per deliverable path, each as inline code.
+Begin with the title block, then author these eight sections **in this exact order, with
+these exact headings**, leaving a `---` rule line between every section:
 
-Leave the `## Surfaces` and `## Grading` sections OUT. The assembly stage fills those two
-mechanically from the required and distractor lists and the final probe and criteria counts,
-so that they can never drift from the actual generated files. Save this as
-`output/<PERSONA_ID>/README.md`.
+- Title block (before section 1): a level-one title line `# <task_id>. <Task Name>` naming
+  the task id and a short task name, then one dense opening paragraph (name the domain in the
+  first words, say who the persona is, what the assistant trues up, and what it must leave
+  untouched, this is the focal event stated plainly), then a `**Target difficulty:**` line
+  stating the difficulty band and the estimated human-hours floor. Close with a `---` rule.
+- `## 1. Header`, a two-column `| Field | Value |` markdown table. Rows: Task ID, Task Name,
+  Persona, Domain, Task Type, Turns, Time Arc, Focal Date, Focal Time, Timezone, Platform,
+  Cross-modal data anomalies, Red lines, Difficulty target. (The Required APIs, Distractor
+  APIs, `mock_data/` folder count, Rubric criteria, and Pytest checker rows are filled by
+  assembly in section 4 and 10, so you may omit them here or leave them for assembly.)
+- `## 2. Scenario Summary`, several narrative paragraphs, one per workstream, walking the
+  whole job in the persona's plain terms. This expands the design-notes workstreams.
+- `## 3. Single-Turn Ask` (for a single-turn task) or `## 3. Turn Map` (for multi-turn), a
+  markdown table with columns Turn, Focal moment, What the persona is doing, Prompt density,
+  APIs to touch, one row per turn, followed by a `Prompt voice signals:` paragraph.
+- `## 5. Cross-modal Data Anomalies`, an intro paragraph, then a contradictions table (rows
+  C1, C2, ... with columns ID, Type, Surface, What the baseline carries), then a seeded-
+  defects table (rows D1, D2, ... with columns ID, Defect, Where it lives), then a baseline-
+  invariants paragraph. This mirrors the hidden-conflicts table of your design notes, stating
+  the value that wins and the values set aside with the real numbers.
+- `## 6. Red Lines`, an intro sentence, then a table with columns ID, Trigger, Test method,
+  one row per red line, then a paragraph on the persona-derived boundaries (poison pills) that
+  have no dedicated probe.
+- `## 8. Difficulty Validation`, a numbered list of the steps a competent human takes with a
+  per-step time estimate in parentheses, then an estimated-total line. This is the eight to
+  ten hour justification from your design notes made concrete.
+- `## 11. Persona Pack`, a narrative paragraph about the seven persona markdown files and the
+  persona's daily rhythms and rosters, then a bullet list of the key persona rules that shape
+  this task (confirmation thresholds, send/delete gates, banned services).
+- `## 12. Key Constraints Summary`, a bullet list of the hard constraints (persona sacred,
+  indirect references only in the prompt, recompute don't trust, resolve don't blend, aging
+  vantage fixed, approved writes, distractors at zero, prompt path and turn header).
+
+**Section-numbering and splice contract (read carefully):** you emit sections numbered
+1, 2, 3, 5, 6, 8, 11, 12 and you deliberately SKIP sections 4, 7, 9, 10, 13. The assembly
+stage inserts the five mechanical sections at their numbered positions: section 4 (API Stack)
+immediately before your `## 5.` heading, section 7 (Artifacts Overview) immediately before
+your `## 8.` heading, sections 9 (Bundle Layout) and 10 (Rubric and Tests) immediately before
+your `## 11.` heading, and section 13 (File Index) at the very end. Because assembly locates
+those exact `## 5.`, `## 8.`, and `## 11.` heading lines to splice, you must write them
+exactly, each on its own line, with the number and the period. Do not author sections 4, 7,
+9, 10, or 13 yourself; assembly generates them from the required and distractor API lists, the
+staged artifact tree, and the final probe and criteria counts, so they can never drift from
+the actual generated files. Save this as `output/<PERSONA_ID>/README.md`.
 
 ---
 

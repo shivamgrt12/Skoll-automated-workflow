@@ -166,36 +166,185 @@ def build_task_yaml(meta: dict, system_prompt: str, task_description: str) -> st
     return "\n".join(doc_lines) + "\n"
 
 
-def _surfaces_section(meta: dict) -> str:
-    req = ", ".join(meta["required_apis"])
-    dis = ", ".join(meta["distractor_apis"])
-    return (
-        "## Surfaces\n\n"
-        f"- **Required ({len(meta['required_apis'])}):** {req}\n"
-        f"- **Distractors ({len(meta['distractor_apis'])}):** {dis}"
+def _api_stack_section(meta: dict) -> str:
+    req = list(meta["required_apis"])
+    dis = list(meta["distractor_apis"])
+    lines = [
+        "## 4. API Stack",
+        "",
+        f"### 4.1 Required APIs ({len(req)})",
+        "",
+        "| # | API | Role in this task |",
+        "|---|---|---|",
+    ]
+    for i, api in enumerate(req, 1):
+        lines.append(f"| {i} | `{api}` | Load-bearing surface the solve must read or write. |")
+    lines += [
+        "",
+        f"### 4.2 Distractor APIs ({len(dis)}, must end at zero requests)",
+        "",
+        "| # | API | Why distractor |",
+        "|---|---|---|",
+    ]
+    for i, api in enumerate(dis, 1):
+        lines.append(f"| {i} | `{api}` | Plausible but out of scope; audit must show zero requests. |")
+    banned = ", ".join(f"`{a}`" for a in sorted(BANNED_APIS))
+    lines += ["", f"Banned (not connected): {banned}."]
+    return "\n".join(lines)
+
+
+def _artifacts_section(input_dir: Path) -> str:
+    home = input_dir / "home"
+    counts: dict[str, int] = {}
+    if home.is_dir():
+        for path in home.rglob("*"):
+            if path.is_file():
+                ext = path.suffix.lstrip(".").upper() or "NOEXT"
+                counts[ext] = counts.get(ext, 0) + 1
+    total = sum(counts.values())
+    lines = [
+        "## 7. Artifacts Overview",
+        "",
+        f"{total} pre-staged files in a flat `data/` home directory (persona filesystem "
+        "filler). The load-bearing values the agent must reconcile live in the `mock_data/` "
+        "service APIs, not in these ambient artifacts.",
+        "",
+        "| Format | Files |",
+        "|---|---|",
+    ]
+    for ext, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])):
+        lines.append(f"| {ext} | {n} |")
+    if not counts:
+        lines.append("| (none) | 0 |")
+    dist = ", ".join(f"{ext} x {n}" for ext, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
+    lines += ["", f"File format distribution: {dist or '(none)'}."]
+    return "\n".join(lines)
+
+
+def _bundle_layout_section(meta: dict) -> str:
+    req = list(meta["required_apis"])
+    dis = list(meta["distractor_apis"])
+    n_folders = len(req) + len(dis)
+    lines = [
+        "## 9. Bundle Layout",
+        "",
+        "```",
+        "bundle/",
+        "+-- data/                                    # pre-staged home-directory artifacts (flat)",
+        f"+-- mock_data/                               # {n_folders} API folders ({len(req)} required + {len(dis)} distractor)",
+    ]
+    for api in req:
+        lines.append(f"|   +-- {api}/{' ' * max(1, 34 - len(api))}# required")
+    for api in dis:
+        lines.append(f"|   +-- {api}/{' ' * max(1, 34 - len(api))}# distractor")
+    lines.append("+-- persona/                                 # 7 .md files (sacred, from persona pack)")
+    for name in PERSONA_STATIC_ORDER + PERSONA_DYNAMIC_ORDER:
+        lines.append(f"|   +-- {name}.md")
+    lines += [
+        "+-- PROMPT.md                                # single-turn (or multi-turn) persona-voice ask",
+        "+-- README.md                                # this file",
+        "+-- rubric.json                              # rubric criteria",
+        "+-- task.yaml                                # API stack + system_prompt + task_description",
+        "+-- test_outputs.py                          # module-level stdlib-only test functions",
+        "+-- test_weights.json                        # weights, 1:1 bijection with tests",
+        "+-- TRUTH.md                                 # golden truth for prompts and reference trajectory",
+        "```",
+    ]
+    return "\n".join(lines)
+
+
+def _rubric_tests_section(probes: int, criteria: int, work_dir: Path) -> str:
+    weights_path = work_dir / "test_weights.json"
+    n_weights = 0
+    if weights_path.is_file():
+        try:
+            data = json.loads(weights_path.read_text())
+            if isinstance(data, dict):
+                n_weights = len(data)
+        except json.JSONDecodeError:
+            n_weights = 0
+    bijection = (
+        f"{probes} = {n_weights}."
+        if probes == n_weights
+        else f"MISMATCH: {probes} test functions vs {n_weights} weight keys (must be equal)."
+    )
+    crit_range = f"R1\u2013R{criteria}" if criteria else "none"
+    return "\n".join(
+        [
+            "## 10. Rubric and Tests",
+            "",
+            f"- **`rubric.json`** {criteria} criteria ({crit_range}). Channel B, the LLM judge, "
+            "grades discovered values, conflict resolution, and provenance.",
+            f"- **`test_outputs.py`** {probes} module-level stdlib-only test functions. Channel A "
+            "asserts the read happened and the forbidden write did not (audit facts).",
+            f"- **`test_weights.json`** one weight key per test function.",
+            f"- **Bijection invariant:** every test function has exactly one weight key, and vice "
+            f"versa. {bijection}",
+            "- **Channel disjointness:** Channel A (pytest) grades audit facts; Channel B (rubric) "
+            "grades content and judgment. No workstream is graded twice by the same question.",
+            "- **Calibration target:** a no-op or crashed agent fails every read/state probe and "
+            "earns nothing from the penalty probes (positive-assertion convention).",
+        ]
     )
 
 
-def _grading_section(probes: int, criteria: int) -> str:
-    return (
-        "## Grading\n\n"
-        f"- Channel A: `test_outputs.py` with `test_weights.json` ({probes} probes).\n"
-        f"- Channel B: `rubric.json` ({criteria} criteria, R1\u2013R{criteria})."
+def _file_index_section() -> str:
+    return "\n".join(
+        [
+            "## 13. File Index",
+            "",
+            "| Concern | File |",
+            "|---|---|",
+            "| Prompt voice (verbatim ask text) | `PROMPT.md` |",
+            "| API stack lock + system_prompt + task_description | `task.yaml` |",
+            "| Persona pack (sacred) | `persona/*.md` |",
+            "| Rubric criteria | `rubric.json` |",
+            "| Pytest checkers | `test_outputs.py` |",
+            "| Weights (1:1 bijection with tests) | `test_weights.json` |",
+            "| Mock-data API folders (required + distractor) | `mock_data/` |",
+            "| Pre-staged home-directory artifacts | `data/` |",
+            "| Golden truth for prompts and reference trajectory | `TRUTH.md` |",
+            "| This file | `README.md` |",
+        ]
     )
 
 
-def build_readme(meta: dict, work_dir: Path, probes: int, criteria: int) -> str:
-    authored = (work_dir / "README.md").read_text().rstrip()
-    surfaces = _surfaces_section(meta)
-    grading = _grading_section(probes, criteria)
+def _strip_trailing_rule(text: str) -> str:
+    text = text.rstrip()
+    if text.endswith("---"):
+        text = text[: -len("---")].rstrip()
+    return text
 
-    marker = "## Traps"
-    if marker in authored:
-        head, tail = authored.split(marker, 1)
-        body = f"{head.rstrip()}\n\n{surfaces}\n\n{marker}{tail}"
-    else:
-        body = f"{authored}\n\n{surfaces}"
-    return f"{body}\n\n{grading}\n"
+
+def _splice_before(body: str, marker: str, section: str) -> str:
+    # Insert `section` immediately before the line that starts with `marker`.
+    # Strip any `---` the author already ended the previous section with so the
+    # splice never doubles the horizontal rule. If the marker is absent (author
+    # skipped that heading), append the section at the end so a missing marker
+    # never drops a mechanical section.
+    idx = body.find(marker)
+    if idx == -1:
+        return f"{_strip_trailing_rule(body)}\n\n---\n\n{section}"
+    head, tail = body[:idx], body[idx:]
+    return f"{_strip_trailing_rule(head)}\n\n---\n\n{section}\n\n---\n\n{tail.lstrip()}"
+
+
+def build_readme(
+    meta: dict, work_dir: Path, probes: int, criteria: int, input_dir: Path
+) -> str:
+    # The model authors sections 1,2,3,5,6,8,11,12; assembly splices the five
+    # mechanical sections at their numbered positions (contract mirrored in
+    # prompt_generation.md "Artifact 3"): section 4 before `## 5.`, section 7
+    # before `## 8.`, sections 9+10 before `## 11.`, section 13 at the end.
+    body = (work_dir / "README.md").read_text().rstrip()
+    body = _splice_before(body, "## 5.", _api_stack_section(meta))
+    body = _splice_before(body, "## 8.", _artifacts_section(input_dir))
+    section_9_10 = _bundle_layout_section(meta) + "\n\n---\n\n" + _rubric_tests_section(
+        probes, criteria, work_dir
+    )
+    body = _splice_before(body, "## 11.", section_9_10)
+    body = f"{body.rstrip()}\n\n---\n\n{_file_index_section()}"
+    return f"{body}\n"
 
 
 REQUIRED_API_FLOOR = 12
@@ -281,7 +430,7 @@ def assemble(
     task_description = build_task_description(meta, (work_dir / "PROMPT.md").read_text())
 
     (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, task_description))
-    (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria))
+    (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria, input_dir))
 
     for fname in ("PROMPT.md", "rubric.json", "test_outputs.py", "test_weights.json", "TRUTH.md"):
         src = work_dir / fname
