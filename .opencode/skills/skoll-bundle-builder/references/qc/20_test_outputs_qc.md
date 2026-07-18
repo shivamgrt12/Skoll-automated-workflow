@@ -8,7 +8,7 @@ You are a senior RL-benchmark auditor. You will be given three files produced by
 
 …plus the originating `PROMPT.md` and `data/` directory for the task.
 
-Your job is to find every instance of the 19 defect classes catalogued below and produce a structured report. **Do not rewrite the files.** Only flag.
+Your job is to find every instance of the 20 defect classes catalogued below and produce a structured report. **Do not rewrite the files.** Only flag.
 
 The weight scale in use is **`{-5, -3, -1, 1, 3, 5}`** (NOT the old `{-50,-30,-10,10,30,50}` scale). All thresholds below are scaled accordingly.
 
@@ -29,7 +29,7 @@ The weight scale in use is **`{-5, -3, -1, 1, 3, 5}`** (NOT the old `{-50,-30,-1
 For every test function in `test_outputs.py`, walk the checks below in order. Record every hit with:
 
 ```
-DEFECT #<n> — <defect name>        (n = 1–19)
+DEFECT #<n> — <defect name>        (n = 1–20)
   test: <test_method_name>           (file:line if available)
   evidence: <smallest code snippet that proves it>
   why: <one-sentence explanation referencing the rule>
@@ -120,7 +120,7 @@ For each test, determine whether ANY agent trajectory could pass it. Common alwa
 - Reads a file path the mock server does not serve
 - Expects a value that contradicts what `data/` actually contains
 - Expects an endpoint response that the mock server does not implement
-- Uses `read_file` / `file_exists` on a path the agent has no way to learn about from `PROMPT.md`
+- Uses `file_exists` on a path the agent has no way to learn about from `PROMPT.md` — a correct agent cannot guess the filename, so the test is unsatisfiable. When `PROMPT.md` does not name the deliverable file, there must be NO pytest test pinning it at all; the deliverable is covered by a filename-agnostic rubric criterion (§2.16.1 Case B). A test that pins a guessed/invented deliverable name is a defect. (Any `read_file`/open-and-read of a deliverable is a separate, always-a-defect problem — see Defect 20.)
 
 Verify by inspecting `data/` directly. List the missing artifact in the evidence.
 
@@ -275,28 +275,42 @@ Flag (FAIL-HARD) if:
 
 Verify by collecting every `test_method_name` node ID from `test_outputs.py` and confirming the `test_weights.json` key set equals it exactly (a bijection). Report the missing keys and the orphan/extra keys separately. (Defect 18 governs the *form* of each key; Defect 19 governs the *completeness and exactness* of the set.)
 
+### Defect 20 — File-content assertion in pytest (hard check)
+
+pytest evaluates API state and bare file existence ONLY. It must NEVER open, read, or assert on the CONTENT of a file the agent wrote — content correctness belongs to the rubric (Channel B). This is checked **hard**: it is a **FAIL-HARD** condition.
+
+Flag (FAIL-HARD) any test that:
+
+- Opens or reads an agent-written deliverable — `open(`, `read_file(`, `.read()`, `.read_text()`, `csv.reader(`, `csv.DictReader(`, `json.load(open(`, or `zipfile` / `xml.etree.ElementTree` / `openpyxl` applied to an agent output file, OR
+- Asserts on anything derived from that file's content — a row count, header, cell, ID, sum, prose, or substring that was read out of the file (the SAME fact read back from the mock API is fine and belongs to a `test_behavioral_*` / `test_outcome_*` test), OR
+- Uses `glob` to discover the agent's output files.
+
+Do NOT flag: `os.path.exists(path)` / `file_exists(path)` bare existence on a `PROMPT.md`-named path (that is the one allowed file check); reading an HTTP `response_body` / `request_body` from the mock server (that is API state, not file content); asserting a data VALUE sourced from `mock_data/` when it arrives over the API.
+
+The mechanical test: **does the asserted value arrive via an HTTP call to the mock server (allowed) or via opening the agent's file (FAIL-HARD)?** If a task's only deliverable is a computed file with no mutation endpoint (§2.16.1), pytest asserts existence only and the rubric carries the content — a pytest content assertion is still a defect here, not a fix.
+
 ---
 
-## Cross-cutting checks (must run after the 19)
+## Cross-cutting checks (must run after the 20)
 
-C1. **Header template intact** — verify the §"Required Header Template" block (imports + `*_URL` constants + helper functions) appears verbatim at the top of `test_outputs.py`. Flag any modification.
+C1. **Header template intact** — verify the §"Required Header Template" block (imports + `*_URL` constants + helper functions) appears verbatim at the top of `test_outputs.py`. The current template defines helpers `_request`, `api_get`, `api_post`, `_get`, `_post`, and `file_exists` ONLY — it deliberately contains NO `read_file` / open-and-read helper. Flag any modification, including a re-introduced `read_file` helper.
 
 C2. **stdlib only** — flag any `import` of `requests`, `pandas`, `numpy`, `openpyxl`, `bs4`, `beautifulsoup4`, `lxml`, `PIL`, `Pillow`.
 
-C3. **Hardcoded output folders** — flag any literal `deliverables/`, `output/`, `results/`, `reports/`, `submissions/` UNLESS `PROMPT.md` names the folder.
+C3. **Hardcoded output folders / path-discovery** — flag any literal `deliverables/`, `output/`, `results/`, `reports/`, `submissions/` UNLESS `PROMPT.md` names the folder. Also flag any path-discovery helper or constant regardless of folder name: `DELIVERABLE`, `_WORKSPACE`, `_DATA_DIRS`, `_find_deliverable`, `_read_deliverable`, or `glob(` used to locate the agent's output files. A data VALUE from `mock_data/` (an ID, amount, date, name) is NOT a path — do not flag it.
 
 C4. **Function-prefix discipline** —
 - `test_behavioral_*` tests check that an endpoint was called (no value assertion)
-- `test_outcome_*` tests check value correctness of data the agent received/produced
+- `test_outcome_*` tests check value correctness of data read back **from the mock server** (`response_body` inspection or re-GET), NOT by reading a file the agent wrote
 - Negative-weight tests detect undesired behavior and MUST have a negative weight in `test_weights.json`. These tests may use any valid test name (e.g. `test_negative_weight_*`, `test_*_distractor_touched`, `test_*_contains_*`, etc.) as long as the weight is negative.
 Flag any test whose function prefix does not match its assertion shape, or any test with a negative weight that does not detect undesired behavior, or any test that detects undesired behavior but has `weight ≥ 0`.
 
 C5. **Distractor coverage** — list every API the prompt declares as a Distractor (§2.12). Coverage is satisfied by either per-API negative-weight tests OR one bucket negative-weight test whose body textually references ALL declared distractor APIs (the bucket form is the current standard). Flag only if a declared distractor API is referenced by NO negative-weight test body at all.
 
 C6. **Calibration sanity** — given the suite, estimate:
-- No-op agent score (does nothing) — should be `< 0.25 × pytest_positive_total`
+- No-op agent score. The no-op baseline is defined at the API layer: an agent that performs ZERO API mutations (even if it writes files) should score `< 0.25 × pytest_positive_total`. Positive credit must be anchored to API-state assertions, never to a file merely existing.
 - SOTA agent score (does the right thing perfectly) — should be `0.55 – 0.70 × pytest_positive_total`
-Flag if either estimate falls outside its band.
+Flag if either estimate falls outside its band. **Pure file-output carve-out:** if the task's only deliverable is a computed file with no mutation endpoint behind it (§2.16.1), the deterministic layer is intentionally thin — content is graded by the rubric. Two sub-cases, both acceptable: (A) `PROMPT.md` names the file → pytest asserts existence only (capped at weight ≤ +1); (B) `PROMPT.md` does NOT name the file → there is NO pytest deliverable test, and a filename-agnostic rubric criterion carries the deliverable entirely. For such a correctly-declared pure-file bundle, do NOT flag the thin (or absent) deterministic deliverable surface; a `< 0.55` SOTA estimate is expected and acceptable here. Do NOT demand a pytest test for an unnamed deliverable — requiring one would force a guessed filename, which is itself a defect.
 
 ---
 
@@ -309,7 +323,7 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 
 ## Summary
 - Total findings: <n>
-- Findings by defect class (1–19): <e.g. D1:0 D2:2 D3:0 … D17:1 D18:0 D19:0 — list all 19, omit-zero is NOT allowed>
+- Findings by defect class (1–20): <e.g. D1:0 D2:2 D3:0 … D17:1 D18:0 D19:0 D20:0 — list all 20, omit-zero is NOT allowed>
 - High-severity findings: <n>
 - Weight scale verified: yes/no   (must be {-5,-3,-1,1,3,5})
 - pytest_positive_total: <n>
@@ -320,10 +334,10 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 (one block per finding, using the DEFECT #<n> template above; group by defect number, then by test)
 
 ## Cross-cutting (C1–C6)
-(mark every check C1–C6 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 19 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C6 ❌ cause FAIL, C3–C6 ⚠ cause PASS WITH WARNING.)
+(mark every check C1–C6 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 20 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C6 ❌ cause FAIL, C3–C6 ⚠ cause PASS WITH WARNING.)
 
 ## Defect scorecard
-(all 19 rows, in order; fill the count and a ≤6-word note.)
+(all 20 rows, in order; fill the count and a ≤6-word note.)
 
 **How to choose the mark for each row (this decides the verdict, so apply it literally):**
 - **❌** — the defect is present AND it affects scoring or can mis-grade an agent: it changes the reward, lets a wrong/rogue trajectory pass, blocks a correct trajectory, or is any FAIL-HARD condition. Every confirmed defect instance defaults to ❌ unless it clearly meets the ⚠ bar below.
@@ -352,11 +366,12 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 | D17 | rubric.json + test_outputs.py follow MECE         | ✅/❌  | 0    |      |
 | D18 | Weight keys are pytest node IDs                   | ✅/❌  | 0    |      |
 | D19 | Weight-key set is 1:1 with collected tests        | ✅/❌  | 0    |      |
+| D20 | File-content assertion in pytest (FAIL-HARD)      | ✅/❌  | 0    |      |
 
 ## Verdict
-PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D19) AND the cross-cutting checks (C1–C6). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes).
-- FAIL-HARD: any of {C1 broken, C2 non-stdlib import, weight scale wrong, suite-wide negative cap exceeded, Defect 15 invalid Python file (parse/import failure), Defect 18 weight key not a valid pytest node ID, Defect 19 weight-key set not a 1:1 bijection with the collected tests}
-- FAIL: any ❌ among the 19 scorecard rows OR among cross-cutting checks C3–C6 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder, C6 calibration outside band) — including any Defect 12 hit
+PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D20) AND the cross-cutting checks (C1–C6). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes).
+- FAIL-HARD: any of {C1 broken, C2 non-stdlib import, weight scale wrong, suite-wide negative cap exceeded, Defect 15 invalid Python file (parse/import failure), Defect 18 weight key not a valid pytest node ID, Defect 19 weight-key set not a 1:1 bijection with the collected tests, Defect 20 file-content assertion in pytest}
+- FAIL: any ❌ among the 20 scorecard rows OR among cross-cutting checks C3–C6 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder, C6 calibration outside band) — including any Defect 12 hit
 - PASS WITH WARNING: no ❌ anywhere, but at least one ⚠ (scorecard row or cross-cutting check)
 - PASS: every scorecard row AND every cross-cutting check (C1–C6) is ✅
 ```

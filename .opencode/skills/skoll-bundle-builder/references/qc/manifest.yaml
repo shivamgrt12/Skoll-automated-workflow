@@ -4,6 +4,12 @@
 severity:
   10_rubric_qc.md: block
   20_test_outputs_qc.md: block
+  # Deterministic backstop for Rules 2 & 3: fails if test_outputs.py opens/reads
+  # a written deliverable (read_file/open/csv/json.load(open)/etc.) or hardcodes
+  # a discovery path or generic output folder. Mirrors the mid-stage pytest_qc
+  # gate so the final bundle cannot ship a file-content assertion even if the
+  # LLM judge (20_test_outputs_qc.md, Defect 20) is talked around. Block.
+  25_no_file_content_check.py: block
   # Escalated to block (2027-01): harness boot logs proved the earlier
   # "JSON-only mock_data is accepted at runtime" assumption wrong. Seed IDs that
   # violate a mock service's declared column types (e.g. string 'ACT-001' in an

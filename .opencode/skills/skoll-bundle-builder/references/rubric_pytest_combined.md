@@ -36,7 +36,8 @@ You produce three files in ONE response. The order matters: rubric first (so tes
 
 There are exactly two evaluation channels:
 
-- **Channel A — pytest (deterministic)**: API state changes, audit-trail counts, exact value matches against `mock_data/`, file existence + structural assertions, database integrity. Executable. Binary pass/fail.
+- **Channel A — pytest (deterministic)**: API state changes, audit-trail counts, exact value matches read back **from the mock server** (audit-log `request_body`/`response_body`, `/audit/summary`, re-GET), database integrity, and **bare file existence** (`os.path.exists` on a PROMPT.md-named path — never opening or reading the file). Executable. Binary pass/fail.
+- **File content is NOT Channel A.** Anything read out of a file the agent wrote — row counts, headers, cells, IDs, sums, prose, substrings via `open()`/`read_file()`/`csv.reader`/`json.load(open(...))`/`.read_text()`/`glob` — is **forbidden in pytest**. The *same fact* is fully assertable when it arrives from an HTTP call to the mock server. Content correctness of a written file is graded ONLY by the rubric (Channel B). The mechanical test for every assertion: **does the value arrive via an HTTP call to the mock server (Channel A, allowed) or via opening the agent's file (forbidden)?**
 - **Channel B — rubric (non-deterministic, LLM-judged)**: reasoning quality, explanation of decisions, communication style, refusal quality, reconciliation of contradictions, format/tone, hallucination detection by judgment, follow-through completeness across turns, synthesis quality.
 
 **Every check belongs to exactly one channel.** If you write a rubric criterion that asks "did the agent post X to endpoint Y" — that is Channel A. Move it to a pytest test. If you write a pytest test that asks "did the agent explain the drift clearly" — that is Channel B. Move it to a rubric criterion.
@@ -218,9 +219,11 @@ For multi-turn tasks with staged backend mutations:
 |---|---|---|
 | Was POST `/v1/issues` called? | A (pytest) | Audit-log query — fully deterministic |
 | Did POST body parse as well-formed JSON with required keys? | A (pytest) | Structural — exact string/key match |
-| Correct entity ID extracted into output file? | A (pytest) | Exact match against `mock_data/` |
-| Status field equals `"submitted"` / `"published"` / enum literal? | A (pytest) | Exact enum match |
-| File `output/<name>.csv` exists AND has expected header row? | A (pytest) | Structural — header bytes match |
+| Correct entity ID present in the mutating call's `request_body` / re-GET state? | A (pytest) | Exact match read from the mock server |
+| Correct entity ID written *inside* the agent's output file? | B (rubric) | File content — pytest may not open the file |
+| Status field equals `"submitted"` / `"published"` / enum literal (re-GET)? | A (pytest) | Exact enum match from API state |
+| File `output/<name>.csv` (named in PROMPT.md) exists? | A (pytest) | Bare existence only — `os.path.exists`, no open |
+| Output file has the expected header row / correct contents? | B (rubric) | File content — pytest may not read the file |
 | Distractor API `/audit/summary` shows zero business calls? | A (pytest) | Audit-log query — count is deterministic |
 | Was the agent's reasoning sound? | B (rubric) | Subjective |
 | Did the agent communicate clearly / politely / thoroughly? | B (rubric) | Subjective adjective — not measurable |
@@ -239,7 +242,7 @@ If a test name or docstring contains any subjective adjective (`helpful`, `polit
 
 ## 2.2 Calibration Target
 
-Pass@8 for current SOTA agents must land in 55–70%. A no-op agent that writes empty correctly-named files and makes one API call must score strictly < 25%. Tests that only check keyword presence in output files are TOO EASY and rejected. Tests must verify STRUCTURAL CORRECTNESS not just content existence.
+Pass@8 for current SOTA agents must land in 55–70%. **The no-op baseline is defined at the API layer, not the filesystem:** an agent that writes files but performs **zero API mutations** must score strictly < 25%. Every unit of positive credit must be anchored to an **API-state assertion** (a mutating call was made, its `request_body` carries the right value, or re-GET reflects the mutation) — never to a file merely existing. Structural correctness is verified against `request_body` / `response_body` / re-GET, NOT by reading the agent's output file. A suite in which a zero-mutation agent can bank positive credit is mis-calibrated and must be rejected. (Pure file-output tasks with no mutation endpoint are the one carve-out — see §2.16.1.)
 
 ## 2.3 Assertion Polarity Rule (Convention B — applies to EVERY test)
 
@@ -277,8 +280,8 @@ Process: parse rubric → extract (verb, endpoint) pairs → build required-muta
 1. **API state changes** — every deterministic mutation, ONLY for APIs listed under Required/Distractor in user message.
 2. **Audit-trail evidence** — `/audit/requests` and `/audit/summary` for endpoints expected/forbidden.
 3. **Database integrity** — counts, FK intact, no orphans, only for listed APIs.
-4. **Deterministic outputs** — exact values, calculations, lookups against `mock_data/`.
-5. **Output files** — files the agent must produce in the declared output directory.
+4. **Deterministic outputs** — exact values, calculations, lookups, **read back from the mock server** (`request_body` of the mutating call, `response_body`, or re-GET). Exact-value assertions are allowed here because the value arrives over HTTP, not from the agent's file.
+5. **Output files** — **existence only, and only when PROMPT.md names the path.** You may assert `os.path.exists(path)` for a file whose path PROMPT.md literally names. You may NOT open, read, parse, or assert on the contents of that file — content correctness is the rubric's job (Channel B). **If PROMPT.md does NOT name an output path, emit no file test at all — the deliverable is covered by a filename-agnostic rubric criterion instead (§2.16.1).** You cannot predict the filename the agent will choose, so never guess one in pytest.
 
 **Do NOT test (rubric handles):**
 - Chat / reasoning quality, message phrasing.
@@ -286,6 +289,26 @@ Process: parse rubric → extract (verb, endpoint) pairs → build required-muta
 - Subjective judgment, reconciliation quality, refusal quality.
 
 **Staged-file duplication rule (MANDATORY for positive audit-trail tests).** The harness always stages the bundle's `data/` files into the agent workspace, so a correct agent can satisfy any ask whose evidence also exists on disk WITHOUT ever calling the mock API. Therefore a POSITIVE audit-trail test (one that asserts an endpoint WAS called) may only cover content that is NOT duplicated in a staged `data/` file. Before writing each positive audit test, check the bundle's `data/` files: if the same values the API serves also ship as a staged file, you must do ONE of the following — (a) do not stage the duplicate file (remove it from `data/`), or (b) write the test in OR-evidence form: pass if the endpoint was called OR the staged-file value appears in the agent's deliverable. Never ship a hard `audit count > 0` positive test whose answer sits verbatim in a staged file — a perfect agent will fail it.
+
+### 2.5.1 Channel A — exhaustive ALLOWED / FORBIDDEN list (zero wiggle room)
+
+A pytest assertion is legal **only** if it matches one of the ALLOWED shapes below. If it matches any FORBIDDEN shape, it is a hard reject — rewrite it as an API-state assertion or move it to the rubric.
+
+**ALLOWED (the complete list):**
+1. **Behaviour — call happened.** The endpoint was called: `/audit/summary` count `> 0`, or a matching entry in `/audit/requests`.
+2. **Behaviour — payload correct.** `json.loads(entry['request_body'])` contains the required key/value; exact-value matches are allowed when the value is sourced per §2.8.
+3. **Outcome — re-GET reflects the mutation.** GET the entity back and assert status enum, a field `==` the sourced value, a collection grew, or the entity now exists.
+4. **Outcome — response carries the value.** `json.loads(entry['response_body'])` carries the required value.
+5. **Outcome — file exists.** `os.path.exists(path)` **only**, where PROMPT.md literally names `path`. No open, no read, no parse.
+6. **Negative — unwanted call happened.** A positive assertion that an undesired endpoint was called, carrying a NEGATIVE weight (Convention B).
+
+**FORBIDDEN (any one = hard reject):**
+1. **Opening/reading a deliverable's content** — `open()`, `read_file()`, `.read()`, `.read_text()`, `csv.reader(...)`, `json.load(open(...))`, `zipfile`/`ElementTree`/`openpyxl` on an agent-written file.
+2. **Asserting on anything derived from file content** — row counts, headers, cells, IDs, sums, prose, substrings that were read out of a file. (The *same facts* are allowed when read from the API.)
+3. **Hardcoding a deliverable filename / path / directory that PROMPT.md does not name** — no `DELIVERABLE`, `_WORKSPACE`, `_DATA_DIRS`, `output/`, `deliverables/`, `results/`, `reports/`, `submissions/` constants; no `_find_deliverable` / `_read_deliverable`; no `glob` discovery of the agent's files.
+4. **Asserting on message / reasoning / format quality** — that is Channel B.
+
+**Values vs paths (R2 nuance):** a data VALUE that appears in `mock_data/` — an ID like `'CLM-88421'`, an amount like `3500`, a date, a name — is a legal assertion literal. What changes under these rules is only *where you read it back from*: from the mock server (allowed), never from the agent's file (forbidden). Do not confuse a data value with a hardcoded path.
 
 ## 2.6 Class Prefixes (three required buckets)
 
@@ -376,10 +399,10 @@ You MUST generate exactly ONE bucket `TestNegativeWeight*` test that covers ALL 
 
 - Method names: `test_<service>_<action>_<detail>` snake_case.
 - `test_outputs.py` MUST be **self-contained**: emit the Required Header Template (imports + `<SERVICE>_URL` constants + helpers) at the TOP, then all `TestBehavioral*` / `TestOutcome*` / `TestNegativeWeight*` class definitions.
-- Helpers defined in the header: `api_get(base_url, endpoint)` / `api_post(base_url, endpoint, body)` (two-arg form); `_get(url)` / `_post(url, body)` (one-arg form); `read_file(path)`; `file_exists(path)`.
+- Helpers defined in the header: `api_get(base_url, endpoint)` / `api_post(base_url, endpoint, body)` (two-arg form); `_get(url)` / `_post(url, body)` (one-arg form); `file_exists(path)` (existence only — there is deliberately no file-reading helper, §2.5.1).
 - `<SERVICE>_URL` naming: API directory name uppercased, `-` → `_`, plus `_URL` (e.g., `slack-api` → `SLACK_API_URL`). Port from `environment/<api>-api/service.toml` (`port = ...`). Env-var name matches the constant name.
 - Emit one `<SERVICE>_URL` constant per Required API AND per Distractor API the prompt names.
-- **Prompt-named paths only (HARD RULE)**: a test may only pin an output file path or file name that `PROMPT.md` explicitly requests (deliverables flow from `meta.yaml` `deliverables:` into the prompt). NEVER hardcode a path, directory, or file name the agent has no way to learn from `PROMPT.md` — a correct agent cannot guess it, so the test would be unsatisfiable.
+- **Prompt-named paths only (HARD RULE)**: a test may only pin an output file path or file name that `PROMPT.md` explicitly requests (deliverables flow from `meta.yaml` `deliverables:` into the prompt). NEVER hardcode a path, directory, or file name the agent has no way to learn from `PROMPT.md` — a correct agent cannot guess it, so the test would be unsatisfiable. **If PROMPT.md does not name the deliverable file, the test does not exist — route the deliverable to a filename-agnostic rubric criterion instead (§2.16.1 Case B).** Even for a PROMPT.md-named path, the only legal use is a bare `os.path.exists(path)` existence check (§2.5 item 5); never open or read the file. Do NOT emit path-discovery helpers or constants (`DELIVERABLE`, `_WORKSPACE`, `_DATA_DIRS`, `_find_deliverable`, `_read_deliverable`, `glob(...)`). A data VALUE from `mock_data/` (an ID, amount, date, name) is not a path — asserting on it read *from the API* is always fine.
 - Every test has a docstring. One logical assertion group per method. Independent — no fixtures, no shared state.
 - 4-space indentation.
 
@@ -428,26 +451,38 @@ def _post(url, data=None):
     return _request("POST", url, data=data)
 
 
-def read_file(path):
-    with open(path) as f:
-        return f.read()
-
-
 def file_exists(path):
     return os.path.exists(path)
 ```
+
+There is deliberately NO `read_file` / open-and-read helper: pytest never reads the content of a file the agent wrote (§2.5.1). Assert file *existence* with `file_exists` on a PROMPT.md-named path only; grade file *content* in the rubric.
 
 After this header, your `TestBehavioral*` / `TestOutcome*` / `TestNegativeWeight*` classes follow.
 
 ## 2.15 Import Restrictions (stdlib only)
 
-Beyond the imports in the Required Header Template, you MAY add these stdlib modules at the top of `test_outputs.py` if you need them: `hashlib, re, csv, io, pathlib, struct, base64, datetime, math, collections, itertools, functools, string, textwrap, xml, zipfile, gzip, shutil, glob, tempfile, copy`.
+Beyond the imports in the Required Header Template, you MAY add these stdlib modules at the top of `test_outputs.py` if you need them: `hashlib, re, io, pathlib, struct, base64, datetime, math, collections, itertools, functools, string, textwrap, gzip, shutil, tempfile, copy`.
 
-FORBIDDEN: `requests, pandas, numpy, openpyxl, beautifulsoup4, lxml, PIL, Pillow`, any third-party. For `.xlsx` use `zipfile + xml.etree.ElementTree`. For HTTP use `api_get` / `api_post` / `_get` / `_post`.
+FORBIDDEN: `requests, pandas, numpy, openpyxl, beautifulsoup4, lxml, PIL, Pillow`, any third-party. Also NOT used, because pytest never reads the agent's output files: `glob` (file discovery), and `csv` / `zipfile` / `xml.etree.ElementTree` for parsing an agent-written `.csv` / `.xlsx` (that is banned file-content grading — move it to the rubric). For HTTP use `api_get` / `api_post` / `_get` / `_post`.
 
-## 2.16 Structure Assertion + No-Op Exploit Guard
+## 2.16 No-Op Exploit Guard (API-state anchored)
 
-For `.xlsx` / `.csv` / `.html` / `.json` output, at least ONE test MUST verify STRUCTURE — not just keyword presence. `file_exists(...)` alone earns no credit; pair every existence check with a content assertion. An agent that creates empty correctly-named files must score < 25%.
+A file existing earns NO positive credit on its own, and a file-existence test must NEVER assert content. Instead, **every unit of positive credit must be anchored to an API-state assertion** — a mutating call was made, its `request_body` carries the right value, or re-GET reflects the mutation (§2.5.1). An agent that performs **zero qualifying API mutations** must score strictly < 25%. Do not try to "guard the no-op" by reading the output file and asserting its structure — that is banned file-content grading. If the task genuinely has no mutation endpoint behind its deliverable, see §2.16.1.
+
+## 2.16.1 Pure File-Output Tasks (residual class)
+
+Some tasks' only deliverable is a computed file with NO API mutation endpoint standing behind it. These are permitted but are **deterministically weak by construction — do not disguise that.** How the deliverable is covered depends entirely on **whether PROMPT.md names the file**:
+
+**Case A — PROMPT.md names the exact file path/name.** pytest MAY assert **existence only** (`file_exists` on that PROMPT.md-named path). No open, no content, no discovery. The rubric still owns content correctness (see below). A pure-existence test is capped at weight **≤ +1**, so a no-op that merely creates the file cannot climb toward 25% on it.
+
+**Case B — PROMPT.md does NOT name the file.** Emit **NO pytest test for the deliverable at all** — pytest never guesses a filename. The deliverable is covered **entirely by a rubric criterion** that describes the artifact by *what it must contain or do*, never by filename. The agent may name the file anything; the LLM judge locates the produced artifact and grades it on substance.
+
+In **both** cases:
+- Content correctness lives **entirely in the rubric** as `final_answer` criterion(s) that quote the exact expected values from `mock_data/`; the LLM judge reads the artifact, pytest never does.
+- **Filename-agnostic rubric wording (MANDATORY for Case B, preferred for Case A).** Write the criterion as "The response produces a brief/report/file that reconciles X, states the corrected total $4.8M, and flags the stale figure" — describe the *content obligation*. Do NOT write "reconciliation_brief.md contains …" or name any file, because the filename is not knowable in advance. Even in Case A, prefer describing content over quoting the filename so the criterion survives a differently-named-but-correct artifact.
+- The generator MUST NOT fabricate a pytest content assertion, nor invent a filename, just to reach the §2.2 floor.
+- **Task-design preference:** if any API mutation *could* back the file (e.g. also record the result to an endpoint), require it in the task so a deterministic gate is restored. Only fall back to file-output coverage when no mutation is available.
+- QC calibration (§2.2 / QC C6) is relaxed for a bundle correctly declared pure-file: its deterministic layer is intentionally thin and the rubric carries the content load.
 
 ## 2.17 `test_weights.json` shape
 
@@ -540,7 +575,9 @@ For every `(rubric_criterion, pytest_test)` pair in the final output:
 |---|---|---|
 | **Same endpoint, same check** | Rubric: "The agent submits POST to /v1/issues" + Test: `test_jira_issue_created` checking POST /v1/issues | Delete rubric criterion |
 | **Same value, same assertion** | Rubric: "The agent sets price to $29.99" + Test: `assert price == 29.99` | Delete rubric criterion |
-| **Same file, same existence check** | Rubric: "The agent creates report.xlsx" + Test: `assert file_exists("report.xlsx")` | Delete rubric criterion |
+| **Same file, same *existence* check (file named in PROMPT.md)** | Rubric: "The agent creates report.xlsx" (existence only) + Test: `assert file_exists("report.xlsx")` | Delete rubric criterion (existence is pytest's) |
+| **File exists (pytest) vs file *content* (rubric)** | Test: `assert file_exists("report.xlsx")` + Rubric: "The response produces a report reconciling the total to $4.8M" | KEEP both — different observables. pytest owns existence, rubric owns content (§2.16.1); this is NOT overlap |
+| **Deliverable NOT named in PROMPT.md** | No pytest test exists + Rubric: "The response produces a brief that reconciles X and states the corrected total $4.8M" (no filename) | KEEP the rubric criterion — it is the ONLY coverage for the deliverable (§2.16.1 Case B). Never delete it as "overlap"; there is no test to defer to |
 | **Same distractor, same negative** | Rubric: "The agent touches PayPal API" (is_positive=false) + Test: `test_paypal_distractor_touched` | Delete rubric criterion |
 | **Partial overlap — deterministic core with judgment wrapper** | Rubric: "The response explains the Slack notification sent to #ops-alerts about the budget overrun of $12,500" + Test: `test_slack_post_ops_alerts` | KEEP BOTH — rubric evaluates explanation quality, test evaluates API call. But REWORD rubric to focus on the explanation: "The response explains to the user why a budget overrun notification was warranted" |
 
@@ -680,6 +717,9 @@ If inputs are incomplete:
 - [ ] Every assert phrased POSITIVELY (Convention B).
 - [ ] Exactly ONE bucket `TestNegativeWeight*` distractor test exists, its body references every declared Distractor API by its `<SERVICE>_URL` constant, its assertion message enumerates the touched services, and it carries weight `-5`.
 - [ ] Every output-file path pinned by a test is explicitly requested in `PROMPT.md` (no guessed/hardcoded paths).
+- [ ] No test opens or reads a file the agent wrote (`open(`, `read_file(`, `.read()`, `.read_text()`, `csv.reader`, `json.load(open(`, `zipfile`/`ElementTree`/`openpyxl` on an agent file, `glob`). File tests assert `file_exists(...)` existence ONLY; content is graded by the rubric (§2.5.1, §2.16).
+- [ ] No path-discovery helper/constant (`DELIVERABLE`, `_WORKSPACE`, `_DATA_DIRS`, `_find_deliverable`, `_read_deliverable`, `glob(`).
+- [ ] Every unit of positive credit is anchored to an API-state assertion (call made / `request_body` value / re-GET), not to a file existing — except a correctly-declared pure file-output task (§2.16.1), whose existence tests are capped at weight ≤ +1.
 - [ ] One umbrella negative test per endpoint, no per-method stacking, no category stacking.
 - [ ] Suite-wide cap: `sum(|w| if w<0) ≤ 3 × sum(w if w>0)`.
 - [ ] `/audit/summary` accessed via `summary.get("endpoints", {})`; `/audit/requests` via `audit.get("requests", [])`.
