@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """skoll-bundle: one command to build a harness-ready Skoll input bundle.
 
-Pipeline (per persona):
+Pipeline (per persona, truth-first):
   0 validate   deterministic  scripts/validate_input.py
   1 prompt     model          references/prompt_generation.md    -> PROMPT.md
-  2 rubric     model          references/rubric_pytest_combined.md -> rubric.json + test_outputs.py + test_weights.json
-  3 truth      model          references/truth_guide.md          -> TRUTH.md
+  2 truth      model          references/truth_guide.md          -> TRUTH.md (answer key + VALUE_LOCK)
+  3 rubric     model          references/rubric_pytest_combined.md -> rubric.json + test_outputs.py + test_weights.json
   4 assemble   deterministic  scripts/assemble.py                -> task.yaml + README.md + copied trees
   5 qc         model+script   references/qc/NN_*                  -> pass/fail gates
 
 Every stage records a checkpoint in <work>/bundle-manifest.json so a run can be
-resumed (--resume) or a single stage re-run (--regenerate --stage N). Default is
+resumed (--resume) or a single stage re-run (--stage <name>). Default is
 interactive: the run pauses after each stage for review. --auto runs unattended.
 """
 from __future__ import annotations
@@ -92,7 +92,7 @@ def _write_qc_report(
     print(f"[QC report] wrote {path}")
 
 MANIFEST_NAME = "bundle-manifest.json"
-MANIFEST_VERSION = "1.0"
+MANIFEST_VERSION = "1.1"
 
 # Passed as --model to override any retired model id pinned by the installed
 # agent config (a stale pin makes the provider reject the call). Env-overridable.
@@ -161,7 +161,22 @@ def _load_manifest(work: Path) -> dict:
 
 
 def _save_manifest(work: Path, manifest: dict) -> None:
-    (work / MANIFEST_NAME).write_text(json.dumps(manifest, indent=2) + "\n")
+    # QC sweeps record per-gate verdicts incrementally while stage-level callers
+    # may hold an older in-memory manifest; union-merge qc_gates so a later save
+    # never drops freshly recorded entries. Entries self-validate by fingerprint,
+    # so keeping either side of a conflict is safe.
+    mpath = work / MANIFEST_NAME
+    if mpath.is_file():
+        try:
+            disk_gates = json.loads(mpath.read_text()).get("qc_gates", {})
+        except (json.JSONDecodeError, OSError):
+            disk_gates = {}
+        if disk_gates:
+            merged = {key: dict(gates) for key, gates in disk_gates.items()}
+            for key, gates in manifest.get("qc_gates", {}).items():
+                merged.setdefault(key, {}).update(gates)
+            manifest["qc_gates"] = merged
+    mpath.write_text(json.dumps(manifest, indent=2) + "\n")
 
 
 def _record(manifest: dict, stage: str, status: str, **extra) -> None:
@@ -539,7 +554,7 @@ def _prompt_qc_context(input_dir: Path, work: Path) -> list[Path]:
     return [input_dir, input_dir / "home", input_dir / "task", work]
 
 
-def _prompt_self_repair_sweep(input_dir: Path, work: Path) -> None:
+def _prompt_self_repair_sweep(input_dir: Path, work: Path, resume: bool = False) -> None:
     # Delegates to the shared per-stage sweep so severity honoring, the 3-round
     # auto-fix retry loop, QC report writing, and blocking-halt semantics stay
     # identical to every other mid-stage sweep in this file.
@@ -550,6 +565,7 @@ def _prompt_self_repair_sweep(input_dir: Path, work: Path) -> None:
         _prompt_qc_context(input_dir, work),
         PROMPT_ARTIFACTS,
         input_dir=input_dir,
+        resume=resume,
     )
 
 
@@ -805,6 +821,25 @@ def _stage_gate_check(gate: Path, context_dirs: list[Path], work: Path, artifact
     return _parse_qc_verdict(out)
 
 
+def _gate_fingerprint(
+    gate: Path, work: Path, artifacts: tuple[str, ...], stage_name: str
+) -> str:
+    # Hash the audited artifacts AND the gate file itself so a cached verdict is
+    # only reusable while both the artifact bytes and the gate's rules are
+    # unchanged. The mock_data sweep folds in mock_data_changes.json as a cheap
+    # proxy for enrichment edits (hashing every mock_data dir would be costly).
+    digest = hashlib.sha256()
+    names = list(artifacts)
+    if stage_name == "mock_data":
+        names.append("mock_data_changes.json")
+    for name in names:
+        path = work / name
+        digest.update(name.encode())
+        digest.update(path.read_bytes() if path.is_file() else b"<absent>")
+    digest.update(gate.read_bytes())
+    return digest.hexdigest()
+
+
 def _stage_qc_sweep(
     stage_name: str,
     gate_dir: Path,
@@ -814,6 +849,7 @@ def _stage_qc_sweep(
     enrich_input_dir: Path | None = None,
     input_dir: Path | None = None,
     harness_dir: Path | None = None,
+    resume: bool = False,
 ) -> None:
     """Blocking auto-fix QC sweep for one generating stage.
 
@@ -821,6 +857,8 @@ def _stage_qc_sweep(
     pass or the budget is exhausted; model-audit .md gates run in fix mode so the
     model revises the artifact, re-checked each round. Any gate whose residual
     verdict is "fail" at "block" severity raises StageError, halting the pipeline.
+    With resume=True, a gate whose recorded pass/warn fingerprint still matches
+    the current artifact + gate bytes is skipped instead of re-audited.
     """
     gates = _discover_gates(gate_dir)
     if not gates:
@@ -831,8 +869,22 @@ def _stage_qc_sweep(
     print(f"\n--- {stage_name} QC sweep ({gate_dir.name}) ---")
     blocking_failures: list[str] = []
     report_entries: list[tuple[str, str, str]] = []
+    cache_key = f"{stage_name}/{gate_dir.name}"
+    manifest = _load_manifest(work)
+    gate_cache = manifest.setdefault("qc_gates", {}).setdefault(cache_key, {})
     for gate in gates:
         level = severity.get(gate.name, "block")
+        if resume:
+            cached = gate_cache.get(gate.name)
+            if (
+                cached
+                and cached.get("verdict") in ("pass", "warn")
+                and cached.get("fingerprint")
+                == _gate_fingerprint(gate, work, artifacts, stage_name)
+            ):
+                print(f"[{gate_dir.name} CACHED] {gate.name} — unchanged since last pass")
+                report_entries.append((gate.name, f"{cached['verdict']} (cached)", ""))
+                continue
         gate_ctx = _resolve_gate_context(
             gate_context_map.get(gate.name, []),
             work, context_dirs, context_source, harness_dir,
@@ -872,6 +924,12 @@ def _stage_qc_sweep(
             print(f"[{gate_dir.name} FAIL] {gate.name}")
             blocking_failures.append(gate.name)
         report_entries.append((gate.name, verdict, detail))
+        gate_cache[gate.name] = {
+            "verdict": verdict,
+            "fingerprint": _gate_fingerprint(gate, work, artifacts, stage_name),
+            "timestamp": _now(),
+        }
+        _save_manifest(work, manifest)
     _write_qc_report(work, stage_name, gate_dir.name, report_entries, halted=bool(blocking_failures))
     if blocking_failures:
         raise StageError(
@@ -1148,7 +1206,7 @@ def _pause(stage: str, auto: bool) -> None:
 
 def _rerun_midstage_qc(stage: str, input_dir: Path, work: Path, harness_dir: Path | None = None) -> None:
     if stage == "prompt" and (work / "PROMPT.md").is_file():
-        _prompt_self_repair_sweep(input_dir, work)
+        _prompt_self_repair_sweep(input_dir, work, resume=True)
         if (work / "api_selection.json").is_file():
             _stage_qc_sweep(
                 "mock_data",
@@ -1158,25 +1216,26 @@ def _rerun_midstage_qc(stage: str, input_dir: Path, work: Path, harness_dir: Pat
                 ("api_selection.json",),
                 enrich_input_dir=input_dir,
                 input_dir=input_dir,
+                resume=True,
             )
     elif stage == "rubric" and (work / "rubric.json").is_file():
         sweep_context = [input_dir, input_dir / "home", input_dir / "mock_data", work]
         _stage_qc_sweep(
             "rubric", RUBRIC_QC_DIR, work, sweep_context, ("rubric.json",),
-            input_dir=input_dir, harness_dir=harness_dir,
+            input_dir=input_dir, harness_dir=harness_dir, resume=True,
         )
         if (work / "test_outputs.py").is_file() and (work / "test_weights.json").is_file():
             _stage_qc_sweep(
                 "pytest", PYTEST_QC_DIR, work, sweep_context,
                 ("test_outputs.py", "test_weights.json"),
-                input_dir=input_dir, harness_dir=harness_dir,
+                input_dir=input_dir, harness_dir=harness_dir, resume=True,
             )
     elif stage == "truth" and (work / "TRUTH.md").is_file():
         _stage_qc_sweep(
             "truth", TRUTH_QC_DIR, work,
             [input_dir, input_dir / "home", input_dir / "mock_data", input_dir / "task", work],
             ("TRUTH.md",),
-            input_dir=input_dir, harness_dir=harness_dir,
+            input_dir=input_dir, harness_dir=harness_dir, resume=True,
         )
 
 
