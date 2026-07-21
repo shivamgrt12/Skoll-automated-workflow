@@ -81,7 +81,6 @@ blocks (`VALUE_LOCK { … }`, `PHASE2_FINGERPRINT { … }`), and the marker lege
 - **Timezone:** ‹IANA tz (label)› · **Date anchoring:** ‹frozen/persona-anchored; in-world now; date-format rule.›
 - **Drafting language:** ‹language + reading level + voice-mirroring + decision-first rule.›
 - **Confirmation threshold:** ‹$ per single charge / recurring rule / travel rule / any pre-cleared exception.›
-- **Platform:** harness = ‹harness name› · agent = ‹agent name› · multimodal = ‹true|false› · google_drive = ‹true|false› (deliverables are ‹/workspace|data/› files).
 - **Grading:** Channel A `test_outputs.py` (‹N› deterministic pytest probes, weighted) + Channel B `rubric.json` (‹N› LLM-judge criteria, R1–R‹n›).
 
 ---
@@ -261,8 +260,11 @@ PHASE2_FINGERPRINT {
 - **Principal**, **timezone**, **drafting language**, **confirmation threshold** →
   **`persona/USER.md`** + **`persona/AGENTS.md`** (e.g. the `$250` gate, "drafts only",
   "never publish"). Quote the real numbers.
-- **Platform / multimodal / google_drive** → `task.yaml` `system_prompt` (`Workspace`
-  block tells you `/workspace` vs `data/`) and whether artifacts are multimodal.
+- **No platform / runtime metadata.** Do **not** put any platform, harness, OS, agent/model
+  runtime, thinking flag, multimodal flag, connector-availability toggle (e.g. `google_drive`),
+  or delivery-mode line into TRUTH.md — that is environment configuration, not task truth, and
+  is a **FAIL-HARD** truth-QC violation (TQ-28). Where the deliverable location genuinely matters
+  (`/workspace` vs `data/`), state it as solve-path prose in §1/§4, not as a metadata line.
 - **Grading counts** → count entries in **`rubric.json`** (Channel B) and keys in
   **`test_weights.json`** (Channel A). These two counts must match §8.
 

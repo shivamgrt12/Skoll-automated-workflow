@@ -44,8 +44,10 @@ heading text.
 
 - **Header / metadata:** a reference-only disclaimer (states it is NOT consumed by the harness),
   Task ID, principal/persona identity, timezone + in-world "now" date anchoring, confirmation
-  threshold, platform/agent runtime, multimodal flag, and a grading summary (Channel A probe count
+  threshold, and a grading summary (Channel A probe count
   and positive/negative split; Channel B rubric criteria count and positive/negative split).
+  **Platform/runtime metadata (harness/OS, agent + model runtime, thinking flag, multimodal flag,
+  connector-availability flags, delivery mode) must NOT appear here — see TQ-28.**
 - **§ Focal Event / Scope:** the scenario, the asks, and an explicit **out-of-scope / red-line** list.
 - **§ Canonical Solve Path:** the ordered "golden solve" steps, ideally marked
   `[critical]` / `[conflict]` / `[red-line]`, each tied to rubric IDs and/or probe names.
@@ -237,15 +239,42 @@ The oracle/answer values (exact scores, the "correct" resolved values, refusal r
 TRUTH.md and must **not** be pre-leaked into `PROMPT.md` or embedded in `rubric.json` criteria in
 a way that hands the solver the answer. Leakage into prompt/rubric → Major.
 
-**TQ-26 — No Google Drive / Google Contacts dependency in the truth path.**
-TRUTH.md must not require a `google-drive` / `google-contacts` deliverable or data source when the
-task declares those unavailable. A truth path depending on an unavailable Drive/Contacts surface →
-**red**.
+**TQ-26 — No external cloud / file-share / contacts surface in the truth path.**
+TRUTH.md must not require, name, or route a deliverable or data source through **Google Drive**,
+**Google Contacts**, **Box**, or **Dropbox** — nor any equivalent external cloud-storage,
+file-share, or external-contacts surface. These surfaces are banned regardless of whether the task
+separately declares them unavailable. If any such surface appears in the truth path — a deliverable,
+data source, send/upload/read target, or route — flag it as a **blocker**: severity **FAIL-HARD**
+(auto-fail the bundle regardless of other results). (Documenting the availability *toggle* for these
+surfaces inside TRUTH.md is separately barred by TQ-28.)
 
 **TQ-27 — Grounding vs invention.**
 No fact in TRUTH.md may be invented without a source. Any asserted value, quote, or record that
 cannot be traced to `data/`, `mock_data/`, `persona/`, `task.yaml`, or `PROMPT.md` → Major
 (hallucinated truth).
+
+**TQ-28 — No platform / runtime metadata in TRUTH.md.**
+TRUTH.md is a golden-truth reference about the *task* (its scenario, values, solve path, grading).
+It must **not** carry any **platform, harness, or agent-runtime metadata**, because that is
+environment configuration, not task truth. Specifically, TRUTH.md must not state, assume, or depend
+on any of:
+
+- **harness / OS** (e.g. "harness = macOS", "runs on macOS/Linux/Windows");
+- **agent or model runtime** (e.g. "agent = Claude", "runtime `claude-opus-4-8`", model/vendor
+  names, context-window or tokenizer claims);
+- **thinking / reasoning-mode flag** (e.g. "thinking off/on", chain-of-thought settings);
+- **multimodal flag** or any statement gating which media types are readable (e.g.
+  "multimodal = true", "XML/XLSX/TSV/DOCX/PDF/MP3 allowed");
+- **connector-availability flags** (e.g. "google_drive = false", "Box/Dropbox banned" stated as a
+  platform toggle);
+- **delivery-channel / "nothing is sent" mode** stated as a platform setting.
+
+If **any** such platform/runtime line is present in TRUTH.md, flag it as a **blocker**: severity
+**FAIL-HARD** (auto-fail the bundle regardless of other results). Remove it; the task's own facts,
+red-lines, and grounded sources must stand on their own. Note this is about *metadata placement*:
+the actual **banned external surfaces** (Google Drive, Google Contacts, Box, Dropbox) are still
+forbidden from the *truth path* under TQ-26 — TQ-28 additionally forbids *documenting the platform
+toggle itself* inside TRUTH.md.
 
 ---
 
@@ -265,6 +294,8 @@ agrees everywhere listed. There are **no** hardcoded targets.
 | Conflicts (decoy vs authoritative) | TRUTH.md Fairness Ledger | rubric/tests reward authoritative side |
 | Red lines / poison pills | TRUTH.md | each maps to a negative rubric criterion + negative probe |
 | Cited sources | TRUTH.md Value Lock citations | files/records exist and contents match |
+| Platform / runtime metadata | scan whole TRUTH.md | must be ABSENT: no harness/OS, agent+model runtime, thinking flag, multimodal flag, connector toggles, or delivery-mode lines (TQ-28) |
+| Banned surfaces | TRUTH.md truth path | no Google Drive / Google Contacts / Box / Dropbox anywhere in the solve path (TQ-26) |
 
 ---
 
@@ -279,5 +310,7 @@ Produce `QC_REPORT_TRUTH.md`:
 5. **Verdict.**
 
 > **Roll-up verdict rule:** any **FAIL-HARD** or ungrounded/contradicted load-bearing truth ⇒
-> **FAIL**. Otherwise any **red/Major** ⇒ **NEEDS FIXES**. Only Minor/cleanup remaining ⇒
-> **PASS (with cleanup)**. Clean ⇒ **PASS**.
+> **FAIL**. This includes any occurrence of a **TQ-26** banned surface (Google Drive / Google
+> Contacts / Box / Dropbox) in the truth path or any **TQ-28** platform/runtime metadata line in
+> TRUTH.md — either one is a blocker that forces **FAIL** on its own. Otherwise any **red/Major** ⇒
+> **NEEDS FIXES**. Only Minor/cleanup remaining ⇒ **PASS (with cleanup)**. Clean ⇒ **PASS**.
