@@ -37,7 +37,10 @@ PYTEST_QC_DIR = REFERENCES / "pytest_qc"
 TRUTH_QC_DIR = REFERENCES / "truth_qc"
 MOCK_DATA_QC_DIR = REFERENCES / "mock_data_qc"
 
-STAGES = ["validate", "prompt", "rubric", "truth", "assemble", "qc"]
+# Truth is authored right after the prompt so the answer key (TRUTH.md + its
+# VALUE_LOCK block) exists before rubric/tests, which consume it as the coverage
+# map. assemble + qc must remain last.
+STAGES = ["validate", "prompt", "truth", "rubric", "assemble", "qc"]
 
 BANNED_SERVICES = frozenset(
     {"google-drive-api", "google-contacts-api", "box-api", "dropbox-api"}
@@ -253,7 +256,15 @@ def stage_validate(input_dir: Path, harness_dir: Path) -> None:
 
 
 PROMPT_ARTIFACTS = ("PROMPT.md", "prompt_design_notes.md", "README.md", "api_selection.json")
-PROMPT_PIN_ARTIFACTS = ("PROMPT.md", "prompt_design_notes.md", "README.md", "api_selection.json")
+PROMPT_PIN_ARTIFACTS = (
+    "PROMPT.md",
+    "prompt_design_notes.md",
+    "README.md",
+    "api_selection.json",
+    # Optional short blurb consumed by assemble.py build_task_description; absence
+    # falls back to the legacy full-prompt collapse, so it is pinned but not required.
+    "task_description.txt",
+)
 
 ARTIFACT_MARKER_INSTRUCTION = (
     "Wrap every artifact between an opening line '===FILE: <name>===' and a "
@@ -358,10 +369,12 @@ def stage_prompt(input_dir: Path, work: Path, auto: bool, design: dict | None) -
         + ARTIFACT_MARKER_INSTRUCTION
         + " Emit PROMPT.md, prompt_design_notes.md, README.md, "
         "api_selection.json (an object with keys required_apis, distractor_apis, "
-        "input_artifacts, and deliverables), any enriched mock_data/<svc>-api/<file> "
-        "files, and finally mock_data_changes.json (a JSON array logging every "
-        "mock-data edit, or [] if none). Emit the four fixed artifacts first, in that "
-        "order."
+        "input_artifacts, and deliverables), task_description.txt (one short "
+        "third-person paragraph, three to five sentences, describing what the task "
+        "is about - never a copy of the prompt), any enriched "
+        "mock_data/<svc>-api/<file> files, and finally mock_data_changes.json (a "
+        "JSON array logging every mock-data edit, or [] if none). Emit the five "
+        "fixed artifacts first, in that order."
         + _design_directives(design),
     )
     files = _split_artifacts(out)
@@ -879,11 +892,13 @@ def stage_rubric(input_dir: Path, work: Path, harness_dir: Path, meta: dict) -> 
     required = " ".join(meta.get("required_apis", []))
     distractor = " ".join(meta.get("distractor_apis", []))
     base_instruction = (
-        f"Read {work / 'prompt.txt'}. Generate rubric.json, test_outputs.py, and "
-        f"test_weights.json as one JSON object. Required APIs: {required}. "
-        f"Distractor APIs: {distractor}."
+        f"Read {work / 'prompt.txt'} and {work / 'TRUTH.md'}. TRUTH.md is the "
+        "authoritative answer key: its VALUE_LOCK block is your coverage map and "
+        "every graded literal must come from it. Generate rubric.json, "
+        "test_outputs.py, and test_weights.json as one JSON object. "
+        f"Required APIs: {required}. Distractor APIs: {distractor}."
     )
-    context_dirs = [input_dir, input_dir / "home", input_dir / "mock_data", harness_dir]
+    context_dirs = [input_dir, input_dir / "home", input_dir / "mock_data", work, harness_dir]
 
     attempts = 3
     last_error: Exception | None = None
@@ -921,7 +936,9 @@ def stage_truth(input_dir: Path, work: Path, harness_dir: Path) -> None:
             input_dir / "task",
             work,
         ],
-        f"Read the bundle in progress at {work} and inputs at {input_dir}. "
+        f"Read the prompt and design notes in {work} and the inputs at {input_dir} "
+        "(persona, mock_data, task). The rubric and tests do NOT exist yet — you are "
+        "authoring the answer key that they will consume. "
         "Produce TRUTH.md following the locked 9-section structure. "
         "Emit the COMPLETE document as your final output wrapped exactly as "
         "===FILE: TRUTH.md=== on its own line, then the full document, then "

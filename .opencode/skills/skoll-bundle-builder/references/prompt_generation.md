@@ -415,7 +415,7 @@ of that file, naming the concrete surfaces, conflicts, deliverables, and calcula
 add up past a full working day. If any of the three is not a clean yes, deepen the parallel
 work, add another hidden conflict, or widen the data load until it is.
 
-Then output exactly three artifacts, nothing else after them.
+Then output exactly four artifacts, nothing else after them.
 
 ### Artifact 1, the prompt file
 
@@ -491,11 +491,26 @@ exactly, each on its own line, with the number and the period. Do not author sec
 staged artifact tree, and the final probe and criteria counts, so they can never drift from
 the actual generated files. Save this as `output/<PERSONA_ID>/README.md`.
 
+### Artifact 4, the task description
+
+Print a `task_description.txt` body: one short paragraph, three to five sentences, written
+in the third person by analyzing the finished prompt you just produced. It gives a reader
+context for what the task is all about: name the domain and the principal, describe the
+situation the prompt drops the assistant into, and state the outcome the person wants. It
+is a description of the task, never a copy of the prompt. Do not paste prompt sentences,
+do not use the persona's first-person voice, do not name output filenames, do not reveal
+the hidden conflicts, their winners, or any resolution rule, and do not restate data
+values the agent is supposed to discover. Think of it as the one-paragraph blurb a project
+tracker would show next to the task id. This body is copied verbatim into the shipped
+`task.yaml` as its `task_description` field, so keep it to plain prose with no markdown
+headings, no bullet lists, and no turn banners. Save this as
+`output/<PERSONA_ID>/task_description.txt`.
+
 ---
 
 ## 6. After prompt generation, create `artifact_required.md`
 
-Once the prompt is generated and the two artifacts above are produced, this document must go
+Once the prompt is generated and the artifacts above are produced, this document must go
 one step further and create an `artifact_required.md`. This file records the artifact
 requirements and the artifact description data that follow directly from the prompt you just
 wrote. It is not a free invention. Every entry in it must trace back to a deliverable, an

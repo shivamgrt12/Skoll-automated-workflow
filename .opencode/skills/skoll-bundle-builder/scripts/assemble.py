@@ -6,10 +6,11 @@ Deterministic. Consumes:
   - input_dir/mock_data/<svc>-api/   (persona team, FULL ~101-svc catalog)
   - input_dir/home/                  (persona team, artifact tree = workspace)
   - work_dir/PROMPT.md               (Stage 1)
-  - work_dir/rubric.json             (Stage 2)
-  - work_dir/test_outputs.py         (Stage 2)
-  - work_dir/test_weights.json       (Stage 2)
-  - work_dir/TRUTH.md                (Stage 3)
+  - work_dir/task_description.txt    (Stage 1, optional blurb for task.yaml)
+  - work_dir/TRUTH.md                (Stage 2)
+  - work_dir/rubric.json             (Stage 3)
+  - work_dir/test_outputs.py         (Stage 3)
+  - work_dir/test_weights.json       (Stage 3)
   - design_metadata.yaml             (operator / Stage 1 notes; carries the
                                       selected required/distractor API subset)
 
@@ -145,8 +146,17 @@ def _copy_flat(src: Path, dst: Path) -> None:
         shutil.copy2(path, dst / path.name)
 
 
-def build_task_description(meta: dict, prompt_md: str) -> str:
-    source = meta.get("task_description") or _TURN_MARKER.sub("", prompt_md)
+def build_task_description(meta: dict, work_dir: Path) -> str:
+    # Priority: operator-authored meta field, then the prompt stage's short
+    # task_description.txt blurb, then the legacy full-prompt collapse so
+    # bundles generated before the blurb existed still assemble.
+    source = meta.get("task_description")
+    if not source:
+        blurb = work_dir / "task_description.txt"
+        if blurb.is_file():
+            source = blurb.read_text()
+    if not source:
+        source = _TURN_MARKER.sub("", (work_dir / "PROMPT.md").read_text())
     return _WS_RUN.sub(" ", source).strip()
 
 
@@ -427,7 +437,7 @@ def assemble(
     system_prompt = build_system_prompt(input_dir, templates_dir, meta)
     probes = count_pytest_probes(work_dir / "test_outputs.py")
     criteria = count_rubric_criteria(work_dir / "rubric.json")
-    task_description = build_task_description(meta, (work_dir / "PROMPT.md").read_text())
+    task_description = build_task_description(meta, work_dir)
 
     (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, task_description))
     (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria, input_dir))

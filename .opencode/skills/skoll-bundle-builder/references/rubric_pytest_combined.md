@@ -8,23 +8,27 @@ Use this as the **system prompt** for a fresh opencode session. The model will p
 
 ## How to invoke
 
-Within the skoll-bundle-builder pipeline this file IS the rubric stage system prompt: the orchestrator (`stage_rubric`) inlines this document, attaches the persona input dir, `home/`, `mock_data/`, and the harness environment as context directories, and passes the prompt text plus the required/distractor API lists. You do not invoke it by hand; running `--stage rubric` drives it. The model must produce `rubric.json`, `test_outputs.py`, and `test_weights.json` in one response.
+Within the skoll-bundle-builder pipeline this file IS the rubric stage system prompt: the orchestrator (`stage_rubric`) inlines this document, attaches the persona input dir, `home/`, `mock_data/`, the work dir (which holds `prompt.txt` and the already-authored **`TRUTH.md`** answer key), and the harness environment as context directories, and passes the prompt text plus the required/distractor API lists. You do not invoke it by hand; running `--stage rubric` drives it. The model must produce `rubric.json`, `test_outputs.py`, and `test_weights.json` in one response.
+
+**`TRUTH.md` is the authoritative answer key and coverage map.** The truth stage runs *before* this stage and has already resolved every conflict, named the correct values, and typed them in its `VALUE_LOCK` block. You MUST read it. Its `VALUE_LOCK` entries are typed: `graded-positive` (the correct resolved value — key exactly ONE positive grader on it), `stale` and `decoy` (superseded / plausible-wrong values that must NOT appear — key a negative grader on each). Every graded literal you emit must come from a `VALUE_LOCK` entry; never invent a value, and never read a resolved value out of a deliverable file (see the routing rule below).
 
 ## Inputs to attach (REQUIRED)
 
 | Input | Source | Required? |
 |---|---|---|
 | Agent prompt | `<task_dir>/prompt.txt` | **Yes** |
+| Answer key + coverage map (typed `VALUE_LOCK`) | `<task_dir>/TRUTH.md` | **Yes** |
 | Multimodal artifacts (PDFs, docx, images, xlsx that the prompt references) | `<task_dir>/data/` | Yes when prompt references files |
 | Mock data files (CSV/JSON/XLSX) per API | `<task_dir>/mock_data/<service>-api/*` | Yes when APIs are involved |
 | Persona rules (AGENTS.md, SOUL.md, MEMORY.md, etc.) | `<task_dir>/persona/` | Yes when persona present |
 | Per-API truth source — endpoints, methods, body schemas | `WildClawBench/environment/<service>-api/` for each Required and Distractor API. Read `server.py` (FastAPI routes), `*_data.py` (mock entity fields), `*_postman_collection.json` (request schemas) | Yes when APIs are involved |
 | Required APIs + Distractor APIs lists | named in user message, or inferred from `mock_data/` subdir names | Yes when APIs are involved |
 
-If `prompt.txt` is missing or empty, output a single JSON error and stop:
+If `prompt.txt` or `TRUTH.md` is missing or empty, output a single JSON error and stop:
 ```json
 {"error": "MISSING_INPUT", "missing": ["prompt.txt"]}
 ```
+(list whichever of `prompt.txt` / `TRUTH.md` is absent).
 
 ---
 
@@ -43,6 +47,8 @@ There are exactly two evaluation channels:
 **Every check belongs to exactly one channel.** If you write a rubric criterion that asks "did the agent post X to endpoint Y" — that is Channel A. Move it to a pytest test. If you write a pytest test that asks "did the agent explain the drift clearly" — that is Channel B. Move it to a rubric criterion.
 
 **ZERO-OVERLAP GUARANTEE (hard invariant):** No rubric criterion and pytest test may evaluate the same observable. Phase 3 (overlap pruning) and Phase 4 (overlap verification) together enforce this. If after Phase 4 any overlap remains, the generation MUST be rejected and re-done.
+
+**TRUTH.md routing rule (hard invariant):** `TRUTH.md` and its `VALUE_LOCK` are your **coverage map**, not a source of file-content assertions. Use a `VALUE_LOCK` value to decide *which mutation, API state, or audit record* a pytest test asserts, and to supply the exact literal a rubric criterion quotes. You MUST NOT turn a resolved `VALUE_LOCK` value into a pytest assertion that reads it back out of a deliverable the agent wrote (`open()`/`read_file()`/`.read_text()`/`csv`/`json.load(open(...))` on an output file) — that is a Channel-A violation caught by the file-content gate and is always wrong. A resolved figure that lives only inside a written deliverable is graded by a **rubric** criterion (Channel B). A resolved figure that also lands in API state (a POST body, a mutated record, an audit entry) is asserted by pytest **against the mock server**, never against the file. In short: `VALUE_LOCK` tells you *what* is correct and *where* it is observable; it never licenses reading the agent's output files.
 
 ### Multi-turn evaluation model (Skoll-aligned)
 
@@ -94,6 +100,7 @@ For multi-turn Skoll tasks, each of the following generates independent Channel 
 
 Walk inputs in this order and hold the result in working memory:
 
+0. **`TRUTH.md` `VALUE_LOCK` walk (do this FIRST)** — read every `VALUE_LOCK` entry. Each `type:graded-positive` value is a coverage obligation that MUST be asserted by exactly one positive grader (a pytest Channel-A assertion when the value is observable via an API/audit/state read, otherwise a rubric Channel-B criterion). Each `type:stale` and `type:decoy` value is a negative-polarity obligation: the agent must not surface it (a negative-weight pytest test when observable via the API, otherwise a negative rubric criterion). `TRUTH.md` §2 (canonical solve path), §4 (fairness ledger), and §6 (poison-pill) name the state changes, red lines, and pills these obligations attach to. The `VALUE_LOCK` is the bijection target: every `graded-positive` key must be covered, and every graded literal you emit must equal a `VALUE_LOCK` entry verbatim.
 1. **`prompt.txt` sentence walk** — split on sentence boundaries; drop only sentences under 4 tokens. Every surviving sentence that names an action verb, an entity, a constraint, or a deadline is a coverage obligation.
 2. **`persona/*.md` rules** — every `must` / `must not` / `should` / verbatim-named rule (e.g., from `AGENTS.md`, `SOUL.md`) is a coverage obligation. Any rule the persona names verbatim becomes a candidate criterion (state-level and/or message-level).
 3. **`mock_data/<service>-api/*` real entities** — list the concrete IDs, names, dates, amounts, codes that the prompt references or that the agent will plausibly need. These are the literals you may quote in criteria.

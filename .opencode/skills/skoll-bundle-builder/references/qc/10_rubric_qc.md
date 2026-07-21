@@ -817,6 +817,22 @@ For each negative criterion:
 **Major**: Single freebie criterion accounts for > 30% of total positive score. Score-5 criteria cover < 50% of core deliverable asks.
 **Moderate**: Only 1 negative criterion (weak penalty signal).
 
+## 7.5 VALUE_LOCK Coverage (TRUTH.md answer key)
+
+> TRUTH.md is authored before the rubric and carries a typed `VALUE_LOCK` block: each entry is `type:graded-positive` (the correct value), `type:stale` (superseded), or `type:decoy` (plausible-wrong, must not appear). The rubric is one of the two graders that must key on it.
+>
+> **Applicability:** if TRUTH.md is absent, or present but contains no `VALUE_LOCK` block (legacy bundle), report this check as **not applicable** and do NOT fail on it.
+
+Open TRUTH.md and walk every `VALUE_LOCK` entry:
+
+- [ ] Every `type:graded-positive` value that lives only in a deliverable or prose outcome (i.e. is NOT observable as API state / audit-log content) has **exactly one** positive rubric criterion quoting that value **verbatim**.
+- [ ] Every `type:stale` or `type:decoy` entry tied to a conflict or red line has a negative rubric criterion penalizing its appearance — unless a negative-weight pytest already covers that same observable (do not double-grade; see 2.8.2).
+- [ ] No criterion quotes a graded literal (number, ID, name, date presented as the correct answer) that is absent from `VALUE_LOCK`. An invented graded value is a coverage-map violation.
+- [ ] API-observable graded-positive values (asserted by pytest against the mock server) are NOT also quoted by a positive criterion (zero-overlap; see 2.8.2).
+
+**Major**: A deliverable-only graded-positive value has no positive criterion, or a criterion quotes a graded literal absent from `VALUE_LOCK`.
+**Moderate**: A stale/decoy entry tied to a conflict or red line has no negative grader in either channel. A graded-positive value is double-graded across channels.
+
 ---
 
 # PHASE 8 — MULTIMODAL-SPECIFIC CHECKS
@@ -1179,6 +1195,7 @@ If ANY of these fire, verdict is **Fail**. No exceptions.
 20. Any criterion is provably unachievable (4.10)
 21. Two criteria create an impossible bind (5.1/5.2)
 22. Core deliverable ask has zero rubric coverage (7.1)
+22a. Deliverable-only graded-positive VALUE_LOCK value has no positive criterion, or a criterion quotes a graded literal absent from VALUE_LOCK (7.5, when applicable)
 23. Rubric criterion contradicts GTFA (7.3)
 24. Zero MM-derived criteria on an MM task (8.1)
 25. Sensitive-data task without score -5 safety gate (8.4)
@@ -1360,6 +1377,11 @@ When verdict is **Fail** or **Needs Fixes**, the QC report MUST include a **Requ
 
 ### GTFA Consistency
 [Assessment]
+
+### VALUE_LOCK Coverage (7.5)
+[Not applicable (no TRUTH.md / no VALUE_LOCK block) — OR — per-entry table:]
+| VALUE_LOCK key | Type | Covered By | OK? |
+|---|---|---|---|
 
 ### Discriminative Power
 | Check | Value | Status |

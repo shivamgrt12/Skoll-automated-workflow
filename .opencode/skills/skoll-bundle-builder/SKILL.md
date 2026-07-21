@@ -87,9 +87,9 @@ run that lists them.
 | # | stage | kind | produces |
 |---|-------|------|----------|
 | 0 | validate | script | fail-loud checklist against `input-contract.yaml` |
-| 1 | prompt | model | `PROMPT.md`, `prompt_design_notes.md`, `README.md`, `api_selection.json` (then review — see below) |
-| 2 | rubric | model | `rubric.json`, `test_outputs.py`, `test_weights.json` |
-| 3 | truth | model | `TRUTH.md` |
+| 1 | prompt | model | `PROMPT.md`, `prompt_design_notes.md`, `README.md`, `api_selection.json`, `task_description.txt` (then review — see below) |
+| 2 | truth | model | `TRUTH.md` (the answer key, with its typed `VALUE_LOCK` block) |
+| 3 | rubric | model | `rubric.json`, `test_outputs.py`, `test_weights.json` (consumes `TRUTH.md`'s `VALUE_LOCK` as coverage map) |
 | 4 | assemble | script | `task.yaml`, final `README.md`, copied trees (no `inject/`) |
 | 5 | qc | script+model | pass/fail gates from `references/qc/` |
 
@@ -109,9 +109,9 @@ the artifact and re-checks, up to three rounds, before the run halts.
 |---|---|---|
 | 1 prompt | `references/prompt_qc/` | `PROMPT.md` (+ its review loop) |
 | 1 prompt | `references/mock_data_qc/` | `api_selection.json` (service selection) + mock-data / persona alignment |
-| 2 rubric | `references/rubric_qc/` | `rubric.json` |
-| 2 rubric | `references/pytest_qc/` | `test_outputs.py`, `test_weights.json` |
-| 3 truth | `references/truth_qc/` | `TRUTH.md` |
+| 2 truth | `references/truth_qc/` | `TRUTH.md` |
+| 3 rubric | `references/rubric_qc/` | `rubric.json` |
+| 3 rubric | `references/pytest_qc/` | `test_outputs.py`, `test_weights.json` |
 | 5 qc (final) | `references/qc/` | the whole assembled bundle |
 
 Mid-stage gates block by default; a failure at `block` severity stops the run.

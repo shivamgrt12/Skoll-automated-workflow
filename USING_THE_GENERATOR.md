@@ -281,7 +281,7 @@ interactive questions. The full flag list:
 | `--anchor` | — | Fixed anchor event/deadline text (omit if none) |
 | `--auto` | — | Fully unattended — no pauses, model infers any unset design field |
 | `--resume` | — | Skip stages already marked complete in the manifest |
-| `--stage <name> …` | — | Re-run only these stage(s): `validate prompt rubric truth assemble qc` |
+| `--stage <name> …` | — | Re-run only these stage(s): `validate prompt truth rubric assemble qc` |
 
 ---
 
@@ -324,8 +324,9 @@ anything is off, it fails here — cheap and loud.
 
 ### Stage 1 — prompt (model) — *the soul of the task*
 Writes `PROMPT.md` (the task the agent will be given), plus
-`prompt_design_notes.md`, a `README.md`, and `api_selection.json` (the
-required-vs-distractor service split). It runs in phases:
+`prompt_design_notes.md`, a `README.md`, `api_selection.json` (the
+required-vs-distractor service split), and a short `task_description.txt`
+blurb used later for `task.yaml`. It runs in phases:
 - **Design** — uses your turn-shape/domain/anchor answers.
 - **Generate** — writes the prompt and picks the API subset.
 - **Self-repair sweep** — every gate in `references/prompt_qc/` runs; a gate that
@@ -341,16 +342,19 @@ solution leak, persona alignment, English-only, plus two deterministic backstops
 (`15_no_deliverable_list.py`, `18_no_reconciliation_rule.py`) and a deep
 model-audit read (`70_prompt_qc_review.md`).
 
-### Stage 2 — rubric (model)
-Writes `rubric.json` (how the agent's work is scored) and the pytest layer
-`test_outputs.py` + `test_weights.json`. Mid-stage QC audits the rubric
-(`references/rubric_qc/`) and the tests (`references/pytest_qc/`, including a
-route/needle satisfiability check against the real mock routes).
+### Stage 2 — truth (model)
+Writes `TRUTH.md` — the ground-truth answer key, authored right after the
+prompt (before any rubric or tests exist). It resolves every planted conflict
+and records the correct/stale/decoy values in a typed `VALUE_LOCK` block.
+Mid-stage QC (`references/truth_qc/`) checks it's grounded in the prompt,
+persona, and mock data.
 
-### Stage 3 — truth (model)
-Writes `TRUTH.md` — the ground-truth answer key the scoring reasons against.
-Mid-stage QC (`references/truth_qc/`) checks it's grounded in the rest of the
-bundle and doesn't contradict the prompt or mock data.
+### Stage 3 — rubric (model)
+Writes `rubric.json` (how the agent's work is scored) and the pytest layer
+`test_outputs.py` + `test_weights.json`, using `TRUTH.md`'s `VALUE_LOCK` as its
+coverage map. Mid-stage QC audits the rubric (`references/rubric_qc/`) and the
+tests (`references/pytest_qc/`, including a route/needle satisfiability check
+against the real mock routes and a VALUE_LOCK coverage check).
 
 ### Stage 4 — assemble (script)
 Builds the final `task.yaml` byte-faithfully, writes the final `README.md`, and

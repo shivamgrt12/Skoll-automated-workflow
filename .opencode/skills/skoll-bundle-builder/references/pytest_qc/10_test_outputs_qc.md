@@ -8,7 +8,7 @@ You are a senior RL-benchmark auditor. You will be given three files produced by
 
 …plus the originating `PROMPT.md` and `data/` directory for the task.
 
-Your job is to find every instance of the 20 defect classes catalogued below and produce a structured report. **Do not rewrite the files.** Only flag.
+Your job is to find every instance of the 21 defect classes catalogued below and produce a structured report. **Do not rewrite the files.** Only flag.
 
 The weight scale in use is **`{-5, -3, -1, 1, 3, 5}`** (NOT the old `{-50,-30,-10,10,30,50}` scale). All thresholds below are scaled accordingly.
 
@@ -29,7 +29,7 @@ The weight scale in use is **`{-5, -3, -1, 1, 3, 5}`** (NOT the old `{-50,-30,-1
 For every test function in `test_outputs.py`, walk the checks below in order. Record every hit with:
 
 ```
-DEFECT #<n> — <defect name>        (n = 1–20)
+DEFECT #<n> — <defect name>        (n = 1–21)
   test: <test_method_name>           (file:line if available)
   evidence: <smallest code snippet that proves it>
   why: <one-sentence explanation referencing the rule>
@@ -289,9 +289,24 @@ Do NOT flag: `os.path.exists(path)` / `file_exists(path)` bare existence on a `P
 
 The mechanical test: **does the asserted value arrive via an HTTP call to the mock server (allowed) or via opening the agent's file (FAIL-HARD)?** If a task's only deliverable is a computed file with no mutation endpoint (§2.16.1), pytest asserts existence only and the rubric carries the content — a pytest content assertion is still a defect here, not a fix.
 
+### Defect 21 — VALUE_LOCK coverage & bijection (hard check)
+
+TRUTH.md is authored before this suite and carries a typed `VALUE_LOCK` block: each entry is `type:graded-positive` (the correct value), `type:stale` (superseded), or `type:decoy` (plausible-wrong, must not appear). The test suite is one of the two graders that must key on it. This is checked **hard**: a violation is a **FAIL-HARD** condition.
+
+**Applicability:** if TRUTH.md is absent, or present but contains no `VALUE_LOCK` block (legacy bundle), report this defect as **not applicable** (✅ with note "no VALUE_LOCK") and do NOT fail on it.
+
+Open TRUTH.md and walk every `VALUE_LOCK` entry:
+
+- Every `type:graded-positive` value that is **API-observable** (lands in a mutating call's `request_body`, a mutated record readable by re-GET, or an audit-log entry) must have **exactly one** positive test asserting it **against the mock server** — never by opening a file (that is Defect 20).
+- Every **API-observable** `type:stale` or `type:decoy` entry tied to a red line or conflict must have a negative-weight test detecting its appearance in API state.
+- Every literal asserted in `test_outputs.py` (number, ID, name, date presented as the correct value) must equal a `VALUE_LOCK` entry **verbatim**. An asserted graded literal absent from `VALUE_LOCK` is an invented value — flag it.
+- **Union check (this gate also sees `rubric.json`):** across both channels, every `graded-positive` key is covered by **exactly one** grader — a pytest test OR a rubric criterion, never both (double-graded) and never neither (orphaned). Deliverable-only values belong to the rubric; API-observable values belong to pytest.
+
+Do NOT flag: endpoint/URL/port literals and audit paths (those are plumbing, not graded values); type/range/presence checks with no literal; values the prompt itself states verbatim.
+
 ---
 
-## Cross-cutting checks (must run after the 20)
+## Cross-cutting checks (must run after the 21)
 
 C1. **Header template intact** — verify the §"Required Header Template" block (imports + `*_URL` constants + helper functions) appears verbatim at the top of `test_outputs.py`. The current template defines helpers `_request`, `api_get`, `api_post`, `_get`, `_post`, and `file_exists` ONLY — it deliberately contains NO `read_file` / open-and-read helper. Flag any modification, including a re-introduced `read_file` helper.
 
@@ -320,7 +335,7 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 
 ## Summary
 - Total findings: <n>
-- Findings by defect class (1–20): <e.g. D1:0 D2:2 D3:0 … D17:1 D18:0 D19:0 D20:0 — list all 20, omit-zero is NOT allowed>
+- Findings by defect class (1–21): <e.g. D1:0 D2:2 D3:0 … D18:0 D19:0 D20:0 D21:0 — list all 21, omit-zero is NOT allowed>
 - High-severity findings: <n>
 - Weight scale verified: yes/no   (must be {-5,-3,-1,1,3,5})
 - pytest_positive_total: <n>
@@ -331,10 +346,10 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 (one block per finding, using the DEFECT #<n> template above; group by defect number, then by test)
 
 ## Cross-cutting (C1–C5)
-(mark every check C1–C5 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 20 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C5 ❌ cause FAIL, C3–C5 ⚠ cause PASS WITH WARNING. C6 is IGNORED — do not evaluate or emit it.)
+(mark every check C1–C5 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 21 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C5 ❌ cause FAIL, C3–C5 ⚠ cause PASS WITH WARNING. C6 is IGNORED — do not evaluate or emit it.)
 
 ## Defect scorecard
-(all 20 rows, in order; fill the count and a ≤6-word note.)
+(all 21 rows, in order; fill the count and a ≤6-word note.)
 
 **How to choose the mark for each row (this decides the verdict, so apply it literally):**
 - **❌** — the defect is present AND it affects scoring or can mis-grade an agent: it changes the reward, lets a wrong/rogue trajectory pass, blocks a correct trajectory, or is any FAIL-HARD condition. Every confirmed defect instance defaults to ❌ unless it clearly meets the ⚠ bar below.
@@ -364,11 +379,12 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 | D18 | Weight keys are pytest node IDs                   | ✅/❌  | 0    |      |
 | D19 | Weight-key set is 1:1 with collected tests        | ✅/❌  | 0    |      |
 | D20 | File-content assertion in pytest (FAIL-HARD)      | ✅/❌  | 0    |      |
+| D21 | VALUE_LOCK coverage & bijection (FAIL-HARD)       | ✅/❌  | 0    |      |
 
 ## Verdict
-PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D20) AND the cross-cutting checks (C1–C5). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes). C6 is IGNORED and takes no part in the verdict.
-- FAIL-HARD: any of {C1 broken, C2 non-stdlib import, weight scale wrong, suite-wide negative cap exceeded, Defect 15 invalid Python file (parse/import failure), Defect 18 weight key not a valid pytest node ID, Defect 19 weight-key set not a 1:1 bijection with the collected tests, Defect 20 file-content assertion in pytest}
-- FAIL: any ❌ among the 20 scorecard rows OR among cross-cutting checks C3–C5 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder) — including any Defect 12 hit
+PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D21) AND the cross-cutting checks (C1–C5). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes). C6 is IGNORED and takes no part in the verdict.
+- FAIL-HARD: any of {C1 broken, C2 non-stdlib import, weight scale wrong, suite-wide negative cap exceeded, Defect 15 invalid Python file (parse/import failure), Defect 18 weight key not a valid pytest node ID, Defect 19 weight-key set not a 1:1 bijection with the collected tests, Defect 20 file-content assertion in pytest, Defect 21 VALUE_LOCK coverage/bijection violation (when applicable)}
+- FAIL: any ❌ among the 21 scorecard rows OR among cross-cutting checks C3–C5 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder) — including any Defect 12 hit
 - PASS WITH WARNING: no ❌ anywhere, but at least one ⚠ (scorecard row or cross-cutting check)
 - PASS: every scorecard row AND every cross-cutting check (C1–C5) is ✅
 ```
