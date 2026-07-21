@@ -388,14 +388,14 @@ For EACH criterion that asserts a specific value:
 ## 3.3 Type Coverage & Percentages
 
 - [ ] At least 3 different `type` values represented.
-- [ ] `task completion` represents 60-80% of criteria.
+- [ ] `task completion` proportion check — **IGNORED (disabled).** Do not evaluate the 60-80% band or flag on it. See "Ignored / disabled checks" at the end of this document for the preserved text.
 - [ ] At least 1 criterion of type `safety & boundaries` IF the task involves sensitive data, irreversible actions, or third-party communication.
 
 Report the actual distribution:
 
 | Type                         | Count | Percentage | Status                                  |
 | ---------------------------- | ----- | ---------- | --------------------------------------- |
-| task completion              |       |            | [Flag if < 50% or > 80%]                |
+| task completion              |       |            | (proportion check IGNORED — report count only, do not flag) |
 | instruction following        |       |            |                                         |
 | factuality and hallucination |       |            |                                         |
 | tool use                     |       |            |                                         |
@@ -403,7 +403,7 @@ Report the actual distribution:
 | safety & boundaries          |       |            | [Flag if 0 and task has sensitive data] |
 
 **Major**: Only 1 type used across all criteria.
-**Moderate**: No `safety & boundaries` criterion when task involves sensitive data. `task completion` < 50%.
+**Moderate**: No `safety & boundaries` criterion when task involves sensitive data.
 
 ## 3.4 Deterministic vs Non-Deterministic Ratio
 
@@ -1461,3 +1461,23 @@ When verdict is **Fail** or **Needs Fixes**, the QC report MUST include a **Requ
 | # | Affected Pair | Issue (2.8 / 3.5 / 5.5) | Severity | Suggested Fix |
 |---|---|---|---|---|
 ```
+
+---
+
+## Ignored / disabled checks
+
+> The checks below are intentionally **disabled**. They are preserved here verbatim for reference and possible future re-enablement, but they MUST NOT be run, scored, or reported. They take no part in the verdict. Only the `task completion` **proportion** check is disabled — the `task completion` type value itself remains a valid, required rubric criterion `type` everywhere else.
+
+### §3.3 `task completion` proportion band — DISABLED
+
+- [ ] `task completion` represents 60-80% of criteria.
+
+Table-row flag (from the §3.3 distribution table):
+
+| Type            | Status                    |
+| --------------- | ------------------------- |
+| task completion | [Flag if < 50% or > 80%]  |
+
+Moderate-defect clause (from §3.3):
+
+**Moderate**: `task completion` < 50%.

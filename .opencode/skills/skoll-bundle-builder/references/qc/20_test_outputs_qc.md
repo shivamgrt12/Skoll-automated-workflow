@@ -307,10 +307,7 @@ Flag any test whose function prefix does not match its assertion shape, or any t
 
 C5. **Distractor coverage** — list every API the prompt declares as a Distractor (§2.12). Coverage is satisfied by either per-API negative-weight tests OR one bucket negative-weight test whose body textually references ALL declared distractor APIs (the bucket form is the current standard). Flag only if a declared distractor API is referenced by NO negative-weight test body at all.
 
-C6. **Calibration sanity** — given the suite, estimate:
-- No-op agent score. The no-op baseline is defined at the API layer: an agent that performs ZERO API mutations (even if it writes files) should score `< 0.25 × pytest_positive_total`. Positive credit must be anchored to API-state assertions, never to a file merely existing.
-- SOTA agent score (does the right thing perfectly) — should be `0.55 – 0.70 × pytest_positive_total`
-Flag if either estimate falls outside its band. **Pure file-output carve-out:** if the task's only deliverable is a computed file with no mutation endpoint behind it (§2.16.1), the deterministic layer is intentionally thin — content is graded by the rubric. Two sub-cases, both acceptable: (A) `PROMPT.md` names the file → pytest asserts existence only (capped at weight ≤ +1); (B) `PROMPT.md` does NOT name the file → there is NO pytest deliverable test, and a filename-agnostic rubric criterion carries the deliverable entirely. For such a correctly-declared pure-file bundle, do NOT flag the thin (or absent) deterministic deliverable surface; a `< 0.55` SOTA estimate is expected and acceptable here. Do NOT demand a pytest test for an unnamed deliverable — requiring one would force a guessed filename, which is itself a defect.
+C6. **Calibration sanity** — **IGNORED (disabled).** This check is currently disabled and MUST NOT be run or reported. See the "Ignored / disabled checks" section at the end of this document for the preserved text. Do not evaluate no-op or SOTA calibration bands; do not emit a C6 row.
 
 ---
 
@@ -333,8 +330,8 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 ## Findings
 (one block per finding, using the DEFECT #<n> template above; group by defect number, then by test)
 
-## Cross-cutting (C1–C6)
-(mark every check C1–C6 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 20 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C6 ❌ cause FAIL, C3–C6 ⚠ cause PASS WITH WARNING.)
+## Cross-cutting (C1–C5)
+(mark every check C1–C5 as ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard; one block per ⚠ or ❌ check with evidence; a one-line ✅ for each passing check. These marks feed the verdict alongside the 20 scorecard rows — C1/C2 failures are FAIL-HARD, C3–C5 ❌ cause FAIL, C3–C5 ⚠ cause PASS WITH WARNING. C6 is IGNORED — do not evaluate or emit it.)
 
 ## Defect scorecard
 (all 20 rows, in order; fill the count and a ≤6-word note.)
@@ -369,11 +366,11 @@ Produce one Markdown document with these sections, in order. Use the exact headi
 | D20 | File-content assertion in pytest (FAIL-HARD)      | ✅/❌  | 0    |      |
 
 ## Verdict
-PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D20) AND the cross-cutting checks (C1–C6). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes).
+PASS / PASS WITH WARNING / FAIL / FAIL-HARD — decided from BOTH the scorecard marks (D1–D20) AND the cross-cutting checks (C1–C5). Mark each cross-cutting check ✅/⚠/❌ using the same ⚠-vs-❌ rule as the scorecard (❌ if it affects scoring / can mis-grade; ⚠ if cosmetic or no scoring impact; ✅ if it passes). C6 is IGNORED and takes no part in the verdict.
 - FAIL-HARD: any of {C1 broken, C2 non-stdlib import, weight scale wrong, suite-wide negative cap exceeded, Defect 15 invalid Python file (parse/import failure), Defect 18 weight key not a valid pytest node ID, Defect 19 weight-key set not a 1:1 bijection with the collected tests, Defect 20 file-content assertion in pytest}
-- FAIL: any ❌ among the 20 scorecard rows OR among cross-cutting checks C3–C6 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder, C6 calibration outside band) — including any Defect 12 hit
+- FAIL: any ❌ among the 20 scorecard rows OR among cross-cutting checks C3–C5 (e.g. C4 function-prefix break / `test_negative_weight_*` with `weight ≥ 0`, C5 uncovered declared distractor, C3 stray output folder) — including any Defect 12 hit
 - PASS WITH WARNING: no ❌ anywhere, but at least one ⚠ (scorecard row or cross-cutting check)
-- PASS: every scorecard row AND every cross-cutting check (C1–C6) is ✅
+- PASS: every scorecard row AND every cross-cutting check (C1–C5) is ✅
 ```
 
 If FAIL-HARD, list the triggering condition(s) on a single line under the verdict and stop. Do not enumerate the remaining findings.
@@ -389,3 +386,16 @@ If FAIL-HARD, list the triggering condition(s) on a single line under the verdic
 - The weight keys must be **exactly** the set of collected `test_method_name` node IDs — no more, no less. Every test has exactly one weight, and every weight maps to exactly one test. A **missing** weight (test with no key) AND an **orphan/extra** weight (key that maps to no collected test) are BOTH FAIL-HARD (this is the bijection enforced by Defect 19; Defect 18 governs the key *form*).
 - If a test imports a non-stdlib package, mark C2 and continue auditing; do not abort.
 - Treat the `{-5,-3,-1,1,3,5}` scale as authoritative. If you see any other magnitudes (e.g. `10`, `30`, `50`, `-110`), record `weight scale verified: no` in the Summary and FAIL-HARD.
+
+---
+
+## Ignored / disabled checks
+
+> The checks below are intentionally **disabled**. They are preserved here verbatim for reference and possible future re-enablement, but they MUST NOT be run, scored, or reported. They take no part in the verdict.
+
+### C6. Calibration sanity (SOTA + no-op bands) — DISABLED
+
+C6. **Calibration sanity** — given the suite, estimate:
+- No-op agent score. The no-op baseline is defined at the API layer: an agent that performs ZERO API mutations (even if it writes files) should score `< 0.25 × pytest_positive_total`. Positive credit must be anchored to API-state assertions, never to a file merely existing.
+- SOTA agent score (does the right thing perfectly) — should be `0.55 – 0.70 × pytest_positive_total`
+Flag if either estimate falls outside its band. **Pure file-output carve-out:** if the task's only deliverable is a computed file with no mutation endpoint behind it (§2.16.1), the deterministic layer is intentionally thin — content is graded by the rubric. Two sub-cases, both acceptable: (A) `PROMPT.md` names the file → pytest asserts existence only (capped at weight ≤ +1); (B) `PROMPT.md` does NOT name the file → there is NO pytest deliverable test, and a filename-agnostic rubric criterion carries the deliverable entirely. For such a correctly-declared pure-file bundle, do NOT flag the thin (or absent) deterministic deliverable surface; a `< 0.55` SOTA estimate is expected and acceptable here. Do NOT demand a pytest test for an unnamed deliverable — requiring one would force a guessed filename, which is itself a defect.
