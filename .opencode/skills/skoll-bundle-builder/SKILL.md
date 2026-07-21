@@ -292,14 +292,11 @@ with two digits (e.g. a leading `_`) is skipped by discovery, so keep vendor
 tools and helpers underscore-prefixed (directories included).
 
 Current final-bundle gates: `10_rubric_qc.md`, `20_test_outputs_qc.md`,
-`30_mock_data_qc.py`, `35_mock_boot_check.py`, `40_mock_data_placeholders.py`
-(warn), `50_truth_qc.md`, `60_check_ai_images.py`. `30_mock_data_qc.py` audits
-each `mock_data/<svc>-api/` overlay against the vendored canonical example
-snapshot in `_mock_overlay_validator/examples/` (stdlib-only, self-contained, so
-it ignores the `<harness_dir>` argument). `60_check_ai_images.py` scans
-`<bundle>/data` for AI-generated / stock images and **requires Pillow**
-(`pip install Pillow`); with Pillow absent it errors (exit 2) rather than
-silently passing, so install it on every runner.
+`25_no_file_content_check.py`, `30_mock_data_qc.py`, `35_mock_boot_check.py`,
+`40_mock_data_placeholders.py` (warn), `50_truth_qc.md`. `30_mock_data_qc.py`
+audits each `mock_data/<svc>-api/` overlay against the vendored canonical
+example snapshot in `_mock_overlay_validator/examples/` (stdlib-only,
+self-contained, so it ignores the `<harness_dir>` argument).
 
 Optionally set severity in `references/qc/manifest.yaml`:
 

@@ -21,7 +21,7 @@ sample persona inputs and the mock-service registry it needs.
    ```
 2. **Install the two Python dependencies** (everything else is standard library):
    ```bash
-   pip install -r requirements.txt   # pyyaml + Pillow
+   pip install -r requirements.txt   # pyyaml
    ```
    Python 3.11+ is required.
 

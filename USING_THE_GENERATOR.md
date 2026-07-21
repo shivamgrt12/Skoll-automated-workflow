@@ -151,17 +151,14 @@ opencode auth login
 
 ### 2.5 Install the Python dependencies
 
-Python **3.11+** is required. Only two third-party packages are needed
+Python **3.11+** is required. Only one third-party package is needed
 (everything else is standard library):
 
 ```bash
-pip install -r requirements.txt   # installs pyyaml + Pillow
+pip install -r requirements.txt   # installs pyyaml
 ```
 
 - **pyyaml** — reads the persona `meta.yaml` and the QC manifests.
-- **Pillow** — needed by the image-check QC gate (`60_check_ai_images.py`). If
-  Pillow is missing, that gate errors out instead of silently passing, so
-  install it even though it feels optional.
 
 ### 2.6 Sanity check
 
@@ -423,7 +420,6 @@ the final-bundle set:
 python3 06_final_bundle_qc/30_mock_data_qc.py        <bundle_dir>
 python3 06_final_bundle_qc/35_mock_boot_check.py     <bundle_dir> <harness_dir>
 python3 06_final_bundle_qc/40_mock_data_placeholders.py <bundle_dir>   # warn
-python3 06_final_bundle_qc/60_check_ai_images.py     <bundle_dir>      # warn; needs Pillow
 ```
 
 **`.md` gates** — model-audit checklists. Paste the gate's full text as the
@@ -432,8 +428,8 @@ persona MD files where asked), and read the verdict. `manual_QCs/README.md` has 
 ready-to-paste member prompt.
 
 **Verdicts:** treat anything that isn't a clean pass as blocking, **except** the
-two gates marked `warn` (`40_mock_data_placeholders.py`,
-`60_check_ai_images.py`). Fix the artifact and re-run the gate until it passes.
+gate marked `warn` (`40_mock_data_placeholders.py`). Fix the artifact and
+re-run the gate until it passes.
 
 Recommended order:
 
@@ -473,8 +469,7 @@ You rarely re-run from scratch. Use the work dir:
 | `No such file or directory: Persona/...` | Personas aren't in a fresh clone (git-ignored) | Get the persona folder from your team lead, place under `Persona/` ([section 3](#3-get-a-persona-to-build-important--not-in-the-clone)) |
 | Stage 0 fails on a service | `required/distractor` API has no matching `mock_data/<svc>-api/` folder, or a banned service is listed | Fix `meta.yaml` — every listed API needs a mock-data folder; remove any banned service |
 | `command not found: opencode` | opencode not installed / not on PATH | Install opencode ([section 2.2](#22-install-opencode)), then set up config and `opencode auth login` ([section 2.4](#24-authenticate)) |
-| `ModuleNotFoundError: yaml` or Pillow errors | Deps not installed | `pip install -r requirements.txt` |
-| `60_check_ai_images.py` exits `2` | Pillow missing | `pip install Pillow` |
+| `ModuleNotFoundError: yaml` | Deps not installed | `pip install -r requirements.txt` |
 | Run stopped mid-pipeline | A blocking gate failed after 3 auto-fix rounds | Read `<work>/QC_reports/NN_<stage>.md` (marked `HALTED`) for the exact finding, fix, then `--resume` |
 | Design questions never appeared in chat | You passed design flags (or `--auto`), which makes the run non-interactive | Omit `--turn-shape/--domain/--anchor/--auto` to be asked; or just pass the answers as flags |
 

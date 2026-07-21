@@ -34,7 +34,7 @@ On the machine that will run the batch (e.g. the EC2 box):
 - Install the Python dependencies:
 
   ```bash
-  pip install -r requirements.txt      # pyyaml + Pillow
+  pip install -r requirements.txt      # pyyaml
   ```
 
 ---
