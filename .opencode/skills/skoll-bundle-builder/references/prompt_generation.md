@@ -137,9 +137,24 @@ write down, for your own use, the following. You will hand these to the bundle s
    This is the behavior that separates a few minutes of skimming from a full day of careful
    work, and it is what the client complexity examples reach through scale and depth.
 3. **The deliverables.** At least two substantive professional work products the person
-   expects to be saved for them, such as a brief, a reconciliation document, a plan, or a
-   verification summary. Name each and the rough shape they want, for example a multi
+   expects to be saved for them. Name each and the rough shape they want, for example a multi
    section priority ranked brief.
+   **Most tasks must require at least one complex, non-text-based artifact** — a chart or plot
+   (for example a `.png` of a trend or comparison the person needs to see), a slide deck (a
+   `.pptx` they will present), an interactive HTML dashboard, or a worked spreadsheet with
+   real formulas and structure. The client does not want every task to reduce to a written
+   markdown or PDF brief. A task whose deliverables are all plain prose documents is the
+   exception, not the norm, and you must be able to justify it from the persona (the person
+   in this role genuinely hands in only written text). Whenever the workstreams involve
+   numbers, comparisons, trends, distributions, status across many items, or anything a
+   professional would naturally visualize, make the primary deliverable the visual or
+   structured artifact a person in that role would actually build, not a paragraph describing
+   it. You still describe every deliverable as an outcome the person wants ("a dashboard they
+   can hand their director that shows where each account stands"), never as a filename or a
+   format specification. Confirm the runtime surfaces and the persona can genuinely support
+   producing the artifact you require; never demand a plot or a deck the environment cannot
+   generate. The content of that artifact is graded by the rubric, not by the tests, so a
+   visual or binary deliverable stays fully gradable — only its existence is ever a test.
 4. **The cross source conflicts.** At least two places where two sources disagree and the
    newest or most authoritative source must win. You will NOT reveal these in the prompt.
    Discovering them is the test. You only record them here for the bundle stage. Build each
@@ -327,8 +342,14 @@ Produce one heavy opening turn exactly as above, then two or three light follow 
   running prose as outcomes they care about, in the same breath as the work that produces
   them. Describe each as the result a person wants, such as a launch readiness brief they can
   act on or a cash flow picture they can trust, never as a file name and never as a set of
-  fields the file must carry. The agent decides the structure, the format, and the schema on
-  its own. If the deliverables read like a spec rather than a request, rewrite them into the
+  fields the file must carry. When a deliverable is a visual or structured artifact — a chart
+  the person needs to see, a deck they will present, a dashboard they will hand over — convey
+  that through the outcome they want ("a one-slide picture of where each account stands that
+  she can walk her director through", "a chart that makes the drop obvious at a glance"), so
+  the need for the visual is unmistakable while the agent still decides the exact structure,
+  format, and schema on its own. Requiring a complex artifact is about the outcome the person
+  wants to see, never a format spec: never write "save a .png" or "produce a .pptx with these
+  slides". If the deliverables read like a spec rather than a request, rewrite them into the
   flow of the paragraph.
 - Fresh and original. The scenario, the focal event, the workstreams, the deliverables, the
   numbers, and the names must all be new and drawn from this persona. Nothing is lifted from
@@ -485,8 +506,13 @@ For each deliverable the person wants saved, capture two things. First, the **ar
 requirement**, meaning what must exist for the deliverable to be considered done, the surface
 or population it draws on, the conflicts it must resolve, and the judgment it must reflect.
 Second, the **artifact description**, meaning the rough shape, sections, and content the work
-product should carry so a later stage knows what good looks like. Keep both grounded in the
-prompt and the design notes. Never contradict the prompt, never widen scope beyond the
+product should carry so a later stage knows what good looks like. State the **artifact type**
+explicitly here — chart or plot, slide deck, HTML dashboard, worked spreadsheet, or written
+document — so the rubric stage knows it is grading a visual or structured artifact and not
+assuming plain prose. For a non-text artifact, record what the visual must show or the deck
+must convey (the axes and the comparison a plot must carry, the slides a deck must contain,
+the panels a dashboard must render), because that content is graded by the rubric while the
+tests only confirm the artifact exists. Keep both grounded in the prompt and the design notes. Never contradict the prompt, never widen scope beyond the
 connected surfaces, and never restate the hidden conflicts as if they were given in the
 prompt text.
 

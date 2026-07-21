@@ -26,8 +26,10 @@ List four to eight independent streams. Each should sit on its own surface.
 2. ...
 
 ## 4. Deliverables the person expects saved
-List at least two professional work products and their rough shape.
-1. <deliverable> / sections and format expected
+List at least two professional work products and their rough shape. At least one should be a
+complex non-text artifact (chart/plot, slide deck, HTML dashboard, or worked spreadsheet)
+unless the persona genuinely only hands in written text — state the artifact type for each.
+1. <deliverable> / artifact type (plot / deck / dashboard / spreadsheet / document) / sections and content expected
 2. ...
 
 ## 5. Hidden cross-source conflicts (NEVER in the prompt)
