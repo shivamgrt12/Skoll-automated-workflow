@@ -39,22 +39,13 @@ PERSONA_DYNAMIC_ORDER = ["HEARTBEAT"]
 DEFAULT_RUNTIME_MODEL = "claude-sonnet-4-20250514"
 DEFAULT_RUNTIME_THINKING = "off"
 
-# task.yaml `task_type` controlled vocabulary. The meta must declare one of these.
+# task.yaml `task_type` controlled vocabulary: the task DOMAIN. Legacy metas that
+# still carry an old activity-style task_type fall back to their `domain` key
+# (see _resolve_task_type), so existing persona metas keep working unchanged.
 TASK_TYPES = (
-    "Search & Retrieval",
-    "Productivity Flow",
-    "Code Intelligence",
-    "Creative Synthesis",
-    "Skill Use & Orchestration",
-    "Skill Creation & Editing",
-    "Communication & Messaging",
-    "Device & Environment Control",
-    "Memory & Personalization",
-    "Scheduling & Long-Running",
-    "Proactive Assistance",
-    "Social Interaction",
-    "Multi-Turn Robustness",
-    "Safety Alignment",
+    "enterprise",
+    "professional/prosumer",
+    "personal",
 )
 
 # task.yaml `platform` controlled vocabulary.
@@ -361,13 +352,29 @@ REQUIRED_API_FLOOR = 12
 BANNED_APIS = frozenset({"dropbox-api", "google-drive-api", "google-contacts-api"})
 
 
+def _normalize_domain(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    cleaned = value.strip().lower()
+    if cleaned in ("professional", "prosumer", "professional/prosumer"):
+        return "professional/prosumer"
+    return cleaned if cleaned in TASK_TYPES else None
+
+
+def _resolve_task_type(meta: dict) -> str | None:
+    return _normalize_domain(meta.get("task_type")) or _normalize_domain(meta.get("domain"))
+
+
 def _validate_meta_schema(meta: dict) -> list[str]:
     errors: list[str] = []
-    task_type = meta.get("task_type")
-    if task_type is None:
-        errors.append(f"task_type is required; pick one of {list(TASK_TYPES)}")
-    elif task_type not in TASK_TYPES:
-        errors.append(f"task_type {task_type!r} is not a valid type; pick one of {list(TASK_TYPES)}")
+    resolved = _resolve_task_type(meta)
+    if resolved is None:
+        errors.append(
+            f"task_type must be the task domain, one of {list(TASK_TYPES)} "
+            f"(got task_type={meta.get('task_type')!r}, domain={meta.get('domain')!r})"
+        )
+    else:
+        meta["task_type"] = resolved
     platform = meta.get("platform", DEFAULT_PLATFORM)
     if platform not in PLATFORMS:
         errors.append(f"platform {platform!r} is not valid; pick one of {list(PLATFORMS)}")
