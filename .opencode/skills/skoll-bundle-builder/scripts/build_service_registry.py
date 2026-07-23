@@ -31,7 +31,7 @@ def build_registry(harness_dir: Path) -> dict[str, dict]:
         toml_path = service_dir / "service.toml"
         if not toml_path.is_file():
             continue
-        data = tomllib.loads(toml_path.read_text())
+        data = tomllib.loads(toml_path.read_text(encoding="utf-8"))
         svc = data.get("service", {})
         name = svc.get("name") or service_dir.name
         port = svc.get("port")
@@ -56,7 +56,7 @@ def main(argv: list[str]) -> int:
     registry = build_registry(harness_dir)
     payload = json.dumps(registry, indent=2, sort_keys=True)
     if len(argv) >= 3:
-        Path(argv[2]).write_text(payload + "\n")
+        Path(argv[2]).write_text(payload + "\n", encoding="utf-8", newline="")
     print(payload)
     print(f"\n{len(registry)} services registered", file=sys.stderr)
     return 0

@@ -61,7 +61,7 @@ _WS_RUN = re.compile(r"\s+")
 
 
 def _read(path: Path) -> str:
-    return path.read_text().rstrip("\n")
+    return path.read_text(encoding="utf-8").rstrip("\n")
 
 
 def _yaml_scalar(value: object) -> str:
@@ -98,13 +98,13 @@ def build_system_prompt(persona_dir: Path, templates_dir: Path, meta: dict) -> s
 def count_pytest_probes(test_file: Path) -> int:
     if not test_file.is_file():
         return 0
-    return len(re.findall(r"^\s*def (test_\w+)", test_file.read_text(), re.MULTILINE))
+    return len(re.findall(r"^\s*def (test_\w+)", test_file.read_text(encoding="utf-8"), re.MULTILINE))
 
 
 def count_rubric_criteria(rubric_file: Path) -> int:
     if not rubric_file.is_file():
         return 0
-    data = json.loads(rubric_file.read_text())
+    data = json.loads(rubric_file.read_text(encoding="utf-8"))
     if isinstance(data, list):
         return len(data)
     for key in ("criteria", "rubric", "items"):
@@ -145,9 +145,9 @@ def build_task_description(meta: dict, work_dir: Path) -> str:
     if not source:
         blurb = work_dir / "task_description.txt"
         if blurb.is_file():
-            source = blurb.read_text()
+            source = blurb.read_text(encoding="utf-8")
     if not source:
-        source = _TURN_MARKER.sub("", (work_dir / "PROMPT.md").read_text())
+        source = _TURN_MARKER.sub("", (work_dir / "PROMPT.md").read_text(encoding="utf-8"))
     return _WS_RUN.sub(" ", source).strip()
 
 
@@ -259,7 +259,7 @@ def _rubric_tests_section(probes: int, criteria: int, work_dir: Path) -> str:
     n_weights = 0
     if weights_path.is_file():
         try:
-            data = json.loads(weights_path.read_text())
+            data = json.loads(weights_path.read_text(encoding="utf-8"))
             if isinstance(data, dict):
                 n_weights = len(data)
         except json.JSONDecodeError:
@@ -337,7 +337,7 @@ def build_readme(
     # mechanical sections at their numbered positions (contract mirrored in
     # prompt_generation.md "Artifact 3"): section 4 before `## 5.`, section 7
     # before `## 8.`, sections 9+10 before `## 11.`, section 13 at the end.
-    body = (work_dir / "README.md").read_text().rstrip()
+    body = (work_dir / "README.md").read_text(encoding="utf-8").rstrip()
     body = _splice_before(body, "## 5.", _api_stack_section(meta))
     body = _splice_before(body, "## 8.", _artifacts_section(input_dir))
     section_9_10 = _bundle_layout_section(meta) + "\n\n---\n\n" + _rubric_tests_section(
@@ -428,7 +428,7 @@ def assemble(
     harness_dir: Path,
     out_dir: Path,
 ) -> list[str]:
-    meta = yaml.safe_load(meta_path.read_text())
+    meta = yaml.safe_load(meta_path.read_text(encoding="utf-8"))
     registry = build_registry(harness_dir)
 
     errors = _validate_meta_schema(meta) + _validate_apis_against_inputs(meta, input_dir, registry)
@@ -446,8 +446,8 @@ def assemble(
     criteria = count_rubric_criteria(work_dir / "rubric.json")
     task_description = build_task_description(meta, work_dir)
 
-    (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, task_description))
-    (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria, input_dir))
+    (out_dir / "task.yaml").write_text(build_task_yaml(meta, system_prompt, task_description), encoding="utf-8", newline="")
+    (out_dir / "README.md").write_text(build_readme(meta, work_dir, probes, criteria, input_dir), encoding="utf-8", newline="")
 
     for fname in ("PROMPT.md", "rubric.json", "test_outputs.py", "test_weights.json", "TRUTH.md"):
         src = work_dir / fname

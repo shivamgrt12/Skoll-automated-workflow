@@ -88,7 +88,7 @@ def _write_qc_report(
         else:
             lines.append("_(mechanical gate; no model findings)_")
         lines.append("")
-    path.write_text("\n".join(lines))
+    path.write_text("\n".join(lines), encoding="utf-8", newline="")
     print(f"[QC report] wrote {path}")
 
 MANIFEST_NAME = "bundle-manifest.json"
@@ -149,14 +149,14 @@ def _merge_selection(meta: dict, selection: dict) -> dict:
 
 def _persist_meta(work: Path, meta: dict) -> Path:
     path = work / "meta.resolved.json"
-    path.write_text(json.dumps(meta, indent=2) + "\n")
+    path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="")
     return path
 
 
 def _load_manifest(work: Path) -> dict:
     mpath = work / MANIFEST_NAME
     if mpath.is_file():
-        return json.loads(mpath.read_text())
+        return json.loads(mpath.read_text(encoding="utf-8"))
     return {"version": MANIFEST_VERSION, "stages": {}}
 
 
@@ -168,7 +168,7 @@ def _save_manifest(work: Path, manifest: dict) -> None:
     mpath = work / MANIFEST_NAME
     if mpath.is_file():
         try:
-            disk_gates = json.loads(mpath.read_text()).get("qc_gates", {})
+            disk_gates = json.loads(mpath.read_text(encoding="utf-8")).get("qc_gates", {})
         except (json.JSONDecodeError, OSError):
             disk_gates = {}
         if disk_gates:
@@ -176,7 +176,7 @@ def _save_manifest(work: Path, manifest: dict) -> None:
             for key, gates in manifest.get("qc_gates", {}).items():
                 merged.setdefault(key, {}).update(gates)
             manifest["qc_gates"] = merged
-    mpath.write_text(json.dumps(manifest, indent=2) + "\n")
+    mpath.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="")
 
 
 def _record(manifest: dict, stage: str, status: str, **extra) -> None:
@@ -200,7 +200,7 @@ def _opencode_stage(system_prompt: Path, context_dirs: list[Path], prompt: str) 
     run_dir = _common_root([system_prompt] + context_dirs)
     context_lines = "\n".join(f"- {d.resolve()}" for d in context_dirs)
     message = (
-        f"{system_prompt.read_text()}\n\n"
+        f"{system_prompt.read_text(encoding='utf-8')}\n\n"
         "----- OPERATOR INSTRUCTION -----\n"
         f"{prompt}\n\n"
         "Context directories you may read from (absolute paths):\n"
@@ -420,9 +420,9 @@ def _apply_mock_data_enrichment(
     applied = _guarded_mock_writeback(input_dir, files)
     changes = files.pop("mock_data_changes.json", "[]")
     _read_mock_data_changes(changes, name="mock_data_changes.json")
-    (work / "mock_data_changes.json").write_text(changes)
+    (work / "mock_data_changes.json").write_text(changes, encoding="utf-8", newline="")
     (work / "mock_data_applied.json").write_text(
-        json.dumps(applied, indent=2) + "\n"
+        json.dumps(applied, indent=2) + "\n", encoding="utf-8", newline=""
     )
 
 
@@ -444,7 +444,7 @@ def _guarded_mock_writeback(input_dir: Path, files: dict[str, str]) -> list[dict
         if service in BANNED_SERVICES:
             raise StageError(f"enrichment targets banned service: {service}")
         _guard_values_only(target, body, name)
-        target.write_text(body)
+        target.write_text(body, encoding="utf-8", newline="")
         applied.append({"file": name, "service": service})
     return applied
 
@@ -455,7 +455,7 @@ def _guard_values_only(target: Path, new_body: str, name: str) -> None:
     if target.suffix != ".json":
         return
     try:
-        old = json.loads(target.read_text())
+        old = json.loads(target.read_text(encoding="utf-8"))
         new = json.loads(new_body)
     except json.JSONDecodeError as exc:
         raise StageError(f"enrichment is not valid JSON: {name}: {exc}") from exc
@@ -504,8 +504,8 @@ def _read_mock_data_changes(raw: str, name: str) -> list:
 def _write_prompt_artifacts(work: Path, files: dict[str, str]) -> dict:
     for name in PROMPT_PIN_ARTIFACTS:
         if name in files:
-            (work / name).write_text(files[name])
-    (work / "prompt.txt").write_text((work / "PROMPT.md").read_text())
+            (work / name).write_text(files[name], encoding="utf-8", newline="")
+    (work / "prompt.txt").write_text((work / "PROMPT.md").read_text(encoding="utf-8"), encoding="utf-8", newline="")
     if "api_selection.json" in files:
         _canonicalize_api_selection(work)
     return _read_api_selection(work)
@@ -517,11 +517,11 @@ def _canonicalize_api_selection(work: Path) -> None:
     # registry, task.yaml) keys on the "-api" form, so pin the on-disk selection to that
     # canonical form here rather than defending against both spellings in each consumer.
     path = work / "api_selection.json"
-    sel = _extract_json(path.read_text())
+    sel = _extract_json(path.read_text(encoding="utf-8"))
     for key in ("required_apis", "distractor_apis"):
         if isinstance(sel.get(key), list):
             sel[key] = [_api_name(v) for v in sel[key]]
-    path.write_text(json.dumps(sel, indent=2))
+    path.write_text(json.dumps(sel, indent=2), encoding="utf-8", newline="")
 
 
 def _api_name(value: str) -> str:
@@ -530,7 +530,7 @@ def _api_name(value: str) -> str:
 
 
 def _read_api_selection(work: Path) -> dict:
-    return _extract_json((work / "api_selection.json").read_text())
+    return _extract_json((work / "api_selection.json").read_text(encoding="utf-8"))
 
 
 def _split_artifacts(raw: str) -> dict[str, str]:
@@ -722,7 +722,9 @@ def _mechanical_gate_fix(
         "reported a failure. Revise the artifact(s) so the check will pass on the "
         f"next run. {directive}\n\n"
         "## Gate output\n\n"
-        f"```\n{failure_output.strip()}\n```\n"
+        f"```\n{failure_output.strip()}\n```\n",
+        encoding="utf-8",
+        newline="",
     )
     try:
         out = _opencode_stage(
@@ -739,7 +741,7 @@ def _mechanical_gate_fix(
     files = _split_artifacts(out)
     wrote = [name for name in artifacts if name in files]
     for name in wrote:
-        (work / name).write_text(files[name])
+        (work / name).write_text(files[name], encoding="utf-8", newline="")
     if wrote:
         print(f"[{gate.parent.name} FIXED] {gate.name} (revised {', '.join(sorted(wrote))})")
 
@@ -796,7 +798,7 @@ def _stage_gate_autofix(
             )
     wrote = [name for name in artifacts if name in files]
     for name in wrote:
-        (work / name).write_text(files[name])
+        (work / name).write_text(files[name], encoding="utf-8", newline="")
     if wrote:
         print(f"[{gate.parent.name} FIXED] {gate.name} (revised {', '.join(sorted(wrote))})")
     return _parse_qc_verdict(out), out, bool(wrote)
@@ -1005,7 +1007,7 @@ def stage_truth(input_dir: Path, work: Path, harness_dir: Path) -> None:
     files = _split_artifacts(out)
     if "TRUTH.md" not in files:
         raise StageError("truth stage did not emit a ===FILE: TRUTH.md=== block")
-    (work / "TRUTH.md").write_text(files["TRUTH.md"])
+    (work / "TRUTH.md").write_text(files["TRUTH.md"], encoding="utf-8", newline="")
     _stage_qc_sweep(
         "truth", TRUTH_QC_DIR, work,
         [input_dir, input_dir / "home", input_dir / "mock_data", input_dir / "task", work],
@@ -1190,9 +1192,9 @@ def _write_channel_files(work: Path, payload: dict) -> None:
         content = payload.get(key, payload.get(out_name))
         target = work / out_name
         if out_name.endswith(".json") and not isinstance(content, str):
-            target.write_text(json.dumps(content, indent=2) + "\n")
+            target.write_text(json.dumps(content, indent=2) + "\n", encoding="utf-8", newline="")
         else:
-            target.write_text(content if isinstance(content, str) else str(content))
+            target.write_text(content if isinstance(content, str) else str(content), encoding="utf-8", newline="")
 
 
 def _pause(stage: str, auto: bool) -> None:
@@ -1247,7 +1249,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
     meta_path = Path(args.meta).expanduser().resolve()
     work.mkdir(parents=True, exist_ok=True)
 
-    meta = json.loads(Path(meta_path).read_text()) if meta_path.suffix == ".json" else _load_yaml(meta_path)
+    meta = json.loads(Path(meta_path).read_text(encoding="utf-8")) if meta_path.suffix == ".json" else _load_yaml(meta_path)
 
     manifest = _load_manifest(work)
     manifest["persona_hash"] = _hash_persona(input_dir)
@@ -1317,7 +1319,7 @@ def run_pipeline(args: argparse.Namespace) -> int:
 def _load_yaml(path: Path) -> dict:
     import yaml
 
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def build_parser() -> argparse.ArgumentParser:

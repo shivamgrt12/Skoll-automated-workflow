@@ -28,7 +28,7 @@ class Check:
 
 
 def _load_contract(contract_path: Path) -> dict:
-    return yaml.safe_load(contract_path.read_text())
+    return yaml.safe_load(contract_path.read_text(encoding="utf-8"))
 
 
 def _check_persona(input_dir: Path, spec: dict) -> list[Check]:
@@ -51,7 +51,7 @@ def _check_persona(input_dir: Path, spec: dict) -> list[Check]:
     if spec.get("memory_marker_required"):
         memory = persona_dir / "MEMORY.md"
         marker = spec["memory_cache_boundary_marker"]
-        has_marker = memory.is_file() and marker in memory.read_text()
+        has_marker = memory.is_file() and marker in memory.read_text(encoding="utf-8")
         checks.append(Check("MEMORY.md cache-boundary marker", has_marker, marker))
     return checks
 
